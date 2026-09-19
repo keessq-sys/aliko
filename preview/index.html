@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aliko Diamond Key — Nigeria's Premier Real Estate Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    :root {
+      --c-obsidian: #050A0E;
+      --c-emerald: #059669;
+      --c-gold: #D97706;
+    }
+    body {
+      background-color: #050A0E;
+      color: #f3f4f6;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    .font-serif {
+      font-family: 'Playfair Display', serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card {
+      background: rgba(10, 17, 24, 0.75);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(5, 150, 105, 0.2);
+    }
+    .glass-card:hover {
+      border-color: rgba(5, 150, 105, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px -10px rgba(5, 150, 105, 0.3);
+    }
+    .text-gradient-gold {
+      background: linear-gradient(135deg, #D97706, #F59E0B, #FCD34D);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .text-gradient-emerald {
+      background: linear-gradient(135deg, #059669, #34D399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .grid-floor {
+      background-image: linear-gradient(rgba(5, 150, 105, 0.1) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(5, 150, 105, 0.1) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #064E3B;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="selection:bg-emerald-500/30">
+
+  <!-- ==================== NAVIGATION ==================== -->
+  <header class="sticky top-0 z-50 w-full glass border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center shadow-[0_0_20px_rgba(5,150,105,0.4)]">
+            <i data-lucide="diamond" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <span class="text-xl font-serif font-bold text-white tracking-wide">Aliko Diamond Key</span>
+            <span class="block text-[10px] text-emerald-400 font-mono tracking-widest uppercase -mt-1">Premier Real Estate</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden md:flex items-center gap-8">
+          <a href="index.html" class="text-sm font-medium text-emerald-400">Home</a>
+          <a href="properties.html" class="text-sm font-medium text-stone-300 hover:text-emerald-400 transition-colors">Properties</a>
+          <a href="agents.html" class="text-sm font-medium text-stone-300 hover:text-emerald-400 transition-colors">Verified Agents</a>
+          <a href="properties.html?view=map" class="text-sm font-medium text-stone-300 hover:text-emerald-400 transition-colors">Interactive Map</a>
+          <div class="relative group">
+            <button class="text-sm font-medium text-stone-300 hover:text-emerald-400 transition-colors flex items-center gap-1">
+              Dashboards <i data-lucide="chevron-down" class="w-4 h-4"></i>
+            </button>
+            <div class="absolute top-full right-0 mt-2 w-52 glass-card rounded-xl shadow-2xl py-2 hidden group-hover:block">
+              <a href="dashboard-manager.html" class="flex items-center gap-2 px-4 py-2 text-xs text-stone-300 hover:bg-white/10 hover:text-white">
+                <i data-lucide="building-2" class="w-4 h-4 text-amber-400"></i> Estate Manager
+              </a>
+              <a href="dashboard-agent.html" class="flex items-center gap-2 px-4 py-2 text-xs text-stone-300 hover:bg-white/10 hover:text-white">
+                <i data-lucide="users" class="w-4 h-4 text-emerald-400"></i> Agent Dashboard
+              </a>
+              <a href="dashboard-client.html" class="flex items-center gap-2 px-4 py-2 text-xs text-stone-300 hover:bg-white/10 hover:text-white">
+                <i data-lucide="home" class="w-4 h-4 text-cyan-400"></i> Client Portal
+              </a>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Right CTAs -->
+        <div class="hidden md:flex items-center gap-4">
+          <a href="auth.html" class="text-sm font-medium text-stone-300 hover:text-white px-3 py-2">Sign In</a>
+          <a href="agent-registration.html" class="text-xs font-semibold px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 transition-all">
+            Join as Agent
+          </a>
+          <a href="auth.html?mode=register" class="text-sm font-semibold px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-400 text-white shadow-[0_0_15px_rgba(5,150,105,0.4)] hover:scale-105 transition-all">
+            Get Started
+          </a>
+        </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button id="mobileMenuBtn" class="md:hidden text-stone-300 hover:text-white">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div id="mobileDrawer" class="hidden md:hidden glass border-t border-white/10 px-4 py-4 space-y-3">
+      <a href="index.html" class="block text-sm text-emerald-400 font-medium py-1">Home</a>
+      <a href="properties.html" class="block text-sm text-stone-300 font-medium py-1">Properties</a>
+      <a href="agents.html" class="block text-sm text-stone-300 font-medium py-1">Verified Agents</a>
+      <a href="properties.html?view=map" class="block text-sm text-stone-300 font-medium py-1">Interactive Map</a>
+      <div class="pt-2 border-t border-white/10 text-xs font-mono text-stone-500">DASHBOARDS</div>
+      <a href="dashboard-manager.html" class="block text-sm text-stone-300 py-1">🏢 Estate Manager Dashboard</a>
+      <a href="dashboard-agent.html" class="block text-sm text-stone-300 py-1">🤝 Agent Portal</a>
+      <a href="dashboard-client.html" class="block text-sm text-stone-300 py-1">🏠 Client Portal</a>
+      <div class="pt-3 border-t border-white/10 flex gap-2">
+        <a href="auth.html" class="flex-1 py-2 text-center text-xs font-semibold rounded-lg bg-white/5 border border-white/10 text-white">Sign In</a>
+        <a href="agent-registration.html" class="flex-1 py-2 text-center text-xs font-semibold rounded-lg bg-emerald-600 text-white">Register</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== SECTION 1: HERO ==================== -->
+  <section class="relative min-h-[92vh] flex items-center justify-center overflow-hidden pt-12 pb-20">
+    <!-- 3D Grid Background -->
+    <div class="absolute inset-0 grid-floor opacity-30 pointer-events-none"></div>
+    <div class="absolute inset-0 bg-radial-at-c from-emerald-950/40 via-transparent to-[#050A0E] pointer-events-none"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10">
+      <div class="grid lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left: Copy & Search -->
+        <div class="lg:col-span-7 text-center lg:text-left">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 text-xs font-mono mb-6">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            NIGERIA'S PREMIER 3D PROPERTY ECOSYSTEM
+          </div>
+
+          <h1 class="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold text-white leading-[1.1] mb-6">
+            Own <span class="text-gradient-gold">Prime</span> Real Estate in <span class="text-gradient-emerald">Abuja & Lagos</span>
+          </h1>
+
+          <p class="text-stone-400 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
+            Verified titles with zero legal ambiguity. Invest in Nigeria’s highest-yielding residential, commercial, and land developments with automated deed generation.
+          </p>
+
+          <!-- Hero Search Box (Embedded) -->
+          <div class="glass-card p-4 rounded-2xl shadow-2xl max-w-2xl mx-auto lg:mx-0 mb-8">
+            <form action="properties.html" method="GET" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-[11px] font-mono text-stone-400 uppercase mb-1">Location</label>
+                <div class="relative">
+                  <i data-lucide="map-pin" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-500"></i>
+                  <input type="text" name="search" placeholder="Maitama, Lekki, Ikoyi..." class="w-full pl-9 pr-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-mono text-stone-400 uppercase mb-1">Property Type</label>
+                <select name="type" class="w-full px-3 py-2 rounded-xl bg-[#0A1628] border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
+                  <option value="All">All Types</option>
+                  <option value="Duplex">Luxury Duplex</option>
+                  <option value="Penthouse">Penthouse</option>
+                  <option value="Apartment">Modern Apartment</option>
+                  <option value="Land">Verified Land</option>
+                  <option value="Commercial">Commercial Tower</option>
+                </select>
+              </div>
+
+              <div class="flex items-end">
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-400 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(5,150,105,0.4)] hover:scale-[1.02] transition-transform">
+                  <i data-lucide="search" class="w-4 h-4"></i> Search Listings
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Trust Badges -->
+          <div class="flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-stone-400">
+            <div class="flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> AGIS Registered
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> 100% C of O Verified
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="lock" class="w-4 h-4 text-emerald-400"></i> CBN Bank-Grade Escrow
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: 3D Floating Property Card Stack -->
+        <div class="lg:col-span-5 relative">
+          <!-- Ambient Glow -->
+          <div class="absolute -top-10 -right-10 w-72 h-72 rounded-full bg-emerald-600/20 blur-[90px] pointer-events-none"></div>
+          <div class="absolute -bottom-10 -left-10 w-72 h-72 rounded-full bg-amber-600/20 blur-[90px] pointer-events-none"></div>
+
+          <!-- Card 1: Featured Listing Showcase -->
+          <div class="glass-card rounded-3xl p-5 shadow-2xl relative z-20 border border-emerald-500/30">
+            <div class="relative aspect-[16/10] rounded-2xl overflow-hidden mb-4">
+              <img src="https://picsum.photos/seed/property1/800/600" alt="Featured Villa" class="w-full h-full object-cover">
+              <div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-semibold text-emerald-400 border border-emerald-500/30">
+                ⭐ FEATURED MASTERPIECE
+              </div>
+              <div class="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-emerald-500 text-black text-xs font-bold font-mono">
+                ₦185,000,000
+              </div>
+            </div>
+
+            <div class="flex items-start justify-between mb-2">
+              <div>
+                <h3 class="text-lg font-serif font-bold text-white">5-Bedroom Royal Duplex</h3>
+                <p class="text-xs text-stone-400 flex items-center gap-1 mt-0.5">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-400"></i> Aso Drive, Maitama, Abuja FCT
+                </p>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                AVAILABLE
+              </span>
+            </div>
+
+            <!-- Metrics row -->
+            <div class="grid grid-cols-3 gap-2 py-3 my-2 border-y border-white/5 text-center text-xs">
+              <div>
+                <span class="text-stone-500 text-[10px] block">Bedrooms</span>
+                <span class="font-bold text-white">5 Beds</span>
+              </div>
+              <div>
+                <span class="text-stone-500 text-[10px] block">Land Size</span>
+                <span class="font-bold text-white">800 sqm</span>
+              </div>
+              <div>
+                <span class="text-stone-500 text-[10px] block">Title</span>
+                <span class="font-bold text-emerald-400">C of O</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-2">
+              <div class="flex items-center gap-2">
+                <img src="https://i.pravatar.cc/150?u=agent1" class="w-8 h-8 rounded-full border border-emerald-500/50" alt="Agent">
+                <div class="text-left">
+                  <div class="text-xs font-semibold text-white">Adaeze Okonkwo</div>
+                  <div class="text-[10px] text-stone-400">Verified Prime Agent</div>
+                </div>
+              </div>
+              <a href="property-detail.html?id=prop-001" class="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs">
+                Inspect ↗
+              </a>
+            </div>
+          </div>
+
+          <!-- Floating Teaser Card -->
+          <div class="glass-card p-3.5 rounded-2xl shadow-xl absolute -bottom-6 -left-6 z-30 max-w-xs flex items-center gap-3 border border-amber-500/30">
+            <div class="p-2.5 rounded-xl bg-amber-500/20 text-amber-400">
+              <i data-lucide="trending-up" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white">+31.4% Value Appreciation</div>
+              <div class="text-[10px] text-stone-400">FCT Prime Sector 2024-2026</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 2: STATS STRIP ==================== -->
+  <section class="border-y border-white/5 bg-white/[0.02] py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div class="p-4 rounded-2xl glass">
+          <div class="text-3xl lg:text-4xl font-serif font-bold text-gradient-gold mb-1">1,240+</div>
+          <div class="text-xs text-stone-400 font-mono uppercase tracking-wider">Verified Listings</div>
+        </div>
+        <div class="p-4 rounded-2xl glass">
+          <div class="text-3xl lg:text-4xl font-serif font-bold text-gradient-emerald mb-1">₦18.4B+</div>
+          <div class="text-xs text-stone-400 font-mono uppercase tracking-wider">Transaction Volume</div>
+        </div>
+        <div class="p-4 rounded-2xl glass">
+          <div class="text-3xl lg:text-4xl font-serif font-bold text-gradient-gold mb-1">86</div>
+          <div class="text-xs text-stone-400 font-mono uppercase tracking-wider">Licensed Agents</div>
+        </div>
+        <div class="p-4 rounded-2xl glass">
+          <div class="text-3xl lg:text-4xl font-serif font-bold text-gradient-emerald mb-1">100%</div>
+          <div class="text-xs text-stone-400 font-mono uppercase tracking-wider">Clean Title Guarantee</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 3: FEATURED PROPERTIES ==================== -->
+  <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+      <div>
+        <div class="text-emerald-400 text-xs font-mono uppercase tracking-widest mb-2">CURATED RESIDENCES & PLOTS</div>
+        <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">Featured Properties</h2>
+      </div>
+      <a href="properties.html" class="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-400 hover:text-emerald-300">
+        Explore All 1,240+ Properties <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </a>
+    </div>
+
+    <!-- 3-Column Grid of 6 Properties -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      
+      <!-- Card 1 -->
+      <div class="glass-card rounded-2xl overflow-hidden transition-all duration-300 flex flex-col">
+        <div class="relative aspect-[3/2] overflow-hidden">
+          <img src="https://picsum.photos/seed/prop1/800/600" class="w-full h-full object-cover" alt="Villa">
+          <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-semibold text-white">
+            Duplex
+          </div>
+          <div class="absolute bottom-3 left-3 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500 text-black uppercase font-mono">
+            Available
+          </div>
+        </div>
+        <div class="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-2xl font-bold font-serif text-amber-400">₦185,000,000</span>
+              <span class="text-xs text-stone-500">Maitama, Abuja</span>
+            </div>
+            <h3 class="text-base font-bold text-white mb-2">5-Bedroom Architectural Villa</h3>
+            <p class="text-xs text-stone-400 line-clamp-2 mb-4">State-of-the-art smart automation, swimming pool, and dedicated security quarter in prime Aso Drive.</p>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-white/5 text-xs text-stone-400">
+            <span>5 Beds • 6 Baths • 800 sqm</span>
+            <a href="property-detail.html?id=prop-001" class="text-emerald-400 font-semibold hover:underline">View ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="glass-card rounded-2xl overflow-hidden transition-all duration-300 flex flex-col">
+        <div class="relative aspect-[3/2] overflow-hidden">
+          <img src="https://picsum.photos/seed/prop3/800/600" class="w-full h-full object-cover" alt="Penthouse">
+          <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-semibold text-white">
+            Penthouse
+          </div>
+          <div class="absolute bottom-3 left-3 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500 text-black uppercase font-mono">
+            Available
+          </div>
+        </div>
+        <div class="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-2xl font-bold font-serif text-amber-400">₦450,000,000</span>
+              <span class="text-xs text-stone-500">VI, Lagos</span>
+            </div>
+            <h3 class="text-base font-bold text-white mb-2">Skyline Atlantic Penthouse</h3>
+            <p class="text-xs text-stone-400 line-clamp-2 mb-4">Direct ocean panorama, private rooftop lounge, floor-to-ceiling glass architecture.</p>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-white/5 text-xs text-stone-400">
+            <span>4 Beds • 4 Baths • 400 sqm</span>
+            <a href="property-detail.html?id=prop-002" class="text-emerald-400 font-semibold hover:underline">View ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="glass-card rounded-2xl overflow-hidden transition-all duration-300 flex flex-col">
+        <div class="relative aspect-[3/2] overflow-hidden">
+          <img src="https://picsum.photos/seed/prop4/800/600" class="w-full h-full object-cover" alt="Apartment">
+          <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-semibold text-white">
+            Apartment
+          </div>
+          <div class="absolute bottom-3 left-3 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500 text-black uppercase font-mono">
+            Reserved
+          </div>
+        </div>
+        <div class="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-2xl font-bold font-serif text-amber-400">₦75,000,000</span>
+              <span class="text-xs text-stone-500">Wuse 2, Abuja</span>
+            </div>
+            <h3 class="text-base font-bold text-white mb-2">Modern 3-Bed City Residence</h3>
+            <p class="text-xs text-stone-400 line-clamp-2 mb-4">Centrally positioned in Abuja’s lifestyle epicentre, featuring 24/7 backup power and high rental yields.</p>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-white/5 text-xs text-stone-400">
+            <span>3 Beds • 3 Baths • 220 sqm</span>
+            <a href="property-detail.html?id=prop-003" class="text-emerald-400 font-semibold hover:underline">View ↗</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 4: PROPERTY TYPES ==================== -->
+  <section class="py-16 border-t border-white/5 bg-white/[0.01]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <div class="text-emerald-400 text-xs font-mono uppercase tracking-widest mb-2">PORTFOLIO DIVERSIFICATION</div>
+        <h2 class="text-3xl font-serif font-bold text-white">Browse by Asset Class</h2>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <a href="properties.html?type=Duplex" class="p-5 rounded-2xl glass text-center group hover:bg-emerald-950/30 transition-all border border-white/5 hover:border-emerald-500/40">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+            <i data-lucide="home" class="w-6 h-6"></i>
+          </div>
+          <div class="text-sm font-bold text-white">Duplexes</div>
+          <div class="text-[11px] text-stone-400 mt-1">214 Listings</div>
+        </a>
+
+        <a href="properties.html?type=Penthouse" class="p-5 rounded-2xl glass text-center group hover:bg-emerald-950/30 transition-all border border-white/5 hover:border-emerald-500/40">
+          <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+            <i data-lucide="crown" class="w-6 h-6"></i>
+          </div>
+          <div class="text-sm font-bold text-white">Penthouses</div>
+          <div class="text-[11px] text-stone-400 mt-1">42 Listings</div>
+        </a>
+
+        <a href="properties.html?type=Apartment" class="p-5 rounded-2xl glass text-center group hover:bg-emerald-950/30 transition-all border border-white/5 hover:border-emerald-500/40">
+          <div class="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+            <i data-lucide="building" class="w-6 h-6"></i>
+          </div>
+          <div class="text-sm font-bold text-white">Apartments</div>
+          <div class="text-[11px] text-stone-400 mt-1">480 Listings</div>
+        </a>
+
+        <a href="properties.html?type=Land" class="p-5 rounded-2xl glass text-center group hover:bg-emerald-950/30 transition-all border border-white/5 hover:border-emerald-500/40">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+            <i data-lucide="map" class="w-6 h-6"></i>
+          </div>
+          <div class="text-sm font-bold text-white">Verified Plots</div>
+          <div class="text-[11px] text-stone-400 mt-1">360 Plots</div>
+        </a>
+
+        <a href="properties.html?type=Commercial" class="p-5 rounded-2xl glass text-center group hover:bg-emerald-950/30 transition-all border border-white/5 hover:border-emerald-500/40">
+          <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+            <i data-lucide="briefcase" class="w-6 h-6"></i>
+          </div>
+          <div class="text-sm font-bold text-white">Commercial</div>
+          <div class="text-[11px] text-stone-400 mt-1">88 Spaces</div>
+        </a>
+
+        <a href="properties.html?type=Residential" class="p-5 rounded-2xl glass text-center group hover:bg-emerald-950/30 transition-all border border-white/5 hover:border-emerald-500/40">
+          <div class="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+            <i data-lucide="shield" class="w-6 h-6"></i>
+          </div>
+          <div class="text-sm font-bold text-white">Gated Estates</div>
+          <div class="text-[11px] text-stone-400 mt-1">56 Estates</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 5: HOW IT WORKS ==================== -->
+  <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <div class="text-emerald-400 text-xs font-mono uppercase tracking-widest mb-2">END-TO-END TRANSACTIONS</div>
+      <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">How Aliko Diamond Key Works</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+      <div class="glass-card p-6 rounded-2xl relative">
+        <div class="text-4xl font-serif font-bold text-emerald-500/30 mb-3 font-mono">01</div>
+        <h3 class="text-lg font-bold text-white mb-2">Discover & Filter</h3>
+        <p class="text-xs text-stone-400 leading-relaxed">Browse verified listings using 3D walkthroughs, satellite coordinates, and price-per-sqm metrics.</p>
+      </div>
+
+      <div class="glass-card p-6 rounded-2xl relative">
+        <div class="text-4xl font-serif font-bold text-emerald-500/30 mb-3 font-mono">02</div>
+        <h3 class="text-lg font-bold text-white mb-2">Schedule Inspection</h3>
+        <p class="text-xs text-stone-400 leading-relaxed">Book in-person physical inspections with licensed realtors or receive live drone feeds if abroad.</p>
+      </div>
+
+      <div class="glass-card p-6 rounded-2xl relative">
+        <div class="text-4xl font-serif font-bold text-emerald-500/30 mb-3 font-mono">03</div>
+        <h3 class="text-lg font-bold text-white mb-2">Legal Verification</h3>
+        <p class="text-xs text-stone-400 leading-relaxed">Automated AGIS title searches, survey beacons verification, and encumbrance-free deed validation.</p>
+      </div>
+
+      <div class="glass-card p-6 rounded-2xl relative">
+        <div class="text-4xl font-serif font-bold text-emerald-500/30 mb-3 font-mono">04</div>
+        <h3 class="text-lg font-bold text-white mb-2">Instant Deed of Ownership</h3>
+        <p class="text-xs text-stone-400 leading-relaxed">Digitally signed contracts and legal assignment documents generated seamlessly within 24 hours.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 6: INTERACTIVE MAP PREVIEW ==================== -->
+  <section class="py-16 border-t border-white/5 bg-[#0A1118]/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-12 gap-8 items-center">
+        <div class="lg:col-span-5">
+          <div class="text-emerald-400 text-xs font-mono uppercase tracking-widest mb-2">GEOSPATIAL INTELLIGENCE</div>
+          <h2 class="text-3xl font-serif font-bold text-white mb-4">Explore Prime Corridors on Google & Carto Maps</h2>
+          <p class="text-stone-400 text-sm leading-relaxed mb-6">
+            Switch between satellite topology, road connectivity, and land parcel boundaries. Discover proximity to international schools, diplomatic zones, and expressways.
+          </p>
+          <div class="space-y-3 mb-8">
+            <div class="flex items-center gap-3 text-xs text-stone-300">
+              <span class="w-3 h-3 rounded-full bg-emerald-500"></span> <strong>Abuja FCT:</strong> Maitama, Asokoro, Guzape, Katampe
+            </div>
+            <div class="flex items-center gap-3 text-xs text-stone-300">
+              <span class="w-3 h-3 rounded-full bg-amber-500"></span> <strong>Lagos Coastal:</strong> Ikoyi, Victoria Island, Lekki Phase 1, Epe
+            </div>
+          </div>
+          <a href="properties.html?view=map" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-400 text-white font-semibold text-xs shadow-lg">
+            <i data-lucide="map" class="w-4 h-4"></i> Open Fullscreen Map Explorer
+          </a>
+        </div>
+
+        <!-- Embedded Map Box -->
+        <div class="lg:col-span-7 h-96 rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative">
+          <div id="homeMap" class="w-full h-full bg-[#050A0E]"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 7: ROI CALCULATOR ==================== -->
+  <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="glass-card rounded-3xl p-8 lg:p-12 border border-emerald-900/40">
+      <div class="grid lg:grid-cols-12 gap-10 items-center">
+        
+        <div class="lg:col-span-6">
+          <div class="text-amber-400 text-xs font-mono uppercase tracking-widest mb-2">INVESTMENT METRICS</div>
+          <h2 class="text-3xl font-serif font-bold text-white mb-4">Calculate Your Real Estate Appreciation</h2>
+          <p class="text-stone-400 text-sm leading-relaxed mb-6">
+            Historically, prime property in Abuja and Lagos outpaces equity markets and provides an inflation-proof store of wealth.
+          </p>
+
+          <div class="space-y-6">
+            <div>
+              <div class="flex justify-between text-xs font-mono mb-2">
+                <span class="text-stone-400">Capital Outlay:</span>
+                <span id="capitalDisplay" class="text-amber-400 font-bold">₦50,000,000</span>
+              </div>
+              <input id="capitalSlider" type="range" min="10" max="500" value="50" step="5" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-amber-500">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-mono mb-2">
+                <span class="text-stone-400">Holding Period:</span>
+                <span id="periodDisplay" class="text-emerald-400 font-bold">5 Years</span>
+              </div>
+              <input id="periodSlider" type="range" min="1" max="10" value="5" step="1" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+            </div>
+          </div>
+        </div>
+
+        <!-- Result Projection Box -->
+        <div class="lg:col-span-6 p-6 rounded-2xl bg-black/50 border border-white/10">
+          <div class="text-xs font-mono text-stone-500 uppercase mb-1">Estimated 5-Year Net Value</div>
+          <div id="projectedValue" class="text-4xl lg:text-5xl font-serif font-bold text-emerald-400 mb-2">
+            ₦146,500,000
+          </div>
+          <div class="text-xs text-amber-400 font-semibold mb-6">
+            +193% Projected Total Return (at 24% annual growth rate)
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/5 text-xs">
+            <div>
+              <span class="text-stone-500 block">Est. Annual Rental Yield</span>
+              <span class="text-white font-bold text-sm">₦4,200,000 / yr</span>
+            </div>
+            <div>
+              <span class="text-stone-500 block">Inflation Hedge Factor</span>
+              <span class="text-white font-bold text-sm">3.2x vs Cash Naira</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 8: DUAL CTAS (BUYERS VS REALTORS) ==================== -->
+  <section class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid md:grid-cols-2 gap-8">
+      
+      <!-- Buyer CTA -->
+      <div class="glass-card p-8 rounded-3xl border border-emerald-500/30 flex flex-col justify-between">
+        <div>
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4">
+            <i data-lucide="home" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-2xl font-serif font-bold text-white mb-2">Looking to Buy or Lease?</h3>
+          <p class="text-stone-400 text-xs sm:text-sm leading-relaxed mb-6">
+            Access certified residential listings, luxury penthouses, and high-yield commercial hubs with legal escrow protection.
+          </p>
+        </div>
+        <a href="properties.html" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-400 text-white font-bold text-xs sm:text-sm text-center shadow-lg">
+          Browse Verified Listings ↗
+        </a>
+      </div>
+
+      <!-- Agent & Manager CTA -->
+      <div class="glass-card p-8 rounded-3xl border border-amber-500/30 flex flex-col justify-between">
+        <div>
+          <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-4">
+            <i data-lucide="award" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-2xl font-serif font-bold text-white mb-2">Real Estate Professional?</h3>
+          <p class="text-stone-400 text-xs sm:text-sm leading-relaxed mb-6">
+            Register your agency, showcase properties to high-net-worth diaspora buyers, and manage your tenant portfolio with enterprise tooling.
+          </p>
+        </div>
+        <div class="flex gap-3">
+          <a href="agent-registration.html" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-400 text-black font-bold text-xs sm:text-sm text-center shadow-lg">
+            Agent Sign Up
+          </a>
+          <a href="manager-registration.html" class="flex-1 py-3.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm text-center border border-white/10">
+            Estate Manager
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="border-t border-white/10 bg-[#020508] py-16 text-stone-400 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+        <div>
+          <h4 class="text-white font-serif font-bold text-base mb-4">Aliko Diamond Key</h4>
+          <p class="text-stone-500 leading-relaxed mb-4">
+            Abuja FCT & Lagos State prime real estate acquisition, title authentication, and asset management ecosystem.
+          </p>
+          <div class="text-stone-600 font-mono text-[11px]">
+            RC: 1849204 (CAC Nigeria)
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-white font-semibold mb-4">Quick Navigation</h4>
+          <ul class="space-y-2">
+            <li><a href="properties.html" class="hover:text-white">Properties Directory</a></li>
+            <li><a href="agents.html" class="hover:text-white">Licensed Agents</a></li>
+            <li><a href="properties.html?view=map" class="hover:text-white">Interactive Map</a></li>
+            <li><a href="auth.html" class="hover:text-white">Client Portal</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-white font-semibold mb-4">Professional Onboarding</h4>
+          <ul class="space-y-2">
+            <li><a href="agent-registration.html" class="hover:text-white">Realtor 5-Step Wizard</a></li>
+            <li><a href="manager-registration.html" class="hover:text-white">Estate Manager Sign Up</a></li>
+            <li><a href="dashboard-manager.html" class="hover:text-white">Manager Portal</a></li>
+            <li><a href="dashboard-agent.html" class="hover:text-white">Agent Portal</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-white font-semibold mb-4">Contact & Head Office</h4>
+          <p class="text-stone-500 mb-2">Plot 412 Constitution Avenue, Central Business District, Abuja FCT, Nigeria.</p>
+          <p class="text-stone-500 mb-2">Phone: +234 (0) 800 25456 342</p>
+          <p class="text-emerald-400">support@alikodiamondkey.com</p>
+        </div>
+      </div>
+
+      <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-stone-600 text-[11px]">
+        <div>© 2026 Aliko Diamond Key Ltd. All rights reserved. Government Documented.</div>
+        <div class="flex gap-6">
+          <a href="#" class="hover:text-stone-400">Terms of Service</a>
+          <a href="#" class="hover:text-stone-400">Privacy Policy</a>
+          <a href="#" class="hover:text-stone-400">AGIS Compliance</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Mobile Menu Toggle
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    if (mobileBtn && mobileDrawer) {
+      mobileBtn.addEventListener('click', () => {
+        mobileDrawer.classList.toggle('hidden');
+      });
+    }
+
+    // Leaflet Interactive Map Preview
+    const homeMapEl = document.getElementById('homeMap');
+    if (homeMapEl) {
+      const map = L.map('homeMap').setView([9.0579, 7.4951], 12);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors & CARTO',
+        maxZoom: 18
+      }).addTo(map);
+
+      // Add pins for prime estates
+      const markers = [
+        { lat: 9.0765, lng: 7.4985, title: 'Maitama Luxury Duplexes - ₦185M' },
+        { lat: 9.0432, lng: 7.5210, title: 'Asokoro Penthouses - ₦450M' },
+        { lat: 9.0610, lng: 7.4680, title: 'Wuse 2 Modern Apartments - ₦75M' },
+        { lat: 9.1020, lng: 7.4100, title: 'Gwarinpa Residential Plots - ₦35M' }
+      ];
+
+      markers.forEach(m => {
+        L.marker([m.lat, m.lng]).addTo(map).bindPopup(m.title);
+      });
+    }
+
+    // Interactive ROI Calculator Logic
+    const capitalSlider = document.getElementById('capitalSlider');
+    const periodSlider = document.getElementById('periodSlider');
+    const capitalDisplay = document.getElementById('capitalDisplay');
+    const periodDisplay = document.getElementById('periodDisplay');
+    const projectedValue = document.getElementById('projectedValue');
+
+    function calculateROI() {
+      if (!capitalSlider || !periodSlider) return;
+      const capital = parseInt(capitalSlider.value) * 1000000;
+      const years = parseInt(periodSlider.value);
+      const rate = 0.24; // 24% annual appreciation
+      const futureVal = Math.round(capital * Math.pow(1 + rate, years));
+      capitalDisplay.textContent = `₦${(capital / 1000000).toLocaleString()}M`;
+      periodDisplay.textContent = `${years} Year${years > 1 ? 's' : ''}`;
+      projectedValue.textContent = `₦${(futureVal / 1000000).toFixed(1)}M`;
+    }
+
+    if (capitalSlider && periodSlider) {
+      capitalSlider.addEventListener('input', calculateROI);
+      periodSlider.addEventListener('input', calculateROI);
+      calculateROI();
+    }
+  </script>
+</body>
+</html>

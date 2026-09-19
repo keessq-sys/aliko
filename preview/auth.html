@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Access & Registration — Aliko Diamond Key</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { background-color: #050A0E; color: #f3f4f6; font-family: 'Inter', sans-serif; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .glass-card { background: rgba(10, 17, 24, 0.85); backdrop-filter: blur(24px); border: 1px solid rgba(5, 150, 105, 0.25); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-emerald-500/30">
+
+  <!-- Header Mini -->
+  <header class="p-6">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center shadow-[0_0_15px_rgba(5,150,105,0.4)]">
+          <i data-lucide="diamond" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="text-lg font-serif font-bold text-white tracking-wide">Aliko Diamond Key</span>
+      </a>
+      <a href="index.html" class="text-xs text-stone-400 hover:text-white flex items-center gap-1">
+        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to Homepage
+      </a>
+    </div>
+  </header>
+
+  <!-- Auth Card Center -->
+  <main class="flex-1 flex items-center justify-center px-4 py-8">
+    <div class="glass-card w-full max-w-xl p-8 rounded-3xl shadow-2xl relative">
+      
+      <!-- Ambient Lights -->
+      <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-emerald-500/10 blur-[50px] pointer-events-none"></div>
+
+      <!-- Main Tabs: Sign In vs Sign Up -->
+      <div class="flex p-1 rounded-2xl bg-white/5 border border-white/10 mb-8">
+        <button id="tabSignInBtn" class="flex-1 py-2.5 rounded-xl text-xs font-semibold bg-emerald-600 text-white transition-all shadow-md">
+          Sign In to Account
+        </button>
+        <button id="tabSignUpBtn" class="flex-1 py-2.5 rounded-xl text-xs font-semibold text-stone-400 hover:text-white transition-all">
+          Create New Account
+        </button>
+      </div>
+
+      <!-- ================= FORM 1: SIGN IN ================= -->
+      <div id="signInFormPanel" class="space-y-5">
+        <div class="text-center mb-6">
+          <h2 class="text-2xl font-serif font-bold text-white mb-1">Welcome Back</h2>
+          <p class="text-stone-400 text-xs">Access your property investments, inspection calendar, and legal title deeds.</p>
+        </div>
+
+        <form id="signInForm" class="space-y-4">
+          <div>
+            <label class="block text-xs font-medium text-stone-300 mb-1.5">Email Address</label>
+            <div class="relative">
+              <i data-lucide="mail" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500"></i>
+              <input type="email" required placeholder="name@domain.com" class="w-full pl-10 pr-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500">
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="block text-xs font-medium text-stone-300">Password</label>
+              <a href="#" class="text-[11px] text-emerald-400 hover:underline">Forgot password?</a>
+            </div>
+            <div class="relative">
+              <i data-lucide="lock" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500"></i>
+              <input type="password" required placeholder="••••••••" class="w-full pl-10 pr-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500">
+            </div>
+          </div>
+
+          <!-- Role selection shortcut for demo preview -->
+          <div>
+            <label class="block text-[11px] font-mono text-stone-400 uppercase mb-1.5">Quick Demo Dashboard Routing</label>
+            <select id="loginRoleSelect" class="w-full px-3 py-2 rounded-xl bg-[#0A1628] border border-white/10 text-xs text-emerald-400 font-semibold focus:outline-none focus:border-emerald-500">
+              <option value="dashboard-manager.html">Enter as Estate Manager (Full Portfolio Analytics)</option>
+              <option value="dashboard-agent.html">Enter as Licensed Agent (Leads & Commissions)</option>
+              <option value="dashboard-client.html">Enter as Buyer / Client (Wishlist & Documents)</option>
+            </select>
+          </div>
+
+          <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-400 text-white font-bold text-xs shadow-lg hover:scale-[1.01] transition-transform">
+            Sign In to Dashboard ↗
+          </button>
+        </form>
+      </div>
+
+      <!-- ================= FORM 2: SIGN UP WITH 3 ROLES ================= -->
+      <div id="signUpFormPanel" class="hidden space-y-6">
+        <div class="text-center mb-4">
+          <h2 class="text-2xl font-serif font-bold text-white mb-1">Create Account</h2>
+          <p class="text-stone-400 text-xs">Select your account profile role to begin.</p>
+        </div>
+
+        <!-- 3 Role Subtabs -->
+        <div class="grid grid-cols-3 gap-2 p-1 rounded-xl bg-white/5 border border-white/10">
+          <button id="roleClientBtn" class="role-btn py-2 px-2 rounded-lg text-xs font-semibold bg-emerald-600 text-white text-center">
+            🏠 Buyer / Client
+          </button>
+          <button id="roleAgentBtn" class="role-btn py-2 px-2 rounded-lg text-xs font-semibold text-stone-400 hover:text-white text-center">
+            🤝 Agent
+          </button>
+          <button id="roleManagerBtn" class="role-btn py-2 px-2 rounded-lg text-xs font-semibold text-stone-400 hover:text-white text-center">
+            🏢 Manager
+          </button>
+        </div>
+
+        <!-- Client Form -->
+        <div id="clientSignupSection" class="space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] text-stone-400 mb-1">First Name</label>
+              <input type="text" placeholder="Chinwe" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
+            </div>
+            <div>
+              <label class="block text-[11px] text-stone-400 mb-1">Last Name</label>
+              <input type="text" placeholder="Adeyemi" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] text-stone-400 mb-1">Email</label>
+            <input type="email" placeholder="chinwe@example.com" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-[11px] text-stone-400 mb-1">Phone Number</label>
+            <input type="tel" placeholder="+234 80 0000 0000" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-[11px] text-stone-400 mb-1">Create Password</label>
+            <input type="password" placeholder="Min. 8 characters" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <a href="dashboard-client.html" class="w-full block py-3 text-center rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg mt-2">
+            Complete Client Registration
+          </a>
+        </div>
+
+        <!-- Agent Banner CTA for Wizard -->
+        <div id="agentSignupSection" class="hidden text-center py-6 px-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
+            <i data-lucide="award" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-serif font-bold text-white">Licensed Realtor Onboarding</h3>
+          <p class="text-xs text-stone-300 max-w-sm mx-auto">
+            Agents must complete our 5-step verification process including identity documents and REAN / NIA certification checks.
+          </p>
+          <a href="agent-registration.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-amber-400 text-black font-bold text-xs shadow-lg hover:scale-105 transition-transform">
+            Launch 5-Step Realtor Wizard <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+
+        <!-- Manager Banner CTA -->
+        <div id="managerSignupSection" class="hidden text-center py-6 px-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+            <i data-lucide="building-2" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-serif font-bold text-white">Estate Management Companies</h3>
+          <p class="text-xs text-stone-300 max-w-sm mx-auto">
+            Register your property development or facility management firm with CAC verification and choose your enterprise SaaS tier.
+          </p>
+          <a href="manager-registration.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-400 text-white font-bold text-xs shadow-lg hover:scale-105 transition-transform">
+            Launch Manager Registration Form <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="p-4 text-center text-xs text-stone-600">
+    © 2026 Aliko Diamond Key. Bank-Grade Encryption & CAC Verified.
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    const tabSignInBtn = document.getElementById('tabSignInBtn');
+    const tabSignUpBtn = document.getElementById('tabSignUpBtn');
+    const signInFormPanel = document.getElementById('signInFormPanel');
+    const signUpFormPanel = document.getElementById('signUpFormPanel');
+
+    tabSignInBtn.addEventListener('click', () => {
+      tabSignInBtn.className = "flex-1 py-2.5 rounded-xl text-xs font-semibold bg-emerald-600 text-white transition-all shadow-md";
+      tabSignUpBtn.className = "flex-1 py-2.5 rounded-xl text-xs font-semibold text-stone-400 hover:text-white transition-all";
+      signInFormPanel.classList.remove('hidden');
+      signUpFormPanel.classList.add('hidden');
+    });
+
+    tabSignUpBtn.addEventListener('click', () => {
+      tabSignUpBtn.className = "flex-1 py-2.5 rounded-xl text-xs font-semibold bg-emerald-600 text-white transition-all shadow-md";
+      tabSignInBtn.className = "flex-1 py-2.5 rounded-xl text-xs font-semibold text-stone-400 hover:text-white transition-all";
+      signUpFormPanel.classList.remove('hidden');
+      signInFormPanel.classList.add('hidden');
+    });
+
+    // Sub-role switcher
+    const roleClientBtn = document.getElementById('roleClientBtn');
+    const roleAgentBtn = document.getElementById('roleAgentBtn');
+    const roleManagerBtn = document.getElementById('roleManagerBtn');
+    const clientSec = document.getElementById('clientSignupSection');
+    const agentSec = document.getElementById('agentSignupSection');
+    const managerSec = document.getElementById('managerSignupSection');
+
+    function selectRole(activeBtn, showSec) {
+      [roleClientBtn, roleAgentBtn, roleManagerBtn].forEach(b => {
+        b.className = "role-btn py-2 px-2 rounded-lg text-xs font-semibold text-stone-400 hover:text-white text-center";
+      });
+      activeBtn.className = "role-btn py-2 px-2 rounded-lg text-xs font-semibold bg-emerald-600 text-white text-center";
+      [clientSec, agentSec, managerSec].forEach(s => s.classList.add('hidden'));
+      showSec.classList.remove('hidden');
+    }
+
+    roleClientBtn.addEventListener('click', () => selectRole(roleClientBtn, clientSec));
+    roleAgentBtn.addEventListener('click', () => selectRole(roleAgentBtn, agentSec));
+    roleManagerBtn.addEventListener('click', () => selectRole(roleManagerBtn, managerSec));
+
+    // Sign in redirection logic
+    document.getElementById('signInForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const targetDashboard = document.getElementById('loginRoleSelect').value;
+      window.location.href = targetDashboard;
+    });
+
+    // Check query params
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mode') === 'register' || params.get('tab') === 'signup') {
+      tabSignUpBtn.click();
+    }
+  </script>
+</body>
+</html>

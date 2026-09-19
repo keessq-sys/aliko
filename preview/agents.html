@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accredited Realtors & Brokers Directory — Aliko Diamond Key</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { background-color: #050A0E; color: #f3f4f6; font-family: 'Inter', sans-serif; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-card { background: rgba(10, 17, 24, 0.85); backdrop-filter: blur(24px); border: 1px solid rgba(5, 150, 105, 0.25); }
+    .glass-card:hover { border-color: rgba(5, 150, 105, 0.5); transform: translateY(-4px); box-shadow: 0 12px 30px -10px rgba(5, 150, 105, 0.3); }
+  </style>
+</head>
+<body class="selection:bg-emerald-500/30 pb-20">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 w-full glass border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center shadow-lg">
+            <i data-lucide="diamond" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <span class="text-xl font-serif font-bold text-white">Aliko Diamond Key</span>
+            <span class="block text-[10px] text-emerald-400 font-mono uppercase">Realtor Registry</span>
+          </div>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-8">
+          <a href="index.html" class="text-sm font-medium text-stone-300 hover:text-emerald-400">Home</a>
+          <a href="properties.html" class="text-sm font-medium text-stone-300 hover:text-emerald-400">Properties</a>
+          <a href="agents.html" class="text-sm font-medium text-emerald-400">Verified Agents</a>
+          <a href="properties.html?view=map" class="text-sm font-medium text-stone-300 hover:text-emerald-400">Interactive Map</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <a href="agent-registration.html" class="text-xs font-semibold px-4 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20">
+            Join as Agent
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner -->
+  <div class="border-b border-white/5 bg-gradient-to-b from-emerald-950/20 to-transparent py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 text-xs font-mono mb-4">
+        <i data-lucide="shield-check" class="w-4 h-4"></i> REAN & NIA LICENSED ADVISORS
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-serif font-bold text-white mb-3">
+        Meet Nigeria's Top Real Estate Agents
+      </h1>
+      <p class="text-stone-400 text-xs sm:text-sm leading-relaxed">
+        Work exclusively with accredited professionals who have passed our rigorous title verification standards, local zoning evaluations, and zero-encumbrance covenants.
+      </p>
+    </div>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+    
+    <!-- Filter row -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+      <div class="flex flex-wrap gap-2">
+        <button class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-600 text-white">All Locations (86)</button>
+        <button class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/5 text-stone-300 hover:bg-white/10">Abuja FCT (48)</button>
+        <button class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/5 text-stone-300 hover:bg-white/10">Lagos State (28)</button>
+        <button class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/5 text-stone-300 hover:bg-white/10">Port Harcourt (10)</button>
+      </div>
+
+      <div class="text-xs text-stone-400 font-mono">
+        Filter by: Highest Rating ★
+      </div>
+    </div>
+
+    <!-- Agent Cards Grid (4 cols) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      
+      <!-- Agent 1 -->
+      <div class="glass-card rounded-2xl p-5 text-center flex flex-col justify-between transition-all">
+        <div>
+          <div class="relative w-24 h-24 mx-auto mb-4">
+            <img src="https://i.pravatar.cc/150?u=agent1" class="w-full h-full rounded-full object-cover border-2 border-emerald-500" alt="">
+            <span class="absolute bottom-0 right-0 p-1.5 rounded-full bg-emerald-500 text-black shadow-lg" title="Title Verified">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+            </span>
+          </div>
+          <h3 class="text-base font-bold text-white">Adaeze Okonkwo</h3>
+          <p class="text-xs text-stone-400">Apex Prime Realtors</p>
+          <div class="text-xs text-amber-400 font-semibold my-2">★ 4.9 (48 Sales)</div>
+          <p class="text-[11px] text-stone-400 line-clamp-2 mb-4">Specialist in Maitama, Asokoro, and Guzape diplomatic prime residential estates.</p>
+        </div>
+        <div class="pt-3 border-t border-white/5 flex gap-2">
+          <a href="https://wa.me/2348012345678" class="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">
+            WhatsApp
+          </a>
+          <a href="properties.html?agent=adaeze" class="px-3 py-2 rounded-xl bg-white/5 text-stone-300 hover:text-white text-xs">
+            Listings (14)
+          </a>
+        </div>
+      </div>
+
+      <!-- Agent 2 -->
+      <div class="glass-card rounded-2xl p-5 text-center flex flex-col justify-between transition-all">
+        <div>
+          <div class="relative w-24 h-24 mx-auto mb-4">
+            <img src="https://i.pravatar.cc/150?u=agent2" class="w-full h-full rounded-full object-cover border-2 border-emerald-500" alt="">
+            <span class="absolute bottom-0 right-0 p-1.5 rounded-full bg-emerald-500 text-black shadow-lg">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+            </span>
+          </div>
+          <h3 class="text-base font-bold text-white">Emeka Chukwu</h3>
+          <p class="text-xs text-stone-400">Chukwu & Partners Commercial</p>
+          <div class="text-xs text-amber-400 font-semibold my-2">★ 4.8 (34 Sales)</div>
+          <p class="text-[11px] text-stone-400 line-clamp-2 mb-4">Victoria Island & Ikoyi waterfront commercial towers, office floors, and land banking.</p>
+        </div>
+        <div class="pt-3 border-t border-white/5 flex gap-2">
+          <a href="https://wa.me/2348012345678" class="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">
+            WhatsApp
+          </a>
+          <a href="properties.html?agent=emeka" class="px-3 py-2 rounded-xl bg-white/5 text-stone-300 hover:text-white text-xs">
+            Listings (18)
+          </a>
+        </div>
+      </div>
+
+      <!-- Agent 3 -->
+      <div class="glass-card rounded-2xl p-5 text-center flex flex-col justify-between transition-all">
+        <div>
+          <div class="relative w-24 h-24 mx-auto mb-4">
+            <img src="https://i.pravatar.cc/150?u=agent3" class="w-full h-full rounded-full object-cover border-2 border-emerald-500" alt="">
+            <span class="absolute bottom-0 right-0 p-1.5 rounded-full bg-emerald-500 text-black shadow-lg">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+            </span>
+          </div>
+          <h3 class="text-base font-bold text-white">Fatima Musa</h3>
+          <p class="text-xs text-stone-400">Savannah Crest Advisory</p>
+          <div class="text-xs text-amber-400 font-semibold my-2">★ 5.0 (52 Sales)</div>
+          <p class="text-[11px] text-stone-400 line-clamp-2 mb-4">Wuse 2, Jabi Lake, and Gwarinpa family terraces and smart gated community layouts.</p>
+        </div>
+        <div class="pt-3 border-t border-white/5 flex gap-2">
+          <a href="https://wa.me/2348012345678" class="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">
+            WhatsApp
+          </a>
+          <a href="properties.html?agent=fatima" class="px-3 py-2 rounded-xl bg-white/5 text-stone-300 hover:text-white text-xs">
+            Listings (24)
+          </a>
+        </div>
+      </div>
+
+      <!-- Agent 4 -->
+      <div class="glass-card rounded-2xl p-5 text-center flex flex-col justify-between transition-all">
+        <div>
+          <div class="relative w-24 h-24 mx-auto mb-4">
+            <img src="https://i.pravatar.cc/150?u=agent4" class="w-full h-full rounded-full object-cover border-2 border-emerald-500" alt="">
+            <span class="absolute bottom-0 right-0 p-1.5 rounded-full bg-emerald-500 text-black shadow-lg">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+            </span>
+          </div>
+          <h3 class="text-base font-bold text-white">Chidi Nwosu</h3>
+          <p class="text-xs text-stone-400">Atlantic Shoreline Realty</p>
+          <div class="text-xs text-amber-400 font-semibold my-2">★ 4.7 (29 Sales)</div>
+          <p class="text-[11px] text-stone-400 line-clamp-2 mb-4">Lekki Phase 1, Chevron, and Epe high-yield development land and off-plan syndicates.</p>
+        </div>
+        <div class="pt-3 border-t border-white/5 flex gap-2">
+          <a href="https://wa.me/2348012345678" class="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">
+            WhatsApp
+          </a>
+          <a href="properties.html?agent=chidi" class="px-3 py-2 rounded-xl bg-white/5 text-stone-300 hover:text-white text-xs">
+            Listings (9)
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

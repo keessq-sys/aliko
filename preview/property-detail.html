@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5-Bedroom Luxury Duplex — Aliko Diamond Key</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    body { background-color: #050A0E; color: #f3f4f6; font-family: 'Inter', sans-serif; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-card { background: rgba(10, 17, 24, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(5, 150, 105, 0.2); }
+  </style>
+</head>
+<body class="selection:bg-emerald-500/30 pb-20">
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="sticky top-0 z-50 w-full glass border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center shadow-[0_0_20px_rgba(5,150,105,0.4)]">
+            <i data-lucide="diamond" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <span class="text-xl font-serif font-bold text-white tracking-wide">Aliko Diamond Key</span>
+            <span class="block text-[10px] text-emerald-400 font-mono tracking-widest uppercase -mt-1">Verified Listing</span>
+          </div>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-8">
+          <a href="index.html" class="text-sm font-medium text-stone-300 hover:text-emerald-400">Home</a>
+          <a href="properties.html" class="text-sm font-medium text-emerald-400">Properties</a>
+          <a href="agents.html" class="text-sm font-medium text-stone-300 hover:text-emerald-400">Verified Agents</a>
+          <a href="properties.html?view=map" class="text-sm font-medium text-stone-300 hover:text-emerald-400">Interactive Map</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <a href="properties.html" class="text-xs font-semibold px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-stone-300 hover:text-white">
+            ← Back to Directory
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== BREADCRUMB ==================== -->
+  <div class="border-b border-white/5 bg-white/[0.01] py-3.5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-2 text-xs text-stone-400">
+      <a href="index.html" class="hover:text-emerald-400">Home</a>
+      <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+      <a href="properties.html" class="hover:text-emerald-400">Properties</a>
+      <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+      <span class="text-emerald-400">5-Bedroom Luxury Duplex</span>
+    </div>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+    
+    <!-- Title & Price Banner -->
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase font-mono">
+            AVAILABLE
+          </span>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-800 text-stone-300 border border-stone-700">
+            Luxury Duplex
+          </span>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/60 border border-emerald-700/60 text-emerald-300 flex items-center gap-1">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> C of O & AGIS Documented
+          </span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-serif font-bold text-white mb-2">
+          5-Bedroom Architectural Royal Duplex
+        </h1>
+        <p class="text-stone-400 text-sm flex items-center gap-1.5">
+          <i data-lucide="map-pin" class="w-4 h-4 text-emerald-400"></i> Plot 14, Aso Drive, Maitama District, Abuja FCT
+        </p>
+      </div>
+
+      <div class="flex flex-row lg:flex-col items-end justify-between lg:justify-center gap-2">
+        <div class="text-right">
+          <div class="text-xs font-mono text-stone-500 uppercase">Guide Price</div>
+          <div class="text-3xl sm:text-4xl font-serif font-bold text-amber-400">
+            ₦185,000,000
+          </div>
+          <div class="text-xs text-stone-400">₦231,250 / sqm</div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="shareBtn" class="p-2.5 rounded-xl bg-white/5 border border-white/10 text-stone-300 hover:text-white" title="Share">
+            <i data-lucide="share-2" class="w-4 h-4"></i>
+          </button>
+          <button id="saveBtn" class="p-2.5 rounded-xl bg-white/5 border border-white/10 text-stone-300 hover:text-rose-500" title="Save to Wishlist">
+            <i data-lucide="heart" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gallery Carousel -->
+    <div class="mb-10">
+      <div class="relative aspect-[16/9] md:aspect-[21/9] rounded-2xl overflow-hidden bg-black border border-white/10 shadow-2xl">
+        <img id="mainGalleryImg" src="https://picsum.photos/seed/prop1/1200/600" alt="Main Photo" class="w-full h-full object-cover transition-opacity duration-300">
+        
+        <!-- Next / Prev Buttons -->
+        <button id="prevImg" class="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/60 text-white hover:bg-emerald-600 transition-colors">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <button id="nextImg" class="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/60 text-white hover:bg-emerald-600 transition-colors">
+          <i data-lucide="chevron-right" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Counter -->
+        <div class="absolute bottom-4 right-4 px-3 py-1 rounded-full bg-black/70 text-xs font-mono text-white">
+          <span id="imgCounter">1</span> / 4 Photos
+        </div>
+      </div>
+
+      <!-- Thumbnail Row -->
+      <div class="grid grid-cols-4 gap-3 mt-3">
+        <img src="https://picsum.photos/seed/prop1/800/600" class="thumb-img h-20 w-full object-cover rounded-xl cursor-pointer border-2 border-emerald-500" data-index="0" alt="Thumb 1">
+        <img src="https://picsum.photos/seed/prop1a/800/600" class="thumb-img h-20 w-full object-cover rounded-xl cursor-pointer border border-white/10 hover:border-emerald-500" data-index="1" alt="Thumb 2">
+        <img src="https://picsum.photos/seed/prop1b/800/600" class="thumb-img h-20 w-full object-cover rounded-xl cursor-pointer border border-white/10 hover:border-emerald-500" data-index="2" alt="Thumb 3">
+        <img src="https://picsum.photos/seed/prop1c/800/600" class="thumb-img h-20 w-full object-cover rounded-xl cursor-pointer border border-white/10 hover:border-emerald-500" data-index="3" alt="Thumb 4">
+      </div>
+    </div>
+
+    <!-- Main 2-Column Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Left Column (8 Cols) -->
+      <div class="lg:col-span-8 space-y-8">
+        
+        <!-- Key Specifications Grid -->
+        <div class="glass-card p-6 rounded-2xl shadow-xl">
+          <h2 class="text-lg font-serif font-bold text-white mb-4">Property Specifications</h2>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
+            <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
+              <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="bed" class="w-5 h-5"></i></div>
+              <div><span class="text-stone-400 block">Bedrooms</span><strong class="text-white text-sm">5 Ensuite Beds</strong></div>
+            </div>
+            <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
+              <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="bath" class="w-5 h-5"></i></div>
+              <div><span class="text-stone-400 block">Bathrooms</span><strong class="text-white text-sm">6 Modern Baths</strong></div>
+            </div>
+            <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
+              <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="square" class="w-5 h-5"></i></div>
+              <div><span class="text-stone-400 block">Plot Size</span><strong class="text-white text-sm">800 sqm</strong></div>
+            </div>
+            <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
+              <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="car" class="w-5 h-5"></i></div>
+              <div><span class="text-stone-400 block">Parking</span><strong class="text-white text-sm">4 Vehicles</strong></div>
+            </div>
+            <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
+              <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="calendar" class="w-5 h-5"></i></div>
+              <div><span class="text-stone-400 block">Year Completed</span><strong class="text-white text-sm">2024 Build</strong></div>
+            </div>
+            <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
+              <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="shield" class="w-5 h-5"></i></div>
+              <div><span class="text-stone-400 block">Title Document</span><strong class="text-emerald-400 text-sm">Federal C of O</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="glass-card p-6 rounded-2xl shadow-xl">
+          <h2 class="text-lg font-serif font-bold text-white mb-3">Architectural Description</h2>
+          <div class="text-stone-300 text-sm leading-relaxed space-y-3">
+            <p>
+              An exquisite bespoke architectural duplex commanding a prime elevated plot in the diplomatic heart of Maitama, Abuja. Conceived for discerning homeowners, this residence pairs floor-to-ceiling double-glazed thermal windows with marble floors imported from Carrara, Italy.
+            </p>
+            <p>
+              The property boasts dual expansive living salons, a chef's show kitchen fitted with integrated Miele appliances, a discrete preparation scullery, private home cinema salon, and an outdoor infinity swimming pool framed by manicured tropical gardens.
+            </p>
+            <p>
+              Security infrastructure is fortified with biometric access doors, infrared perimeter CCTV sensors, a bulletproof panic safe room, and independent gatehouse quarters with automated cantilever gates.
+            </p>
+          </div>
+        </div>
+
+        <!-- Amenities -->
+        <div class="glass-card p-6 rounded-2xl shadow-xl">
+          <h2 class="text-lg font-serif font-bold text-white mb-4">Features & Amenities</h2>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs text-stone-300">
+            <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> Infinity Swimming Pool
+            </div>
+            <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> Solar Inverter + Backup Gen
+            </div>
+            <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> 24/7 CCTV & Armed Patrol
+            </div>
+            <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> 2-Room Staff Quarters (BQ)
+            </div>
+            <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> Smart Home Automation
+            </div>
+            <div class="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> Automated Borehole System
+            </div>
+          </div>
+        </div>
+
+        <!-- Location Map & Nearby Distances -->
+        <div class="glass-card p-6 rounded-2xl shadow-xl">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-lg font-serif font-bold text-white">Geospatial Position & Map</h2>
+              <p class="text-stone-400 text-xs mt-0.5">Plot 14, Aso Drive, Maitama, Abuja FCT</p>
+            </div>
+            <a href="https://maps.google.com/?q=9.0765,7.4985" target="_blank" class="text-xs text-emerald-400 hover:underline">
+              Google Maps ↗
+            </a>
+          </div>
+
+          <!-- Leaflet Interactive Map -->
+          <div class="h-72 rounded-xl overflow-hidden border border-white/10 mb-4">
+            <div id="detailMap" class="w-full h-full bg-[#050A0E]"></div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
+            <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+              <span class="text-stone-500 block">Airport</span>
+              <strong class="text-emerald-400 text-sm">~28 Mins</strong>
+            </div>
+            <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+              <span class="text-stone-500 block">CBD Abuja</span>
+              <strong class="text-emerald-400 text-sm">~8 Mins</strong>
+            </div>
+            <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+              <span class="text-stone-500 block">Transcorp Hilton</span>
+              <strong class="text-emerald-400 text-sm">~5 Mins</strong>
+            </div>
+            <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+              <span class="text-stone-500 block">British School</span>
+              <strong class="text-emerald-400 text-sm">~4 Mins</strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Agent Contact Sidebar (4 Cols Sticky) -->
+      <div class="lg:col-span-4 space-y-6 lg:sticky lg:top-28">
+        
+        <div class="glass-card p-6 rounded-2xl shadow-2xl border border-emerald-900/40">
+          <!-- Agent Bio -->
+          <div class="flex items-center gap-4 pb-4 border-b border-white/10 mb-4">
+            <img src="https://i.pravatar.cc/150?u=agent1" alt="Adaeze Okonkwo" class="w-14 h-14 rounded-full border-2 border-emerald-500">
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h3 class="font-bold text-white text-base">Adaeze Okonkwo</h3>
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+              </div>
+              <p class="text-xs text-stone-400">Senior Partner, ADK Luxury Group</p>
+              <div class="text-xs text-amber-400 font-semibold mt-0.5">★ 4.9 (48 Client Deals)</div>
+            </div>
+          </div>
+
+          <!-- Direct Phone/WhatsApp Actions -->
+          <div class="grid grid-cols-3 gap-2 mb-6">
+            <a href="tel:+2348012345678" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-center text-xs font-medium text-stone-300">
+              <i data-lucide="phone" class="w-4 h-4 text-emerald-400 mx-auto mb-1"></i> Call
+            </a>
+            <a href="https://wa.me/2348012345678" target="_blank" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-center text-xs font-medium text-stone-300">
+              <i data-lucide="message-circle" class="w-4 h-4 text-emerald-400 mx-auto mb-1"></i> WhatsApp
+            </a>
+            <a href="mailto:adaeze@alikodiamondkey.com" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-center text-xs font-medium text-stone-300">
+              <i data-lucide="mail" class="w-4 h-4 text-emerald-400 mx-auto mb-1"></i> Email
+            </a>
+          </div>
+
+          <!-- Schedule Viewing CTA -->
+          <button id="openScheduleModal" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-amber-300 text-black font-bold text-xs shadow-lg hover:scale-[1.02] transition-transform mb-6">
+            📅 Book Physical Property Inspection
+          </button>
+
+          <!-- Direct Inquiry Form -->
+          <form id="inquiryForm" class="space-y-3 pt-4 border-t border-white/10">
+            <div class="text-xs font-mono text-stone-400 uppercase">Express Inquiry</div>
+            <input type="text" placeholder="Your Name" required class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500">
+            <input type="email" placeholder="Email Address" required class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500">
+            <input type="tel" placeholder="Phone (+234)" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500">
+            <textarea rows="3" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500 resize-none">I would like to enquire about the 5-Bedroom Luxury Duplex in Maitama (₦185M).</textarea>
+            <button type="submit" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg">
+              <i data-lucide="send" class="w-3.5 h-3.5"></i> Send to Agent
+            </button>
+          </form>
+        </div>
+
+        <!-- 100% Legal Guarantee Badge -->
+        <div class="glass p-4 rounded-2xl border border-white/10 text-xs text-stone-400 space-y-2">
+          <div class="flex items-center gap-2 text-white font-semibold">
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> 100% Legal Guarantee
+          </div>
+          <p>Every sale through Aliko Diamond Key includes full lawyer title endorsement and escrow protection until delivery of signed deeds.</p>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ==================== MODAL: SCHEDULE INSPECTION ==================== -->
+  <div id="scheduleModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="glass-card w-full max-w-md p-6 rounded-3xl border border-emerald-500/40 shadow-2xl relative">
+      <button id="closeScheduleModal" class="absolute top-4 right-4 text-stone-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <h3 class="text-xl font-serif font-bold text-white mb-2">Book Property Viewing</h3>
+      <p class="text-xs text-stone-400 mb-6">Select your preferred date. Our licensed agent will confirm your reservation.</p>
+
+      <form id="viewingForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-stone-300 mb-1">Inspection Date</label>
+          <input type="date" required class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-stone-300 mb-1">Time Slot</label>
+          <select class="w-full px-3 py-2 rounded-xl bg-[#0A1628] border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <option value="10:00">10:00 AM (Morning)</option>
+            <option value="12:00">12:00 PM (Midday)</option>
+            <option value="14:00">02:00 PM (Afternoon)</option>
+            <option value="16:00">04:00 PM (Evening Sunset)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-stone-300 mb-1">Attendance Format</label>
+          <div class="flex gap-4 text-xs text-stone-300">
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="radio" name="format" value="in-person" checked class="accent-emerald-500"> In-Person On-Site
+            </label>
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="radio" name="format" value="virtual" class="accent-emerald-500"> Virtual Live Drone Tour
+            </label>
+          </div>
+        </div>
+        <button type="submit" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg mt-4">
+          Confirm Viewing Appointment
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // Leaflet map setup for Maitama
+    const map = L.map('detailMap').setView([9.0765, 7.4985], 14);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap contributors & CARTO',
+      maxZoom: 18
+    }).addTo(map);
+    L.marker([9.0765, 7.4985]).addTo(map).bindPopup("<strong>5-Bedroom Royal Duplex</strong><br>₦185,000,000").openPopup();
+
+    // Gallery slider logic
+    const galleryImages = [
+      "https://picsum.photos/seed/prop1/1200/600",
+      "https://picsum.photos/seed/prop1a/1200/600",
+      "https://picsum.photos/seed/prop1b/1200/600",
+      "https://picsum.photos/seed/prop1c/1200/600"
+    ];
+    let activeImgIdx = 0;
+    const mainImg = document.getElementById('mainGalleryImg');
+    const counter = document.getElementById('imgCounter');
+    const thumbs = document.querySelectorAll('.thumb-img');
+
+    function showImage(idx) {
+      activeImgIdx = (idx + galleryImages.length) % galleryImages.length;
+      mainImg.src = galleryImages[activeImgIdx];
+      counter.textContent = activeImgIdx + 1;
+      thumbs.forEach((t, i) => {
+        t.className = i === activeImgIdx 
+          ? "thumb-img h-20 w-full object-cover rounded-xl cursor-pointer border-2 border-emerald-500" 
+          : "thumb-img h-20 w-full object-cover rounded-xl cursor-pointer border border-white/10 hover:border-emerald-500";
+      });
+    }
+
+    document.getElementById('prevImg').addEventListener('click', () => showImage(activeImgIdx - 1));
+    document.getElementById('nextImg').addEventListener('click', () => showImage(activeImgIdx + 1));
+    thumbs.forEach(t => {
+      t.addEventListener('click', () => showImage(parseInt(t.getAttribute('data-index'))));
+    });
+
+    // Modal logic
+    const modal = document.getElementById('scheduleModal');
+    document.getElementById('openScheduleModal').addEventListener('click', () => modal.classList.remove('hidden'));
+    document.getElementById('closeScheduleModal').addEventListener('click', () => modal.classList.add('hidden'));
+    document.getElementById('viewingForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Inspection booked successfully! Agent Adaeze Okonkwo will contact you to confirm.');
+      modal.classList.add('hidden');
+    });
+
+    // Inquiry submission
+    document.getElementById('inquiryForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Inquiry sent directly to Adaeze Okonkwo! You will receive an SMS and email copy shortly.');
+      e.target.reset();
+    });
+
+    // Share & Save
+    document.getElementById('shareBtn').addEventListener('click', () => {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Property link copied to clipboard!');
+    });
+    document.getElementById('saveBtn').addEventListener('click', function() {
+      this.classList.toggle('text-rose-500');
+      alert('Saved to your client wishlist!');
+    });
+  </script>
+</body>
+</html>

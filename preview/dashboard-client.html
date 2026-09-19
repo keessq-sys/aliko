@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client Investor Portal — Aliko Diamond Key</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { background-color: #050A0E; color: #f3f4f6; font-family: 'Inter', sans-serif; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-card { background: rgba(10, 17, 24, 0.85); backdrop-filter: blur(24px); border: 1px solid rgba(5, 150, 105, 0.25); }
+    .tab-active { background: rgba(5, 150, 105, 0.2); border-color: rgba(5, 150, 105, 0.5); color: #34D399; }
+  </style>
+</head>
+<body class="min-h-screen pb-20 selection:bg-emerald-500/30">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 w-full glass border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center shadow-lg">
+            <i data-lucide="diamond" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <span class="text-xl font-serif font-bold text-white">Aliko Diamond Key</span>
+            <span class="block text-[10px] text-emerald-400 font-mono uppercase">Investor & Buyer Portal</span>
+          </div>
+        </a>
+
+        <div class="flex items-center gap-4">
+          <a href="properties.html" class="text-xs text-stone-300 hover:text-emerald-400 flex items-center gap-1.5">
+            <i data-lucide="search" class="w-4 h-4"></i> Browse Listings
+          </a>
+          <div class="h-5 w-px bg-white/10"></div>
+          <div class="flex items-center gap-2">
+            <img src="https://i.pravatar.cc/150?u=client1" class="w-9 h-9 rounded-full border border-emerald-500" alt="">
+            <span class="text-xs font-semibold text-white">Engr. Tunde Adeleke</span>
+          </div>
+          <a href="auth.html" class="text-stone-400 hover:text-rose-400 p-2" title="Sign Out">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
+    
+    <!-- Top Greeting -->
+    <div class="glass-card p-6 sm:p-8 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-serif font-bold text-white mb-1">
+          Good Day, Engr. Tunde
+        </h1>
+        <p class="text-stone-400 text-xs sm:text-sm">
+          You have <span class="text-emerald-400 font-semibold">1 confirmed inspection</span> scheduled this week and <span class="text-amber-400 font-semibold">3 saved properties</span>.
+        </p>
+      </div>
+
+      <a href="properties.html" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold text-center shadow-lg">
+        Explore New Properties ↗
+      </a>
+    </div>
+
+    <!-- Portal Navigation Tabs -->
+    <div class="flex flex-wrap gap-2 border-b border-white/10 pb-4">
+      <button data-tab="wishlist" class="client-tab tab-active px-4 py-2 rounded-xl text-xs font-semibold border border-transparent transition-all flex items-center gap-2">
+        <i data-lucide="heart" class="w-4 h-4"></i> Saved Wishlist (3)
+      </button>
+      <button data-tab="inspections" class="client-tab px-4 py-2 rounded-xl text-xs font-semibold text-stone-400 hover:text-white border border-transparent transition-all flex items-center gap-2">
+        <i data-lucide="calendar" class="w-4 h-4"></i> Scheduled Inspections (1)
+      </button>
+      <button data-tab="documents" class="client-tab px-4 py-2 rounded-xl text-xs font-semibold text-stone-400 hover:text-white border border-transparent transition-all flex items-center gap-2">
+        <i data-lucide="file-check" class="w-4 h-4"></i> Title Deeds & Agreements (2)
+      </button>
+      <button data-tab="messages" class="client-tab px-4 py-2 rounded-xl text-xs font-semibold text-stone-400 hover:text-white border border-transparent transition-all flex items-center gap-2">
+        <i data-lucide="message-circle" class="w-4 h-4"></i> Agent Messages (1)
+      </button>
+    </div>
+
+    <!-- TAB 1: WISHLIST -->
+    <div id="wishlistSection" class="portal-panel space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Wishlist item 1 -->
+        <div class="glass-card rounded-2xl overflow-hidden flex flex-col justify-between">
+          <div>
+            <img src="https://picsum.photos/seed/prop1/800/600" class="h-44 w-full object-cover" alt="">
+            <div class="p-4">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-lg font-serif font-bold text-amber-400">₦185,000,000</span>
+                <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">Available</span>
+              </div>
+              <h3 class="text-sm font-bold text-white mb-1">5-Bedroom Royal Duplex</h3>
+              <p class="text-xs text-stone-400">Aso Drive, Maitama, Abuja</p>
+            </div>
+          </div>
+          <div class="p-4 pt-0 flex gap-2">
+            <a href="property-detail.html?id=prop-001" class="flex-1 py-2 text-center rounded-xl bg-emerald-600 text-white text-xs font-semibold">Inspect ↗</a>
+            <button class="p-2 rounded-xl bg-white/5 text-stone-400 hover:text-rose-500" title="Remove"><i data-lucide="trash" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+
+        <!-- Wishlist item 2 -->
+        <div class="glass-card rounded-2xl overflow-hidden flex flex-col justify-between">
+          <div>
+            <img src="https://picsum.photos/seed/prop3/800/600" class="h-44 w-full object-cover" alt="">
+            <div class="p-4">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-lg font-serif font-bold text-amber-400">₦450,000,000</span>
+                <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">Available</span>
+              </div>
+              <h3 class="text-sm font-bold text-white mb-1">Skyline Atlantic Penthouse</h3>
+              <p class="text-xs text-stone-400">Victoria Island, Lagos</p>
+            </div>
+          </div>
+          <div class="p-4 pt-0 flex gap-2">
+            <a href="property-detail.html?id=prop-002" class="flex-1 py-2 text-center rounded-xl bg-emerald-600 text-white text-xs font-semibold">Inspect ↗</a>
+            <button class="p-2 rounded-xl bg-white/5 text-stone-400 hover:text-rose-500" title="Remove"><i data-lucide="trash" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: INSPECTIONS -->
+    <div id="inspectionsSection" class="portal-panel hidden space-y-4">
+      <div class="glass-card p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <img src="https://picsum.photos/seed/prop1/150/150" class="w-16 h-16 rounded-xl object-cover" alt="">
+          <div>
+            <span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 font-mono">CONFIRMED ON-SITE</span>
+            <h4 class="text-sm font-bold text-white mt-1">5-Bedroom Royal Duplex, Maitama</h4>
+            <p class="text-xs text-stone-400">Thursday, 24th Sept at 10:00 AM • Agent: Adaeze Okonkwo</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="https://wa.me/2348012345678" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
+            <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp Agent
+          </a>
+          <button class="px-4 py-2 rounded-xl bg-white/5 hover:bg-rose-500/20 text-xs text-stone-400 hover:text-rose-400">Reschedule</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: DOCUMENTS -->
+    <div id="documentsSection" class="portal-panel hidden space-y-4">
+      <div class="glass-card p-6 rounded-2xl space-y-4">
+        <h3 class="text-base font-serif font-bold text-white">Your Executed Real Estate Instruments</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <i data-lucide="file-check" class="w-6 h-6 text-emerald-400"></i>
+              <div>
+                <div class="text-xs font-bold text-white">Deed_of_Assignment_Maitama_Duplex.pdf</div>
+                <div class="text-[10px] text-stone-500 font-mono">AGIS VERIFIED • 3.1 MB</div>
+              </div>
+            </div>
+            <button class="text-xs text-emerald-400 hover:underline">Download</button>
+          </div>
+          <div class="p-4 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <i data-lucide="file-text" class="w-6 h-6 text-amber-400"></i>
+              <div>
+                <div class="text-xs font-bold text-white">CBN_Licensed_Escrow_Receipt.pdf</div>
+                <div class="text-[10px] text-stone-500 font-mono">PAYSTACK RECEIPT • 850 KB</div>
+              </div>
+            </div>
+            <button class="text-xs text-emerald-400 hover:underline">Download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: MESSAGES -->
+    <div id="messagesSection" class="portal-panel hidden space-y-4">
+      <div class="glass-card p-6 rounded-2xl">
+        <div class="flex items-center gap-3 pb-4 border-b border-white/10 mb-4">
+          <img src="https://i.pravatar.cc/150?u=agent1" class="w-10 h-10 rounded-full border border-emerald-500" alt="">
+          <div>
+            <h4 class="text-xs font-bold text-white">Adaeze Okonkwo</h4>
+            <span class="text-[10px] text-emerald-400 font-mono">● ONLINE NOW</span>
+          </div>
+        </div>
+
+        <div class="space-y-3 text-xs mb-4">
+          <div class="bg-white/5 p-3 rounded-xl max-w-md">
+            <span class="text-stone-400 text-[10px] block mb-1">Adaeze • 10:45 AM</span>
+            Hello Engr. Tunde, I have uploaded the latest architectural elevation and survey beacons coordinates for the Maitama duplex. Looking forward to our inspection!
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <input type="text" placeholder="Type a message to your realtor..." class="flex-1 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
+          <button class="px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-semibold">Send</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    lucide.createIcons();
+
+    const tabs = document.querySelectorAll('.client-tab');
+    const panels = document.querySelectorAll('.portal-panel');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => {
+          t.className = "client-tab px-4 py-2 rounded-xl text-xs font-semibold text-stone-400 hover:text-white border border-transparent transition-all flex items-center gap-2";
+        });
+        tab.className = "client-tab tab-active px-4 py-2 rounded-xl text-xs font-semibold border border-transparent transition-all flex items-center gap-2";
+
+        panels.forEach(p => p.classList.add('hidden'));
+        const tabKey = tab.getAttribute('data-tab');
+        document.getElementById(`${tabKey}Section`).classList.remove('hidden');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent CRM & Deals Portal — Aliko Diamond Key</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { background-color: #050A0E; color: #f3f4f6; font-family: 'Inter', sans-serif; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-card { background: rgba(10, 17, 24, 0.85); backdrop-filter: blur(24px); border: 1px solid rgba(5, 150, 105, 0.25); }
+    .sidebar-active { background: rgba(5, 150, 105, 0.15); border-left: 3px solid #10B981; color: #34D399; font-weight: 600; }
+  </style>
+</head>
+<body class="min-h-screen flex selection:bg-emerald-500/30 overflow-x-hidden">
+
+  <!-- Left Sidebar -->
+  <aside class="w-64 glass border-r border-white/10 flex flex-col justify-between p-4 flex-shrink-0 min-h-screen sticky top-0">
+    <div>
+      <a href="index.html" class="flex items-center gap-3 px-2 py-4 mb-4 border-b border-white/10">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center shadow-lg">
+          <i data-lucide="diamond" class="w-4 h-4 text-white"></i>
+        </div>
+        <div>
+          <span class="text-sm font-serif font-bold text-white block">Aliko Diamond Key</span>
+          <span class="text-[10px] font-mono text-emerald-400 uppercase">Agent Portal</span>
+        </div>
+      </a>
+
+      <!-- Agent Profile Card -->
+      <div class="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3 mb-6">
+        <img src="https://i.pravatar.cc/150?u=agent1" class="w-10 h-10 rounded-full border border-emerald-500" alt="">
+        <div class="min-w-0">
+          <div class="text-xs font-bold text-white truncate">Adaeze Okonkwo</div>
+          <div class="text-[10px] text-stone-400 truncate">Senior Partner • Maitama</div>
+          <span class="inline-block mt-0.5 px-1.5 py-0.2 rounded text-[9px] font-mono bg-emerald-500/20 text-emerald-400">★ 4.9 VERIFIED</span>
+        </div>
+      </div>
+
+      <nav class="space-y-1 text-xs">
+        <button class="sidebar-active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Deals Pipeline
+        </button>
+        <button class="text-stone-400 hover:text-white hover:bg-white/5 w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left">
+          <i data-lucide="home" class="w-4 h-4"></i> My Listings <span class="ml-auto px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-[10px] text-emerald-400 font-mono">14</span>
+        </button>
+        <button class="text-stone-400 hover:text-white hover:bg-white/5 w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left">
+          <i data-lucide="calendar" class="w-4 h-4"></i> Viewings Schedule <span class="ml-auto px-1.5 py-0.5 rounded-full bg-amber-500/20 text-[10px] text-amber-400 font-mono">3 Today</span>
+        </button>
+        <button class="text-stone-400 hover:text-white hover:bg-white/5 w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left">
+          <i data-lucide="wallet" class="w-4 h-4"></i> Commissions Earned
+        </button>
+        <button class="text-stone-400 hover:text-white hover:bg-white/5 w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left">
+          <i data-lucide="message-square" class="w-4 h-4"></i> Diaspora Client Inbox
+        </button>
+      </nav>
+    </div>
+
+    <div class="pt-4 border-t border-white/10 space-y-2">
+      <a href="index.html" class="flex items-center gap-2 px-3 py-2 text-xs text-stone-400 hover:text-white rounded-lg hover:bg-white/5">
+        <i data-lucide="globe" class="w-4 h-4"></i> Public Marketplace
+      </a>
+      <a href="auth.html" class="flex items-center gap-2 px-3 py-2 text-xs text-rose-400 hover:bg-rose-500/10 rounded-lg">
+        <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Area -->
+  <div class="flex-1 flex flex-col min-w-0">
+    <header class="h-20 glass border-b border-white/10 px-8 flex items-center justify-between sticky top-0 z-30">
+      <div>
+        <h1 class="text-xl font-serif font-bold text-white">Agent Deals Pipeline & CRM</h1>
+        <p class="text-[11px] text-stone-400 font-mono">BROKER ACCREDITATION # REAN/ABJ/2021/892</p>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md">
+          <i data-lucide="plus" class="w-4 h-4"></i> List New Property
+        </button>
+      </div>
+    </header>
+
+    <main class="p-8 space-y-8 flex-1">
+      <!-- KPI Row -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="glass-card p-5 rounded-2xl">
+          <span class="text-xs text-stone-400 font-mono">Active Listings</span>
+          <div class="text-3xl font-serif font-bold text-white mt-1">14 Properties</div>
+          <span class="text-[11px] text-emerald-400 font-semibold">₦1.85B Portfolio Valuation</span>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <span class="text-xs text-stone-400 font-mono">Verified Buyer Leads</span>
+          <div class="text-3xl font-serif font-bold text-emerald-400 mt-1">29 Qualified</div>
+          <span class="text-[11px] text-emerald-400 font-semibold">6 Diaspora Inquiries</span>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <span class="text-xs text-stone-400 font-mono">Commissions (Q3 Paid)</span>
+          <div class="text-3xl font-serif font-bold text-amber-400 mt-1">₦24,850,000</div>
+          <span class="text-[11px] text-stone-400 font-mono">5% Split Auto-Settled</span>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl">
+          <span class="text-xs text-stone-400 font-mono">Inspections This Week</span>
+          <div class="text-3xl font-serif font-bold text-white mt-1">7 Bookings</div>
+          <span class="text-[11px] text-emerald-400 font-semibold">2 Virtual Drone Tours</span>
+        </div>
+      </div>
+
+      <!-- Pipeline Kanban / Table -->
+      <div class="glass-card p-6 rounded-2xl">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-base font-serif font-bold text-white">Active Buyer Lead Pipeline</h3>
+          <span class="text-xs text-stone-400">Synced with WhatsApp & Web Inquiries</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="border-b border-white/10 text-stone-400 font-mono uppercase">
+              <tr>
+                <th class="py-3 px-4">Client / Investor</th>
+                <th class="py-3 px-4">Property of Interest</th>
+                <th class="py-3 px-4">Budget / Offer</th>
+                <th class="py-3 px-4">Deal Stage</th>
+                <th class="py-3 px-4">Last Interaction</th>
+                <th class="py-3 px-4 text-right">Quick Contact</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5 text-stone-300">
+              <tr>
+                <td class="py-3 px-4 font-semibold text-white">Engr. Tunde Adeleke (London)</td>
+                <td class="py-3 px-4 text-emerald-400">5-Bedroom Royal Duplex, Maitama</td>
+                <td class="py-3 px-4 font-mono font-bold text-amber-400">₦185,000,000</td>
+                <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] bg-purple-500/20 text-purple-300 font-mono">INSPECTION DONE</span></td>
+                <td class="py-3 px-4 text-stone-400">Today, 11:20 AM</td>
+                <td class="py-3 px-4 text-right space-x-2">
+                  <a href="https://wa.me/23480000000" class="text-emerald-400 font-semibold hover:underline">WhatsApp</a>
+                  <button class="text-stone-400 hover:text-white">Draft Deed</button>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-semibold text-white">Alhaji Bello Danjuma</td>
+                <td class="py-3 px-4 text-emerald-400">Skyline Penthouse, Victoria Island</td>
+                <td class="py-3 px-4 font-mono font-bold text-amber-400">₦450,000,000</td>
+                <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 font-mono">DEED IN ESCROW</span></td>
+                <td class="py-3 px-4 text-stone-400">Yesterday</td>
+                <td class="py-3 px-4 text-right space-x-2">
+                  <a href="https://wa.me/23480000000" class="text-emerald-400 font-semibold hover:underline">WhatsApp</a>
+                  <button class="text-stone-400 hover:text-white">View Escrow</button>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-semibold text-white">Mrs. Ngozi Eke</td>
+                <td class="py-3 px-4 text-emerald-400">3-Bed Residence, Wuse 2</td>
+                <td class="py-3 px-4 font-mono font-bold text-amber-400">₦75,000,000</td>
+                <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-300 font-mono">NEW INQUIRY</span></td>
+                <td class="py-3 px-4 text-stone-400">2 hrs ago</td>
+                <td class="py-3 px-4 text-right space-x-2">
+                  <a href="https://wa.me/23480000000" class="text-emerald-400 font-semibold hover:underline">WhatsApp</a>
+                  <button class="text-stone-400 hover:text-white">Call Client</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

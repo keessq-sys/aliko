@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Property Listings — Aliko Diamond Key</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    body { background-color: #050A0E; color: #f3f4f6; font-family: 'Inter', sans-serif; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-card { background: rgba(10, 17, 24, 0.75); backdrop-filter: blur(20px); border: 1px solid rgba(5, 150, 105, 0.2); }
+    .glass-card:hover { border-color: rgba(5, 150, 105, 0.4); transform: translateY(-4px); box-shadow: 0 12px 30px -10px rgba(5, 150, 105, 0.3); }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #064E3B; border-radius: 3px; }
+  </style>
+</head>
+<body class="selection:bg-emerald-500/30">
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="sticky top-0 z-50 w-full glass border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center shadow-[0_0_20px_rgba(5,150,105,0.4)]">
+            <i data-lucide="diamond" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <span class="text-xl font-serif font-bold text-white tracking-wide">Aliko Diamond Key</span>
+            <span class="block text-[10px] text-emerald-400 font-mono tracking-widest uppercase -mt-1">Verified Marketplace</span>
+          </div>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-8">
+          <a href="index.html" class="text-sm font-medium text-stone-300 hover:text-emerald-400">Home</a>
+          <a href="properties.html" class="text-sm font-medium text-emerald-400">Properties</a>
+          <a href="agents.html" class="text-sm font-medium text-stone-300 hover:text-emerald-400">Verified Agents</a>
+          <a href="properties.html?view=map" class="text-sm font-medium text-stone-300 hover:text-emerald-400">Interactive Map</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <a href="auth.html" class="text-sm font-medium text-stone-300 hover:text-white px-3 py-2">Sign In</a>
+          <a href="auth.html?mode=register" class="text-xs font-semibold px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-400 text-white shadow-lg">Get Started</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== TOP HERO BANNER ==================== -->
+  <div class="border-b border-white/5 bg-gradient-to-b from-emerald-950/20 to-transparent py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div class="text-xs font-mono text-emerald-400 uppercase tracking-widest mb-1">GOVERNMENT DOCUMENTED INVENTORY</div>
+          <h1 class="text-3xl sm:text-4xl font-serif font-bold text-white mb-2">Verified Real Estate Listings</h1>
+          <p class="text-stone-400 text-sm max-w-xl">
+            Explore premium duplexes, waterfront penthouses, luxury apartments, and registered land parcels with clean titles.
+          </p>
+        </div>
+
+        <!-- View Mode Switcher -->
+        <div class="flex items-center gap-3">
+          <div class="p-1 rounded-xl bg-white/5 border border-white/10 flex items-center">
+            <button id="gridViewBtn" class="p-2 rounded-lg bg-emerald-600 text-white transition-colors" title="Grid View">
+              <i data-lucide="layout-grid" class="w-4 h-4"></i>
+            </button>
+            <button id="listViewBtn" class="p-2 rounded-lg text-stone-400 hover:text-white transition-colors" title="List View">
+              <i data-lucide="layout-list" class="w-4 h-4"></i>
+            </button>
+            <button id="mapViewBtn" class="p-2 rounded-lg text-stone-400 hover:text-white transition-colors" title="Map View">
+              <i data-lucide="map" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Sort Select -->
+          <select id="sortSelect" class="px-3 py-2 rounded-xl bg-[#0A1628] border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <option value="newest">Newest Listed</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN CONTENT & FILTERS ==================== -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-col lg:flex-row gap-8">
+      
+      <!-- Filter Sidebar (Left) -->
+      <aside class="w-full lg:w-72 flex-shrink-0">
+        <div class="glass-card p-5 rounded-2xl sticky top-28 space-y-6">
+          <div class="flex items-center justify-between pb-3 border-b border-white/10">
+            <h3 class="font-serif font-bold text-white text-base flex items-center gap-2">
+              <i data-lucide="sliders-horizontal" class="w-4 h-4 text-emerald-400"></i> Filters
+            </h3>
+            <button id="resetFilters" class="text-xs text-stone-400 hover:text-emerald-400 underline">Reset</button>
+          </div>
+
+          <!-- Search Query -->
+          <div>
+            <label class="block text-[11px] font-mono text-stone-400 uppercase mb-1">Keywords</label>
+            <div class="relative">
+              <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-500"></i>
+              <input id="searchInput" type="text" placeholder="Location, estate, name..." class="w-full pl-9 pr-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500">
+            </div>
+          </div>
+
+          <!-- Asset Class -->
+          <div>
+            <label class="block text-[11px] font-mono text-stone-400 uppercase mb-2">Asset Type</label>
+            <div class="flex flex-wrap gap-1.5" id="typeFilters">
+              <button data-type="All" class="type-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-600 text-white">All</button>
+              <button data-type="duplex" class="type-btn px-2.5 py-1 rounded-lg text-xs bg-white/5 text-stone-300 hover:bg-white/10">Duplex</button>
+              <button data-type="penthouse" class="type-btn px-2.5 py-1 rounded-lg text-xs bg-white/5 text-stone-300 hover:bg-white/10">Penthouse</button>
+              <button data-type="apartment" class="type-btn px-2.5 py-1 rounded-lg text-xs bg-white/5 text-stone-300 hover:bg-white/10">Apartment</button>
+              <button data-type="land" class="type-btn px-2.5 py-1 rounded-lg text-xs bg-white/5 text-stone-300 hover:bg-white/10">Land</button>
+              <button data-type="commercial" class="type-btn px-2.5 py-1 rounded-lg text-xs bg-white/5 text-stone-300 hover:bg-white/10">Commercial</button>
+            </div>
+          </div>
+
+          <!-- Max Price Slider -->
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-stone-400 font-mono">Max Price:</span>
+              <span id="priceLabel" class="text-amber-400 font-bold font-mono">Any Budget</span>
+            </div>
+            <input id="priceRange" type="range" min="30" max="1000" value="1000" step="20" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-amber-500">
+          </div>
+
+          <!-- Bedrooms -->
+          <div>
+            <label class="block text-[11px] font-mono text-stone-400 uppercase mb-1">Bedrooms</label>
+            <select id="bedroomSelect" class="w-full px-3 py-2 rounded-xl bg-[#0A1628] border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
+              <option value="any">Any Bedrooms</option>
+              <option value="2">2+ Bedrooms</option>
+              <option value="3">3+ Bedrooms</option>
+              <option value="4">4+ Bedrooms</option>
+              <option value="5">5+ Bedrooms</option>
+            </select>
+          </div>
+
+          <!-- Verified Only Toggle -->
+          <div class="pt-2 border-t border-white/5 flex items-center justify-between">
+            <span class="text-xs text-stone-300 flex items-center gap-1.5">
+              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Title Verified Only
+            </span>
+            <input id="verifiedToggle" type="checkbox" class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Results Area (Right) -->
+      <main class="flex-1 min-w-0">
+        
+        <!-- Results Counter -->
+        <div class="flex items-center justify-between text-xs text-stone-400 mb-4 pb-2 border-b border-white/5">
+          <span id="resultsCount">Showing 8 properties</span>
+          <span class="text-[11px] font-mono text-emerald-400">● Real-time Availability</span>
+        </div>
+
+        <!-- Container for Grid or List -->
+        <div id="propertiesContainer" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          <!-- Dynamic Property Cards will be injected by JavaScript below -->
+        </div>
+
+        <!-- Map Container (Hidden by default, shown when Map View selected) -->
+        <div id="mapViewContainer" class="hidden h-[600px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative">
+          <div id="propertiesMap" class="w-full h-full bg-[#050A0E]"></div>
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <script>
+    // Properties Mock Dataset
+    const PROPERTIES = [
+      {
+        id: "prop-001",
+        title: "5-Bedroom Luxury Duplex",
+        type: "duplex",
+        price: 185000000,
+        bedrooms: 5,
+        bathrooms: 6,
+        sizeSqm: 800,
+        location: "Aso Drive, Maitama, Abuja",
+        status: "available",
+        isVerified: true,
+        image: "https://picsum.photos/seed/prop1/800/600",
+        lat: 9.0765,
+        lng: 7.4985
+      },
+      {
+        id: "prop-002",
+        title: "Skyline Atlantic Penthouse",
+        type: "penthouse",
+        price: 450000000,
+        bedrooms: 4,
+        bathrooms: 4,
+        sizeSqm: 400,
+        location: "Skyline Towers, Victoria Island, Lagos",
+        status: "available",
+        isVerified: true,
+        image: "https://picsum.photos/seed/prop3/800/600",
+        lat: 6.4281,
+        lng: 3.4219
+      },
+      {
+        id: "prop-003",
+        title: "Modern 3-Bed City Residence",
+        type: "apartment",
+        price: 75000000,
+        bedrooms: 3,
+        bathrooms: 3,
+        sizeSqm: 220,
+        location: "Aminu Kano Way, Wuse 2, Abuja",
+        status: "reserved",
+        isVerified: true,
+        image: "https://picsum.photos/seed/prop4/800/600",
+        lat: 9.0610,
+        lng: 7.4680
+      },
+      {
+        id: "prop-004",
+        title: "Katampe Hills Residential Land",
+        type: "land",
+        price: 45000000,
+        bedrooms: 0,
+        bathrooms: 0,
+        sizeSqm: 1000,
+        location: "Katampe Extension, Abuja",
+        status: "available",
+        isVerified: true,
+        image: "https://picsum.photos/seed/land1/800/600",
+        lat: 9.1120,
+        lng: 7.4320
+      },
+      {
+        id: "prop-005",
+        title: "Commercial Grade-A Office Hub",
+        type: "commercial",
+        price: 950000000,
+        bedrooms: 0,
+        bathrooms: 12,
+        sizeSqm: 2400,
+        location: "Central Business District, Abuja",
+        status: "available",
+        isVerified: true,
+        image: "https://picsum.photos/seed/comm1/800/600",
+        lat: 9.0520,
+        lng: 7.4850
+      },
+      {
+        id: "prop-006",
+        title: "Waterfront 4-Bed Detached Villa",
+        type: "duplex",
+        price: 320000000,
+        bedrooms: 4,
+        bathrooms: 5,
+        sizeSqm: 650,
+        location: "Banana Island, Ikoyi, Lagos",
+        status: "available",
+        isVerified: true,
+        image: "https://picsum.photos/seed/prop6/800/600",
+        lat: 6.4520,
+        lng: 3.4410
+      },
+      {
+        id: "prop-007",
+        title: "Lekki Phase 1 Contemporary Maisonette",
+        type: "apartment",
+        price: 130000000,
+        bedrooms: 3,
+        bathrooms: 4,
+        sizeSqm: 310,
+        location: "Admiralty Way, Lekki Phase 1, Lagos",
+        status: "sold",
+        isVerified: true,
+        image: "https://picsum.photos/seed/prop7/800/600",
+        lat: 6.4480,
+        lng: 3.4730
+      },
+      {
+        id: "prop-008",
+        title: "Guzape Diplomatic Zone Villa",
+        type: "duplex",
+        price: 280000000,
+        bedrooms: 6,
+        bathrooms: 7,
+        sizeSqm: 900,
+        location: "Diplomatic Enclave, Guzape, Abuja",
+        status: "available",
+        isVerified: true,
+        image: "https://picsum.photos/seed/prop8/800/600",
+        lat: 9.0280,
+        lng: 7.5180
+      }
+    ];
+
+    let currentType = 'All';
+    let currentView = 'grid';
+    let leafletMapInstance = null;
+
+    const container = document.getElementById('propertiesContainer');
+    const mapViewContainer = document.getElementById('mapViewContainer');
+    const resultsCount = document.getElementById('resultsCount');
+    const searchInput = document.getElementById('searchInput');
+    const priceRange = document.getElementById('priceRange');
+    const priceLabel = document.getElementById('priceLabel');
+    const bedroomSelect = document.getElementById('bedroomSelect');
+    const verifiedToggle = document.getElementById('verifiedToggle');
+    const sortSelect = document.getElementById('sortSelect');
+
+    function filterAndRender() {
+      const q = searchInput.value.toLowerCase().trim();
+      const maxPrice = parseInt(priceRange.value) * 1000000;
+      const minBeds = bedroomSelect.value === 'any' ? 0 : parseInt(bedroomSelect.value);
+      const verifiedOnly = verifiedToggle.checked;
+      const sortBy = sortSelect.value;
+
+      let filtered = PROPERTIES.filter(p => {
+        if (q && !p.title.toLowerCase().includes(q) && !p.location.toLowerCase().includes(q)) return false;
+        if (currentType !== 'All' && p.type.toLowerCase() !== currentType.toLowerCase()) return false;
+        if (p.price > maxPrice) return false;
+        if (minBeds > 0 && p.bedrooms < minBeds) return false;
+        if (verifiedOnly && !p.isVerified) return false;
+        return true;
+      });
+
+      // Sort
+      if (sortBy === 'price-asc') filtered.sort((a, b) => a.price - b.price);
+      if (sortBy === 'price-desc') filtered.sort((a, b) => b.price - a.price);
+
+      resultsCount.textContent = `Showing ${filtered.length} of ${PROPERTIES.length} properties`;
+
+      if (currentView === 'map') {
+        renderMap(filtered);
+        return;
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-16 text-center">
+            <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3 text-stone-500">
+              <i data-lucide="search-x" class="w-8 h-8"></i>
+            </div>
+            <h4 class="text-white font-serif font-bold text-lg mb-1">No matching properties</h4>
+            <p class="text-stone-400 text-xs">Try relaxing your filter parameters or search terms.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      if (currentView === 'grid') {
+        container.className = "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6";
+        container.innerHTML = filtered.map(p => `
+          <div class="glass-card rounded-2xl overflow-hidden flex flex-col justify-between">
+            <div>
+              <div class="relative aspect-[3/2] overflow-hidden">
+                <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover">
+                <div class="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-black/60 text-[10px] uppercase font-semibold text-white capitalize">
+                  ${p.type}
+                </div>
+                <div class="absolute bottom-3 left-3 px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono ${p.status === 'available' ? 'bg-emerald-500 text-black' : p.status === 'reserved' ? 'bg-amber-500 text-black' : 'bg-rose-500 text-white'}">
+                  ${p.status}
+                </div>
+              </div>
+              <div class="p-4">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xl font-serif font-bold text-amber-400">₦${(p.price / 1000000).toLocaleString()}M</span>
+                </div>
+                <h3 class="text-sm font-bold text-white mb-1 line-clamp-1">${p.title}</h3>
+                <p class="text-[11px] text-stone-400 flex items-center gap-1 mb-3">
+                  <i data-lucide="map-pin" class="w-3 h-3 text-emerald-400"></i> ${p.location}
+                </p>
+                <div class="flex items-center gap-3 text-[11px] text-stone-400 py-2 border-t border-white/5">
+                  ${p.bedrooms > 0 ? `<span>${p.bedrooms} Beds</span>` : ''}
+                  ${p.bathrooms > 0 ? `<span>• ${p.bathrooms} Baths</span>` : ''}
+                  <span>• ${p.sizeSqm} sqm</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-4 pt-0">
+              <a href="property-detail.html?id=${p.id}" class="w-full block py-2 rounded-xl bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white text-center text-xs font-semibold border border-emerald-500/30 transition-colors">
+                View Full Details ↗
+              </a>
+            </div>
+          </div>
+        `).join('');
+      } else if (currentView === 'list') {
+        container.className = "space-y-4";
+        container.innerHTML = filtered.map(p => `
+          <div class="glass-card rounded-2xl overflow-hidden flex flex-col md:flex-row gap-4 p-3">
+            <div class="w-full md:w-56 aspect-[3/2] md:aspect-auto rounded-xl overflow-hidden relative flex-shrink-0">
+              <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover">
+              <span class="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/70 text-[10px] text-white uppercase font-mono">${p.type}</span>
+            </div>
+            <div class="flex-1 flex flex-col justify-between py-1">
+              <div>
+                <div class="flex items-start justify-between">
+                  <div>
+                    <h3 class="text-base font-serif font-bold text-white mb-1">${p.title}</h3>
+                    <p class="text-xs text-stone-400 flex items-center gap-1">
+                      <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-400"></i> ${p.location}
+                    </p>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-xl font-serif font-bold text-amber-400">₦${(p.price / 1000000).toLocaleString()}M</span>
+                    <span class="block text-[10px] font-mono uppercase ${p.status === 'available' ? 'text-emerald-400' : 'text-amber-400'}">${p.status}</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-4 text-xs text-stone-400 mt-3">
+                  ${p.bedrooms > 0 ? `<span>🛏 ${p.bedrooms} Beds</span>` : ''}
+                  ${p.bathrooms > 0 ? `<span>🚿 ${p.bathrooms} Baths</span>` : ''}
+                  <span>📐 ${p.sizeSqm} sqm</span>
+                  <span class="text-emerald-400">🛡 Title Verified</span>
+                </div>
+              </div>
+              <div class="flex justify-end gap-2 pt-3 border-t border-white/5 mt-3">
+                <a href="property-detail.html?id=${p.id}" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">
+                  Inspect Property ↗
+                </a>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      lucide.createIcons();
+    }
+
+    function renderMap(propsList) {
+      if (!leafletMapInstance) {
+        leafletMapInstance = L.map('propertiesMap').setView([9.0610, 7.4680], 12);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; OpenStreetMap contributors & CARTO',
+          maxZoom: 18
+        }).addTo(leafletMapInstance);
+      }
+
+      // Clear existing markers
+      leafletMapInstance.eachLayer(layer => {
+        if (layer instanceof L.Marker) {
+          leafletMapInstance.removeLayer(layer);
+        }
+      });
+
+      propsList.forEach(p => {
+        const marker = L.marker([p.lat, p.lng]).addTo(leafletMapInstance);
+        marker.bindPopup(`
+          <div style="font-family: sans-serif; min-width: 140px;">
+            <strong style="color: #fff;">${p.title}</strong><br>
+            <span style="color: #D97706; font-weight: bold;">₦${(p.price/1000000).toFixed(0)}M</span><br>
+            <a href="property-detail.html?id=${p.id}" style="color: #34D399; text-decoration: underline; font-size: 11px;">View Listing ↗</a>
+          </div>
+        `);
+      });
+    }
+
+    // Event Listeners
+    searchInput.addEventListener('input', filterAndRender);
+    sortSelect.addEventListener('change', filterAndRender);
+    bedroomSelect.addEventListener('change', filterAndRender);
+    verifiedToggle.addEventListener('change', filterAndRender);
+
+    priceRange.addEventListener('input', () => {
+      const val = parseInt(priceRange.value);
+      priceLabel.textContent = val >= 1000 ? 'Any Budget' : `₦${val}M`;
+      filterAndRender();
+    });
+
+    document.querySelectorAll('.type-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.type-btn').forEach(b => b.className = "type-btn px-2.5 py-1 rounded-lg text-xs bg-white/5 text-stone-300 hover:bg-white/10");
+        btn.className = "type-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-600 text-white";
+        currentType = btn.getAttribute('data-type');
+        filterAndRender();
+      });
+    });
+
+    // View toggles
+    document.getElementById('gridViewBtn').addEventListener('click', () => {
+      currentView = 'grid';
+      container.classList.remove('hidden');
+      mapViewContainer.classList.add('hidden');
+      updateViewButtons('gridViewBtn');
+      filterAndRender();
+    });
+
+    document.getElementById('listViewBtn').addEventListener('click', () => {
+      currentView = 'list';
+      container.classList.remove('hidden');
+      mapViewContainer.classList.add('hidden');
+      updateViewButtons('listViewBtn');
+      filterAndRender();
+    });
+
+    document.getElementById('mapViewBtn').addEventListener('click', () => {
+      currentView = 'map';
+      container.classList.add('hidden');
+      mapViewContainer.classList.remove('hidden');
+      updateViewButtons('mapViewBtn');
+      filterAndRender();
+      setTimeout(() => { if (leafletMapInstance) leafletMapInstance.invalidateSize(); }, 200);
+    });
+
+    function updateViewButtons(activeId) {
+      ['gridViewBtn', 'listViewBtn', 'mapViewBtn'].forEach(id => {
+        const b = document.getElementById(id);
+        if (id === activeId) {
+          b.className = "p-2 rounded-lg bg-emerald-600 text-white transition-colors";
+        } else {
+          b.className = "p-2 rounded-lg text-stone-400 hover:text-white transition-colors";
+        }
+      });
+    }
+
+    document.getElementById('resetFilters').addEventListener('click', () => {
+      searchInput.value = '';
+      priceRange.value = 1000;
+      priceLabel.textContent = 'Any Budget';
+      bedroomSelect.value = 'any';
+      verifiedToggle.checked = false;
+      currentType = 'All';
+      document.querySelectorAll('.type-btn').forEach(b => b.className = "type-btn px-2.5 py-1 rounded-lg text-xs bg-white/5 text-stone-300 hover:bg-white/10");
+      document.querySelector('.type-btn[data-type="All"]').className = "type-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-600 text-white";
+      filterAndRender();
+    });
+
+    // Handle initial query params (e.g. ?view=map or ?type=Penthouse)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('view') === 'map') {
+      document.getElementById('mapViewBtn').click();
+    } else {
+      filterAndRender();
+    }
+  </script>
+</body>
+</html>
