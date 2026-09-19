@@ -1,0 +1,154 @@
+<script lang="ts">
+  import { Menu, X, Bell, User, LogOut, Settings, LayoutDashboard, Map as MapIcon, Building2 } from 'lucide-svelte';
+  import { slide } from 'svelte/transition';
+  import { page } from '$app/stores';
+
+  let isMobileMenuOpen = false;
+  let isProfileMenuOpen = false;
+  
+  // Mock auth state for demo
+  let isLoggedIn = false;
+  let unreadNotifications = 3;
+  let userRole = 'agent'; // 'client', 'agent', 'manager'
+
+  const navLinks = [
+    { name: 'Home', href: '/' },
+    { name: 'Properties', href: '/properties' },
+    { name: 'Agents', href: '/agents' },
+    { name: 'Map View', href: '/map' }
+  ];
+
+  function toggleMobileMenu() {
+    isMobileMenuOpen = !isMobileMenuOpen;
+  }
+  
+  function toggleProfileMenu() {
+    isProfileMenuOpen = !isProfileMenuOpen;
+  }
+</script>
+
+<header class="sticky top-0 z-40 w-full glass-l2 border-b border-white/10">
+  <div class="container mx-auto px-4 lg:px-8">
+    <div class="flex items-center justify-between h-20">
+      
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_15px_rgba(5,150,105,0.4)] group-hover:scale-105 transition-transform duration-300">
+          <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg>
+        </div>
+        <span class="text-xl font-serif font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-stone-400">
+          Aliko Diamond Key
+        </span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-8">
+        {#each navLinks as link}
+          <a 
+            href={link.href} 
+            class="text-sm font-medium transition-colors hover:text-emerald-400 relative {$page.url.pathname === link.href ? 'text-emerald-400' : 'text-stone-300'}"
+          >
+            {link.name}
+            {#if $page.url.pathname === link.href}
+              <div class="absolute -bottom-7 left-0 w-full h-0.5 bg-emerald-500 shadow-[0_0_10px_rgba(5,150,105,0.8)]"></div>
+            {/if}
+          </a>
+        {/each}
+      </nav>
+
+      <!-- Desktop Actions -->
+      <div class="hidden md:flex items-center gap-4">
+        {#if isLoggedIn}
+          <button class="relative p-2 rounded-full text-stone-300 hover:text-white hover:bg-white/10 transition-colors">
+            <Bell size={20} />
+            {#if unreadNotifications > 0}
+              <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full shadow-[0_0_8px_rgba(225,29,72,0.8)] animate-pulse"></span>
+            {/if}
+          </button>
+          
+          <div class="relative">
+            <button class="flex items-center gap-2 p-1 pl-3 pr-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors" on:click={toggleProfileMenu}>
+              <span class="text-sm font-medium text-stone-300">John D.</span>
+              <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Avatar" class="w-8 h-8 rounded-full border border-emerald-500/50" />
+            </button>
+            
+            <!-- Profile Dropdown -->
+            {#if isProfileMenuOpen}
+              <div class="absolute right-0 mt-3 w-56 rounded-xl glass-l3 border border-white/10 shadow-2xl py-2 flex flex-col z-50">
+                <div class="px-4 py-2 border-b border-white/10 mb-2">
+                  <p class="text-sm font-medium text-white">John Doe</p>
+                  <p class="text-xs text-stone-400">john@example.com</p>
+                  <div class="mt-2 badge-agent inline-block">Agent</div>
+                </div>
+                
+                <a href="/dashboard" class="flex items-center gap-3 px-4 py-2 text-sm text-stone-300 hover:text-white hover:bg-white/5 transition-colors">
+                  <LayoutDashboard size={16} /> Dashboard
+                </a>
+                <a href="/profile" class="flex items-center gap-3 px-4 py-2 text-sm text-stone-300 hover:text-white hover:bg-white/5 transition-colors">
+                  <User size={16} /> Profile
+                </a>
+                <a href="/settings" class="flex items-center gap-3 px-4 py-2 text-sm text-stone-300 hover:text-white hover:bg-white/5 transition-colors">
+                  <Settings size={16} /> Settings
+                </a>
+                <div class="h-px bg-white/10 my-2"></div>
+                <button class="flex items-center gap-3 px-4 py-2 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors w-full text-left" on:click={() => isLoggedIn = false}>
+                  <LogOut size={16} /> Sign out
+                </button>
+              </div>
+            {/if}
+          </div>
+        {:else}
+          <a href="/auth?tab=signin" class="text-sm font-medium text-stone-300 hover:text-white transition-colors px-4 py-2">Sign In</a>
+          <a href="/auth?tab=signup" class="btn-primary">Register</a>
+        {/if}
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button class="md:hidden p-2 text-stone-300 hover:text-white" on:click={toggleMobileMenu}>
+        {#if isMobileMenuOpen}
+          <X size={24} />
+        {:else}
+          <Menu size={24} />
+        {/if}
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Mobile Menu Drawer -->
+  {#if isMobileMenuOpen}
+    <div class="md:hidden absolute top-20 left-0 w-full glass-l3 border-b border-white/10 shadow-2xl" transition:slide={{duration: 300}}>
+      <div class="flex flex-col p-4 gap-2">
+        {#each navLinks as link}
+          <a 
+            href={link.href} 
+            class="px-4 py-3 rounded-lg text-base font-medium {$page.url.pathname === link.href ? 'bg-emerald-900/30 text-emerald-400 border border-emerald-500/20' : 'text-stone-300 hover:bg-white/5'}"
+            on:click={() => isMobileMenuOpen = false}
+          >
+            {link.name}
+          </a>
+        {/each}
+        
+        <div class="h-px bg-white/10 my-4"></div>
+
+        <div class="px-2 py-1 text-xs uppercase font-mono text-stone-500 tracking-wider">Dashboards</div>
+        <a href="/dashboard/manager" class="px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5" on:click={() => isMobileMenuOpen = false}>🏢 Estate Manager</a>
+        <a href="/dashboard/agent" class="px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5" on:click={() => isMobileMenuOpen = false}>🤝 Agent Dashboard</a>
+        <a href="/dashboard/client" class="px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5" on:click={() => isMobileMenuOpen = false}>🏠 Client Portal</a>
+        
+        <div class="h-px bg-white/10 my-2"></div>
+        
+        {#if isLoggedIn}
+          <button class="px-4 py-3 rounded-lg text-base font-medium text-rose-400 hover:bg-rose-500/10 text-left w-full" on:click={() => {isLoggedIn = false; isMobileMenuOpen = false;}}>Sign out</button>
+        {:else}
+          <div class="flex flex-col gap-3 pt-2">
+            <a href="/auth?tab=signin" class="btn-ghost w-full justify-center" on:click={() => isMobileMenuOpen = false}>Sign In</a>
+            <a href="/auth?tab=signup" class="btn-primary w-full justify-center" on:click={() => isMobileMenuOpen = false}>Register</a>
+          </div>
+        {/if}
+      </div>
+    </div>
+  {/if}
+</header>
