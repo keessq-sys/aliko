@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --c-indigo: #4F46E5;
+    --c-rose: #E11D48;
+    --c-purple: #9333ea;
+    --c-blue-dark: #1e3a8a;
+  }
+  body {
+    background-color: #050A0E;
+    color: #e7e5e4; /* stone-200 */
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Instrument Serif', Georgia, serif;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-400 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(5,150,105,0.5),0_0_60px_rgba(5,150,105,0.2)];
+    transform: translateZ(0);
+  }
+  
+  .btn-secondary {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-amber-600 via-amber-500 to-amber-300 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(217,119,6,0.5),0_0_60px_rgba(217,119,6,0.2)];
+    transform: translateZ(0);
+  }
+
+  .btn-ghost {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-white/10 rounded-lg bg-white/5 backdrop-blur-md hover:bg-white/10 hover:scale-[1.03] active:scale-[0.97];
+    transform: translateZ(0);
+  }
+
+  .btn-danger {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-rose-600 to-rose-400 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(225,29,72,0.5),0_0_60px_rgba(225,29,72,0.2)];
+    transform: translateZ(0);
+  }
+
+  /* Tabs */
+  .tab-pill {
+    @apply px-4 py-2 text-sm font-medium transition-all duration-250 rounded-full text-stone-400 hover:text-white hover:bg-white/5;
+  }
+  
+  .tab-pill-active {
+    @apply px-4 py-2 text-sm font-medium transition-all duration-250 rounded-full text-emerald-400 bg-emerald-900/30 border border-emerald-500/30 shadow-[0_0_10px_rgba(5,150,105,0.2)];
+  }
+
+  /* Wizard */
+  .wizard-step-inactive {
+    @apply flex items-center justify-center w-8 h-8 rounded-full border border-stone-700 bg-stone-800 text-stone-400 transition-all duration-450;
+  }
+  .wizard-step-active {
+    @apply flex items-center justify-center w-8 h-8 rounded-full border border-emerald-400 bg-emerald-900/50 text-emerald-300 shadow-[0_0_15px_rgba(5,150,105,0.4)] transition-all duration-450 transform -translate-y-1;
+  }
+  .wizard-step-complete {
+    @apply flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white transition-all duration-450;
+  }
+
+  /* Cards */
+  .card-3d {
+    @apply relative overflow-hidden transition-all duration-450 ease-[cubic-bezier(0.16,1,0.3,1)] border border-white/5 rounded-2xl bg-white/5 backdrop-blur-xl hover:-translate-y-2 hover:shadow-xl;
+    transform: translateZ(0);
+    perspective: 1200px;
+  }
+
+  /* Badges */
+  .badge-client {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-800 text-stone-300 border border-stone-700;
+  }
+  .badge-agent {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-900/40 text-emerald-300 border border-emerald-700/50;
+  }
+  .badge-manager {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-900/40 text-amber-300 border border-amber-700/50;
+  }
+
+  .sidebar-item {
+    @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-stone-400 hover:text-white hover:bg-white/5 transition-all duration-250;
+  }
+  .sidebar-item-active {
+    @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-emerald-400 bg-emerald-900/20 border border-emerald-500/20 transition-all duration-250;
+  }
+
+  .map-container {
+    @apply w-full h-full rounded-xl overflow-hidden border border-white/10 bg-stone-900;
+  }
+
+  .gradient-border {
+    position: relative;
+    background: transparent;
+  }
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(5,150,105,0.6), rgba(217,119,6,0.6), rgba(99,102,241,0.5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  
+  .prose-dark {
+    @apply prose prose-invert prose-emerald max-w-none text-stone-300;
+  }
+}
+
+@layer utilities {
+  .neon-emerald {
+    box-shadow: 0 0 20px rgba(5,150,105,0.5), 0 0 60px rgba(5,150,105,0.2);
+  }
+  .neon-gold {
+    box-shadow: 0 0 20px rgba(217,119,6,0.5), 0 0 60px rgba(217,119,6,0.2);
+  }
+  .glass-l1 {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .glass-l2 {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+  .glass-l3 {
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+}
+
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  0% { opacity: 0; transform: translateX(20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes countUp {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes morphGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes particleFloat {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}

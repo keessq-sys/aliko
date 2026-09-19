@@ -1,0 +1,48 @@
+{
+  "name": "aliko-diamond-key",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npx convex dev\" \"vite dev\"",
+    "build": "vite build",
+    "preview": "vite preview",
+    "convex:push": "npx convex deploy",
+    "deploy": "npm run build && npx wrangler pages deploy .svelte-kit/cloudflare",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "lint": "prettier --check . && eslint .",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-cloudflare": "^4.7.0",
+    "@sveltejs/kit": "^2.9.0",
+    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.0",
+    "eslint": "^9.15.0",
+    "eslint-plugin-svelte": "^2.46.0",
+    "postcss": "^8.4.49",
+    "prettier": "^3.4.1",
+    "prettier-plugin-svelte": "^3.3.2",
+    "svelte": "^5.6.0",
+    "svelte-check": "^4.1.0",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
+  },
+  "dependencies": {
+    "convex": "^1.17.1",
+    "@convex-dev/auth": "^0.0.71",
+    "convex-svelte": "^0.1.2",
+    "pdf-lib": "^1.17.1",
+    "qrcode": "^1.5.4",
+    "@types/qrcode": "^1.5.5",
+    "three": "^0.166.0",
+    "@types/three": "^0.166.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.4",
+    "date-fns": "^4.1.0",
+    "zod": "^3.23.8",
+    "lucide-svelte": "^0.466.0"
+  }
+}

@@ -1,0 +1,43 @@
+name = "aliko-diamond-key"
+compatibility_date = "2024-12-01"
+pages_build_output_dir = ".svelte-kit/cloudflare"
+
+# ── Environment variables ──────────────────────────────────────────────────
+[vars]
+NODE_VERSION = "22"
+
+# ── KV Namespaces (session cache, rate limiting) ────────────────────────────
+[[kv_namespaces]]
+binding = "SESSIONS_KV"
+id = "YOUR_KV_NAMESPACE_ID"          # replace after `wrangler kv namespace create SESSIONS`
+preview_id = "YOUR_PREVIEW_KV_ID"
+
+# ── R2 Buckets (property images, generated PDFs) ───────────────────────────
+[[r2_buckets]]
+binding = "DOCUMENTS_R2"
+bucket_name = "aliko-documents"
+
+[[r2_buckets]]
+binding = "IMAGES_R2"
+bucket_name = "aliko-property-images"
+
+# ── Production secrets (set via: wrangler secret put SECRET_NAME) ──────────
+# CONVEX_URL
+# CONVEX_DEPLOY_KEY
+# AUTH_SECRET                  (openssl rand -base64 33)
+# PAYSTACK_SECRET_KEY
+# WHATSAPP_PHONE_NUMBER_ID
+# WHATSAPP_ACCESS_TOKEN
+# WHATSAPP_VERIFY_TOKEN
+# DROPBOX_SIGN_API_KEY
+# QOREID_CLIENT_ID
+# QOREID_CLIENT_SECRET
+# GOOGLE_SERVICE_ACCOUNT_KEY   (single-line JSON)
+# GOOGLE_CALENDAR_ID
+
+# ── Dev-only environment overrides ─────────────────────────────────────────
+[env.preview.vars]
+NODE_ENV = "preview"
+
+[env.production.vars]
+NODE_ENV = "production"
