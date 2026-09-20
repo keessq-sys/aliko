@@ -101,6 +101,16 @@ const services = {
   setServiceActive: m("services:setServiceActive"),
 };
 
+const users = {
+  listUsers: q("users:listUsers"),
+  getRoleCounts: q("users:getRoleCounts"),
+};
+
+const milestones = {
+  listMilestones: q("milestones:listMilestones"),
+  createMilestone: m("milestones:createMilestone"),
+};
+
 const whatsapp = {
   handleIncoming: a("whatsapp:handleIncoming"),
   getSession: q("whatsapp:getSession"),
@@ -115,23 +125,27 @@ export const api: {
   bookings: typeof bookings;
   http: typeof http;
   legalDocuments: typeof legalDocuments;
+  milestones: typeof milestones;
   notifications: typeof notifications;
   partners: typeof partners;
   plots: typeof plots;
   projects: typeof projects;
   serviceRequests: typeof serviceRequests;
   services: typeof services;
+  users: typeof users;
   whatsapp: typeof whatsapp;
 } = {
   auth,
   bookings,
   http,
   legalDocuments,
+  milestones,
   notifications,
   partners,
   plots,
   projects,
   serviceRequests,
   services,
+  users,
   whatsapp,
 };
