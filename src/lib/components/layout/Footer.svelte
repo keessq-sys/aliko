@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Twitter, Linkedin, Instagram, Youtube, Mail, MapPin, Phone, Lamp, Cpu, Building, Hammer, DraftingCompass, LayoutGrid, Building2, Landmark } from 'lucide-svelte';
   import DiamondMark from '$lib/components/ui/DiamondMark.svelte';
+  import { BUSINESS_WHATSAPP_NUMBER, whatsappHref } from '$lib/data/contact';
 </script>
 
 <footer class="relative mt-24 border-t border-emerald-900/50 bg-stone-900 overflow-hidden">
@@ -72,7 +73,9 @@
         <h4 class="text-white font-serif text-lg mb-2">Contact & Newsletter</h4>
         <div class="flex flex-col gap-2 text-sm text-stone-400">
           <span class="flex items-center gap-2"><MapPin size={16} class="text-emerald-500" /> Abuja FCT & Lagos, Nigeria</span>
-          <span class="flex items-center gap-2"><Phone size={16} class="text-emerald-500" /> +234 800 DIAMOND</span>
+          <a href={whatsappHref('Hi, I would like to know more about Aliko Diamond Key.')} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-emerald-400 transition-colors">
+            <Phone size={16} class="text-emerald-500" /> {BUSINESS_WHATSAPP_NUMBER} (WhatsApp)
+          </a>
           <span class="flex items-center gap-2"><Mail size={16} class="text-emerald-500" /> contact@adk.com</span>
         </div>
 

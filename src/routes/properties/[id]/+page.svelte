@@ -5,6 +5,7 @@
   import PropertyCard from '$lib/components/properties/PropertyCard.svelte';
   import MapEmbed from '$lib/components/ui/MapEmbed.svelte';
   import { addToast } from '$lib/stores/ui';
+  import { whatsappHref } from '$lib/data/contact';
   import {
     MapPin,
     Bed,
@@ -428,7 +429,7 @@
                 <span>Call</span>
               </a>
               <a
-                href="https://wa.me/{property.agent.phone.replace(/[^0-9]/g, '')}?text=Hi%20{property.agent.name},%20I'm%20interested%20in%20{property.title}"
+                href={whatsappHref(`Hi, I'm interested in ${property.title} (via ${property.agent.name}).`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-white/5 hover:bg-emerald-900/30 border border-white/10 text-xs font-medium text-stone-300 hover:text-emerald-400 transition-colors"
