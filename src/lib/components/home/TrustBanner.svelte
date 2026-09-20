@@ -71,15 +71,15 @@
 
     </div>
 
-    <!-- Partner Logos Placeholder -->
+    <!-- What we actually check documents against — not a claim of partnership or endorsement -->
     <div class="mt-16 pt-8 border-t border-white/10">
-      <p class="text-center text-xs text-gray-500 uppercase tracking-widest mb-6">Trusted & Verified By</p>
-      <div class="flex flex-wrap justify-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-        <div class="text-2xl font-black italic">CBN</div>
-        <div class="text-2xl font-bold tracking-tighter">paystack</div>
-        <div class="text-2xl font-serif">CAC</div>
-        <div class="text-2xl font-bold border-2 border-current px-2">AGIS</div>
+      <p class="text-center text-xs text-gray-500 uppercase tracking-widest mb-6">Every Title Is Cross-Checked Against</p>
+      <div class="flex flex-wrap justify-center gap-x-12 gap-y-4 opacity-60">
+        <div class="text-sm font-semibold tracking-wide">CAC Company Registry</div>
+        <div class="text-sm font-semibold tracking-wide">AGIS Land Records (FCT)</div>
+        <div class="text-sm font-semibold tracking-wide">State Ministry of Lands</div>
       </div>
+      <p class="mt-6 text-center text-xs text-gray-600">Payments processed securely via Paystack.</p>
     </div>
   </div>
 </section>

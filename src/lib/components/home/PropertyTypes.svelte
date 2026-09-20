@@ -2,13 +2,25 @@
   import { ArrowRight } from 'lucide-svelte';
 
   const types = [
-    { name: 'Residential', desc: 'Houses, Villas & Estates', count: 542, emoji: '🏠', color: 'emerald' },
-    { name: 'Commercial', desc: 'Offices & Business Spaces', count: 124, emoji: '🏢', color: 'blue' },
-    { name: 'Land & Plots', desc: 'Prime Development Land', count: 389, emoji: '🌿', color: 'amber' },
-    { name: 'Apartments', desc: 'Modern City Living', count: 215, emoji: '🏙️', color: 'purple' },
-    { name: 'Duplexes', desc: 'Twin & Semi-detached', count: 187, emoji: '🏰', color: 'rose' },
-    { name: 'Penthouses', desc: 'Luxury Sky Residences', count: 42, emoji: '👑', color: 'cyan' }
+    { name: 'Residential', type: 'residential', desc: 'Houses, Villas & Estates', count: 542, emoji: '🏠', color: 'emerald' },
+    { name: 'Commercial', type: 'commercial', desc: 'Offices & Business Spaces', count: 124, emoji: '🏢', color: 'blue' },
+    { name: 'Land & Plots', type: 'land', desc: 'Prime Development Land', count: 389, emoji: '🌿', color: 'amber' },
+    { name: 'Apartments', type: 'apartment', desc: 'Modern City Living', count: 215, emoji: '🏙️', color: 'purple' },
+    { name: 'Duplexes', type: 'duplex', desc: 'Twin & Semi-detached', count: 187, emoji: '🏰', color: 'rose' },
+    { name: 'Penthouses', type: 'penthouse', desc: 'Luxury Sky Residences', count: 42, emoji: '👑', color: 'cyan' }
   ];
+
+  // Tailwind can't resolve dynamically-built class names at build time, so
+  // every color variant used here has to appear as a literal string somewhere
+  // in the source for the JIT scanner to pick it up.
+  const COLOR_CLASSES: Record<string, string> = {
+    emerald: 'hover:border-emerald-500/50 hover:shadow-[0_0_30px_rgba(5,150,105,0.15)]',
+    blue: 'hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(37,99,235,0.15)]',
+    amber: 'hover:border-amber-500/50 hover:shadow-[0_0_30px_rgba(217,119,6,0.15)]',
+    purple: 'hover:border-purple-500/50 hover:shadow-[0_0_30px_rgba(147,51,234,0.15)]',
+    rose: 'hover:border-rose-500/50 hover:shadow-[0_0_30px_rgba(225,29,72,0.15)]',
+    cyan: 'hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(8,145,178,0.15)]'
+  };
 </script>
 
 <style>
@@ -18,7 +30,7 @@
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
   }
-  
+
   .type-card:hover {
     transform: scale(1.02);
   }
@@ -26,7 +38,7 @@
 
 <section class="py-24 bg-[#050A0E] text-white">
   <div class="container mx-auto px-6">
-    
+
     <div class="text-center mb-16">
       <h2 class="text-3xl md:text-4xl font-extrabold mb-4">Browse by Property Type</h2>
       <p class="text-gray-400">Explore our diverse portfolio of properties tailored to your specific needs.</p>
@@ -34,7 +46,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {#each types as type}
-        <a href={`/properties?type=${type.name}`} class={`type-card rounded-2xl p-6 group flex items-center justify-between hover:border-${type.color}-500/50 hover:shadow-[0_0_30px_rgba(var(--tw-colors-${type.color}-500),0.1)]`}>
+        <a href="/properties?type={type.type}" class="type-card rounded-2xl p-6 group flex items-center justify-between {COLOR_CLASSES[type.color]}">
           <div class="flex items-center gap-6">
             <div class={`w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform`}>
               {type.emoji}

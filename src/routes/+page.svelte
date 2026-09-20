@@ -13,6 +13,7 @@
   import ServicesSection from '$lib/components/home/ServicesSection.svelte';
   import TrustBanner from '$lib/components/home/TrustBanner.svelte';
   import ROICalculator from '$lib/components/home/ROICalculator.svelte';
+  import FAQSection from '$lib/components/home/FAQSection.svelte';
   import DualCTABanner from '$lib/components/home/DualCTABanner.svelte';
 </script>
 
@@ -36,5 +37,6 @@
   <ServicesSection />
   <TrustBanner />
   <ROICalculator />
+  <FAQSection />
   <DualCTABanner />
 </main>

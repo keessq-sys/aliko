@@ -14,9 +14,18 @@
 <svelte:head><title>Settings — ADK Admin</title></svelte:head>
 
 <div class="p-8">
-  <div class="mb-6">
-    <h1 class="flex items-center gap-2 text-xl font-bold text-white"><Settings class="h-5 w-5 text-stone-300" /> Platform Settings</h1>
-    <p class="mt-0.5 text-sm text-stone-500">Deployment secrets are managed with <code class="text-emerald-500">npx convex env set</code> / <code class="text-emerald-500">wrangler secret put</code>.</p>
+  <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div>
+      <h1 class="flex items-center gap-2 text-xl font-bold text-white"><Settings class="h-5 w-5 text-stone-300" /> Platform Settings</h1>
+      <p class="mt-0.5 text-sm text-stone-500">Deployment secrets are managed with <code class="text-emerald-500">npx convex env set</code> / <code class="text-emerald-500">wrangler secret put</code>.</p>
+    </div>
+    <div class="flex-shrink-0 rounded-xl px-4 py-2.5 text-center" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06)">
+      <p class="text-lg font-black text-white">{INTEGRATIONS.filter((i) => i.done).length} / {INTEGRATIONS.length}</p>
+      <p class="text-xs text-stone-500">Integrations connected</p>
+    </div>
+  </div>
+  <div class="mb-6 h-1.5 overflow-hidden rounded-full bg-white/5">
+    <div class="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400" style="width: {(INTEGRATIONS.filter((i) => i.done).length / INTEGRATIONS.length) * 100}%"></div>
   </div>
 
   <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
