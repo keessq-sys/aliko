@@ -59,8 +59,11 @@
 <div class="relative group {isFullscreen ? 'fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl' : 'w-full'} flex flex-col">
   
   <!-- Main Image Container -->
-  <div 
+  <div
     class="relative overflow-hidden bg-stone-900 {isFullscreen ? 'flex-1 h-full' : `${aspectRatio} rounded-2xl`}"
+    role="region"
+    aria-roledescription="carousel"
+    aria-label="Image gallery"
     on:touchstart={handleTouchStart}
     on:touchend={handleTouchEnd}
   >

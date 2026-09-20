@@ -91,7 +91,7 @@
       {#if requests === undefined}
         <div class="grid grid-cols-1 gap-4">
           {#each Array(2) as _}
-            <div class="skeleton h-24 rounded-xl" />
+            <div class="skeleton h-24 rounded-xl"></div>
           {/each}
         </div>
       {:else if requests.length === 0}
@@ -236,22 +236,22 @@
           <h2 class="text-xl font-semibold text-white mb-6 border-b border-white/10 pb-4">Personal Information</h2>
           <form class="space-y-6">
             <div class="flex items-center gap-4 mb-8">
-              <img src="https://picsum.photos/seed/client/100/100" class="w-20 h-20 rounded-full border-2 border-emerald-500/50" />
+              <img src="https://picsum.photos/seed/client/100/100" alt="Profile" class="w-20 h-20 rounded-full border-2 border-emerald-500/50" />
               <button type="button" class="px-4 py-2 bg-white/5 rounded-lg text-sm hover:bg-white/10 text-white">Change Photo</button>
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <label class="text-sm text-stone-400">Full Name</label>
-                <input type="text" value="Amara Eze" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white focus:border-emerald-500 outline-none" />
+                <label for="client-name" class="text-sm text-stone-400">Full Name</label>
+                <input id="client-name" type="text" value="Amara Eze" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white focus:border-emerald-500 outline-none" />
               </div>
               <div class="space-y-2">
-                <label class="text-sm text-stone-400">Email</label>
-                <input type="email" value="amara@example.com" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white focus:border-emerald-500 outline-none" />
+                <label for="client-email" class="text-sm text-stone-400">Email</label>
+                <input id="client-email" type="email" value="amara@example.com" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white focus:border-emerald-500 outline-none" />
               </div>
               <div class="space-y-2">
-                <label class="text-sm text-stone-400">Phone</label>
-                <input type="tel" value="+234 801 111 1111" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white focus:border-emerald-500 outline-none" />
+                <label for="client-phone" class="text-sm text-stone-400">Phone</label>
+                <input id="client-phone" type="tel" value="+234 801 111 1111" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white focus:border-emerald-500 outline-none" />
               </div>
             </div>
             

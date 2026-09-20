@@ -66,7 +66,7 @@
           <ArrowUpRight class="w-4 h-4 text-stone-700 group-hover:text-stone-400 transition-colors" />
         </div>
         {#if value === null}
-          <div class="skeleton h-7 w-16 rounded mb-1" />
+          <div class="skeleton h-7 w-16 rounded mb-1"></div>
         {:else}
           <p class="font-black text-2xl" style="color: {colors.text}">{value.toLocaleString()}</p>
         {/if}
@@ -122,7 +122,7 @@
         {#if $newRequests === undefined}
           {#each Array(4) as _}
             <div class="px-5 py-3 flex items-center gap-3">
-              <div class="skeleton h-4 flex-1 rounded" />
+              <div class="skeleton h-4 flex-1 rounded"></div>
             </div>
           {/each}
         {:else if $newRequests.length === 0}
@@ -149,7 +149,7 @@
           <a href="/admin/bookings" class="text-xs text-emerald-400 hover:text-emerald-300">View all →</a>
         </div>
         {#if $bookings === undefined}
-          <div class="px-5 py-3"><div class="skeleton h-4 w-2/3 rounded" /></div>
+          <div class="px-5 py-3"><div class="skeleton h-4 w-2/3 rounded"></div></div>
         {:else if $bookings.length === 0}
           <p class="px-5 py-5 text-stone-600 text-sm text-center">No bookings yet.</p>
         {:else}

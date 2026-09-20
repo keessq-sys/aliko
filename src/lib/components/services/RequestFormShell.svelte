@@ -44,8 +44,9 @@
     </div>
 
     <div class="mt-8 flex flex-wrap justify-center gap-3">
-      <a href="/" class="rounded-lg bg-white/10 px-6 py-3 transition-colors hover:bg-white/20">Return Home</a>
+      <a href={homeHref} class="rounded-lg bg-white/10 px-6 py-3 transition-colors hover:bg-white/20">Return Home</a>
       <a href="/dashboard/client" class="btn-primary px-6 py-3">Track in Client Portal</a>
+      <button type="button" on:click={onReset} class="rounded-lg border border-white/10 px-6 py-3 text-stone-300 transition-colors hover:bg-white/10">Submit Another Request</button>
     </div>
   </div>
 {:else}

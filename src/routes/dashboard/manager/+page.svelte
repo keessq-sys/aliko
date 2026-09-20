@@ -386,12 +386,12 @@
             
             <div class="grid grid-cols-2 gap-4">
               <div class="space-y-2">
-                <label class="text-sm text-stone-400">Full Name</label>
-                <input type="text" value="Chief Manager" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+                <label for="manager-name" class="text-sm text-stone-400">Full Name</label>
+                <input id="manager-name" type="text" value="Chief Manager" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
               </div>
               <div class="space-y-2">
-                <label class="text-sm text-stone-400">Email Address</label>
-                <input type="email" value="manager@adk.com" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+                <label for="manager-email" class="text-sm text-stone-400">Email Address</label>
+                <input id="manager-email" type="email" value="manager@adk.com" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
               </div>
             </div>
             

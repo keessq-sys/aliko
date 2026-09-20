@@ -25,7 +25,7 @@
   }
 </script>
 
-<div class="flex items-center gap-1" on:mouseleave={() => hoverValue = null}>
+<div class="flex items-center gap-1" role="group" aria-label="Star rating" on:mouseleave={() => hoverValue = null}>
   {#each Array(max) as _, i}
     {@const starValue = i + 1}
     {@const fill = displayValue >= starValue ? 1 : displayValue >= starValue - 0.5 ? 0.5 : 0}

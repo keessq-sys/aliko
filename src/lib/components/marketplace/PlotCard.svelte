@@ -76,7 +76,7 @@
         <!-- Shimmer overlay -->
         <div class="absolute inset-0 pointer-events-none">
           <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-               style="background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.04) 50%, transparent 60%); animation: shimmer 2s linear infinite;" />
+               style="background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.04) 50%, transparent 60%); animation: shimmer 2s linear infinite;"></div>
         </div>
       {/if}
 

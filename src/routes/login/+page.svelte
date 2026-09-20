@@ -26,7 +26,7 @@
 
 <div class="min-h-screen flex items-center justify-center px-4 py-12" style="background: var(--c-obsidian)">
   <!-- BG glow -->
-  <div class="fixed inset-0 pointer-events-none" style="background: radial-gradient(ellipse 70% 50% at 50% -10%, rgba(6,78,59,0.3) 0%, transparent 60%)" />
+  <div class="fixed inset-0 pointer-events-none" style="background: radial-gradient(ellipse 70% 50% at 50% -10%, rgba(6,78,59,0.3) 0%, transparent 60%)"></div>
 
   <div class="relative w-full max-w-md">
     <!-- Logo -->

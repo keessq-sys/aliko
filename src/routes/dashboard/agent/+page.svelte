@@ -274,12 +274,12 @@
             <h3 class="text-lg font-medium text-white border-b border-white/10 pb-4">Profile Settings</h3>
             <div class="grid grid-cols-2 gap-4">
               <div class="space-y-2">
-                <label class="text-sm text-stone-400">Full Name</label>
-                <input type="text" value="Adaeze Okonkwo" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+                <label for="agent-profile-name" class="text-sm text-stone-400">Full Name</label>
+                <input id="agent-profile-name" type="text" value="Adaeze Okonkwo" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
               </div>
               <div class="space-y-2">
-                <label class="text-sm text-stone-400">Email Address</label>
-                <input type="email" value="adaeze@adkpremium.com" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+                <label for="agent-profile-email" class="text-sm text-stone-400">Email Address</label>
+                <input id="agent-profile-email" type="email" value="adaeze@adkpremium.com" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
               </div>
             </div>
             <div class="pt-4">

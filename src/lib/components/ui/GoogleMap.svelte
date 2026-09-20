@@ -170,6 +170,7 @@
         {@const left = 18 + ((i * 27) % 64)}
         <a
           href={markerClickHref && m.href ? m.href : undefined}
+          aria-label={m.title ?? 'Map marker'}
           class="absolute -translate-x-1/2 -translate-y-full transition-transform hover:scale-110 {selectedMarkerTitle === m.title ? 'scale-125 z-20' : 'z-10'}"
           style="top: {top}%; left: {left}%;"
         >

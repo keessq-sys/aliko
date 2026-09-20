@@ -529,6 +529,7 @@
     <div
       on:click={() => isViewingModalOpen = false}
       class="absolute inset-0 bg-black/80 backdrop-blur-md"
+      role="presentation"
     ></div>
 
     <!-- Modal Box -->
@@ -540,8 +541,9 @@
 
       <div class="space-y-4 mb-6">
         <div>
-          <label class="block text-xs font-medium text-stone-300 mb-1">Preferred Date</label>
+          <label for="viewing-date" class="block text-xs font-medium text-stone-300 mb-1">Preferred Date</label>
           <input
+            id="viewing-date"
             type="date"
             bind:value={viewingDate}
             min={new Date().toISOString().split('T')[0]}
@@ -549,8 +551,9 @@
           />
         </div>
         <div>
-          <label class="block text-xs font-medium text-stone-300 mb-1">Preferred Time</label>
+          <label for="viewing-time" class="block text-xs font-medium text-stone-300 mb-1">Preferred Time</label>
           <select
+            id="viewing-time"
             bind:value={viewingTime}
             class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-emerald-500"
           >

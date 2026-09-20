@@ -293,6 +293,7 @@
     <div
       on:click={() => isMobileFilterOpen = false}
       class="absolute inset-0 bg-black/80 backdrop-blur-sm"
+      role="presentation"
     ></div>
 
     <!-- Drawer Content -->

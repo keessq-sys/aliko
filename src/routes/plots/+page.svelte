@@ -146,7 +146,7 @@
 
 {#if selectedPlot}
   <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" role="presentation" on:click={closeModal}>
-    <div class="w-full max-w-md rounded-2xl border border-white/10 bg-[#0A1628] p-6" role="dialog" aria-modal="true" tabindex="-1" on:click|stopPropagation>
+    <div class="w-full max-w-md rounded-2xl border border-white/10 bg-[#0A1628] p-6" role="dialog" aria-modal="true" tabindex="-1" on:click|stopPropagation on:keydown|stopPropagation>
       {#if bookingResult}
         <div class="text-center">
           <CheckCircle2 size={40} class="mx-auto mb-3 text-emerald-400" />

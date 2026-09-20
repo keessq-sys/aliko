@@ -2,16 +2,32 @@
   import { Menu, X, Bell, User, LogOut, Settings, LayoutDashboard, Map as MapIcon, ChevronDown, ChevronRight, Lamp, Building, HardHat, Cpu, Grid3x3, Sofa, Sparkles, FileSignature, Hammer, DraftingCompass, LayoutGrid, Building2, Landmark } from 'lucide-svelte';
   import { slide } from 'svelte/transition';
   import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import DiamondMark from '$lib/components/ui/DiamondMark.svelte';
+  import { api } from '$lib/convex/_generated/api';
+  import { runMutation } from '$lib/convex/queries';
+
+  export let session: { user?: { name?: string | null; email?: string | null; role?: string; id?: string | null } } | null = null;
 
   let isMobileMenuOpen = false;
   let isProfileMenuOpen = false;
   let isServicesOpen = false;
 
-  // Mock auth state for demo
-  let isLoggedIn = false;
+  $: isLoggedIn = !!session?.user;
+  $: userRole = (session?.user?.role ?? 'client').toLowerCase();
+  $: displayName = session?.user?.name || session?.user?.email || 'Account';
   let unreadNotifications = 3;
-  let userRole = 'agent'; // 'client', 'agent', 'manager'
+
+  async function signOut() {
+    try {
+      await runMutation(api.auth.signOut, {});
+    } catch {
+      /* no active session server-side — still clear the client UI */
+    }
+    isProfileMenuOpen = false;
+    isMobileMenuOpen = false;
+    await goto('/', { invalidateAll: true });
+  }
 
   const navLinks = [
     { name: 'Home', href: '/' },
@@ -37,7 +53,7 @@
     { name: 'General Contracts', href: '/services/general-contracts', icon: FileSignature }
   ];
 
-  $: dashboardHref = userRole === 'agent' ? '/dashboard/agent' : userRole === 'manager' ? '/dashboard/manager' : '/dashboard/client';
+  $: dashboardHref = userRole === 'admin' ? '/admin' : userRole === 'agent' ? '/dashboard/agent' : userRole === 'estate_manager' ? '/dashboard/manager' : '/dashboard/client';
 
   function toggleMobileMenu() {
     isMobileMenuOpen = !isMobileMenuOpen;
@@ -77,7 +93,7 @@
         {/each}
 
         <!-- Services Dropdown -->
-        <div class="relative"
+        <div class="relative" role="none"
              on:mouseenter={() => (isServicesOpen = true)}
              on:mouseleave={() => (isServicesOpen = false)}>
           <button
@@ -125,16 +141,18 @@
 
           <div class="relative">
             <button class="flex items-center gap-2 p-1 pl-3 pr-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors" on:click={toggleProfileMenu}>
-              <span class="text-sm font-medium text-stone-300">John D.</span>
-              <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Avatar" class="w-8 h-8 rounded-full border border-emerald-500/50" />
+              <span class="text-sm font-medium text-stone-300">{displayName}</span>
+              <span class="flex h-8 w-8 items-center justify-center rounded-full border border-emerald-500/50 bg-emerald-900/40 text-xs font-bold text-emerald-300">
+                {displayName[0]?.toUpperCase() ?? 'A'}
+              </span>
             </button>
 
             {#if isProfileMenuOpen}
               <div class="absolute right-0 mt-3 w-56 rounded-xl glass-l3 border border-white/10 shadow-2xl py-2 flex flex-col z-50">
                 <div class="px-4 py-2 border-b border-white/10 mb-2">
-                  <p class="text-sm font-medium text-white">John Doe</p>
-                  <p class="text-xs text-stone-400">john@example.com</p>
-                  <div class="mt-2 badge-agent inline-block">Agent</div>
+                  <p class="text-sm font-medium text-white">{session?.user?.name ?? 'Account'}</p>
+                  <p class="text-xs text-stone-400">{session?.user?.email ?? ''}</p>
+                  <div class="mt-2 badge-agent inline-block capitalize">{userRole.replace('_', ' ')}</div>
                 </div>
 
                 <a href={dashboardHref} class="flex items-center gap-3 px-4 py-2 text-sm text-stone-300 hover:text-white hover:bg-white/5 transition-colors">
@@ -147,7 +165,7 @@
                   <Settings size={16} /> Track Documents
                 </a>
                 <div class="h-px bg-white/10 my-2"></div>
-                <button class="flex items-center gap-3 px-4 py-2 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors w-full text-left" on:click={() => isLoggedIn = false}>
+                <button class="flex items-center gap-3 px-4 py-2 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors w-full text-left" on:click={signOut}>
                   <LogOut size={16} /> Sign out
                 </button>
               </div>
@@ -207,7 +225,7 @@
         <div class="h-px bg-white/10 my-2"></div>
 
         {#if isLoggedIn}
-          <button class="px-4 py-3 rounded-lg text-base font-medium text-rose-400 hover:bg-rose-500/10 text-left w-full" on:click={() => {isLoggedIn = false; isMobileMenuOpen = false;}}>Sign out</button>
+          <button class="px-4 py-3 rounded-lg text-base font-medium text-rose-400 hover:bg-rose-500/10 text-left w-full" on:click={signOut}>Sign out</button>
         {:else}
           <div class="flex flex-col gap-3 pt-2">
             <a href="/auth?tab=signin" class="btn-ghost w-full justify-center" on:click={() => isMobileMenuOpen = false}>Sign In</a>

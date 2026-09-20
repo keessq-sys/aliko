@@ -13,7 +13,7 @@
   import Toast from "$lib/components/ui/Toast.svelte";
   import { page } from "$app/stores";
 
-  export let data: { session?: { user?: { name?: string | null; role?: string } } | null };
+  export let data: { session?: { user?: { name?: string | null; email?: string | null; role?: string; id?: string | null } } | null };
 
   // Initialize Convex real-time client (falls back gracefully when unset)
   setupConvex(convexUrl);
@@ -38,7 +38,7 @@
 </svelte:head>
 
 {#if !hideHeader}
-  <Header />
+  <Header session={data.session} />
 {/if}
 
 <main class="{hideHeader ? '' : 'pt-20'} min-h-screen bg-[#050A0E]">

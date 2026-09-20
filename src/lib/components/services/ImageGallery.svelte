@@ -53,6 +53,7 @@
     <div
       class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm"
       on:click={close}
+      on:keydown={(e) => e.key === 'Escape' && close()}
       role="dialog"
       aria-modal="true"
       aria-label="{title} image viewer"
