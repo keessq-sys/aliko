@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-svelte';
+  import { reveal } from '$lib/actions/reveal';
 
   const testimonials = [
     {
@@ -49,7 +50,7 @@
   }
 </style>
 
-<section class="py-24 bg-[#050A0E] text-white overflow-hidden relative">
+<section class="py-24 bg-[#050A0E] text-white overflow-hidden relative" use:reveal>
   <!-- Decorative background elements -->
   <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-600/5 rounded-full blur-3xl pointer-events-none"></div>
 

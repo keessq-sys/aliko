@@ -3,6 +3,7 @@
   import { api } from "$lib/convex/_generated/api";
   import { TrendingUp, Map, FileText, MessageSquare, DollarSign, Users, AlertTriangle, CheckCircle, ArrowUpRight, Inbox } from "lucide-svelte";
   import { formatNaira, formatDateTime } from "$lib/utils/format";
+  import { revealStagger } from "$lib/actions/reveal";
 
   const stats       = useQuery(api.projects.getPlatformStats, {});
   const bookings    = useQuery(api.bookings.getAllBookings, { limit: 8 });
@@ -51,7 +52,7 @@
   </div>
 
   <!-- KPI Cards -->
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4" use:revealStagger={{ step: 60, y: 12 }}>
     {#each KPI_CARDS as { label, valueKey, icon: Icon, color, href }}
       {@const colors = COLOR_MAP[color]}
       {@const value = $stats ? ($stats as Record<string, number>)[valueKey] : null}

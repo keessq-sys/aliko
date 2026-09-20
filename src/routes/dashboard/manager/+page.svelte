@@ -4,6 +4,7 @@
     FileText, BarChart2, Settings, LogOut, Bell, ChevronDown,
     Search, Plus, Filter, Download, AlertTriangle, Wrench, Clock, CheckCircle2
   } from 'lucide-svelte';
+  import { fly } from 'svelte/transition';
   
   import StatCard from '$lib/components/dashboard/StatCard.svelte';
   import ActivityFeed from '$lib/components/dashboard/ActivityFeed.svelte';
@@ -158,7 +159,8 @@
 
     <!-- Scrollable Content Area -->
     <div class="flex-1 overflow-y-auto p-8 hide-scrollbar">
-      
+      {#key currentTab}
+      <div in:fly={{ y: 10, duration: 220, delay: 80 }}>
       {#if currentTab === 'overview'}
         <!-- KPI Row -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -399,7 +401,8 @@
           </div>
         </div>
       {/if}
-      
+      </div>
+      {/key}
     </div>
   </main>
 </div>

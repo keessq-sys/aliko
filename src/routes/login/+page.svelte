@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Diamond } from "lucide-svelte";
+  import DiamondMark from "$lib/components/ui/DiamondMark.svelte";
   import { onMount } from "svelte";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
@@ -31,9 +31,9 @@
   <div class="relative w-full max-w-md">
     <!-- Logo -->
     <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4"
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4 text-white"
            style="background: linear-gradient(135deg, #D97706, #92400E)">
-        <Diamond class="w-7 h-7 text-white" />
+        <DiamondMark size={28} />
       </div>
       <h1 class="font-serif text-2xl text-white">Welcome back</h1>
       <p class="text-stone-500 text-sm mt-1">Sign in to your Aliko Diamond Key account</p>

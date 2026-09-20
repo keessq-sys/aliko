@@ -3,6 +3,7 @@
     LayoutDashboard, Home, Users, DollarSign, Calendar,
     MessageSquare, Settings, LogOut, Bell, Plus, Phone, Mail, Gift, Send, CheckCircle2, Clock
   } from 'lucide-svelte';
+  import { fly } from 'svelte/transition';
 
   import StatCard from '$lib/components/dashboard/StatCard.svelte';
   import RevenueChart from '$lib/components/dashboard/RevenueChart.svelte';
@@ -115,6 +116,8 @@
     </header>
 
     <div class="flex-1 overflow-y-auto p-8 hide-scrollbar">
+      {#key currentTab}
+      <div in:fly={{ y: 10, duration: 220, delay: 80 }}>
       {#if currentTab === 'overview'}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard title="Active Listings" value="12" change="Stable" changeType="up" icon={Home} />
@@ -285,6 +288,8 @@
           </div>
         </div>
       {/if}
+      </div>
+      {/key}
     </div>
   </main>
 </div>

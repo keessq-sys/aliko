@@ -1,6 +1,7 @@
 <script lang="ts">
   import { ShieldCheck, Leaf, Users2 } from 'lucide-svelte';
   import { VISION_BANNER_IMAGE } from '$lib/data/imagery';
+  import { reveal } from '$lib/actions/reveal';
 
   const pillars = [
     { icon: ShieldCheck, label: 'Zero-fraud, government-verified titles' },
@@ -9,7 +10,7 @@
   ];
 </script>
 
-<section class="relative isolate overflow-hidden py-28 text-white">
+<section class="relative isolate overflow-hidden py-28 text-white" use:reveal>
   <img src={VISION_BANNER_IMAGE} alt="" class="absolute inset-0 h-full w-full object-cover" loading="lazy" />
   <div class="absolute inset-0 bg-gradient-to-b from-[#050A0E]/85 via-[#050A0E]/70 to-[#050A0E]"></div>
 

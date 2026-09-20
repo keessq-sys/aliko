@@ -19,9 +19,12 @@
   const featuredServices = FEATURED_SLUGS
     .map((slug) => SERVICES.find((s) => s.slug === slug))
     .filter((s): s is (typeof SERVICES)[number] => !!s);
+
+  import { reveal, revealStagger } from '$lib/actions/reveal';
+  import { tilt } from '$lib/actions/tilt';
 </script>
 
-<section class="relative border-t border-white/5 py-20">
+<section class="relative border-t border-white/5 py-20" use:reveal>
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="mb-12 flex flex-col justify-between gap-4 md:flex-row md:items-end">
       <div>
@@ -33,12 +36,13 @@
       </a>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+    <div class="grid grid-cols-2 gap-4 md:grid-cols-4" use:revealStagger={{ step: 70 }}>
       {#each featuredServices as service}
         {@const Icon = ICONS[service.icon] ?? Lamp}
         <a
           href="/services/{service.slug}"
-          class="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-[0_12px_30px_-10px_rgba(5,150,105,0.25)]"
+          use:tilt={{ max: 8, scale: 1.03 }}
+          class="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] p-5 transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_12px_30px_-10px_rgba(5,150,105,0.25)]"
         >
           <div class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 transition-transform duration-300 group-hover:scale-110">
             <Icon size={22} />

@@ -4,6 +4,7 @@
   import { api } from '$lib/convex/_generated/api';
   import { formatNaira } from '$lib/utils/format';
   import { REQUEST_STATUS_META } from '$lib/types/services';
+  import { fly } from 'svelte/transition';
 
   let currentTab = 'requests';
 
@@ -77,6 +78,8 @@
   <!-- Main Content -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
+    {#key currentTab}
+    <div in:fly={{ y: 10, duration: 220, delay: 80 }}>
     {#if currentTab === 'requests'}
       <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h2 class="text-xl font-semibold text-white">My Service Requests</h2>
@@ -265,6 +268,8 @@
          <p>No messages yet.</p>
       </div>
     {/if}
+    </div>
+    {/key}
   </main>
 </div>
 

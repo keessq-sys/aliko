@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Twitter, Linkedin, Instagram, Youtube, Mail, MapPin, Phone, Lamp, Cpu, Building, Hammer, DraftingCompass, LayoutGrid, Building2, Landmark } from 'lucide-svelte';
+  import DiamondMark from '$lib/components/ui/DiamondMark.svelte';
 </script>
 
 <footer class="relative mt-24 border-t border-emerald-900/50 bg-stone-900 overflow-hidden">
@@ -12,10 +13,8 @@
       <!-- Brand Col -->
       <div class="flex flex-col gap-6 lg:col-span-1">
         <a href="/" class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_15px_rgba(5,150,105,0.4)]">
-            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-            </svg>
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_15px_rgba(5,150,105,0.4)] text-white">
+            <DiamondMark size={18} />
           </div>
           <span class="text-xl font-serif font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-stone-400">
             Aliko Diamond Key

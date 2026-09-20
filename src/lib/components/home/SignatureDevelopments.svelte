@@ -1,9 +1,11 @@
 <script lang="ts">
   import { ArrowUpRight } from 'lucide-svelte';
   import { SIGNATURE_DEVELOPMENTS } from '$lib/data/imagery';
+  import { tilt } from '$lib/actions/tilt';
+  import { reveal, revealStagger } from '$lib/actions/reveal';
 </script>
 
-<section class="bg-[#050A0E] py-20 text-white">
+<section class="bg-[#050A0E] py-20 text-white" use:reveal>
   <div class="container mx-auto px-6">
     <div class="mb-10 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
       <div>
@@ -19,10 +21,11 @@
       </a>
     </div>
 
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2" use:revealStagger={{ step: 100 }}>
       {#each SIGNATURE_DEVELOPMENTS as dev, i}
         <a
           href="/properties"
+          use:tilt={{ max: 5, scale: 1.01, glare: true }}
           class="group relative overflow-hidden rounded-2xl border border-white/5 {i === 0 || i === 3 ? 'lg:row-span-2' : ''}"
           style="min-height: {i === 0 || i === 3 ? '520px' : '250px'}"
         >

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Home, Trophy, ArrowRight, CheckCircle2 } from 'lucide-svelte';
+  import { reveal } from '$lib/actions/reveal';
 </script>
 
 <style>
@@ -38,7 +39,7 @@
   }
 </style>
 
-<section class="py-24 bg-[#050A0E] text-white">
+<section class="py-24 bg-[#050A0E] text-white" use:reveal>
   <div class="container mx-auto px-6">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
       

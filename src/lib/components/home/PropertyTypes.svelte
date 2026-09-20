@@ -1,5 +1,6 @@
 <script lang="ts">
   import { ArrowRight } from 'lucide-svelte';
+  import { reveal, revealStagger } from '$lib/actions/reveal';
 
   const types = [
     { name: 'Residential', type: 'residential', desc: 'Houses, Villas & Estates', count: 542, emoji: '🏠', color: 'emerald' },
@@ -36,7 +37,7 @@
   }
 </style>
 
-<section class="py-24 bg-[#050A0E] text-white">
+<section class="py-24 bg-[#050A0E] text-white" use:reveal>
   <div class="container mx-auto px-6">
 
     <div class="text-center mb-16">
@@ -44,7 +45,7 @@
       <p class="text-gray-400">Explore our diverse portfolio of properties tailored to your specific needs.</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" use:revealStagger={{ step: 60 }}>
       {#each types as type}
         <a href="/properties?type={type.type}" class="type-card rounded-2xl p-6 group flex items-center justify-between {COLOR_CLASSES[type.color]}">
           <div class="flex items-center gap-6">

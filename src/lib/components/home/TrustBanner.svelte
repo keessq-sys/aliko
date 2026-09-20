@@ -1,5 +1,6 @@
 <script lang="ts">
   import { ShieldCheck, FileText, Lock, Building } from 'lucide-svelte';
+  import { reveal } from '$lib/actions/reveal';
 
   const pillars = [
     { icon: FileText, title: 'C of O & Title Deeds', desc: 'Verified documents directly with land registries.' },
@@ -34,7 +35,7 @@
   }
 </style>
 
-<section class="trust-banner py-20 relative overflow-hidden text-white">
+<section class="trust-banner py-20 relative overflow-hidden text-white" use:reveal>
   <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] opacity-20"></div>
   
   <div class="container mx-auto px-6 relative z-10">

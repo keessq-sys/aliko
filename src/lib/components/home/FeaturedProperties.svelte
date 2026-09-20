@@ -1,5 +1,6 @@
 <script lang="ts">
   import { MapPin, Bed, Bath, Square, ArrowRight } from 'lucide-svelte';
+  import { reveal } from '$lib/actions/reveal';
 
   const properties = [
     {
@@ -75,7 +76,7 @@
   }
 </style>
 
-<section class="py-24 bg-[#050A0E] text-white">
+<section class="py-24 bg-[#050A0E] text-white" use:reveal>
   <div class="container mx-auto px-6">
     
     <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">

@@ -2,6 +2,7 @@
   import { Menu, X, Bell, User, LogOut, Settings, LayoutDashboard, Map as MapIcon, ChevronDown, ChevronRight, Lamp, Building, HardHat, Cpu, Grid3x3, Sofa, Sparkles, FileSignature, Hammer, DraftingCompass, LayoutGrid, Building2, Landmark } from 'lucide-svelte';
   import { slide } from 'svelte/transition';
   import { page } from '$app/stores';
+  import DiamondMark from '$lib/components/ui/DiamondMark.svelte';
 
   let isMobileMenuOpen = false;
   let isProfileMenuOpen = false;
@@ -52,10 +53,8 @@
 
       <!-- Logo -->
       <a href="/" class="flex items-center gap-3 group">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_15px_rgba(5,150,105,0.4)] group-hover:scale-105 transition-transform duration-300">
-          <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_15px_rgba(5,150,105,0.4)] group-hover:scale-105 transition-transform duration-300 text-white">
+          <DiamondMark size={22} />
         </div>
         <span class="text-xl font-serif font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-stone-400">
           Aliko Diamond Key

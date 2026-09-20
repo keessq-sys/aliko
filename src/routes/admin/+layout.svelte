@@ -2,7 +2,8 @@
   import { page } from "$app/stores";
   import { useQuery } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
-  import { Diamond, LayoutDashboard, Map, FolderOpen, FileText, Construction, MessageSquare, Bell, ChevronRight, LogOut, Settings, Inbox, Building2, Briefcase, Layers, UserCog } from "lucide-svelte";
+  import { LayoutDashboard, Map, FolderOpen, FileText, Construction, MessageSquare, Bell, ChevronRight, LogOut, Settings, Inbox, Building2, Briefcase, Layers, UserCog } from "lucide-svelte";
+  import DiamondMark from "$lib/components/ui/DiamondMark.svelte";
 
   export let data: { session?: { user?: { role?: string; name?: string | null } } | null };
 
@@ -70,9 +71,9 @@
          style="background: #0A1628; border-right: 1px solid rgba(255,255,255,0.05)">
     <!-- Brand -->
     <div class="flex items-center gap-2.5 px-5 py-5" style="border-bottom: 1px solid rgba(255,255,255,0.05)">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-white"
            style="background: linear-gradient(135deg, #D97706, #92400E)">
-        <Diamond class="w-4 h-4 text-white" />
+        <DiamondMark size={16} />
       </div>
       <div>
         <p class="text-white font-bold text-xs leading-none">Aliko Diamond Key</p>

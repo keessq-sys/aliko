@@ -1,9 +1,11 @@
 <script lang="ts">
   import { MapPin } from 'lucide-svelte';
   import { EXPLORE_LOCATIONS } from '$lib/data/imagery';
+  import { reveal, revealStagger } from '$lib/actions/reveal';
+  import { tilt } from '$lib/actions/tilt';
 </script>
 
-<section class="bg-[#050A0E] py-20 text-white">
+<section class="bg-[#050A0E] py-20 text-white" use:reveal>
   <div class="container mx-auto px-6">
     <div class="mb-10 text-center">
       <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">Nationwide Coverage</p>
@@ -14,10 +16,11 @@
       </p>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6" use:revealStagger={{ step: 60 }}>
       {#each EXPLORE_LOCATIONS as loc}
         <a
           href="/properties?q={encodeURIComponent(loc.city)}"
+          use:tilt={{ max: 6 }}
           class="group relative aspect-[3/4] overflow-hidden rounded-2xl border border-white/5"
         >
           <img

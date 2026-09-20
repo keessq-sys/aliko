@@ -1,5 +1,6 @@
 <script lang="ts">
   import { TrendingUp, Download, Info } from 'lucide-svelte';
+  import { reveal } from '$lib/actions/reveal';
 
   let investment = 50; // Millions
   let years = 5;
@@ -53,7 +54,7 @@
   }
 </style>
 
-<section class="py-24 bg-[#050A0E] text-white">
+<section class="py-24 bg-[#050A0E] text-white" use:reveal>
   <div class="container mx-auto px-6 max-w-6xl">
     
     <div class="text-center mb-16">

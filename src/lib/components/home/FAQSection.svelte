@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Plus, Minus } from 'lucide-svelte';
+  import { reveal } from '$lib/actions/reveal';
 
   const FAQS = [
     {
@@ -35,7 +36,7 @@
   }
 </script>
 
-<section class="border-t border-white/5 bg-[#050A0E] py-20 text-white">
+<section class="border-t border-white/5 bg-[#050A0E] py-20 text-white" use:reveal>
   <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
     <div class="mb-10 text-center">
       <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">FAQ</p>
