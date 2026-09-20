@@ -1,6 +1,8 @@
 <script lang="ts">
-  import { User, Calendar, MapPin, Hash, Briefcase, FileBadge, Building2, UploadCloud, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-svelte';
-  import { fade, slide } from 'svelte/transition';
+  import { User, MapPin, Briefcase, CheckCircle, ArrowRight, ArrowLeft, Loader2 } from 'lucide-svelte';
+  import { fade } from 'svelte/transition';
+  import { api } from '$lib/convex/_generated/api';
+  import { runMutation } from '$lib/convex/queries';
 
   let currentStep = 1;
   const totalSteps = 5;
@@ -11,14 +13,13 @@
   // Form Data
   let formData = {
     // Step 1
-    photo: null as File | null,
     fullName: '',
     dob: '',
     gender: 'Male',
     nationality: 'Nigeria',
     nin: '',
     stateOfOrigin: '',
-    
+
     // Step 2
     agencyName: '',
     type: 'Independent Agent',
@@ -50,7 +51,12 @@
     termsAccepted: false
   };
 
+  let submitting = false;
   let submitted = false;
+  let reference = '';
+  let submitError = '';
+
+  const submitApplication = async (args: any) => runMutation(api.partners.submitAgentApplication, args);
 
   const toggleSpec = (s: string) => {
     if (formData.specializations.includes(s)) {
@@ -71,23 +77,50 @@
   const nextStep = () => { if (currentStep < totalSteps) currentStep++; };
   const prevStep = () => { if (currentStep > 1) currentStep--; };
 
-  const submitForm = () => {
-    submitted = true;
+  const submitForm = async () => {
+    submitError = '';
+    if (!formData.fullName || !formData.email || !formData.phone) {
+      submitError = 'Name, email and phone are required. Please review earlier steps.';
+      return;
+    }
+    submitting = true;
+    try {
+      const result = await submitApplication({
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        agencyName: formData.agencyName || undefined,
+        agentType: formData.type,
+        reanNumber: formData.reanNumber || undefined,
+        experience: formData.experience,
+        specializations: formData.specializations,
+        bio: formData.bio || undefined,
+        statesOfOperation: formData.statesOfOp,
+        primaryLgas: formData.lgas || undefined,
+        nin: formData.nin || undefined
+      });
+      reference = result?.reference ?? '';
+      submitted = true;
+    } catch (err: any) {
+      submitError = err?.message ?? 'Submission failed. Please try again.';
+    } finally {
+      submitting = false;
+    }
   };
 </script>
 
 <div class="min-h-screen bg-[#050A0E] text-white pt-24 pb-12 px-4 sm:px-6 lg:px-8 relative">
   <!-- Background effects -->
   <div class="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-amber-900/20 to-transparent pointer-events-none"></div>
-  
+
   {#if submitted}
     <div class="max-w-2xl mx-auto mt-20 text-center" in:fade>
       <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-emerald-500/20 mb-8">
         <CheckCircle class="h-12 w-12 text-emerald-400" />
       </div>
       <h2 class="text-4xl font-bold mb-4">Application Submitted Successfully!</h2>
-      <p class="text-gray-400 text-lg mb-8">Your reference number is <span class="text-amber-400 font-bold">ADK-AGT-2024-8842</span></p>
-      
+      <p class="text-gray-400 text-lg mb-8">Your reference number is <span class="text-amber-400 font-bold">{reference || 'ADK-AGT-2026-0000'}</span></p>
+
       <div class="bg-white/5 border border-white/10 rounded-2xl p-6 max-w-md mx-auto text-left">
         <h3 class="font-semibold text-lg mb-4 text-emerald-400">Next Steps:</h3>
         <ul class="space-y-4 text-gray-300">
@@ -105,7 +138,7 @@
           </li>
         </ul>
       </div>
-      
+
       <a href="/" class="inline-block mt-8 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">Return to Home</a>
     </div>
   {:else}
@@ -120,7 +153,7 @@
         <div class="flex items-center justify-between relative">
           <div class="absolute left-0 top-1/2 w-full h-1 bg-gray-800 -z-10 -translate-y-1/2"></div>
           <div class="absolute left-0 top-1/2 h-1 bg-amber-500 -z-10 -translate-y-1/2 transition-all duration-500" style="width: {((currentStep - 1) / (totalSteps - 1)) * 100}%"></div>
-          
+
           {#each Array(totalSteps) as _, i}
             <div class="flex flex-col items-center gap-2">
               <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors {currentStep > i + 1 ? 'bg-amber-500 text-black' : currentStep === i + 1 ? 'bg-amber-500 text-black shadow-[0_0_15px_rgba(245,158,11,0.5)]' : 'bg-gray-800 text-gray-400'}">
@@ -149,12 +182,12 @@
                 </div>
                 <span class="text-sm text-amber-400">Upload Photo</span>
               </div>
-              
+
               <div>
-                <label class="block text-sm text-gray-400 mb-1">Full Name</label>
+                <label class="block text-sm text-gray-400 mb-1">Full Name *</label>
                 <input type="text" bind:value={formData.fullName} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="John Doe" />
               </div>
-              
+
               <div>
                 <label class="block text-sm text-gray-400 mb-1">Date of Birth</label>
                 <input type="date" bind:value={formData.dob} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500" />
@@ -176,7 +209,7 @@
 
               <div>
                 <label class="block text-sm text-gray-400 mb-1">NIN (Optional, 11 digits)</label>
-                <input type="text" bind:value={formData.nin} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="12345678901" />
+                <input type="text" bind:value={formData.nin} maxlength="11" class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="12345678901" />
               </div>
 
               <div>
@@ -251,7 +284,7 @@
             <div class="space-y-6">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label class="block text-sm text-gray-400 mb-1">Phone Number</label>
+                  <label class="block text-sm text-gray-400 mb-1">Phone Number *</label>
                   <div class="flex">
                     <span class="inline-flex items-center px-3 bg-black/60 border border-r-0 border-white/10 rounded-l-lg text-gray-400">+234</span>
                     <input type="tel" bind:value={formData.phone} class="w-full bg-black/40 border border-white/10 rounded-r-lg px-4 py-2 text-white focus:border-amber-500" placeholder="801 234 5678" />
@@ -270,7 +303,7 @@
                   </div>
                 </div>
                 <div>
-                  <label class="block text-sm text-gray-400 mb-1">Business Email</label>
+                  <label class="block text-sm text-gray-400 mb-1">Business Email *</label>
                   <input type="email" bind:value={formData.email} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500" placeholder="agent@example.com" />
                 </div>
                 <div>
@@ -307,8 +340,8 @@
         {#if currentStep === 4}
           <div in:fade>
             <h2 class="text-2xl font-bold text-amber-400 mb-6">Documents Upload</h2>
-            <p class="text-gray-400 mb-6">Please upload clear copies of the following documents.</p>
-            
+            <p class="text-gray-400 mb-6">Please upload clear copies of the following documents. Files are verified during the review call.</p>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               {#each [
                 { id: 'photo', name: 'Professional Photo', req: true, types: 'JPG/PNG, max 2MB' },
@@ -317,7 +350,7 @@
                 { id: 'cert', name: 'REAN/NIA Certificate', req: false, types: 'PDF/JPG, max 5MB' }
               ] as doc}
                 <div class="border border-dashed border-white/20 rounded-xl p-6 bg-black/20 flex flex-col items-center justify-center text-center hover:border-amber-500/50 hover:bg-amber-500/5 transition-colors cursor-pointer group">
-                  <UploadCloud class="h-10 w-10 text-gray-500 mb-3 group-hover:text-amber-400 transition-colors" />
+                  <User class="h-10 w-10 text-gray-500 mb-3 group-hover:text-amber-400 transition-colors" />
                   <h3 class="font-medium text-white flex items-center gap-2">
                     {doc.name}
                     {#if doc.req}<span class="text-[10px] uppercase bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded">Required</span>{/if}
@@ -332,7 +365,7 @@
         {#if currentStep === 5}
           <div in:fade>
             <h2 class="text-2xl font-bold text-amber-400 mb-6">Review & Submit</h2>
-            
+
             <div class="space-y-4 mb-8">
               <div class="bg-black/30 rounded-xl p-5 border border-white/5">
                 <h3 class="text-amber-400 font-medium mb-3 flex items-center gap-2"><User class="w-4 h-4"/> Personal Info</h3>
@@ -342,7 +375,7 @@
                   <span class="text-gray-500">State of Origin:</span> <span>{formData.stateOfOrigin || 'Not provided'}</span>
                 </div>
               </div>
-              
+
               <div class="bg-black/30 rounded-xl p-5 border border-white/5">
                 <h3 class="text-amber-400 font-medium mb-3 flex items-center gap-2"><Briefcase class="w-4 h-4"/> Professional</h3>
                 <div class="grid grid-cols-2 gap-y-2 text-sm">
@@ -366,15 +399,19 @@
             <label class="flex items-start gap-3 cursor-pointer p-4 bg-black/40 border border-white/10 rounded-lg">
               <input type="checkbox" bind:checked={formData.termsAccepted} class="mt-1 w-5 h-5 rounded border-gray-600 text-amber-500 focus:ring-amber-500 bg-black" />
               <span class="text-sm text-gray-300">
-                I confirm that all information provided is accurate and authentic. I agree to the <a href="#" class="text-amber-400 hover:underline">Terms of Service</a> and acknowledge that ADK reserves the right to suspend accounts with fraudulent information.
+                I confirm that all information provided is accurate and authentic. I agree to the Terms of Service and acknowledge that ADK reserves the right to suspend accounts with fraudulent information.
               </span>
             </label>
           </div>
         {/if}
 
+        {#if submitError}
+          <p class="mt-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300">{submitError}</p>
+        {/if}
+
         <!-- Navigation Buttons -->
         <div class="flex justify-between items-center mt-10 pt-6 border-t border-white/10">
-          <button 
+          <button
             class="flex items-center gap-2 px-6 py-2.5 rounded-lg border border-white/20 text-gray-300 hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             on:click={prevStep}
             disabled={currentStep === 1}
@@ -383,19 +420,23 @@
           </button>
 
           {#if currentStep < totalSteps}
-            <button 
+            <button
               class="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-medium transition-colors shadow-[0_0_15px_rgba(245,158,11,0.3)]"
               on:click={nextStep}
             >
               Continue <ArrowRight class="w-4 h-4" />
             </button>
           {:else}
-            <button 
+            <button
               class="flex items-center gap-2 px-8 py-3 rounded-lg bg-gradient-to-r from-amber-600 to-amber-400 hover:from-amber-500 hover:to-amber-300 text-white font-medium transition-transform hover:scale-105 shadow-[0_0_20px_rgba(245,158,11,0.4)] disabled:opacity-50"
-              disabled={!formData.termsAccepted}
+              disabled={!formData.termsAccepted || submitting}
               on:click={submitForm}
             >
-              Submit Application
+              {#if submitting}
+                <Loader2 class="w-4 h-4 animate-spin" /> Submitting…
+              {:else}
+                Submit Application <ArrowRight class="w-4 h-4" />
+              {/if}
             </button>
           {/if}
         </div>

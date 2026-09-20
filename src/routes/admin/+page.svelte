@@ -1,20 +1,21 @@
 <script lang="ts">
-  import { useQuery } from "convex-svelte";
+  import { useQuery } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
-  import { TrendingUp, Map, FileText, MessageSquare, DollarSign, Home, Users, AlertTriangle, CheckCircle, ArrowUpRight } from "lucide-svelte";
+  import { TrendingUp, Map, FileText, MessageSquare, DollarSign, Users, AlertTriangle, CheckCircle, ArrowUpRight, Inbox } from "lucide-svelte";
   import { formatNaira, formatDateTime } from "$lib/utils/format";
 
-  const stats    = useQuery(api.projects.getPlatformStats, {});
-  const bookings = useQuery(api.bookings.getAllBookings, { limit: 8 });
-  const pending  = useQuery(api.legalDocuments.getPendingDocuments, {});
-  const waQueue  = useQuery(api.whatsapp.getHumanReviewQueue, {});
-  const notifs   = useQuery(api.notifications.getRecentNotifications ?? api.projects.getPlatformStats, {});
+  const stats       = useQuery(api.projects.getPlatformStats, {});
+  const bookings    = useQuery(api.bookings.getAllBookings, { limit: 8 });
+  const pending     = useQuery(api.legalDocuments.getPendingDocuments, {});
+  const waQueue     = useQuery(api.whatsapp.getHumanReviewQueue, {});
+  const requestStats = useQuery(api.serviceRequests.getStatusCounts, {});
+  const newRequests = useQuery(api.serviceRequests.listRequests, { status: "NEW", limit: 5 });
 
   const KPI_CARDS = [
-    { label: "Available Plots", valueKey: "availablePlots", icon: Map,       color: "emerald", href: "/admin/plots" },
+    { label: "Available Plots", valueKey: "availablePlots", icon: Map,        color: "emerald", href: "/admin/plots" },
     { label: "Total Sold",      valueKey: "soldPlots",      icon: CheckCircle,color: "gold",    href: "/admin/plots" },
     { label: "Active Bookings", valueKey: "totalBookings",  icon: DollarSign, color: "blue",    href: "/admin/bookings" },
-    { label: "Total Clients",   valueKey: "totalClients",   icon: Users,      color: "purple",  href: "/admin/clients" },
+    { label: "Total Clients",   valueKey: "totalClients",   icon: Users,      color: "purple",  href: "/admin/users" },
   ];
 
   const COLOR_MAP: Record<string, { bg: string; border: string; text: string }> = {
@@ -50,7 +51,7 @@
   </div>
 
   <!-- KPI Cards -->
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
     {#each KPI_CARDS as { label, valueKey, icon: Icon, color, href }}
       {@const colors = COLOR_MAP[color]}
       {@const value = $stats ? ($stats as Record<string, number>)[valueKey] : null}
@@ -73,6 +74,25 @@
     {/each}
   </div>
 
+  <!-- Service Requests KPI strip -->
+  {#if $requestStats}
+    <a href="/admin/requests" class="group rounded-2xl p-5 mb-8 flex items-center gap-4 transition-all hover:scale-[1.01]"
+       style="background: linear-gradient(135deg, rgba(37,99,235,0.12), rgba(5,150,105,0.08)); border: 1px solid rgba(37,99,235,0.25)">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background: rgba(37,99,235,0.18)">
+        <Inbox class="w-5 h-5 text-blue-300" />
+      </div>
+      <div>
+        <p class="text-stone-300 text-sm font-semibold">Service Requests Inbox</p>
+        <p class="text-stone-500 text-xs">{$requestStats.total} total · {$requestStats.counts.NEW} new · {$requestStats.counts.QUOTED} quoted · {$requestStats.counts.IN_PROGRESS} in progress</p>
+      </div>
+      <div class="ml-auto text-right">
+        <p class="text-blue-300 font-black text-xl">{$requestStats.counts.NEW}</p>
+        <p class="text-stone-600 text-xs">awaiting action</p>
+      </div>
+      <ArrowUpRight class="w-5 h-5 text-stone-600 group-hover:text-blue-300 transition-colors" />
+    </a>
+  {/if}
+
   <!-- Revenue card -->
   {#if $stats}
     <div class="rounded-2xl p-5 mb-8 flex items-center gap-4"
@@ -91,37 +111,61 @@
 
   <!-- 2-col layout -->
   <div class="grid lg:grid-cols-2 gap-6">
-    <!-- Recent Bookings -->
+    <!-- Recent Service Requests -->
     <div class="rounded-2xl overflow-hidden" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)">
       <div class="px-5 py-4 flex items-center justify-between" style="border-bottom: 1px solid rgba(255,255,255,0.06)">
-        <h2 class="font-semibold text-white text-sm">Recent Bookings</h2>
-        <a href="/admin/bookings" class="text-xs text-emerald-400 hover:text-emerald-300">View all →</a>
+        <h2 class="font-semibold text-white text-sm">Latest Service Requests</h2>
+        <a href="/admin/requests" class="text-xs text-emerald-400 hover:text-emerald-300">View all →</a>
       </div>
       <div class="divide-y" style="border-color: rgba(255,255,255,0.04)">
-        {#if $bookings === undefined}
-          {#each Array(5) as _}
+        {#if $newRequests === undefined}
+          {#each Array(4) as _}
             <div class="px-5 py-3 flex items-center gap-3">
               <div class="skeleton h-4 flex-1 rounded" />
             </div>
           {/each}
-        {:else if $bookings.length === 0}
-          <p class="px-5 py-6 text-stone-600 text-sm text-center">No bookings yet.</p>
+        {:else if $newRequests.length === 0}
+          <p class="px-5 py-6 text-stone-600 text-sm text-center">No pending service requests.</p>
         {:else}
-          {#each $bookings.slice(0, 6) as booking}
-            <div class="px-5 py-3 flex items-center gap-3">
+          {#each $newRequests.slice(0, 5) as req}
+            <a href="/admin/requests?id={req._id}" class="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors">
               <div class="flex-1 min-w-0">
-                <p class="text-white text-xs font-medium truncate">{booking.client?.name ?? "—"}</p>
-                <p class="text-stone-600 text-xs">Beacon {booking.plot?.beaconNumber ?? "—"} · {formatNaira(booking.totalAmount)}</p>
+                <p class="text-white text-xs font-medium truncate">{req.requesterName} · {req.requestType.replace(/_/g, " ")}</p>
+                <p class="text-stone-600 text-xs truncate">{req.reference} · {req.serviceSlug}</p>
               </div>
-              <span class="text-xs font-semibold {STATUS_COLORS[booking.paymentStatus]}">{booking.paymentStatus}</span>
-            </div>
+              <span class="text-xs font-semibold text-blue-300">NEW</span>
+            </a>
           {/each}
         {/if}
       </div>
     </div>
 
-    <!-- Pending Documents + WhatsApp Queue -->
+    <!-- Bookings + Documents + WhatsApp -->
     <div class="space-y-4">
+      <div class="rounded-2xl overflow-hidden" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)">
+        <div class="px-5 py-4 flex items-center justify-between" style="border-bottom: 1px solid rgba(255,255,255,0.06)">
+          <h2 class="font-semibold text-white text-sm">Recent Bookings</h2>
+          <a href="/admin/bookings" class="text-xs text-emerald-400 hover:text-emerald-300">View all →</a>
+        </div>
+        {#if $bookings === undefined}
+          <div class="px-5 py-3"><div class="skeleton h-4 w-2/3 rounded" /></div>
+        {:else if $bookings.length === 0}
+          <p class="px-5 py-5 text-stone-600 text-sm text-center">No bookings yet.</p>
+        {:else}
+          <div class="divide-y" style="border-color: rgba(255,255,255,0.04)">
+            {#each $bookings.slice(0, 3) as booking}
+              <div class="px-5 py-3 flex items-center gap-3">
+                <div class="flex-1 min-w-0">
+                  <p class="text-white text-xs font-medium truncate">{booking.client?.name ?? "—"}</p>
+                  <p class="text-stone-600 text-xs">Beacon {booking.plot?.beaconNumber ?? "—"} · {formatNaira(booking.totalAmount)}</p>
+                </div>
+                <span class="text-xs font-semibold {STATUS_COLORS[booking.paymentStatus]}">{booking.paymentStatus}</span>
+              </div>
+            {/each}
+          </div>
+        {/if}
+      </div>
+
       <!-- Pending docs -->
       <div class="rounded-2xl overflow-hidden" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)">
         <div class="px-5 py-4 flex items-center justify-between" style="border-bottom: 1px solid rgba(255,255,255,0.06)">
@@ -135,14 +179,14 @@
           <p class="px-5 py-5 text-stone-600 text-sm text-center">All documents are current.</p>
         {:else}
           <div class="divide-y" style="border-color: rgba(255,255,255,0.04)">
-            {#each $pending.slice(0, 4) as doc}
-              <a href="/admin/documents/{doc._id}" class="flex items-center gap-3 px-5 py-3 hover:bg-white/3 transition-colors">
+            {#each $pending.slice(0, 3) as doc}
+              <div class="flex items-center gap-3 px-5 py-3">
                 <div class="flex-1 min-w-0">
                   <p class="text-white text-xs font-medium">{doc.type.replace(/_/g, " ")}</p>
-                  <p class="text-stone-600 text-xs truncate">{doc.client?.name} · {doc.referenceCode}</p>
+                  <p class="text-stone-600 text-xs truncate">{doc.client?.name ?? "—"} · {doc.referenceCode}</p>
                 </div>
                 <span class="text-xs font-semibold text-amber-400">{doc.status.replace("_", " ")}</span>
-              </a>
+              </div>
             {/each}
           </div>
         {/if}
@@ -154,9 +198,6 @@
           <div class="flex items-center gap-2">
             <MessageSquare class="w-4 h-4 text-emerald-400" />
             <h2 class="font-semibold text-white text-sm">WhatsApp Queue</h2>
-            {#if $waQueue && $waQueue.length > 0}
-              <span class="text-xs font-bold px-1.5 py-0.5 rounded-full" style="background:rgba(220,38,38,0.15);color:#f87171">{$waQueue.length}</span>
-            {/if}
           </div>
           <a href="/admin/whatsapp" class="text-xs text-emerald-400 hover:text-emerald-300">View all →</a>
         </div>

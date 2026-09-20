@@ -73,7 +73,7 @@
         <div>
           <div class="flex justify-between mb-2">
             <label class="font-semibold text-gray-300">Initial Investment</label>
-            <span class="font-bold text-amber-400">{symbol}{currency === 'NGN' ? investment : parseInt(displayInvestment).toLocaleString()}{suffix}</span>
+            <span class="font-bold text-amber-400">{symbol}{currency === 'NGN' ? investment : Number(displayInvestment).toLocaleString()}{suffix}</span>
           </div>
           <input type="range" min="10" max="500" step="10" bind:value={investment} />
           <div class="flex justify-between text-xs text-gray-500 mt-1">
@@ -133,4 +133,4 @@
 
     </div>
   </div>
-</section
+</section>

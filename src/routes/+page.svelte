@@ -7,6 +7,7 @@
   import AgentShowcase from '$lib/components/home/AgentShowcase.svelte';
   import MapPreview from '$lib/components/home/MapPreview.svelte';
   import TestimonialsSection from '$lib/components/home/TestimonialsSection.svelte';
+  import ServicesSection from '$lib/components/home/ServicesSection.svelte';
   import TrustBanner from '$lib/components/home/TrustBanner.svelte';
   import ROICalculator from '$lib/components/home/ROICalculator.svelte';
   import DualCTABanner from '$lib/components/home/DualCTABanner.svelte';
@@ -26,6 +27,7 @@
   <AgentShowcase />
   <MapPreview />
   <TestimonialsSection />
+  <ServicesSection />
   <TrustBanner />
   <ROICalculator />
   <DualCTABanner />

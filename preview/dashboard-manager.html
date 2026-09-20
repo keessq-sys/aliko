@@ -1,502 +1,222 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Estate Manager Dashboard — Aliko Diamond Key</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#050A0E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!--12qhfyh--><link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/> <meta name="description" content="Aliko Diamond Key — Nigeria's Premier Real Estate &amp; Property Management Platform"/> <meta property="og:type" content="website"/> <meta property="og:title" content="Aliko Diamond Key — Premium Real Estate"/> <meta property="og:description" content="1,200+ verified properties across Nigeria. Zero legal risk. Automated title documentation."/> <meta name="theme-color" content="#050A0E"/><!---->
+		<style data-sveltekit>@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  <style>
-    body { background-color: #050A0E; color: #f3f4f6; font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Playfair Display', serif; }
-    .font-mono { font-family: 'JetBrains Mono', monospace; }
-    .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .glass-card { background: rgba(10, 17, 24, 0.85); backdrop-filter: blur(24px); border: 1px solid rgba(5, 150, 105, 0.25); }
-    .sidebar-active { background: rgba(5, 150, 105, 0.15); border-left: 3px solid #10B981; color: #34D399; font-weight: 600; }
-  </style>
-</head>
-<body class="min-h-screen flex selection:bg-emerald-500/30 overflow-x-hidden">
+@layer base {
+  :root {
+    --c-indigo: #4F46E5;
+    --c-rose: #E11D48;
+    --c-purple: #9333ea;
+    --c-blue-dark: #1e3a8a;
+  }
+  body {
+    background-color: #050A0E;
+    color: #e7e5e4; /* stone-200 */
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Instrument Serif', Georgia, serif;
+  }
+}
 
-  <!-- ==================== LEFT SIDEBAR ==================== -->
-  <aside class="w-64 glass border-r border-white/10 flex flex-col justify-between p-4 flex-shrink-0 min-h-screen sticky top-0">
-    <div>
-      <!-- Brand -->
-      <a href="index.html" class="flex items-center gap-3 px-2 py-4 mb-4 border-b border-white/10">
-        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center shadow-lg">
-          <i data-lucide="diamond" class="w-4 h-4 text-white"></i>
-        </div>
-        <div>
-          <span class="text-sm font-serif font-bold text-white block">Aliko Diamond Key</span>
-          <span class="text-[10px] font-mono text-emerald-400 uppercase">Manager Portal</span>
-        </div>
-      </a>
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-400 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(5,150,105,0.5),0_0_60px_rgba(5,150,105,0.2)];
+    transform: translateZ(0);
+  }
+  
+  .btn-secondary {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-amber-600 via-amber-500 to-amber-300 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(217,119,6,0.5),0_0_60px_rgba(217,119,6,0.2)];
+    transform: translateZ(0);
+  }
 
-      <!-- Profile mini -->
-      <div class="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3 mb-6">
-        <img src="https://i.pravatar.cc/150?u=manager1" class="w-10 h-10 rounded-full border border-emerald-500/50" alt="Avatar">
-        <div class="min-w-0">
-          <div class="text-xs font-bold text-white truncate">Barr. Ibrahim Sanni</div>
-          <div class="text-[10px] text-stone-400 truncate">Highland Crest Ltd</div>
-          <span class="inline-block mt-0.5 px-1.5 py-0.2 rounded text-[9px] font-mono bg-amber-500/20 text-amber-400">ENTERPRISE</span>
-        </div>
-      </div>
+  .btn-ghost {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-white/10 rounded-lg bg-white/5 backdrop-blur-md hover:bg-white/10 hover:scale-[1.03] active:scale-[0.97];
+    transform: translateZ(0);
+  }
 
-      <!-- Navigation Tabs -->
-      <nav class="space-y-1 text-xs">
-        <button data-tab="overview" class="nav-tab sidebar-active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors">
-          <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview
-        </button>
-        <button data-tab="properties" class="nav-tab text-stone-400 hover:text-white hover:bg-white/5 w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors">
-          <i data-lucide="home" class="w-4 h-4"></i> My Properties <span class="ml-auto px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-[10px] text-emerald-400 font-mono">47</span>
-        </button>
-        <button data-tab="tenants" class="nav-tab text-stone-400 hover:text-white hover:bg-white/5 w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors">
-          <i data-lucide="users" class="w-4 h-4"></i> Tenants & Leases
-        </button>
-        <button data-tab="agents" class="nav-tab text-stone-400 hover:text-white hover:bg-white/5 w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors">
-          <i data-lucide="award" class="w-4 h-4"></i> Brokerage Agents <span class="ml-auto px-1.5 py-0.5 rounded-full bg-white/10 text-[10px] font-mono">8</span>
-        </button>
-        <button data-tab="financials" class="nav-tab text-stone-400 hover:text-white hover:bg-white/5 w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors">
-          <i data-lucide="wallet" class="w-4 h-4"></i> Rent Roll & Financials
-        </button>
-        <button data-tab="documents" class="nav-tab text-stone-400 hover:text-white hover:bg-white/5 w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors">
-          <i data-lucide="file-text" class="w-4 h-4"></i> Legal & Deeds Vault
-        </button>
-        <button data-tab="settings" class="nav-tab text-stone-400 hover:text-white hover:bg-white/5 w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors">
-          <i data-lucide="settings" class="w-4 h-4"></i> Firm Settings
-        </button>
-      </nav>
-    </div>
+  .btn-danger {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-rose-600 to-rose-400 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(225,29,72,0.5),0_0_60px_rgba(225,29,72,0.2)];
+    transform: translateZ(0);
+  }
 
-    <!-- Bottom Actions -->
-    <div class="pt-4 border-t border-white/10 space-y-2">
-      <a href="index.html" class="flex items-center gap-2 px-3 py-2 text-xs text-stone-400 hover:text-white rounded-lg hover:bg-white/5">
-        <i data-lucide="globe" class="w-4 h-4"></i> Public Marketplace
-      </a>
-      <a href="auth.html" class="flex items-center gap-2 px-3 py-2 text-xs text-rose-400 hover:bg-rose-500/10 rounded-lg">
-        <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
-      </a>
-    </div>
-  </aside>
+  /* Tabs */
+  .tab-pill {
+    @apply px-4 py-2 text-sm font-medium transition-all duration-250 rounded-full text-stone-400 hover:text-white hover:bg-white/5;
+  }
+  
+  .tab-pill-active {
+    @apply px-4 py-2 text-sm font-medium transition-all duration-250 rounded-full text-emerald-400 bg-emerald-900/30 border border-emerald-500/30 shadow-[0_0_10px_rgba(5,150,105,0.2)];
+  }
 
-  <!-- ==================== MAIN DASHBOARD BODY ==================== -->
-  <div class="flex-1 flex flex-col min-w-0">
-    
-    <!-- Top Header Bar -->
-    <header class="h-20 glass border-b border-white/10 px-8 flex items-center justify-between sticky top-0 z-30">
-      <div>
-        <h1 id="tabHeaderTitle" class="text-xl font-serif font-bold text-white">Portfolio Overview</h1>
-        <p class="text-[11px] text-stone-400 font-mono">HIGHLAND CREST PROPERTIES LTD • CAC RC: 1938201</p>
-      </div>
+  /* Wizard */
+  .wizard-step-inactive {
+    @apply flex items-center justify-center w-8 h-8 rounded-full border border-stone-700 bg-stone-800 text-stone-400 transition-all duration-450;
+  }
+  .wizard-step-active {
+    @apply flex items-center justify-center w-8 h-8 rounded-full border border-emerald-400 bg-emerald-900/50 text-emerald-300 shadow-[0_0_15px_rgba(5,150,105,0.4)] transition-all duration-450 transform -translate-y-1;
+  }
+  .wizard-step-complete {
+    @apply flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white transition-all duration-450;
+  }
 
-      <div class="flex items-center gap-4">
-        <button id="addPropertyQuickBtn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md">
-          <i data-lucide="plus" class="w-4 h-4"></i> Add Property
-        </button>
-        <div class="h-6 w-px bg-white/10"></div>
-        <button class="p-2 rounded-xl bg-white/5 border border-white/10 text-stone-300 relative">
-          <i data-lucide="bell" class="w-4 h-4"></i>
-          <span class="w-2 h-2 rounded-full bg-rose-500 absolute top-1.5 right-1.5"></span>
-        </button>
-      </div>
-    </header>
+  /* Cards */
+  .card-3d {
+    @apply relative overflow-hidden transition-all duration-450 ease-[cubic-bezier(0.16,1,0.3,1)] border border-white/5 rounded-2xl bg-white/5 backdrop-blur-xl hover:-translate-y-2 hover:shadow-xl;
+    transform: translateZ(0);
+    perspective: 1200px;
+  }
 
-    <main class="p-8 space-y-8 flex-1">
-      
-      <!-- ==================== TAB 1: OVERVIEW ==================== -->
-      <div id="overviewTab" class="tab-content space-y-8">
-        
-        <!-- KPI Cards Row -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <div class="glass-card p-5 rounded-2xl">
-            <div class="flex justify-between items-start mb-2">
-              <span class="text-xs text-stone-400 font-mono uppercase">Total Properties</span>
-              <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="building" class="w-4 h-4"></i></div>
-            </div>
-            <div class="text-3xl font-serif font-bold text-white mb-1">47 Units</div>
-            <span class="text-[11px] text-emerald-400 font-semibold">↑ +3 new acquisitions</span>
-          </div>
+  /* Badges */
+  .badge-client {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-800 text-stone-300 border border-stone-700;
+  }
+  .badge-agent {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-900/40 text-emerald-300 border border-emerald-700/50;
+  }
+  .badge-manager {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-900/40 text-amber-300 border border-amber-700/50;
+  }
 
-          <div class="glass-card p-5 rounded-2xl">
-            <div class="flex justify-between items-start mb-2">
-              <span class="text-xs text-stone-400 font-mono uppercase">Occupancy Rate</span>
-              <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="pie-chart" class="w-4 h-4"></i></div>
-            </div>
-            <div class="text-3xl font-serif font-bold text-emerald-400 mb-1">89.4%</div>
-            <span class="text-[11px] text-emerald-400 font-semibold">42 Occupied / 5 Available</span>
-          </div>
+  .sidebar-item {
+    @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-stone-400 hover:text-white hover:bg-white/5 transition-all duration-250;
+  }
+  .sidebar-item-active {
+    @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-emerald-400 bg-emerald-900/20 border border-emerald-500/20 transition-all duration-250;
+  }
 
-          <div class="glass-card p-5 rounded-2xl">
-            <div class="flex justify-between items-start mb-2">
-              <span class="text-xs text-stone-400 font-mono uppercase">Monthly Rent Roll</span>
-              <div class="p-2 rounded-lg bg-amber-500/10 text-amber-400"><i data-lucide="dollar-sign" class="w-4 h-4"></i></div>
-            </div>
-            <div class="text-3xl font-serif font-bold text-amber-400 mb-1">₦14.2M</div>
-            <span class="text-[11px] text-emerald-400 font-semibold">↑ +₦1.1M vs last month</span>
-          </div>
+  .map-container {
+    @apply w-full h-full rounded-xl overflow-hidden border border-white/10 bg-stone-900;
+  }
 
-          <div class="glass-card p-5 rounded-2xl">
-            <div class="flex justify-between items-start mb-2">
-              <span class="text-xs text-stone-400 font-mono uppercase">Pending Tasks</span>
-              <div class="p-2 rounded-lg bg-rose-500/10 text-rose-400"><i data-lucide="clock" class="w-4 h-4"></i></div>
-            </div>
-            <div class="text-3xl font-serif font-bold text-white mb-1">8 Tasks</div>
-            <span class="text-[11px] text-rose-400 font-semibold">3 Lease renewals urgent</span>
-          </div>
-        </div>
+  .gradient-border {
+    position: relative;
+    background: transparent;
+  }
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(5,150,105,0.6), rgba(217,119,6,0.6), rgba(99,102,241,0.5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  
+  .prose-dark {
+    @apply prose prose-invert prose-emerald max-w-none text-stone-300;
+  }
+}
 
-        <!-- 12-Month Revenue Area Chart (Pure SVG) -->
-        <div class="glass-card p-6 rounded-2xl shadow-xl">
-          <div class="flex items-center justify-between mb-6">
-            <div>
-              <h3 class="text-base font-serif font-bold text-white">Annual Rent Roll & Cash Flow</h3>
-              <p class="text-xs text-stone-400">Trailing 12 months historical gross revenue vs operational costs</p>
-            </div>
-            <div class="flex items-center gap-4 text-xs font-mono">
-              <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> Gross Inflow (₦)</span>
-              <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500"></span> Service Charge Outflow</span>
-            </div>
-          </div>
+@layer utilities {
+  .neon-emerald {
+    box-shadow: 0 0 20px rgba(5,150,105,0.5), 0 0 60px rgba(5,150,105,0.2);
+  }
+  .neon-gold {
+    box-shadow: 0 0 20px rgba(217,119,6,0.5), 0 0 60px rgba(217,119,6,0.2);
+  }
+  .glass-l1 {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .glass-l2 {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+  .glass-l3 {
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+}
 
-          <!-- SVG Chart -->
-          <div class="h-64 w-full relative">
-            <svg viewBox="0 0 800 240" class="w-full h-full overflow-visible">
-              <!-- Grid lines -->
-              <line x1="0" y1="40" x2="800" y2="40" stroke="#ffffff10" stroke-dasharray="4"/>
-              <line x1="0" y1="100" x2="800" y2="100" stroke="#ffffff10" stroke-dasharray="4"/>
-              <line x1="0" y1="160" x2="800" y2="160" stroke="#ffffff10" stroke-dasharray="4"/>
-              <line x1="0" y1="220" x2="800" y2="220" stroke="#ffffff20"/>
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
 
-              <!-- Gradient Defs -->
-              <defs>
-                <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#10B981" stop-opacity="0.4"/>
-                  <stop offset="100%" stop-color="#10B981" stop-opacity="0.0"/>
-                </linearGradient>
-              </defs>
+@keyframes slideInRight {
+  0% { opacity: 0; transform: translateX(20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
 
-              <!-- Filled Area -->
-              <path d="M 0,180 Q 70,160 140,140 T 280,100 T 420,110 T 560,70 T 700,50 T 800,40 L 800,220 L 0,220 Z" fill="url(#revenueGrad)"/>
-              
-              <!-- Curve Line -->
-              <path d="M 0,180 Q 70,160 140,140 T 280,100 T 420,110 T 560,70 T 700,50 T 800,40" fill="none" stroke="#10B981" stroke-width="3"/>
+@keyframes countUp {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
 
-              <!-- Expense Line -->
-              <path d="M 0,210 Q 70,205 140,195 T 280,190 T 420,185 T 560,180 T 700,175 T 800,170" fill="none" stroke="#E11D48" stroke-width="2" stroke-dasharray="4"/>
+@keyframes morphGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
-              <!-- Month Labels -->
-              <text x="10" y="235" fill="#6b7280" font-size="10" font-family="monospace">Jan</text>
-              <text x="140" y="235" fill="#6b7280" font-size="10" font-family="monospace">Mar</text>
-              <text x="280" y="235" fill="#6b7280" font-size="10" font-family="monospace">May</text>
-              <text x="420" y="235" fill="#6b7280" font-size="10" font-family="monospace">Jul</text>
-              <text x="560" y="235" fill="#6b7280" font-size="10" font-family="monospace">Sep</text>
-              <text x="700" y="235" fill="#6b7280" font-size="10" font-family="monospace">Nov</text>
-              <text x="770" y="235" fill="#6b7280" font-size="10" font-family="monospace">Dec</text>
-            </svg>
-          </div>
-        </div>
+@keyframes particleFloat {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
 
-        <!-- Top Performing Estates Mini-Table -->
-        <div class="glass-card p-6 rounded-2xl">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-base font-serif font-bold text-white">Top Revenue Yielding Estates</h3>
-            <button class="text-xs text-emerald-400 hover:underline">View Detailed Rent Roll ↗</button>
-          </div>
 
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="border-b border-white/10 text-stone-400 font-mono uppercase">
-                <tr>
-                  <th class="py-3 px-4">Estate Property</th>
-                  <th class="py-3 px-4">Type</th>
-                  <th class="py-3 px-4">Units</th>
-                  <th class="py-3 px-4">Occupancy</th>
-                  <th class="py-3 px-4">Annual Roll</th>
-                  <th class="py-3 px-4 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-white/5 text-stone-300">
-                <tr>
-                  <td class="py-3.5 px-4 font-semibold text-white">Diamond Royal Court, Maitama</td>
-                  <td class="py-3.5 px-4">Duplex Terraces</td>
-                  <td class="py-3.5 px-4">12 Units</td>
-                  <td class="py-3.5 px-4 text-emerald-400 font-bold">100%</td>
-                  <td class="py-3.5 px-4 font-mono font-bold text-amber-400">₦72,000,000</td>
-                  <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300">Active</span></td>
-                </tr>
-                <tr>
-                  <td class="py-3.5 px-4 font-semibold text-white">Skyline Towers, Victoria Island</td>
-                  <td class="py-3.5 px-4">Penthouses & Apts</td>
-                  <td class="py-3.5 px-4">8 Units</td>
-                  <td class="py-3.5 px-4 text-emerald-400 font-bold">87.5%</td>
-                  <td class="py-3.5 px-4 font-mono font-bold text-amber-400">₦54,000,000</td>
-                  <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300">Active</span></td>
-                </tr>
-                <tr>
-                  <td class="py-3.5 px-4 font-semibold text-white">Admiralty Commercial Plaza, Lekki</td>
-                  <td class="py-3.5 px-4">Commercial Retail</td>
-                  <td class="py-3.5 px-4">16 Spaces</td>
-                  <td class="py-3.5 px-4 text-emerald-400 font-bold">93.8%</td>
-                  <td class="py-3.5 px-4 font-mono font-bold text-amber-400">₦48,500,000</td>
-                  <td class="py-3.5 px-4 text-right"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300">Active</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+  @keyframes s-918YXh7FMLIr-shrink {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
+ .s-918YXh7FMLIr{}
 
-      </div>
+  .hide-scrollbar.s-6WAhB2hg1CBO::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar.s-6WAhB2hg1CBO {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+ .s-6WAhB2hg1CBO{}</style>
+  </head>
+  <body data-sveltekit-preload-data="hover" class="bg-surface-0 text-white antialiased">
+    <div style="display: contents"><!--[--><!--[0--><!--[--><!--[-1--><!--]--> <main class=" min-h-screen bg-[#050A0E]"><!--[--><!--[-1--><!--[--><div class="flex h-screen w-full bg-[#050A0E] text-stone-300 font-sans overflow-hidden s-6WAhB2hg1CBO"><aside class="w-64 flex-shrink-0 border-r border-white/5 bg-white/[0.02] flex flex-col hidden md:flex s-6WAhB2hg1CBO"><div class="p-6 s-6WAhB2hg1CBO"><h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2 s-6WAhB2hg1CBO"><div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center s-6WAhB2hg1CBO"><span class="text-white font-bold s-6WAhB2hg1CBO">A</span></div> ADK Manager</h1> <div class="mt-8 flex items-center gap-3 rounded-xl bg-white/5 p-3 border border-white/5 s-6WAhB2hg1CBO"><img src="https://picsum.photos/seed/manager/100/100" alt="Manager" class="h-10 w-10 rounded-full object-cover s-6WAhB2hg1CBO"/> <div class="s-6WAhB2hg1CBO"><p class="text-sm font-medium text-white s-6WAhB2hg1CBO">Chief Manager</p> <p class="text-xs text-emerald-500 s-6WAhB2hg1CBO">Premium Plan</p></div></div></div> <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1 hide-scrollbar s-6WAhB2hg1CBO"><!--[--><button class="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all bg-emerald-500/10 text-emerald-400 border-l-2 border-emerald-500 s-6WAhB2hg1CBO"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-layout-dashboard h-5 w-5"><!--[--><!----><rect width="7" height="9" x="3" y="3" rx="1"><!----></rect><!----><!----><rect width="7" height="5" x="14" y="3" rx="1"><!----></rect><!----><!----><rect width="7" height="9" x="14" y="12" rx="1"><!----></rect><!----><!----><rect width="7" height="5" x="3" y="16" rx="1"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--> Overview</button><button class="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all text-stone-400 hover:bg-white/5 hover:text-white s-6WAhB2hg1CBO"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-house h-5 w-5"><!--[--><!----><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"><!----></path><!----><!----><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--> My Properties</button><button class="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all text-stone-400 hover:bg-white/5 hover:text-white s-6WAhB2hg1CBO"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-users h-5 w-5"><!--[--><!----><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"><!----></path><!----><!----><circle cx="9" cy="7" r="4"><!----></circle><!----><!----><path d="M22 21v-2a4 4 0 0 0-3-3.87"><!----></path><!----><!----><path d="M16 3.13a4 4 0 0 1 0 7.75"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--> Tenants</button><button class="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all text-stone-400 hover:bg-white/5 hover:text-white s-6WAhB2hg1CBO"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-briefcase h-5 w-5"><!--[--><!----><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"><!----></path><!----><!----><rect width="20" height="14" x="2" y="6" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--> My Agents</button><button class="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all text-stone-400 hover:bg-white/5 hover:text-white s-6WAhB2hg1CBO"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-dollar-sign h-5 w-5"><!--[--><!----><line x1="12" x2="12" y1="2" y2="22"><!----></line><!----><!----><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--> Financials</button><button class="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all text-stone-400 hover:bg-white/5 hover:text-white s-6WAhB2hg1CBO"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-file-text h-5 w-5"><!--[--><!----><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"><!----></path><!----><!----><path d="M14 2v4a2 2 0 0 0 2 2h4"><!----></path><!----><!----><path d="M10 9H8"><!----></path><!----><!----><path d="M16 13H8"><!----></path><!----><!----><path d="M16 17H8"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--> Documents</button><button class="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all text-stone-400 hover:bg-white/5 hover:text-white s-6WAhB2hg1CBO"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-chart-no-axes-column h-5 w-5"><!--[--><!----><line x1="18" x2="18" y1="20" y2="10"><!----></line><!----><!----><line x1="12" x2="12" y1="20" y2="4"><!----></line><!----><!----><line x1="6" x2="6" y1="20" y2="14"><!----></line><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--> Reports</button><button class="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all text-stone-400 hover:bg-white/5 hover:text-white s-6WAhB2hg1CBO"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-settings h-5 w-5"><!--[--><!----><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"><!----></path><!----><!----><circle cx="12" cy="12" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--> Settings</button><!--]--></nav> <div class="p-4 border-t border-white/5 s-6WAhB2hg1CBO"><button class="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors s-6WAhB2hg1CBO"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-log-out h-5 w-5"><!--[--><!----><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"><!----></path><!----><!----><polyline points="16 17 21 12 16 7"><!----></polyline><!----><!----><line x1="21" x2="9" y1="12" y2="12"><!----></line><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Sign Out</button></div></aside> <main class="flex-1 flex flex-col h-screen overflow-hidden s-6WAhB2hg1CBO"><header class="h-20 flex-shrink-0 border-b border-white/5 bg-[#050A0E]/80 backdrop-blur-md flex items-center justify-between px-8 z-10 s-6WAhB2hg1CBO"><h2 class="text-2xl font-semibold text-white capitalize s-6WAhB2hg1CBO">overview</h2> <div class="flex items-center gap-6 s-6WAhB2hg1CBO"><div class="relative hidden sm:block s-6WAhB2hg1CBO"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400"><!--[--><!----><circle cx="11" cy="11" r="8"><!----></circle><!----><!----><path d="m21 21-4.3-4.3"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <input type="text" placeholder="Search..." class="w-64 rounded-full border border-white/10 bg-white/5 py-2 pl-10 pr-4 text-sm focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 s-6WAhB2hg1CBO"/></div> <button class="relative rounded-full p-2 text-stone-400 hover:bg-white/10 transition-colors s-6WAhB2hg1CBO"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bell h-5 w-5"><!--[--><!----><path d="M10.268 21a2 2 0 0 0 3.464 0"><!----></path><!----><!----><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-[#050A0E] s-6WAhB2hg1CBO"></span></button></div></header> <div class="flex-1 overflow-y-auto p-8 hide-scrollbar s-6WAhB2hg1CBO"><!--[0--><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 s-6WAhB2hg1CBO"><div class="relative overflow-hidden rounded-xl border border-white/5 bg-[#050A0E]/80 p-6 shadow-xl backdrop-blur-md transition-all hover:-translate-y-1 hover:border-emerald-500/30 hover:shadow-emerald-500/10 group"><div class="flex items-start justify-between"><div><p class="text-sm font-medium text-stone-400">Total Properties</p> <div class="mt-2 flex items-baseline gap-1"><!--[-1--><!--]--> <h3 class="text-3xl font-bold text-white">0</h3> <!--[-1--><!--]--></div></div> <!--[0--><div class="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-500/20"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-house h-6 w-6 text-emerald-400"><!--[--><!----><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"><!----></path><!----><!----><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div><!--]--></div> <div class="mt-4 flex items-center justify-between"><div class="flex items-center gap-1 text-sm font-medium text-emerald-400"><!--[0--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-up-right h-4 w-4"><!--[--><!----><path d="M7 7h10v10"><!----></path><!----><!----><path d="M7 17 17 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><!--]--> <span>+3 this month</span></div> <div class="flex items-end gap-1 h-4 opacity-50 group-hover:opacity-100 transition-opacity"><div class="w-1.5 rounded-t-sm bg-emerald-500/40 h-2"></div> <div class="w-1.5 rounded-t-sm bg-emerald-500/60 h-3"></div> <div class="w-1.5 rounded-t-sm bg-emerald-500 h-4"></div></div></div></div><!----> <div class="relative overflow-hidden rounded-xl border border-white/5 bg-[#050A0E]/80 p-6 shadow-xl backdrop-blur-md transition-all hover:-translate-y-1 hover:border-emerald-500/30 hover:shadow-emerald-500/10 group"><div class="flex items-start justify-between"><div><p class="text-sm font-medium text-stone-400">Occupancy Rate</p> <div class="mt-2 flex items-baseline gap-1"><!--[-1--><!--]--> <h3 class="text-3xl font-bold text-white">0</h3> <!--[-1--><!--]--></div></div> <!--[0--><div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/20"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-users h-6 w-6 text-emerald-400"><!--[--><!----><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"><!----></path><!----><!----><circle cx="9" cy="7" r="4"><!----></circle><!----><!----><path d="M22 21v-2a4 4 0 0 0-3-3.87"><!----></path><!----><!----><path d="M16 3.13a4 4 0 0 1 0 7.75"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div><!--]--></div> <div class="mt-4 flex items-center justify-between"><div class="flex items-center gap-1 text-sm font-medium text-emerald-400"><!--[0--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-up-right h-4 w-4"><!--[--><!----><path d="M7 7h10v10"><!----></path><!----><!----><path d="M7 17 17 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><!--]--> <span>+2% vs last month</span></div> <div class="flex items-end gap-1 h-4 opacity-50 group-hover:opacity-100 transition-opacity"><div class="w-1.5 rounded-t-sm bg-emerald-500/40 h-2"></div> <div class="w-1.5 rounded-t-sm bg-emerald-500/60 h-3"></div> <div class="w-1.5 rounded-t-sm bg-emerald-500 h-4"></div></div></div></div><!----> <div class="relative overflow-hidden rounded-xl border border-white/5 bg-[#050A0E]/80 p-6 shadow-xl backdrop-blur-md transition-all hover:-translate-y-1 hover:border-emerald-500/30 hover:shadow-emerald-500/10 group"><div class="flex items-start justify-between"><div><p class="text-sm font-medium text-stone-400">Monthly Revenue</p> <div class="mt-2 flex items-baseline gap-1"><!--[0--><span class="text-xl text-stone-300">₦</span><!--]--> <h3 class="text-3xl font-bold text-white">0</h3> <!--[0--><span class="text-xl text-stone-300">M</span><!--]--></div></div> <!--[0--><div class="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-500/20"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-dollar-sign h-6 w-6 text-emerald-400"><!--[--><!----><line x1="12" x2="12" y1="2" y2="22"><!----></line><!----><!----><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div><!--]--></div> <div class="mt-4 flex items-center justify-between"><div class="flex items-center gap-1 text-sm font-medium text-emerald-400"><!--[0--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-up-right h-4 w-4"><!--[--><!----><path d="M7 7h10v10"><!----></path><!----><!----><path d="M7 17 17 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><!--]--> <span>+₦1.1M</span></div> <div class="flex items-end gap-1 h-4 opacity-50 group-hover:opacity-100 transition-opacity"><div class="w-1.5 rounded-t-sm bg-emerald-500/40 h-2"></div> <div class="w-1.5 rounded-t-sm bg-emerald-500/60 h-3"></div> <div class="w-1.5 rounded-t-sm bg-emerald-500 h-4"></div></div></div></div><!----> <div class="relative overflow-hidden rounded-xl border border-white/5 bg-[#050A0E]/80 p-6 shadow-xl backdrop-blur-md transition-all hover:-translate-y-1 hover:border-emerald-500/30 hover:shadow-emerald-500/10 group"><div class="flex items-start justify-between"><div><p class="text-sm font-medium text-stone-400">Pending Tasks</p> <div class="mt-2 flex items-baseline gap-1"><!--[-1--><!--]--> <h3 class="text-3xl font-bold text-white">0</h3> <!--[-1--><!--]--></div></div> <!--[0--><div class="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-500/20"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-triangle-alert h-6 w-6 text-emerald-400"><!--[--><!----><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"><!----></path><!----><!----><path d="M12 9v4"><!----></path><!----><!----><path d="M12 17h.01"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div><!--]--></div> <div class="mt-4 flex items-center justify-between"><div class="flex items-center gap-1 text-sm font-medium text-rose-400"><!--[-1--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-down-right h-4 w-4"><!--[--><!----><path d="m7 7 10 10"><!----></path><!----><!----><path d="M17 7v10H7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><!--]--> <span>3 urgent</span></div> <div class="flex items-end gap-1 h-4 opacity-50 group-hover:opacity-100 transition-opacity"><div class="w-1.5 rounded-t-sm bg-rose-500/40 h-4"></div> <div class="w-1.5 rounded-t-sm bg-rose-500/60 h-3"></div> <div class="w-1.5 rounded-t-sm bg-rose-500 h-2"></div></div></div></div><!----></div> <div class="mb-8 s-6WAhB2hg1CBO"><div class="relative w-full rounded-xl border border-white/5 bg-[#050A0E]/80 p-6 shadow-xl backdrop-blur-md"><div class="mb-4 flex items-center justify-between"><h3 class="text-lg font-semibold text-white">Financial Overview</h3> <div class="flex items-center gap-4 text-sm"><div class="flex items-center gap-2"><div class="h-3 w-3 rounded-full bg-emerald-500"></div> <span class="text-stone-400">Revenue</span></div> <div class="flex items-center gap-2"><div class="h-3 w-3 rounded-full bg-rose-500"></div> <span class="text-stone-400">Expenses</span></div></div></div> <div class="relative h-[300px] w-full"><svg class="h-full w-full overflow-visible"><defs><linearGradient id="revenue-gradient" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#059669" stop-opacity="0.3"></stop><stop offset="100%" stop-color="#059669" stop-opacity="0"></stop></linearGradient><linearGradient id="expense-gradient" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e11d48" stop-opacity="0.2"></stop><stop offset="100%" stop-color="#e11d48" stop-opacity="0"></stop></linearGradient></defs><!--[--><line x1="60" y1="270" x2="780" y2="270" stroke="rgba(255,255,255,0.05)" stroke-dasharray="4 4"></line><text x="50" y="274" fill="#78716c" font-size="10" text-anchor="end">0</text><line x1="60" y1="207.5" x2="780" y2="207.5" stroke="rgba(255,255,255,0.05)" stroke-dasharray="4 4"></line><text x="50" y="211.5" fill="#78716c" font-size="10" text-anchor="end">5.3M</text><line x1="60" y1="145" x2="780" y2="145" stroke="rgba(255,255,255,0.05)" stroke-dasharray="4 4"></line><text x="50" y="149" fill="#78716c" font-size="10" text-anchor="end">10.6M</text><line x1="60" y1="82.5" x2="780" y2="82.5" stroke="rgba(255,255,255,0.05)" stroke-dasharray="4 4"></line><text x="50" y="86.5" fill="#78716c" font-size="10" text-anchor="end">15.8M</text><line x1="60" y1="20" x2="780" y2="20" stroke="rgba(255,255,255,0.05)" stroke-dasharray="4 4"></line><text x="50" y="24" fill="#78716c" font-size="10" text-anchor="end">21.1M</text><!--]--><!--[--><text x="60" y="290" fill="#78716c" font-size="12" text-anchor="middle">Jan</text><text x="125.45454545454545" y="290" fill="#78716c" font-size="12" text-anchor="middle">Feb</text><text x="190.9090909090909" y="290" fill="#78716c" font-size="12" text-anchor="middle">Mar</text><text x="256.3636363636364" y="290" fill="#78716c" font-size="12" text-anchor="middle">Apr</text><text x="321.8181818181818" y="290" fill="#78716c" font-size="12" text-anchor="middle">May</text><text x="387.27272727272725" y="290" fill="#78716c" font-size="12" text-anchor="middle">Jun</text><text x="452.72727272727275" y="290" fill="#78716c" font-size="12" text-anchor="middle">Jul</text><text x="518.1818181818182" y="290" fill="#78716c" font-size="12" text-anchor="middle">Aug</text><text x="583.6363636363636" y="290" fill="#78716c" font-size="12" text-anchor="middle">Sep</text><text x="649.0909090909091" y="290" fill="#78716c" font-size="12" text-anchor="middle">Oct</text><text x="714.5454545454545" y="290" fill="#78716c" font-size="12" text-anchor="middle">Nov</text><text x="780" y="290" fill="#78716c" font-size="12" text-anchor="middle">Dec</text><!--]--><!--[0--><path d="M 60 170.5681818181818 C 92.72727272727272 170.5681818181818, 92.72727272727272 161.09848484848484, 125.45454545454545 161.09848484848484 C 158.1818181818182 161.09848484848484, 158.1818181818182 130.3219696969697, 190.9090909090909 130.3219696969697 C 223.63636363636363 130.3219696969697, 223.63636363636363 145.71022727272728, 256.3636363636364 145.71022727272728 C 289.0909090909091 145.71022727272728, 289.0909090909091 113.75, 321.8181818181818 113.75 C 354.5454545454545 113.75, 354.5454545454545 119.6685606060606, 387.27272727272725 119.6685606060606 C 420 119.6685606060606, 420 87.70833333333334, 452.72727272727275 87.70833333333334 C 485.4545454545455 87.70833333333334, 485.4545454545455 94.81060606060606, 518.1818181818182 94.81060606060606 C 550.909090909091 94.81060606060606, 550.909090909091 79.42234848484847, 583.6363636363636 79.42234848484847 C 616.3636363636364 79.42234848484847, 616.3636363636364 62.85037878787878, 649.0909090909091 62.85037878787878 C 681.8181818181818 62.85037878787878, 681.8181818181818 71.13636363636365, 714.5454545454545 71.13636363636365 C 747.2727272727273 71.13636363636365, 747.2727272727273 42.72727272727275, 780 42.72727272727275 L 780 270 L 60 270 Z" fill="url(#revenue-gradient)" class="transition-opacity duration-1000" style="opacity: 0"></path><path d="M 60 245.14204545454547 C 92.72727272727272 245.14204545454547, 92.72727272727272 241.5909090909091, 125.45454545454545 241.5909090909091 C 158.1818181818182 241.5909090909091, 158.1818181818182 236.85606060606062, 190.9090909090909 236.85606060606062 C 223.63636363636363 236.85606060606062, 223.63636363636363 243.95833333333334, 256.3636363636364 243.95833333333334 C 289.0909090909091 243.95833333333334, 289.0909090909091 233.30492424242425, 321.8181818181818 233.30492424242425 C 354.5454545454545 233.30492424242425, 354.5454545454545 235.6723484848485, 387.27272727272725 235.6723484848485 C 420 235.6723484848485, 420 228.57007575757575, 452.72727272727275 228.57007575757575 C 485.4545454545455 228.57007575757575, 485.4545454545455 232.12121212121212, 518.1818181818182 232.12121212121212 C 550.909090909091 232.12121212121212, 550.909090909091 225.01893939393938, 583.6363636363636 225.01893939393938 C 616.3636363636364 225.01893939393938, 616.3636363636364 221.46780303030303, 649.0909090909091 221.46780303030303 C 681.8181818181818 221.46780303030303, 681.8181818181818 223.83522727272728, 714.5454545454545 223.83522727272728 C 747.2727272727273 223.83522727272728, 747.2727272727273 216.73295454545456, 780 216.73295454545456 L 780 270 L 60 270 Z" fill="url(#expense-gradient)" class="transition-opacity duration-1000" style="opacity: 0"></path><path d="M 60 170.5681818181818 C 92.72727272727272 170.5681818181818, 92.72727272727272 161.09848484848484, 125.45454545454545 161.09848484848484 C 158.1818181818182 161.09848484848484, 158.1818181818182 130.3219696969697, 190.9090909090909 130.3219696969697 C 223.63636363636363 130.3219696969697, 223.63636363636363 145.71022727272728, 256.3636363636364 145.71022727272728 C 289.0909090909091 145.71022727272728, 289.0909090909091 113.75, 321.8181818181818 113.75 C 354.5454545454545 113.75, 354.5454545454545 119.6685606060606, 387.27272727272725 119.6685606060606 C 420 119.6685606060606, 420 87.70833333333334, 452.72727272727275 87.70833333333334 C 485.4545454545455 87.70833333333334, 485.4545454545455 94.81060606060606, 518.1818181818182 94.81060606060606 C 550.909090909091 94.81060606060606, 550.909090909091 79.42234848484847, 583.6363636363636 79.42234848484847 C 616.3636363636364 79.42234848484847, 616.3636363636364 62.85037878787878, 649.0909090909091 62.85037878787878 C 681.8181818181818 62.85037878787878, 681.8181818181818 71.13636363636365, 714.5454545454545 71.13636363636365 C 747.2727272727273 71.13636363636365, 747.2727272727273 42.72727272727275, 780 42.72727272727275" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" class="drop-shadow-[0_0_8px_rgba(5,150,105,0.4)]" style="stroke-dasharray: 2000; stroke-dashoffset: 2000; transition: stroke-dashoffset 1.5s ease-out;"></path><path d="M 60 245.14204545454547 C 92.72727272727272 245.14204545454547, 92.72727272727272 241.5909090909091, 125.45454545454545 241.5909090909091 C 158.1818181818182 241.5909090909091, 158.1818181818182 236.85606060606062, 190.9090909090909 236.85606060606062 C 223.63636363636363 236.85606060606062, 223.63636363636363 243.95833333333334, 256.3636363636364 243.95833333333334 C 289.0909090909091 243.95833333333334, 289.0909090909091 233.30492424242425, 321.8181818181818 233.30492424242425 C 354.5454545454545 233.30492424242425, 354.5454545454545 235.6723484848485, 387.27272727272725 235.6723484848485 C 420 235.6723484848485, 420 228.57007575757575, 452.72727272727275 228.57007575757575 C 485.4545454545455 228.57007575757575, 485.4545454545455 232.12121212121212, 518.1818181818182 232.12121212121212 C 550.909090909091 232.12121212121212, 550.909090909091 225.01893939393938, 583.6363636363636 225.01893939393938 C 616.3636363636364 225.01893939393938, 616.3636363636364 221.46780303030303, 649.0909090909091 221.46780303030303 C 681.8181818181818 221.46780303030303, 681.8181818181818 223.83522727272728, 714.5454545454545 223.83522727272728 C 747.2727272727273 223.83522727272728, 747.2727272727273 216.73295454545456, 780 216.73295454545456" fill="none" stroke="#e11d48" stroke-width="2" stroke-linecap="round" style="stroke-dasharray: 2000; stroke-dashoffset: 2000; transition: stroke-dashoffset 1.5s ease-out 0.2s;"></path><!--[-1--><!--]--><!--]--></svg></div></div><!----></div> <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 s-6WAhB2hg1CBO"><div class="lg:col-span-2 rounded-xl border border-white/5 bg-white/[0.02] p-6 s-6WAhB2hg1CBO"><h3 class="text-lg font-semibold text-white mb-4 s-6WAhB2hg1CBO">Top Performing Properties</h3> <div class="space-y-4 s-6WAhB2hg1CBO"><!--[--><div class="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/5 hover:border-emerald-500/30 transition-colors s-6WAhB2hg1CBO"><div class="s-6WAhB2hg1CBO"><h4 class="font-medium text-white s-6WAhB2hg1CBO">Maitama Luxury Villa</h4> <p class="text-sm text-stone-400 s-6WAhB2hg1CBO">Maitama, Abuja</p></div> <div class="text-right s-6WAhB2hg1CBO"><p class="font-medium text-emerald-400 s-6WAhB2hg1CBO">₦850.0M</p> <p class="text-xs text-stone-500 s-6WAhB2hg1CBO">Available</p></div></div><div class="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/5 hover:border-emerald-500/30 transition-colors s-6WAhB2hg1CBO"><div class="s-6WAhB2hg1CBO"><h4 class="font-medium text-white s-6WAhB2hg1CBO">Victoria Island Office Space</h4> <p class="text-sm text-stone-400 s-6WAhB2hg1CBO">VI, Lagos</p></div> <div class="text-right s-6WAhB2hg1CBO"><p class="font-medium text-emerald-400 s-6WAhB2hg1CBO">₦15.0M</p> <p class="text-xs text-stone-500 s-6WAhB2hg1CBO">Rented</p></div></div><div class="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/5 hover:border-emerald-500/30 transition-colors s-6WAhB2hg1CBO"><div class="s-6WAhB2hg1CBO"><h4 class="font-medium text-white s-6WAhB2hg1CBO">Lekki Phase 1 Duplex</h4> <p class="text-sm text-stone-400 s-6WAhB2hg1CBO">Lekki, Lagos</p></div> <div class="text-right s-6WAhB2hg1CBO"><p class="font-medium text-emerald-400 s-6WAhB2hg1CBO">₦320.0M</p> <p class="text-xs text-stone-500 s-6WAhB2hg1CBO">Sold</p></div></div><!--]--></div></div> <div class="lg:col-span-1 s-6WAhB2hg1CBO"><div class="rounded-xl border border-white/5 bg-[#050A0E]/80 p-6 shadow-xl backdrop-blur-md"><h3 class="mb-6 text-lg font-semibold text-white">Recent Activity</h3> <div class="relative border-l border-white/10 pl-6 space-y-6"><!--[--><div class="relative transition-all duration-500 ease-out translate-y-4 opacity-0" style="transition-delay: 0ms;"><span class="absolute -left-[31px] flex h-4 w-4 items-center justify-center rounded-full bg-[#050A0E] border-2" style="border-color: #059669"></span> <div class="flex items-start justify-between"><div class="space-y-1"><p class="text-sm text-stone-300"><span class="font-medium text-white">Adaeze Okonkwo</span> listed a new property: Asokoro Penthouse</p> <p class="text-xs text-stone-500">2 hours ago</p></div> <!--[0--><div class="rounded-lg bg-white/5 p-2"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-house h-4 w-4" style="color: #059669"><!--[--><!----><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"><!----></path><!----><!----><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div><!--]--></div></div><div class="relative transition-all duration-500 ease-out translate-y-4 opacity-0" style="transition-delay: 100ms;"><span class="absolute -left-[31px] flex h-4 w-4 items-center justify-center rounded-full bg-[#050A0E] border-2" style="border-color: #3b82f6"></span> <div class="flex items-start justify-between"><div class="space-y-1"><p class="text-sm text-stone-300"><span class="font-medium text-white">System</span> processed rent payment for VI Office Space</p> <p class="text-xs text-stone-500">5 hours ago</p></div> <!--[0--><div class="rounded-lg bg-white/5 p-2"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-dollar-sign h-4 w-4" style="color: #3b82f6"><!--[--><!----><line x1="12" x2="12" y1="2" y2="22"><!----></line><!----><!----><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div><!--]--></div></div><div class="relative transition-all duration-500 ease-out translate-y-4 opacity-0" style="transition-delay: 200ms;"><span class="absolute -left-[31px] flex h-4 w-4 items-center justify-center rounded-full bg-[#050A0E] border-2" style="border-color: #f59e0b"></span> <div class="flex items-start justify-between"><div class="space-y-1"><p class="text-sm text-stone-300"><span class="font-medium text-white">Fatima Musa</span> closed sale for Lekki Phase 1 Duplex</p> <p class="text-xs text-stone-500">Yesterday</p></div> <!--[0--><div class="rounded-lg bg-white/5 p-2"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-briefcase h-4 w-4" style="color: #f59e0b"><!--[--><!----><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"><!----></path><!----><!----><rect width="20" height="14" x="2" y="6" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div><!--]--></div></div><!--]--></div> <button class="mt-8 w-full rounded-lg border border-white/10 py-2 text-sm font-medium text-stone-400 hover:bg-white/5 hover:text-white transition-colors">Load More</button></div><!----></div></div><!--]--></div></main></div><!--]--><!--]--><!--]--></main> <!--[-1--><!--]--> <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 w-full max-w-sm pointer-events-none s-918YXh7FMLIr"><!--[--><!--]--></div><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_dev = {
+						base: new URL("..", location).pathname.slice(0, -1),
+						env: {}
+					};
 
-      <!-- ==================== TAB 2: PROPERTIES TABLE ==================== -->
-      <div id="propertiesTab" class="tab-content hidden space-y-6">
-        <div class="glass-card p-6 rounded-2xl">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <h3 class="text-base font-serif font-bold text-white">Managed Properties Directory</h3>
-            <div class="flex items-center gap-3">
-              <input type="text" placeholder="Search property name or sector..." class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
-              <button class="px-3 py-2 rounded-xl bg-emerald-600 text-white text-xs font-semibold">Filter</button>
-            </div>
-          </div>
+					const element = document.currentScript.parentElement;
 
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="border-b border-white/10 text-stone-400 font-mono uppercase">
-                <tr>
-                  <th class="py-3 px-4">Property</th>
-                  <th class="py-3 px-4">Type</th>
-                  <th class="py-3 px-4">Location</th>
-                  <th class="py-3 px-4">Valuation / Rent</th>
-                  <th class="py-3 px-4">Assigned Agent</th>
-                  <th class="py-3 px-4">Status</th>
-                  <th class="py-3 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-white/5 text-stone-300">
-                <tr>
-                  <td class="py-3 px-4 font-semibold text-white flex items-center gap-2">
-                    <img src="https://picsum.photos/seed/prop1/100/100" class="w-8 h-8 rounded object-cover" alt="">
-                    <span>5-Bedroom Luxury Duplex</span>
-                  </td>
-                  <td class="py-3 px-4">Duplex</td>
-                  <td class="py-3 px-4">Maitama, Abuja</td>
-                  <td class="py-3 px-4 font-mono font-bold text-amber-400">₦185,000,000</td>
-                  <td class="py-3 px-4">Adaeze Okonkwo</td>
-                  <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300">Available</span></td>
-                  <td class="py-3 px-4 text-right space-x-2">
-                    <a href="property-detail.html?id=prop-001" class="text-emerald-400 hover:underline">View</a>
-                    <button class="text-stone-400 hover:text-white">Edit</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 font-semibold text-white flex items-center gap-2">
-                    <img src="https://picsum.photos/seed/prop3/100/100" class="w-8 h-8 rounded object-cover" alt="">
-                    <span>Skyline Atlantic Penthouse</span>
-                  </td>
-                  <td class="py-3 px-4">Penthouse</td>
-                  <td class="py-3 px-4">VI, Lagos</td>
-                  <td class="py-3 px-4 font-mono font-bold text-amber-400">₦450,000,000</td>
-                  <td class="py-3 px-4">Michael Okorie</td>
-                  <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300">Available</span></td>
-                  <td class="py-3 px-4 text-right space-x-2">
-                    <a href="property-detail.html?id=prop-002" class="text-emerald-400 hover:underline">View</a>
-                    <button class="text-stone-400 hover:text-white">Edit</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 font-semibold text-white flex items-center gap-2">
-                    <img src="https://picsum.photos/seed/prop4/100/100" class="w-8 h-8 rounded object-cover" alt="">
-                    <span>Modern 3-Bed City Residence</span>
-                  </td>
-                  <td class="py-3 px-4">Apartment</td>
-                  <td class="py-3 px-4">Wuse 2, Abuja</td>
-                  <td class="py-3 px-4 font-mono font-bold text-amber-400">₦75,000,000</td>
-                  <td class="py-3 px-4">Fatima Musa</td>
-                  <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-300">Reserved</span></td>
-                  <td class="py-3 px-4 text-right space-x-2">
-                    <a href="property-detail.html?id=prop-003" class="text-emerald-400 hover:underline">View</a>
-                    <button class="text-stone-400 hover:text-white">Edit</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- ==================== TAB 3: TENANTS ==================== -->
-      <div id="tenantsTab" class="tab-content hidden space-y-6">
-        <div class="glass-card p-6 rounded-2xl">
-          <h3 class="text-base font-serif font-bold text-white mb-4">Active Leases & Tenant Roster</h3>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="border-b border-white/10 text-stone-400 font-mono uppercase">
-                <tr>
-                  <th class="py-3 px-4">Tenant Name</th>
-                  <th class="py-3 px-4">Property Unit</th>
-                  <th class="py-3 px-4">Lease Term</th>
-                  <th class="py-3 px-4">Rent Paid</th>
-                  <th class="py-3 px-4">Status</th>
-                  <th class="py-3 px-4 text-right">Invoicing</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-white/5 text-stone-300">
-                <tr>
-                  <td class="py-3 px-4 font-semibold text-white">Dr. Kenneth Briggs</td>
-                  <td class="py-3 px-4">Skyline Penthouse Unit 4B</td>
-                  <td class="py-3 px-4 font-mono">15 Aug 2025 - 14 Aug 2026</td>
-                  <td class="py-3 px-4 font-mono text-emerald-400 font-bold">₦18,000,000 / yr</td>
-                  <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300">Current</span></td>
-                  <td class="py-3 px-4 text-right"><button class="text-emerald-400 hover:underline">Download Receipt</button></td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 font-semibold text-white">Sterling Capital Partners</td>
-                  <td class="py-3 px-4">Admiralty Commercial Floor 3</td>
-                  <td class="py-3 px-4 font-mono">01 Oct 2024 - 30 Sep 2026</td>
-                  <td class="py-3 px-4 font-mono text-emerald-400 font-bold">₦25,000,000 / yr</td>
-                  <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300">Current</span></td>
-                  <td class="py-3 px-4 text-right"><button class="text-emerald-400 hover:underline">Download Receipt</button></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- ==================== TAB 4: AGENTS ==================== -->
-      <div id="agentsTab" class="tab-content hidden space-y-6">
-        <div class="flex items-center justify-between">
-          <h3 class="text-base font-serif font-bold text-white">Affiliated Brokerage Realtors</h3>
-          <button class="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-semibold">+ Accredit New Agent</button>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div class="glass-card p-5 rounded-2xl flex items-center gap-4">
-            <img src="https://i.pravatar.cc/150?u=agent1" class="w-12 h-12 rounded-full border-2 border-emerald-500" alt="">
-            <div>
-              <h4 class="text-sm font-bold text-white">Adaeze Okonkwo</h4>
-              <p class="text-[11px] text-stone-400">Lead Realtor (Abuja FCT)</p>
-              <div class="text-[10px] font-mono text-amber-400 mt-1">₦2.4B Closed Volume</div>
-            </div>
-          </div>
-          <div class="glass-card p-5 rounded-2xl flex items-center gap-4">
-            <img src="https://i.pravatar.cc/150?u=agent2" class="w-12 h-12 rounded-full border-2 border-emerald-500" alt="">
-            <div>
-              <h4 class="text-sm font-bold text-white">Emeka Chukwu</h4>
-              <p class="text-[11px] text-stone-400">Commercial Specialist (Lagos)</p>
-              <div class="text-[10px] font-mono text-amber-400 mt-1">₦980M Closed Volume</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ==================== TAB 5: FINANCIALS ==================== -->
-      <div id="financialsTab" class="tab-content hidden space-y-6">
-        <div class="grid grid-cols-3 gap-4">
-          <div class="glass-card p-5 rounded-2xl">
-            <span class="text-xs text-stone-400 font-mono">Gross Rent Collected (YTD)</span>
-            <div class="text-2xl font-serif font-bold text-emerald-400 mt-1">₦170,400,000</div>
-          </div>
-          <div class="glass-card p-5 rounded-2xl">
-            <span class="text-xs text-stone-400 font-mono">Management Fees (10%)</span>
-            <div class="text-2xl font-serif font-bold text-amber-400 mt-1">₦17,040,000</div>
-          </div>
-          <div class="glass-card p-5 rounded-2xl">
-            <span class="text-xs text-stone-400 font-mono">Disbursed to Landlords</span>
-            <div class="text-2xl font-serif font-bold text-white mt-1">₦153,360,000</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ==================== TAB 6: DOCUMENTS ==================== -->
-      <div id="documentsTab" class="tab-content hidden space-y-6">
-        <div class="glass-card p-6 rounded-2xl space-y-4">
-          <h3 class="text-base font-serif font-bold text-white">Title Vault & C of O Records</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="p-4 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <i data-lucide="file-check" class="w-6 h-6 text-emerald-400"></i>
-                <div>
-                  <div class="text-xs font-bold text-white">Maitama_CofO_GovRec.pdf</div>
-                  <div class="text-[10px] text-stone-500 font-mono">AGIS CERTIFIED • 2.4 MB</div>
-                </div>
-              </div>
-              <button class="text-xs text-emerald-400 hover:underline">Download</button>
-            </div>
-            <div class="p-4 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <i data-lucide="file-check" class="w-6 h-6 text-emerald-400"></i>
-                <div>
-                  <div class="text-xs font-bold text-white">Skyline_VI_GovernorConsent.pdf</div>
-                  <div class="text-[10px] text-stone-500 font-mono">LANDS BUREAU • 4.1 MB</div>
-                </div>
-              </div>
-              <button class="text-xs text-emerald-400 hover:underline">Download</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ==================== TAB 7: SETTINGS ==================== -->
-      <div id="settingsTab" class="tab-content hidden space-y-6">
-        <div class="glass-card p-6 rounded-2xl max-w-2xl space-y-4 text-xs">
-          <h3 class="text-base font-serif font-bold text-white mb-2">Corporate Profile & Payment Gateway</h3>
-          <div>
-            <label class="block text-stone-400 mb-1">Company Registered Name</label>
-            <input type="text" value="Highland Crest Properties Ltd" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white">
-          </div>
-          <div>
-            <label class="block text-stone-400 mb-1">Paystack Corporate Merchant Subaccount</label>
-            <input type="text" value="ACCT_93810294821 (Settlement: Zenith Bank Plc)" class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white font-mono">
-          </div>
-          <button class="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold shadow-md">Save Settings</button>
-        </div>
-      </div>
-
-    </main>
-  </div>
-
-  <script>
-    lucide.createIcons();
-
-    // Tab Navigation Logic
-    const tabs = document.querySelectorAll('.nav-tab');
-    const contents = document.querySelectorAll('.tab-content');
-    const tabHeaderTitle = document.getElementById('tabHeaderTitle');
-
-    const titles = {
-      overview: "Portfolio Overview",
-      properties: "Managed Properties Directory",
-      tenants: "Tenants & Active Leases",
-      agents: "Accredited Brokerage Agents",
-      financials: "Rent Roll & Financials",
-      documents: "Legal Deeds & Title Vault",
-      settings: "Firm Settings & Integrations"
-    };
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => {
-          t.classList.remove('sidebar-active');
-          t.className = "nav-tab text-stone-400 hover:text-white hover:bg-white/5 w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors";
-        });
-        tab.className = "nav-tab sidebar-active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors";
-
-        const tabKey = tab.getAttribute('data-tab');
-        contents.forEach(c => c.classList.add('hidden'));
-        document.getElementById(`${tabKey}Tab`).classList.remove('hidden');
-
-        if (tabHeaderTitle && titles[tabKey]) {
-          tabHeaderTitle.textContent = titles[tabKey];
-        }
-      });
-    });
-
-    document.getElementById('addPropertyQuickBtn').addEventListener('click', () => {
-      alert('Opening New Property Enrolment Wizard...');
-      document.querySelector('[data-tab="properties"]').click();
-    });
-  </script>
-</body>
+					Promise.all([
+						import("/@fs/C:/Users/انتو/Downloads/adk-svelte/node_modules/@sveltejs/kit/src/runtime/client/entry.js"),
+						import("/@fs/C:/Users/انتو/Downloads/adk-svelte/.svelte-kit/generated/client/app.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 21],
+							data: [{type:"data",data:{session:null},uses:{}},null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+  </body>
 </html>

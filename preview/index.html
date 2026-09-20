@@ -1,758 +1,489 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aliko Diamond Key — Nigeria's Premier Real Estate Platform</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#050A0E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!--12qhfyh--><link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/> <meta name="description" content="Aliko Diamond Key — Nigeria's Premier Real Estate &amp; Property Management Platform"/> <meta property="og:type" content="website"/> <meta property="og:title" content="Aliko Diamond Key — Premium Real Estate"/> <meta property="og:description" content="1,200+ verified properties across Nigeria. Zero legal risk. Automated title documentation."/> <meta name="theme-color" content="#050A0E"/><!----><!--1uha8ag--><meta name="description" content="Discover ultra-premium homes, land, and commercial spaces across Nigeria with our government-verified, zero-fraud guarantee."/><!----><title>Aliko Diamond Key — Nigeria's Premier Real Estate Platform</title>
+		<style data-sveltekit>@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  <style>
-    :root {
-      --c-obsidian: #050A0E;
-      --c-emerald: #059669;
-      --c-gold: #D97706;
+@layer base {
+  :root {
+    --c-indigo: #4F46E5;
+    --c-rose: #E11D48;
+    --c-purple: #9333ea;
+    --c-blue-dark: #1e3a8a;
+  }
+  body {
+    background-color: #050A0E;
+    color: #e7e5e4; /* stone-200 */
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Instrument Serif', Georgia, serif;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-400 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(5,150,105,0.5),0_0_60px_rgba(5,150,105,0.2)];
+    transform: translateZ(0);
+  }
+  
+  .btn-secondary {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-amber-600 via-amber-500 to-amber-300 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(217,119,6,0.5),0_0_60px_rgba(217,119,6,0.2)];
+    transform: translateZ(0);
+  }
+
+  .btn-ghost {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-white/10 rounded-lg bg-white/5 backdrop-blur-md hover:bg-white/10 hover:scale-[1.03] active:scale-[0.97];
+    transform: translateZ(0);
+  }
+
+  .btn-danger {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-rose-600 to-rose-400 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(225,29,72,0.5),0_0_60px_rgba(225,29,72,0.2)];
+    transform: translateZ(0);
+  }
+
+  /* Tabs */
+  .tab-pill {
+    @apply px-4 py-2 text-sm font-medium transition-all duration-250 rounded-full text-stone-400 hover:text-white hover:bg-white/5;
+  }
+  
+  .tab-pill-active {
+    @apply px-4 py-2 text-sm font-medium transition-all duration-250 rounded-full text-emerald-400 bg-emerald-900/30 border border-emerald-500/30 shadow-[0_0_10px_rgba(5,150,105,0.2)];
+  }
+
+  /* Wizard */
+  .wizard-step-inactive {
+    @apply flex items-center justify-center w-8 h-8 rounded-full border border-stone-700 bg-stone-800 text-stone-400 transition-all duration-450;
+  }
+  .wizard-step-active {
+    @apply flex items-center justify-center w-8 h-8 rounded-full border border-emerald-400 bg-emerald-900/50 text-emerald-300 shadow-[0_0_15px_rgba(5,150,105,0.4)] transition-all duration-450 transform -translate-y-1;
+  }
+  .wizard-step-complete {
+    @apply flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white transition-all duration-450;
+  }
+
+  /* Cards */
+  .card-3d {
+    @apply relative overflow-hidden transition-all duration-450 ease-[cubic-bezier(0.16,1,0.3,1)] border border-white/5 rounded-2xl bg-white/5 backdrop-blur-xl hover:-translate-y-2 hover:shadow-xl;
+    transform: translateZ(0);
+    perspective: 1200px;
+  }
+
+  /* Badges */
+  .badge-client {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-800 text-stone-300 border border-stone-700;
+  }
+  .badge-agent {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-900/40 text-emerald-300 border border-emerald-700/50;
+  }
+  .badge-manager {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-900/40 text-amber-300 border border-amber-700/50;
+  }
+
+  .sidebar-item {
+    @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-stone-400 hover:text-white hover:bg-white/5 transition-all duration-250;
+  }
+  .sidebar-item-active {
+    @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-emerald-400 bg-emerald-900/20 border border-emerald-500/20 transition-all duration-250;
+  }
+
+  .map-container {
+    @apply w-full h-full rounded-xl overflow-hidden border border-white/10 bg-stone-900;
+  }
+
+  .gradient-border {
+    position: relative;
+    background: transparent;
+  }
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(5,150,105,0.6), rgba(217,119,6,0.6), rgba(99,102,241,0.5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  
+  .prose-dark {
+    @apply prose prose-invert prose-emerald max-w-none text-stone-300;
+  }
+}
+
+@layer utilities {
+  .neon-emerald {
+    box-shadow: 0 0 20px rgba(5,150,105,0.5), 0 0 60px rgba(5,150,105,0.2);
+  }
+  .neon-gold {
+    box-shadow: 0 0 20px rgba(217,119,6,0.5), 0 0 60px rgba(217,119,6,0.2);
+  }
+  .glass-l1 {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .glass-l2 {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+  .glass-l3 {
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+}
+
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  0% { opacity: 0; transform: translateX(20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes countUp {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes morphGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes particleFloat {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
+
+
+  @keyframes s-918YXh7FMLIr-shrink {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
+ .s-918YXh7FMLIr{}
+
+  .hero-bg.s-tXm3LvdC2Qn5 {
+    background-color: #050A0E;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(5, 150, 105, 0.15) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(217, 119, 6, 0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(5, 150, 105, 0.1) 0px, transparent 50%);
+  }
+
+  .grid-floor.s-tXm3LvdC2Qn5 {
+    position: absolute;
+    bottom: -50%;
+    left: -50%;
+    width: 200%;
+    height: 100%;
+    background-image: 
+      linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(to top, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    transform: perspective(1000px) rotateX(75deg);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glass-panel.s-tXm3LvdC2Qn5 {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  .orb.s-tXm3LvdC2Qn5 {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+    transition: transform 0.2s ease-out;
+  }
+  
+  @keyframes s-tXm3LvdC2Qn5-float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.05); }
+  }
+
+  .floating.s-tXm3LvdC2Qn5 {
+    animation: s-tXm3LvdC2Qn5-float 6s ease-in-out infinite;
+  }
+ .s-tXm3LvdC2Qn5{}
+
+  .stats-banner.s-qorv0jpAjKOH {
+    background: linear-gradient(90deg, rgba(5,150,105,0.05) 0%, rgba(217,119,6,0.05) 50%, rgba(5,150,105,0.05) 100%);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+ .s-qorv0jpAjKOH{}
+
+  .prop-card.s-64X8MhSKVyMl {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  
+  .prop-card.s-64X8MhSKVyMl:hover {
+    transform: translateY(-10px);
+    border-color: rgba(5, 150, 105, 0.4);
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5), 0 0 20px rgba(5, 150, 105, 0.1);
+  }
+ .s-64X8MhSKVyMl{}
+
+  .type-card.s-Fyt_O8y4Swid {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+  
+  .type-card.s-Fyt_O8y4Swid:hover {
+    transform: scale(1.02);
+  }
+ .s-Fyt_O8y4Swid{}
+
+  .step-card.s-SGDxgfg_BMBp {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+  }
+  
+  .step-card.s-SGDxgfg_BMBp:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .line-dashed.s-SGDxgfg_BMBp {
+    background-image: linear-gradient(90deg, rgba(255,255,255,0.1) 50%, transparent 50%);
+    background-size: 16px 2px;
+  }
+  
+  @media (max-width: 1024px) {
+    .line-dashed.s-SGDxgfg_BMBp {
+      background-image: linear-gradient(180deg, rgba(255,255,255,0.1) 50%, transparent 50%);
+      background-size: 2px 16px;
     }
-    body {
-      background-color: #050A0E;
-      color: #f3f4f6;
-      font-family: 'Inter', sans-serif;
-      overflow-x: hidden;
+  }
+ .s-SGDxgfg_BMBp{}
+
+  .agent-card.s-5kUGZ6P1oEjc {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+  }
+  .agent-card.s-5kUGZ6P1oEjc:hover {
+    border-color: rgba(217, 119, 6, 0.4);
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+    transform: translateY(-5px);
+  }
+ .s-5kUGZ6P1oEjc{}
+
+  .map-container.s-82rYifbWx30q {
+    background-image: url('https://picsum.photos/seed/nigeriamap/1920/1080');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  
+  .map-overlay.s-82rYifbWx30q {
+    background: linear-gradient(90deg, #050A0E 0%, rgba(5,10,14,0.9) 30%, transparent 100%);
+  }
+  
+  @media (max-width: 768px) {
+    .map-overlay.s-82rYifbWx30q {
+      background: linear-gradient(0deg, #050A0E 0%, rgba(5,10,14,0.9) 50%, transparent 100%);
     }
-    .font-serif {
-      font-family: 'Playfair Display', serif;
-    }
-    .font-mono {
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .glass {
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .glass-card {
-      background: rgba(10, 17, 24, 0.75);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(5, 150, 105, 0.2);
-    }
-    .glass-card:hover {
-      border-color: rgba(5, 150, 105, 0.4);
-      transform: translateY(-4px);
-      box-shadow: 0 12px 30px -10px rgba(5, 150, 105, 0.3);
-    }
-    .text-gradient-gold {
-      background: linear-gradient(135deg, #D97706, #F59E0B, #FCD34D);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .text-gradient-emerald {
-      background: linear-gradient(135deg, #059669, #34D399);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .grid-floor {
-      background-image: linear-gradient(rgba(5, 150, 105, 0.1) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(5, 150, 105, 0.1) 1px, transparent 1px);
-      background-size: 40px 40px;
-    }
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #064E3B;
-      border-radius: 3px;
-    }
-  </style>
-</head>
-<body class="selection:bg-emerald-500/30">
+  }
 
-  <!-- ==================== NAVIGATION ==================== -->
-  <header class="sticky top-0 z-50 w-full glass border-b border-white/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-20">
-        
-        <!-- Logo -->
-        <a href="index.html" class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center shadow-[0_0_20px_rgba(5,150,105,0.4)]">
-            <i data-lucide="diamond" class="w-5 h-5 text-white"></i>
-          </div>
-          <div>
-            <span class="text-xl font-serif font-bold text-white tracking-wide">Aliko Diamond Key</span>
-            <span class="block text-[10px] text-emerald-400 font-mono tracking-widest uppercase -mt-1">Premier Real Estate</span>
-          </div>
-        </a>
+  .glass-panel.s-82rYifbWx30q {
+    background: rgba(5, 10, 14, 0.7);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
 
-        <!-- Desktop Navigation Links -->
-        <nav class="hidden md:flex items-center gap-8">
-          <a href="index.html" class="text-sm font-medium text-emerald-400">Home</a>
-          <a href="properties.html" class="text-sm font-medium text-stone-300 hover:text-emerald-400 transition-colors">Properties</a>
-          <a href="agents.html" class="text-sm font-medium text-stone-300 hover:text-emerald-400 transition-colors">Verified Agents</a>
-          <a href="properties.html?view=map" class="text-sm font-medium text-stone-300 hover:text-emerald-400 transition-colors">Interactive Map</a>
-          <div class="relative group">
-            <button class="text-sm font-medium text-stone-300 hover:text-emerald-400 transition-colors flex items-center gap-1">
-              Dashboards <i data-lucide="chevron-down" class="w-4 h-4"></i>
-            </button>
-            <div class="absolute top-full right-0 mt-2 w-52 glass-card rounded-xl shadow-2xl py-2 hidden group-hover:block">
-              <a href="dashboard-manager.html" class="flex items-center gap-2 px-4 py-2 text-xs text-stone-300 hover:bg-white/10 hover:text-white">
-                <i data-lucide="building-2" class="w-4 h-4 text-amber-400"></i> Estate Manager
-              </a>
-              <a href="dashboard-agent.html" class="flex items-center gap-2 px-4 py-2 text-xs text-stone-300 hover:bg-white/10 hover:text-white">
-                <i data-lucide="users" class="w-4 h-4 text-emerald-400"></i> Agent Dashboard
-              </a>
-              <a href="dashboard-client.html" class="flex items-center gap-2 px-4 py-2 text-xs text-stone-300 hover:bg-white/10 hover:text-white">
-                <i data-lucide="home" class="w-4 h-4 text-cyan-400"></i> Client Portal
-              </a>
-            </div>
-          </div>
-        </nav>
+  .pin.s-82rYifbWx30q {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #059669;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 15px rgba(5,150,105,0.8);
+    animation: s-82rYifbWx30q-pulse 2s infinite;
+  }
 
-        <!-- Right CTAs -->
-        <div class="hidden md:flex items-center gap-4">
-          <a href="auth.html" class="text-sm font-medium text-stone-300 hover:text-white px-3 py-2">Sign In</a>
-          <a href="agent-registration.html" class="text-xs font-semibold px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 transition-all">
-            Join as Agent
-          </a>
-          <a href="auth.html?mode=register" class="text-sm font-semibold px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-400 text-white shadow-[0_0_15px_rgba(5,150,105,0.4)] hover:scale-105 transition-all">
-            Get Started
-          </a>
-        </div>
+  @keyframes s-82rYifbWx30q-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(5,150,105, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(5,150,105, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(5,150,105, 0); }
+  }
+ .s-82rYifbWx30q{}
 
-        <!-- Mobile Menu Toggle -->
-        <button id="mobileMenuBtn" class="md:hidden text-stone-300 hover:text-white">
-          <i data-lucide="menu" class="w-6 h-6"></i>
-        </button>
-      </div>
-    </div>
+  .test-card.s-b2NgnP-jY9w8 {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+  }
+ .s-b2NgnP-jY9w8{}
 
-    <!-- Mobile Drawer -->
-    <div id="mobileDrawer" class="hidden md:hidden glass border-t border-white/10 px-4 py-4 space-y-3">
-      <a href="index.html" class="block text-sm text-emerald-400 font-medium py-1">Home</a>
-      <a href="properties.html" class="block text-sm text-stone-300 font-medium py-1">Properties</a>
-      <a href="agents.html" class="block text-sm text-stone-300 font-medium py-1">Verified Agents</a>
-      <a href="properties.html?view=map" class="block text-sm text-stone-300 font-medium py-1">Interactive Map</a>
-      <div class="pt-2 border-t border-white/10 text-xs font-mono text-stone-500">DASHBOARDS</div>
-      <a href="dashboard-manager.html" class="block text-sm text-stone-300 py-1">🏢 Estate Manager Dashboard</a>
-      <a href="dashboard-agent.html" class="block text-sm text-stone-300 py-1">🤝 Agent Portal</a>
-      <a href="dashboard-client.html" class="block text-sm text-stone-300 py-1">🏠 Client Portal</a>
-      <div class="pt-3 border-t border-white/10 flex gap-2">
-        <a href="auth.html" class="flex-1 py-2 text-center text-xs font-semibold rounded-lg bg-white/5 border border-white/10 text-white">Sign In</a>
-        <a href="agent-registration.html" class="flex-1 py-2 text-center text-xs font-semibold rounded-lg bg-emerald-600 text-white">Register</a>
-      </div>
-    </div>
-  </header>
+  .trust-banner.s-Shie5EE_QAlH {
+    background: linear-gradient(135deg, #064e3b 0%, #050a0e 100%);
+    border-top: 1px solid rgba(16, 185, 129, 0.2);
+    border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+  }
 
-  <!-- ==================== SECTION 1: HERO ==================== -->
-  <section class="relative min-h-[92vh] flex items-center justify-center overflow-hidden pt-12 pb-20">
-    <!-- 3D Grid Background -->
-    <div class="absolute inset-0 grid-floor opacity-30 pointer-events-none"></div>
-    <div class="absolute inset-0 bg-radial-at-c from-emerald-950/40 via-transparent to-[#050A0E] pointer-events-none"></div>
+  .scanner-line.s-Shie5EE_QAlH {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 100%;
+    background: #34d399;
+    box-shadow: 0 0 15px #34d399, 0 0 30px #34d399;
+    animation: s-Shie5EE_QAlH-scan 3s ease-in-out infinite alternate;
+    opacity: 0.5;
+  }
 
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10">
-      <div class="grid lg:grid-cols-12 gap-12 items-center">
-        
-        <!-- Left: Copy & Search -->
-        <div class="lg:col-span-7 text-center lg:text-left">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 text-xs font-mono mb-6">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-            NIGERIA'S PREMIER 3D PROPERTY ECOSYSTEM
-          </div>
+  @keyframes s-Shie5EE_QAlH-scan {
+    0% { left: 0%; }
+    100% { left: 100%; }
+  }
+ .s-Shie5EE_QAlH{}
 
-          <h1 class="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold text-white leading-[1.1] mb-6">
-            Own <span class="text-gradient-gold">Prime</span> Real Estate in <span class="text-gradient-emerald">Abuja & Lagos</span>
-          </h1>
+  .calc-card.s-Gt-7X6dNW2G2 {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(217, 119, 6, 0.3);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
 
-          <p class="text-stone-400 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
-            Verified titles with zero legal ambiguity. Invest in Nigeria’s highest-yielding residential, commercial, and land developments with automated deed generation.
-          </p>
+  input[type=range].s-Gt-7X6dNW2G2 {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+  }
+  input[type=range].s-Gt-7X6dNW2G2::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #34d399;
+    cursor: pointer;
+    margin-top: -8px;
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+  }
+  input[type=range].s-Gt-7X6dNW2G2::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+ .s-Gt-7X6dNW2G2{}
 
-          <!-- Hero Search Box (Embedded) -->
-          <div class="glass-card p-4 rounded-2xl shadow-2xl max-w-2xl mx-auto lg:mx-0 mb-8">
-            <form action="properties.html" method="GET" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label class="block text-[11px] font-mono text-stone-400 uppercase mb-1">Location</label>
-                <div class="relative">
-                  <i data-lucide="map-pin" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-500"></i>
-                  <input type="text" name="search" placeholder="Maitama, Lekki, Ikoyi..." class="w-full pl-9 pr-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500">
-                </div>
-              </div>
+  .cta-card.s-b3pdUTLi6DVQ {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .cta-card.s-b3pdUTLi6DVQ:hover {
+    transform: translateY(-5px);
+  }
+  
+  .cta-card.s-b3pdUTLi6DVQ::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
 
-              <div>
-                <label class="block text-[11px] font-mono text-stone-400 uppercase mb-1">Property Type</label>
-                <select name="type" class="w-full px-3 py-2 rounded-xl bg-[#0A1628] border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
-                  <option value="All">All Types</option>
-                  <option value="Duplex">Luxury Duplex</option>
-                  <option value="Penthouse">Penthouse</option>
-                  <option value="Apartment">Modern Apartment</option>
-                  <option value="Land">Verified Land</option>
-                  <option value="Commercial">Commercial Tower</option>
-                </select>
-              </div>
+  .glow-emerald.s-b3pdUTLi6DVQ {
+    box-shadow: 0 0 40px rgba(5, 150, 105, 0.15);
+  }
+  
+  .glow-amber.s-b3pdUTLi6DVQ {
+    box-shadow: 0 0 40px rgba(217, 119, 6, 0.15);
+  }
+ .s-b3pdUTLi6DVQ{}
 
-              <div class="flex items-end">
-                <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-400 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(5,150,105,0.4)] hover:scale-[1.02] transition-transform">
-                  <i data-lucide="search" class="w-4 h-4"></i> Search Listings
-                </button>
-              </div>
-            </form>
-          </div>
+  .search-glass.s-JzwkbW-iESF6 {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+  
+  select.s-JzwkbW-iESF6 {
+    background: transparent;
+    color: white;
+    border: none;
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+  }
+  
+  select.s-JzwkbW-iESF6 option:where(.s-JzwkbW-iESF6) {
+    background: #0f172a; /* dark bg for dropdown items */
+    color: white;
+  }
+ .s-JzwkbW-iESF6{}</style>
+  </head>
+  <body data-sveltekit-preload-data="hover" class="bg-surface-0 text-white antialiased">
+    <div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><header class="sticky top-0 z-40 w-full glass-l2 border-b border-white/10"><div class="container mx-auto px-4 lg:px-8"><div class="flex items-center justify-between h-20"><a href="/" class="flex items-center gap-3 group"><div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_15px_rgba(5,150,105,0.4)] group-hover:scale-105 transition-transform duration-300"><svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div> <span class="text-xl font-serif font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-stone-400">Aliko Diamond Key</span></a> <nav class="hidden md:flex items-center gap-8"><!--[--><a href="/" class="text-sm font-medium transition-colors hover:text-emerald-400 relative text-emerald-400">Home <!--[0--><div class="absolute -bottom-7 left-0 w-full h-0.5 bg-emerald-500 shadow-[0_0_10px_rgba(5,150,105,0.8)]"></div><!--]--></a><a href="/properties" class="text-sm font-medium transition-colors hover:text-emerald-400 relative text-stone-300">Properties <!--[-1--><!--]--></a><a href="/agents" class="text-sm font-medium transition-colors hover:text-emerald-400 relative text-stone-300">Agents <!--[-1--><!--]--></a><a href="/map" class="text-sm font-medium transition-colors hover:text-emerald-400 relative text-stone-300">Map View <!--[-1--><!--]--></a><!--]--> <div class="relative"><button class="flex items-center gap-1 text-sm font-medium transition-colors text-stone-300 hover:text-emerald-400">Services <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-chevron-down transition-transform "><!--[--><!----><path d="m6 9 6 6 6-6"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button> <!--[-1--><!--]--></div></nav> <div class="hidden md:flex items-center gap-4"><!--[-1--><a href="/auth?tab=signin" class="text-sm font-medium text-stone-300 hover:text-white transition-colors px-4 py-2">Sign In</a> <a href="/auth?tab=signup" class="btn-primary">Register</a><!--]--></div> <button class="md:hidden p-2 text-stone-300 hover:text-white"><!--[-1--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-menu"><!--[--><!----><line x1="4" x2="20" y1="12" y2="12"><!----></line><!----><!----><line x1="4" x2="20" y1="6" y2="6"><!----></line><!----><!----><line x1="4" x2="20" y1="18" y2="18"><!----></line><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><!--]--></button></div></div> <!--[-1--><!--]--></header><!----><!--]--> <main class="pt-20 min-h-screen bg-[#050A0E]"><!--[--><!--[-1--><!--[--><main class="bg-[#050A0E] min-h-screen text-white selection:bg-emerald-500/30"><section class="relative min-h-screen hero-bg flex items-center pt-24 pb-12 overflow-hidden text-white s-tXm3LvdC2Qn5"><div class="grid-floor s-tXm3LvdC2Qn5"></div> <div class="orb bg-emerald-600/20 w-96 h-96 top-20 left-10 s-tXm3LvdC2Qn5" style="transform: translate(0px, 0px);"></div> <div class="orb bg-amber-500/20 w-80 h-80 bottom-20 right-20 s-tXm3LvdC2Qn5" style="transform: translate(0px, 0px);"></div> <div class="container mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-12 s-tXm3LvdC2Qn5"><div class="w-full lg:w-1/2 flex flex-col gap-6 items-start s-tXm3LvdC2Qn5"><!--[-1--><!--]--></div> <div class="w-full lg:w-1/2 relative h-[600px] hidden lg:block perspective-1000 s-tXm3LvdC2Qn5"><!--[-1--><!--]--></div></div></section><!----> <div class="stats-banner py-12 relative z-10 w-full overflow-hidden bg-[#050A0E] s-qorv0jpAjKOH"><div class="container mx-auto px-6 s-qorv0jpAjKOH"><div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 divide-x-0 md:divide-x divide-white/10 s-qorv0jpAjKOH"><!--[--><div class="flex flex-col items-center text-center px-4 group s-qorv0jpAjKOH"><div class="p-3 rounded-2xl bg-white/5 mb-4 group-hover:scale-110 transition-transform text-emerald-400 s-qorv0jpAjKOH"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-building-2"><!--[--><!----><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"><!----></path><!----><!----><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"><!----></path><!----><!----><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"><!----></path><!----><!----><path d="M10 6h4"><!----></path><!----><!----><path d="M10 10h4"><!----></path><!----><!----><path d="M10 14h4"><!----></path><!----><!----><path d="M10 18h4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div> <h4 class="text-4xl font-extrabold text-white mb-2 flex items-center justify-center s-qorv0jpAjKOH"><!--[-1--><!--]--> 0 <!--[0--><span class="text-2xl ml-1 s-qorv0jpAjKOH">+</span><!--]--></h4> <p class="text-gray-400 text-sm uppercase tracking-wider font-semibold s-qorv0jpAjKOH">Total Listings</p></div><div class="flex flex-col items-center text-center px-4 group s-qorv0jpAjKOH"><div class="p-3 rounded-2xl bg-white/5 mb-4 group-hover:scale-110 transition-transform text-amber-400 s-qorv0jpAjKOH"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-users"><!--[--><!----><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"><!----></path><!----><!----><circle cx="9" cy="7" r="4"><!----></circle><!----><!----><path d="M22 21v-2a4 4 0 0 0-3-3.87"><!----></path><!----><!----><path d="M16 3.13a4 4 0 0 1 0 7.75"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div> <h4 class="text-4xl font-extrabold text-white mb-2 flex items-center justify-center s-qorv0jpAjKOH"><!--[-1--><!--]--> 0 <!--[-1--><!--]--></h4> <p class="text-gray-400 text-sm uppercase tracking-wider font-semibold s-qorv0jpAjKOH">Verified Agents</p></div><div class="flex flex-col items-center text-center px-4 group s-qorv0jpAjKOH"><div class="p-3 rounded-2xl bg-white/5 mb-4 group-hover:scale-110 transition-transform text-emerald-400 s-qorv0jpAjKOH"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-wallet"><!--[--><!----><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"><!----></path><!----><!----><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div> <h4 class="text-4xl font-extrabold text-white mb-2 flex items-center justify-center s-qorv0jpAjKOH"><!--[0--><span class="text-2xl mr-1 s-qorv0jpAjKOH">₦</span><!--]--> 0 <!--[0--><span class="text-2xl ml-1 s-qorv0jpAjKOH">B+</span><!--]--></h4> <p class="text-gray-400 text-sm uppercase tracking-wider font-semibold s-qorv0jpAjKOH">Transactions</p></div><div class="flex flex-col items-center text-center px-4 group s-qorv0jpAjKOH"><div class="p-3 rounded-2xl bg-white/5 mb-4 group-hover:scale-110 transition-transform text-amber-400 s-qorv0jpAjKOH"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-target"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><circle cx="12" cy="12" r="6"><!----></circle><!----><!----><circle cx="12" cy="12" r="2"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div> <h4 class="text-4xl font-extrabold text-white mb-2 flex items-center justify-center s-qorv0jpAjKOH"><!--[-1--><!--]--> 0 <!--[0--><span class="text-2xl ml-1 s-qorv0jpAjKOH">%</span><!--]--></h4> <p class="text-gray-400 text-sm uppercase tracking-wider font-semibold s-qorv0jpAjKOH">Client Satisfaction</p></div><!--]--></div></div></div><!----> <section class="py-24 bg-[#050A0E] text-white s-64X8MhSKVyMl"><div class="container mx-auto px-6 s-64X8MhSKVyMl"><div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4 s-64X8MhSKVyMl"><div class="s-64X8MhSKVyMl"><h4 class="text-emerald-500 font-bold tracking-widest uppercase text-sm mb-2 s-64X8MhSKVyMl">Prime Listings</h4> <h2 class="text-3xl md:text-5xl font-extrabold s-64X8MhSKVyMl">Featured Properties</h2></div> <a href="/properties" class="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-semibold group transition-colors s-64X8MhSKVyMl">View All Properties <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right group-hover:translate-x-1 transition-transform"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a></div> <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 s-64X8MhSKVyMl"><!--[--><div class="prop-card rounded-2xl overflow-hidden group cursor-pointer flex flex-col h-full s-64X8MhSKVyMl"><div class="relative h-64 overflow-hidden s-64X8MhSKVyMl"><img src="https://picsum.photos/seed/prop1/800/600" alt="Maitama Luxury Duplex" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 s-64X8MhSKVyMl"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent opacity-80 s-64X8MhSKVyMl"></div> <div class="absolute top-4 left-4 s-64X8MhSKVyMl"><span class="bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold border border-white/10 uppercase tracking-wider text-amber-400 s-64X8MhSKVyMl">Duplex</span></div> <div class="absolute top-4 right-4 s-64X8MhSKVyMl"><span class="bg-emerald-500/90 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg s-64X8MhSKVyMl">Available</span></div></div> <div class="p-6 flex flex-col flex-grow s-64X8MhSKVyMl"><div class="mb-4 s-64X8MhSKVyMl"><h3 class="text-xl font-bold mb-2 group-hover:text-emerald-400 transition-colors s-64X8MhSKVyMl">Maitama Luxury Duplex</h3> <p class="text-gray-400 text-sm flex items-center gap-1 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin text-gray-500"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Maitama, Abuja</p></div> <div class="flex items-center justify-between py-4 border-y border-white/5 mb-4 text-sm text-gray-300 s-64X8MhSKVyMl"><!--[0--><div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed text-gray-500"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 5 Beds</div><!--]--> <div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath text-gray-500"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 6 Baths</div> <div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square text-gray-500"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 450 sqm</div></div> <div class="mt-auto flex items-center justify-between s-64X8MhSKVyMl"><div class="s-64X8MhSKVyMl"><p class="text-xs text-gray-500 mb-1 s-64X8MhSKVyMl">Asking Price</p> <p class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 s-64X8MhSKVyMl">₦185,000,000</p></div> <button class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:border-emerald-400 transition-all s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right group-hover:text-white"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div></div></div><div class="prop-card rounded-2xl overflow-hidden group cursor-pointer flex flex-col h-full s-64X8MhSKVyMl"><div class="relative h-64 overflow-hidden s-64X8MhSKVyMl"><img src="https://picsum.photos/seed/prop2/800/600" alt="Asokoro Skyline Penthouse" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 s-64X8MhSKVyMl"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent opacity-80 s-64X8MhSKVyMl"></div> <div class="absolute top-4 left-4 s-64X8MhSKVyMl"><span class="bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold border border-white/10 uppercase tracking-wider text-amber-400 s-64X8MhSKVyMl">Penthouse</span></div> <div class="absolute top-4 right-4 s-64X8MhSKVyMl"><span class="bg-emerald-500/90 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg s-64X8MhSKVyMl">Just Listed</span></div></div> <div class="p-6 flex flex-col flex-grow s-64X8MhSKVyMl"><div class="mb-4 s-64X8MhSKVyMl"><h3 class="text-xl font-bold mb-2 group-hover:text-emerald-400 transition-colors s-64X8MhSKVyMl">Asokoro Skyline Penthouse</h3> <p class="text-gray-400 text-sm flex items-center gap-1 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin text-gray-500"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Asokoro, Abuja</p></div> <div class="flex items-center justify-between py-4 border-y border-white/5 mb-4 text-sm text-gray-300 s-64X8MhSKVyMl"><!--[0--><div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed text-gray-500"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 4 Beds</div><!--]--> <div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath text-gray-500"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 4.5 Baths</div> <div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square text-gray-500"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 320 sqm</div></div> <div class="mt-auto flex items-center justify-between s-64X8MhSKVyMl"><div class="s-64X8MhSKVyMl"><p class="text-xs text-gray-500 mb-1 s-64X8MhSKVyMl">Asking Price</p> <p class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 s-64X8MhSKVyMl">₦320,000,000</p></div> <button class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:border-emerald-400 transition-all s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right group-hover:text-white"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div></div></div><div class="prop-card rounded-2xl overflow-hidden group cursor-pointer flex flex-col h-full s-64X8MhSKVyMl"><div class="relative h-64 overflow-hidden s-64X8MhSKVyMl"><img src="https://picsum.photos/seed/prop3/800/600" alt="Wuse 2 Smart Apartment" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 s-64X8MhSKVyMl"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent opacity-80 s-64X8MhSKVyMl"></div> <div class="absolute top-4 left-4 s-64X8MhSKVyMl"><span class="bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold border border-white/10 uppercase tracking-wider text-amber-400 s-64X8MhSKVyMl">Apartment</span></div> <div class="absolute top-4 right-4 s-64X8MhSKVyMl"><span class="bg-emerald-500/90 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg s-64X8MhSKVyMl">Available</span></div></div> <div class="p-6 flex flex-col flex-grow s-64X8MhSKVyMl"><div class="mb-4 s-64X8MhSKVyMl"><h3 class="text-xl font-bold mb-2 group-hover:text-emerald-400 transition-colors s-64X8MhSKVyMl">Wuse 2 Smart Apartment</h3> <p class="text-gray-400 text-sm flex items-center gap-1 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin text-gray-500"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Wuse 2, Abuja</p></div> <div class="flex items-center justify-between py-4 border-y border-white/5 mb-4 text-sm text-gray-300 s-64X8MhSKVyMl"><!--[0--><div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed text-gray-500"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 3 Beds</div><!--]--> <div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath text-gray-500"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 3 Baths</div> <div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square text-gray-500"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 180 sqm</div></div> <div class="mt-auto flex items-center justify-between s-64X8MhSKVyMl"><div class="s-64X8MhSKVyMl"><p class="text-xs text-gray-500 mb-1 s-64X8MhSKVyMl">Asking Price</p> <p class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 s-64X8MhSKVyMl">₦75,000,000</p></div> <button class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:border-emerald-400 transition-all s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right group-hover:text-white"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div></div></div><div class="prop-card rounded-2xl overflow-hidden group cursor-pointer flex flex-col h-full s-64X8MhSKVyMl"><div class="relative h-64 overflow-hidden s-64X8MhSKVyMl"><img src="https://picsum.photos/seed/prop4/800/600" alt="Gwarinpa Family Home" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 s-64X8MhSKVyMl"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent opacity-80 s-64X8MhSKVyMl"></div> <div class="absolute top-4 left-4 s-64X8MhSKVyMl"><span class="bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold border border-white/10 uppercase tracking-wider text-amber-400 s-64X8MhSKVyMl">House</span></div> <div class="absolute top-4 right-4 s-64X8MhSKVyMl"><span class="bg-emerald-500/90 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg s-64X8MhSKVyMl">Available</span></div></div> <div class="p-6 flex flex-col flex-grow s-64X8MhSKVyMl"><div class="mb-4 s-64X8MhSKVyMl"><h3 class="text-xl font-bold mb-2 group-hover:text-emerald-400 transition-colors s-64X8MhSKVyMl">Gwarinpa Family Home</h3> <p class="text-gray-400 text-sm flex items-center gap-1 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin text-gray-500"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Gwarinpa, Abuja</p></div> <div class="flex items-center justify-between py-4 border-y border-white/5 mb-4 text-sm text-gray-300 s-64X8MhSKVyMl"><!--[0--><div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed text-gray-500"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 4 Beds</div><!--]--> <div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath text-gray-500"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 3 Baths</div> <div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square text-gray-500"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 250 sqm</div></div> <div class="mt-auto flex items-center justify-between s-64X8MhSKVyMl"><div class="s-64X8MhSKVyMl"><p class="text-xs text-gray-500 mb-1 s-64X8MhSKVyMl">Asking Price</p> <p class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 s-64X8MhSKVyMl">₦45,000,000</p></div> <button class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:border-emerald-400 transition-all s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right group-hover:text-white"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div></div></div><div class="prop-card rounded-2xl overflow-hidden group cursor-pointer flex flex-col h-full s-64X8MhSKVyMl"><div class="relative h-64 overflow-hidden s-64X8MhSKVyMl"><img src="https://picsum.photos/seed/prop5/800/600" alt="Lekki Phase 1 Waterfront" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 s-64X8MhSKVyMl"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent opacity-80 s-64X8MhSKVyMl"></div> <div class="absolute top-4 left-4 s-64X8MhSKVyMl"><span class="bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold border border-white/10 uppercase tracking-wider text-amber-400 s-64X8MhSKVyMl">Villa</span></div> <div class="absolute top-4 right-4 s-64X8MhSKVyMl"><span class="bg-emerald-500/90 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg s-64X8MhSKVyMl">Hot Deal</span></div></div> <div class="p-6 flex flex-col flex-grow s-64X8MhSKVyMl"><div class="mb-4 s-64X8MhSKVyMl"><h3 class="text-xl font-bold mb-2 group-hover:text-emerald-400 transition-colors s-64X8MhSKVyMl">Lekki Phase 1 Waterfront</h3> <p class="text-gray-400 text-sm flex items-center gap-1 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin text-gray-500"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Lekki Phase 1, Lagos</p></div> <div class="flex items-center justify-between py-4 border-y border-white/5 mb-4 text-sm text-gray-300 s-64X8MhSKVyMl"><!--[0--><div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed text-gray-500"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 5 Beds</div><!--]--> <div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath text-gray-500"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 5 Baths</div> <div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square text-gray-500"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 500 sqm</div></div> <div class="mt-auto flex items-center justify-between s-64X8MhSKVyMl"><div class="s-64X8MhSKVyMl"><p class="text-xs text-gray-500 mb-1 s-64X8MhSKVyMl">Asking Price</p> <p class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 s-64X8MhSKVyMl">₦220,000,000</p></div> <button class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:border-emerald-400 transition-all s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right group-hover:text-white"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div></div></div><div class="prop-card rounded-2xl overflow-hidden group cursor-pointer flex flex-col h-full s-64X8MhSKVyMl"><div class="relative h-64 overflow-hidden s-64X8MhSKVyMl"><img src="https://picsum.photos/seed/prop6/800/600" alt="VI Commercial Plaza" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 s-64X8MhSKVyMl"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent opacity-80 s-64X8MhSKVyMl"></div> <div class="absolute top-4 left-4 s-64X8MhSKVyMl"><span class="bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold border border-white/10 uppercase tracking-wider text-amber-400 s-64X8MhSKVyMl">Commercial</span></div> <div class="absolute top-4 right-4 s-64X8MhSKVyMl"><span class="bg-emerald-500/90 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg s-64X8MhSKVyMl">Available</span></div></div> <div class="p-6 flex flex-col flex-grow s-64X8MhSKVyMl"><div class="mb-4 s-64X8MhSKVyMl"><h3 class="text-xl font-bold mb-2 group-hover:text-emerald-400 transition-colors s-64X8MhSKVyMl">VI Commercial Plaza</h3> <p class="text-gray-400 text-sm flex items-center gap-1 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin text-gray-500"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Victoria Island, Lagos</p></div> <div class="flex items-center justify-between py-4 border-y border-white/5 mb-4 text-sm text-gray-300 s-64X8MhSKVyMl"><!--[-1--><!--]--> <div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath text-gray-500"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 12 Baths</div> <div class="flex items-center gap-2 s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square text-gray-500"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 1200 sqm</div></div> <div class="mt-auto flex items-center justify-between s-64X8MhSKVyMl"><div class="s-64X8MhSKVyMl"><p class="text-xs text-gray-500 mb-1 s-64X8MhSKVyMl">Asking Price</p> <p class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 s-64X8MhSKVyMl">₦950,000,000</p></div> <button class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:border-emerald-400 transition-all s-64X8MhSKVyMl"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right group-hover:text-white"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div></div></div><!--]--></div></div></section><!----> <section class="py-24 bg-[#050A0E] text-white s-Fyt_O8y4Swid"><div class="container mx-auto px-6 s-Fyt_O8y4Swid"><div class="text-center mb-16 s-Fyt_O8y4Swid"><h2 class="text-3xl md:text-4xl font-extrabold mb-4 s-Fyt_O8y4Swid">Browse by Property Type</h2> <p class="text-gray-400 s-Fyt_O8y4Swid">Explore our diverse portfolio of properties tailored to your specific needs.</p></div> <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 s-Fyt_O8y4Swid"><!--[--><a href="/properties?type=Residential" class="type-card rounded-2xl p-6 group flex items-center justify-between hover:border-emerald-500/50 hover:shadow-[0_0_30px_rgba(var(--tw-colors-emerald-500),0.1)] s-Fyt_O8y4Swid"><div class="flex items-center gap-6 s-Fyt_O8y4Swid"><div class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform s-Fyt_O8y4Swid">🏠</div> <div class="s-Fyt_O8y4Swid"><h3 class="text-xl font-bold mb-1 s-Fyt_O8y4Swid">Residential</h3> <p class="text-xs text-gray-400 mb-2 s-Fyt_O8y4Swid">Houses, Villas &amp; Estates</p> <span class="text-xs font-semibold px-2 py-1 rounded-md bg-white/10 text-gray-300 s-Fyt_O8y4Swid">542 Listings</span></div></div> <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500 group-hover:bg-white/10 group-hover:text-white transition-all s-Fyt_O8y4Swid"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div></a><a href="/properties?type=Commercial" class="type-card rounded-2xl p-6 group flex items-center justify-between hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(var(--tw-colors-blue-500),0.1)] s-Fyt_O8y4Swid"><div class="flex items-center gap-6 s-Fyt_O8y4Swid"><div class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform s-Fyt_O8y4Swid">🏢</div> <div class="s-Fyt_O8y4Swid"><h3 class="text-xl font-bold mb-1 s-Fyt_O8y4Swid">Commercial</h3> <p class="text-xs text-gray-400 mb-2 s-Fyt_O8y4Swid">Offices &amp; Business Spaces</p> <span class="text-xs font-semibold px-2 py-1 rounded-md bg-white/10 text-gray-300 s-Fyt_O8y4Swid">124 Listings</span></div></div> <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500 group-hover:bg-white/10 group-hover:text-white transition-all s-Fyt_O8y4Swid"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div></a><a href="/properties?type=Land &amp; Plots" class="type-card rounded-2xl p-6 group flex items-center justify-between hover:border-amber-500/50 hover:shadow-[0_0_30px_rgba(var(--tw-colors-amber-500),0.1)] s-Fyt_O8y4Swid"><div class="flex items-center gap-6 s-Fyt_O8y4Swid"><div class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform s-Fyt_O8y4Swid">🌿</div> <div class="s-Fyt_O8y4Swid"><h3 class="text-xl font-bold mb-1 s-Fyt_O8y4Swid">Land &amp; Plots</h3> <p class="text-xs text-gray-400 mb-2 s-Fyt_O8y4Swid">Prime Development Land</p> <span class="text-xs font-semibold px-2 py-1 rounded-md bg-white/10 text-gray-300 s-Fyt_O8y4Swid">389 Listings</span></div></div> <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500 group-hover:bg-white/10 group-hover:text-white transition-all s-Fyt_O8y4Swid"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div></a><a href="/properties?type=Apartments" class="type-card rounded-2xl p-6 group flex items-center justify-between hover:border-purple-500/50 hover:shadow-[0_0_30px_rgba(var(--tw-colors-purple-500),0.1)] s-Fyt_O8y4Swid"><div class="flex items-center gap-6 s-Fyt_O8y4Swid"><div class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform s-Fyt_O8y4Swid">🏙️</div> <div class="s-Fyt_O8y4Swid"><h3 class="text-xl font-bold mb-1 s-Fyt_O8y4Swid">Apartments</h3> <p class="text-xs text-gray-400 mb-2 s-Fyt_O8y4Swid">Modern City Living</p> <span class="text-xs font-semibold px-2 py-1 rounded-md bg-white/10 text-gray-300 s-Fyt_O8y4Swid">215 Listings</span></div></div> <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500 group-hover:bg-white/10 group-hover:text-white transition-all s-Fyt_O8y4Swid"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div></a><a href="/properties?type=Duplexes" class="type-card rounded-2xl p-6 group flex items-center justify-between hover:border-rose-500/50 hover:shadow-[0_0_30px_rgba(var(--tw-colors-rose-500),0.1)] s-Fyt_O8y4Swid"><div class="flex items-center gap-6 s-Fyt_O8y4Swid"><div class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform s-Fyt_O8y4Swid">🏰</div> <div class="s-Fyt_O8y4Swid"><h3 class="text-xl font-bold mb-1 s-Fyt_O8y4Swid">Duplexes</h3> <p class="text-xs text-gray-400 mb-2 s-Fyt_O8y4Swid">Twin &amp; Semi-detached</p> <span class="text-xs font-semibold px-2 py-1 rounded-md bg-white/10 text-gray-300 s-Fyt_O8y4Swid">187 Listings</span></div></div> <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500 group-hover:bg-white/10 group-hover:text-white transition-all s-Fyt_O8y4Swid"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div></a><a href="/properties?type=Penthouses" class="type-card rounded-2xl p-6 group flex items-center justify-between hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(var(--tw-colors-cyan-500),0.1)] s-Fyt_O8y4Swid"><div class="flex items-center gap-6 s-Fyt_O8y4Swid"><div class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform s-Fyt_O8y4Swid">👑</div> <div class="s-Fyt_O8y4Swid"><h3 class="text-xl font-bold mb-1 s-Fyt_O8y4Swid">Penthouses</h3> <p class="text-xs text-gray-400 mb-2 s-Fyt_O8y4Swid">Luxury Sky Residences</p> <span class="text-xs font-semibold px-2 py-1 rounded-md bg-white/10 text-gray-300 s-Fyt_O8y4Swid">42 Listings</span></div></div> <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500 group-hover:bg-white/10 group-hover:text-white transition-all s-Fyt_O8y4Swid"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div></a><!--]--></div></div></section><!----> <section class="py-24 bg-[#050A0E] text-white relative overflow-hidden s-SGDxgfg_BMBp"><div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent s-SGDxgfg_BMBp"></div> <div class="container mx-auto px-6 relative z-10 s-SGDxgfg_BMBp"><div class="text-center max-w-2xl mx-auto mb-16 s-SGDxgfg_BMBp"><h4 class="text-amber-500 font-bold tracking-widest uppercase text-sm mb-2 s-SGDxgfg_BMBp">Simple Process</h4> <h2 class="text-3xl md:text-5xl font-extrabold mb-4 s-SGDxgfg_BMBp">Your Journey to Property Ownership</h2> <p class="text-gray-400 s-SGDxgfg_BMBp">We've streamlined the Nigerian real estate process to make buying, selling, or renting transparent and stress-free.</p></div> <div class="relative s-SGDxgfg_BMBp"><div class="absolute top-1/2 left-0 w-full h-[2px] line-dashed hidden lg:block -translate-y-1/2 z-0 s-SGDxgfg_BMBp"></div> <div class="absolute left-8 top-0 h-full w-[2px] line-dashed lg:hidden z-0 s-SGDxgfg_BMBp"></div> <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-6 relative z-10 s-SGDxgfg_BMBp"><!--[--><div class="step-card rounded-2xl p-6 relative flex flex-row lg:flex-col items-start lg:items-center text-left lg:text-center gap-6 lg:gap-4 group s-SGDxgfg_BMBp"><div class="absolute -top-3 -right-3 lg:-top-4 lg:right-auto lg:left-1/2 lg:-translate-x-1/2 w-8 h-8 rounded-full bg-[#050A0E] border-2 border-emerald-500 text-emerald-500 flex items-center justify-center font-bold text-sm shadow-[0_0_15px_rgba(5,150,105,0.3)] group-hover:scale-110 transition-transform s-SGDxgfg_BMBp">1</div> <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/20 transition-colors s-SGDxgfg_BMBp"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-search text-emerald-400"><!--[--><!----><circle cx="11" cy="11" r="8"><!----></circle><!----><!----><path d="m21 21-4.3-4.3"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div> <div class="s-SGDxgfg_BMBp"><h3 class="text-xl font-bold mb-2 s-SGDxgfg_BMBp">Search &amp; Discover</h3> <p class="text-gray-400 text-sm leading-relaxed s-SGDxgfg_BMBp">Browse 1,200+ verified listings with advanced filters tailored to your needs.</p></div></div><div class="step-card rounded-2xl p-6 relative flex flex-row lg:flex-col items-start lg:items-center text-left lg:text-center gap-6 lg:gap-4 group s-SGDxgfg_BMBp"><div class="absolute -top-3 -right-3 lg:-top-4 lg:right-auto lg:left-1/2 lg:-translate-x-1/2 w-8 h-8 rounded-full bg-[#050A0E] border-2 border-amber-500 text-amber-500 flex items-center justify-center font-bold text-sm shadow-[0_0_15px_rgba(5,150,105,0.3)] group-hover:scale-110 transition-transform s-SGDxgfg_BMBp">2</div> <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 group-hover:bg-amber-500/20 transition-colors s-SGDxgfg_BMBp"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-calendar-days text-amber-400"><!--[--><!----><path d="M8 2v4"><!----></path><!----><!----><path d="M16 2v4"><!----></path><!----><!----><rect width="18" height="18" x="3" y="4" rx="2"><!----></rect><!----><!----><path d="M3 10h18"><!----></path><!----><!----><path d="M8 14h.01"><!----></path><!----><!----><path d="M12 14h.01"><!----></path><!----><!----><path d="M16 14h.01"><!----></path><!----><!----><path d="M8 18h.01"><!----></path><!----><!----><path d="M12 18h.01"><!----></path><!----><!----><path d="M16 18h.01"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div> <div class="s-SGDxgfg_BMBp"><h3 class="text-xl font-bold mb-2 s-SGDxgfg_BMBp">Schedule a Viewing</h3> <p class="text-gray-400 text-sm leading-relaxed s-SGDxgfg_BMBp">Book direct physical or virtual tours with agents in just 2 clicks.</p></div></div><div class="step-card rounded-2xl p-6 relative flex flex-row lg:flex-col items-start lg:items-center text-left lg:text-center gap-6 lg:gap-4 group s-SGDxgfg_BMBp"><div class="absolute -top-3 -right-3 lg:-top-4 lg:right-auto lg:left-1/2 lg:-translate-x-1/2 w-8 h-8 rounded-full bg-[#050A0E] border-2 border-blue-500 text-blue-500 flex items-center justify-center font-bold text-sm shadow-[0_0_15px_rgba(5,150,105,0.3)] group-hover:scale-110 transition-transform s-SGDxgfg_BMBp">3</div> <div class="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover:bg-blue-500/20 transition-colors s-SGDxgfg_BMBp"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check text-blue-400"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div> <div class="s-SGDxgfg_BMBp"><h3 class="text-xl font-bold mb-2 s-SGDxgfg_BMBp">Verify &amp; Secure</h3> <p class="text-gray-400 text-sm leading-relaxed s-SGDxgfg_BMBp">Every property comes with government-backed title verification.</p></div></div><div class="step-card rounded-2xl p-6 relative flex flex-row lg:flex-col items-start lg:items-center text-left lg:text-center gap-6 lg:gap-4 group s-SGDxgfg_BMBp"><div class="absolute -top-3 -right-3 lg:-top-4 lg:right-auto lg:left-1/2 lg:-translate-x-1/2 w-8 h-8 rounded-full bg-[#050A0E] border-2 border-emerald-500 text-emerald-500 flex items-center justify-center font-bold text-sm shadow-[0_0_15px_rgba(5,150,105,0.3)] group-hover:scale-110 transition-transform s-SGDxgfg_BMBp">4</div> <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/20 transition-colors s-SGDxgfg_BMBp"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-key text-emerald-400"><!--[--><!----><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"><!----></path><!----><!----><path d="m21 2-9.6 9.6"><!----></path><!----><!----><circle cx="7.5" cy="15.5" r="5.5"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div> <div class="s-SGDxgfg_BMBp"><h3 class="text-xl font-bold mb-2 s-SGDxgfg_BMBp">Own Your Property</h3> <p class="text-gray-400 text-sm leading-relaxed s-SGDxgfg_BMBp">Sign digitally and get your auto-generated deed in 24 hours.</p></div></div><!--]--></div></div></div></section><!----> <section class="py-24 bg-[#050A0E] text-white s-5kUGZ6P1oEjc"><div class="container mx-auto px-6 s-5kUGZ6P1oEjc"><div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4 s-5kUGZ6P1oEjc"><div class="s-5kUGZ6P1oEjc"><h4 class="text-amber-500 font-bold tracking-widest uppercase text-sm mb-2 s-5kUGZ6P1oEjc">Verified Professionals</h4> <h2 class="text-3xl md:text-5xl font-extrabold s-5kUGZ6P1oEjc">Meet Our Top Agents</h2></div> <a href="/agents" class="flex items-center gap-2 text-amber-400 hover:text-amber-300 font-semibold group transition-colors s-5kUGZ6P1oEjc">View All Agents <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right group-hover:translate-x-1 transition-transform"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a></div> <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 s-5kUGZ6P1oEjc"><!--[--><div class="agent-card rounded-2xl p-6 flex flex-col relative group s-5kUGZ6P1oEjc"><div class="absolute top-4 right-4 bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-md text-[10px] font-bold border border-emerald-500/30 flex items-center gap-1 s-5kUGZ6P1oEjc"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-circle-check"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> VERIFIED</div> <div class="flex items-center gap-4 mb-6 s-5kUGZ6P1oEjc"><div class="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white/10 group-hover:border-amber-500 transition-colors s-5kUGZ6P1oEjc"><img src="https://picsum.photos/seed/agent1/200/200" alt="Adaeze Okonkwo" class="w-full h-full object-cover s-5kUGZ6P1oEjc"/></div> <div class="s-5kUGZ6P1oEjc"><h3 class="text-lg font-bold s-5kUGZ6P1oEjc">Adaeze Okonkwo</h3> <p class="text-xs text-gray-400 flex items-center gap-1 s-5kUGZ6P1oEjc"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Lagos</p></div></div> <div class="grid grid-cols-2 gap-4 mb-6 py-4 border-y border-white/5 s-5kUGZ6P1oEjc"><div class="s-5kUGZ6P1oEjc"><p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1 s-5kUGZ6P1oEjc">Sales Volume</p> <p class="font-bold text-amber-400 s-5kUGZ6P1oEjc">₦2.4B</p></div> <div class="s-5kUGZ6P1oEjc"><p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1 s-5kUGZ6P1oEjc">Rating</p> <p class="font-bold flex items-center gap-1 s-5kUGZ6P1oEjc"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 4.9</p></div></div> <div class="flex gap-2 mb-6 flex-wrap s-5kUGZ6P1oEjc"><!--[--><span class="text-xs px-2 py-1 rounded-md bg-white/5 text-gray-300 border border-white/10 s-5kUGZ6P1oEjc">Luxury</span><span class="text-xs px-2 py-1 rounded-md bg-white/5 text-gray-300 border border-white/10 s-5kUGZ6P1oEjc">Commercial</span><!--]--></div> <button class="mt-auto w-full py-3 rounded-xl border border-white/10 font-semibold text-sm hover:bg-white/5 transition-colors s-5kUGZ6P1oEjc">Contact Agent</button></div><div class="agent-card rounded-2xl p-6 flex flex-col relative group s-5kUGZ6P1oEjc"><div class="absolute top-4 right-4 bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-md text-[10px] font-bold border border-emerald-500/30 flex items-center gap-1 s-5kUGZ6P1oEjc"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-circle-check"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> VERIFIED</div> <div class="flex items-center gap-4 mb-6 s-5kUGZ6P1oEjc"><div class="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white/10 group-hover:border-amber-500 transition-colors s-5kUGZ6P1oEjc"><img src="https://picsum.photos/seed/agent2/200/200" alt="Emeka Chukwu" class="w-full h-full object-cover s-5kUGZ6P1oEjc"/></div> <div class="s-5kUGZ6P1oEjc"><h3 class="text-lg font-bold s-5kUGZ6P1oEjc">Emeka Chukwu</h3> <p class="text-xs text-gray-400 flex items-center gap-1 s-5kUGZ6P1oEjc"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Abuja</p></div></div> <div class="grid grid-cols-2 gap-4 mb-6 py-4 border-y border-white/5 s-5kUGZ6P1oEjc"><div class="s-5kUGZ6P1oEjc"><p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1 s-5kUGZ6P1oEjc">Sales Volume</p> <p class="font-bold text-amber-400 s-5kUGZ6P1oEjc">₦4.1B</p></div> <div class="s-5kUGZ6P1oEjc"><p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1 s-5kUGZ6P1oEjc">Rating</p> <p class="font-bold flex items-center gap-1 s-5kUGZ6P1oEjc"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 5</p></div></div> <div class="flex gap-2 mb-6 flex-wrap s-5kUGZ6P1oEjc"><!--[--><span class="text-xs px-2 py-1 rounded-md bg-white/5 text-gray-300 border border-white/10 s-5kUGZ6P1oEjc">Land</span><span class="text-xs px-2 py-1 rounded-md bg-white/5 text-gray-300 border border-white/10 s-5kUGZ6P1oEjc">Estates</span><!--]--></div> <button class="mt-auto w-full py-3 rounded-xl border border-white/10 font-semibold text-sm hover:bg-white/5 transition-colors s-5kUGZ6P1oEjc">Contact Agent</button></div><div class="agent-card rounded-2xl p-6 flex flex-col relative group s-5kUGZ6P1oEjc"><div class="absolute top-4 right-4 bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-md text-[10px] font-bold border border-emerald-500/30 flex items-center gap-1 s-5kUGZ6P1oEjc"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-circle-check"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> VERIFIED</div> <div class="flex items-center gap-4 mb-6 s-5kUGZ6P1oEjc"><div class="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white/10 group-hover:border-amber-500 transition-colors s-5kUGZ6P1oEjc"><img src="https://picsum.photos/seed/agent3/200/200" alt="Fatima Musa" class="w-full h-full object-cover s-5kUGZ6P1oEjc"/></div> <div class="s-5kUGZ6P1oEjc"><h3 class="text-lg font-bold s-5kUGZ6P1oEjc">Fatima Musa</h3> <p class="text-xs text-gray-400 flex items-center gap-1 s-5kUGZ6P1oEjc"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Kano</p></div></div> <div class="grid grid-cols-2 gap-4 mb-6 py-4 border-y border-white/5 s-5kUGZ6P1oEjc"><div class="s-5kUGZ6P1oEjc"><p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1 s-5kUGZ6P1oEjc">Sales Volume</p> <p class="font-bold text-amber-400 s-5kUGZ6P1oEjc">₦850M</p></div> <div class="s-5kUGZ6P1oEjc"><p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1 s-5kUGZ6P1oEjc">Rating</p> <p class="font-bold flex items-center gap-1 s-5kUGZ6P1oEjc"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 4.8</p></div></div> <div class="flex gap-2 mb-6 flex-wrap s-5kUGZ6P1oEjc"><!--[--><span class="text-xs px-2 py-1 rounded-md bg-white/5 text-gray-300 border border-white/10 s-5kUGZ6P1oEjc">Residential</span><span class="text-xs px-2 py-1 rounded-md bg-white/5 text-gray-300 border border-white/10 s-5kUGZ6P1oEjc">Rentals</span><!--]--></div> <button class="mt-auto w-full py-3 rounded-xl border border-white/10 font-semibold text-sm hover:bg-white/5 transition-colors s-5kUGZ6P1oEjc">Contact Agent</button></div><div class="agent-card rounded-2xl p-6 flex flex-col relative group s-5kUGZ6P1oEjc"><div class="absolute top-4 right-4 bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-md text-[10px] font-bold border border-emerald-500/30 flex items-center gap-1 s-5kUGZ6P1oEjc"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-circle-check"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> VERIFIED</div> <div class="flex items-center gap-4 mb-6 s-5kUGZ6P1oEjc"><div class="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white/10 group-hover:border-amber-500 transition-colors s-5kUGZ6P1oEjc"><img src="https://picsum.photos/seed/agent4/200/200" alt="Chidi Nwosu" class="w-full h-full object-cover s-5kUGZ6P1oEjc"/></div> <div class="s-5kUGZ6P1oEjc"><h3 class="text-lg font-bold s-5kUGZ6P1oEjc">Chidi Nwosu</h3> <p class="text-xs text-gray-400 flex items-center gap-1 s-5kUGZ6P1oEjc"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Port Harcourt</p></div></div> <div class="grid grid-cols-2 gap-4 mb-6 py-4 border-y border-white/5 s-5kUGZ6P1oEjc"><div class="s-5kUGZ6P1oEjc"><p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1 s-5kUGZ6P1oEjc">Sales Volume</p> <p class="font-bold text-amber-400 s-5kUGZ6P1oEjc">₦1.2B</p></div> <div class="s-5kUGZ6P1oEjc"><p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1 s-5kUGZ6P1oEjc">Rating</p> <p class="font-bold flex items-center gap-1 s-5kUGZ6P1oEjc"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 4.7</p></div></div> <div class="flex gap-2 mb-6 flex-wrap s-5kUGZ6P1oEjc"><!--[--><span class="text-xs px-2 py-1 rounded-md bg-white/5 text-gray-300 border border-white/10 s-5kUGZ6P1oEjc">Industrial</span><span class="text-xs px-2 py-1 rounded-md bg-white/5 text-gray-300 border border-white/10 s-5kUGZ6P1oEjc">Land</span><!--]--></div> <button class="mt-auto w-full py-3 rounded-xl border border-white/10 font-semibold text-sm hover:bg-white/5 transition-colors s-5kUGZ6P1oEjc">Contact Agent</button></div><!--]--></div></div></section><!----> <section class="h-[60vh] min-h-[500px] w-full map-container text-white overflow-hidden flex items-center relative s-82rYifbWx30q"><div class="pin s-82rYifbWx30q" style="top: 40%; left: 60%;"></div> <div class="pin bg-amber-500 s-82rYifbWx30q" style="top: 60%; left: 45%;"></div> <div class="pin s-82rYifbWx30q" style="top: 75%; left: 55%;"></div> <div class="absolute inset-0 map-overlay z-0 s-82rYifbWx30q"></div> <div class="container mx-auto px-6 relative z-10 h-full flex flex-col justify-end md:justify-center s-82rYifbWx30q"><div class="w-full md:w-5/12 glass-panel rounded-3xl p-8 mb-8 md:mb-0 s-82rYifbWx30q"><div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center mb-6 s-82rYifbWx30q"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin text-emerald-400"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div> <h2 class="text-3xl md:text-4xl font-extrabold mb-4 leading-tight s-82rYifbWx30q">Explore Properties <br class="s-82rYifbWx30q"/>on the Map</h2> <p class="text-gray-400 mb-8 s-82rYifbWx30q">Draw custom boundaries, filter by neighborhood, and see exact locations of verified properties across Nigeria.</p> <div class="space-y-4 mb-8 s-82rYifbWx30q"><div class="flex justify-between items-center border-b border-white/10 pb-2 s-82rYifbWx30q"><span class="font-medium text-gray-300 s-82rYifbWx30q">Lagos State</span> <span class="text-emerald-400 font-bold s-82rYifbWx30q">847 Listings</span></div> <div class="flex justify-between items-center border-b border-white/10 pb-2 s-82rYifbWx30q"><span class="font-medium text-gray-300 s-82rYifbWx30q">Abuja, FCT</span> <span class="text-emerald-400 font-bold s-82rYifbWx30q">456 Listings</span></div> <div class="flex justify-between items-center s-82rYifbWx30q"><span class="font-medium text-gray-300 s-82rYifbWx30q">Port Harcourt</span> <span class="text-emerald-400 font-bold s-82rYifbWx30q">234 Listings</span></div></div> <button class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors s-82rYifbWx30q"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-navigation"><!--[--><!----><polygon points="3 11 22 2 13 21 11 13 3 11"><!----></polygon><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Open Full Map</button></div></div></section><!----> <section class="py-24 bg-[#050A0E] text-white overflow-hidden relative s-b2NgnP-jY9w8"><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-600/5 rounded-full blur-3xl pointer-events-none s-b2NgnP-jY9w8"></div> <div class="container mx-auto px-6 relative z-10 s-b2NgnP-jY9w8"><div class="text-center mb-16 s-b2NgnP-jY9w8"><h2 class="text-3xl md:text-5xl font-extrabold mb-4 s-b2NgnP-jY9w8">What Our Clients Say</h2> <p class="text-gray-400 s-b2NgnP-jY9w8">Join thousands of satisfied home owners and investors.</p></div> <div class="max-w-4xl mx-auto relative s-b2NgnP-jY9w8"><div class="overflow-hidden rounded-3xl s-b2NgnP-jY9w8"><div class="flex transition-transform duration-500 ease-in-out s-b2NgnP-jY9w8" style="transform: translateX(-0%);"><!--[--><div class="w-full shrink-0 p-4 md:p-8 s-b2NgnP-jY9w8"><div class="test-card rounded-3xl p-8 md:p-12 relative s-b2NgnP-jY9w8"><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-quote absolute top-8 right-8 text-white/5"><!--[--><!----><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"><!----></path><!----><!----><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <div class="flex gap-1 mb-6 s-b2NgnP-jY9w8"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><!--]--></div> <p class="text-xl md:text-2xl font-medium leading-relaxed mb-10 text-gray-200 s-b2NgnP-jY9w8">"Found my dream home in Maitama in just 2 weeks. The verification process gave me complete peace of mind, knowing I was dealing with legitimate title deeds."</p> <div class="flex items-center gap-4 s-b2NgnP-jY9w8"><img src="https://picsum.photos/seed/test1/100/100" alt="Chinwe A." class="w-14 h-14 rounded-full border-2 border-emerald-500/50 s-b2NgnP-jY9w8"/> <div class="s-b2NgnP-jY9w8"><h4 class="font-bold text-lg s-b2NgnP-jY9w8">Chinwe A.</h4> <p class="text-sm text-gray-400 s-b2NgnP-jY9w8">Lagos State • <span class="text-emerald-400 s-b2NgnP-jY9w8">Bought a Duplex</span></p></div></div></div></div><div class="w-full shrink-0 p-4 md:p-8 s-b2NgnP-jY9w8"><div class="test-card rounded-3xl p-8 md:p-12 relative s-b2NgnP-jY9w8"><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-quote absolute top-8 right-8 text-white/5"><!--[--><!----><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"><!----></path><!----><!----><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <div class="flex gap-1 mb-6 s-b2NgnP-jY9w8"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><!--]--></div> <p class="text-xl md:text-2xl font-medium leading-relaxed mb-10 text-gray-200 s-b2NgnP-jY9w8">"As a diaspora investor, this platform made it incredibly easy. I was able to take a virtual tour, verify documents through their portal, and secure a property seamlessly."</p> <div class="flex items-center gap-4 s-b2NgnP-jY9w8"><img src="https://picsum.photos/seed/test2/100/100" alt="Dr. Emeka N." class="w-14 h-14 rounded-full border-2 border-emerald-500/50 s-b2NgnP-jY9w8"/> <div class="s-b2NgnP-jY9w8"><h4 class="font-bold text-lg s-b2NgnP-jY9w8">Dr. Emeka N.</h4> <p class="text-sm text-gray-400 s-b2NgnP-jY9w8">United Kingdom • <span class="text-emerald-400 s-b2NgnP-jY9w8">Invested in Land</span></p></div></div></div></div><div class="w-full shrink-0 p-4 md:p-8 s-b2NgnP-jY9w8"><div class="test-card rounded-3xl p-8 md:p-12 relative s-b2NgnP-jY9w8"><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-quote absolute top-8 right-8 text-white/5"><!--[--><!----><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"><!----></path><!----><!----><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <div class="flex gap-1 mb-6 s-b2NgnP-jY9w8"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-star text-amber-400 fill-amber-400"><!--[--><!----><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><!--]--></div> <p class="text-xl md:text-2xl font-medium leading-relaxed mb-10 text-gray-200 s-b2NgnP-jY9w8">"The ROI calculator helped me visualize my investment. I bought a commercial space in Victoria Island and it's already appreciating faster than projected."</p> <div class="flex items-center gap-4 s-b2NgnP-jY9w8"><img src="https://picsum.photos/seed/test3/100/100" alt="Biodun O." class="w-14 h-14 rounded-full border-2 border-emerald-500/50 s-b2NgnP-jY9w8"/> <div class="s-b2NgnP-jY9w8"><h4 class="font-bold text-lg s-b2NgnP-jY9w8">Biodun O.</h4> <p class="text-sm text-gray-400 s-b2NgnP-jY9w8">Abuja • <span class="text-emerald-400 s-b2NgnP-jY9w8">Commercial Buyer</span></p></div></div></div></div><!--]--></div></div> <div class="flex justify-center items-center gap-6 mt-8 s-b2NgnP-jY9w8"><button class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors s-b2NgnP-jY9w8"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-chevron-left"><!--[--><!----><path d="m15 18-6-6 6-6"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button> <div class="flex gap-2 s-b2NgnP-jY9w8"><!--[--><button class="h-2 rounded-full transition-all w-8 bg-emerald-500 s-b2NgnP-jY9w8"></button><button class="h-2 rounded-full transition-all w-2 bg-white/20 s-b2NgnP-jY9w8"></button><button class="h-2 rounded-full transition-all w-2 bg-white/20 s-b2NgnP-jY9w8"></button><!--]--></div> <button class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors s-b2NgnP-jY9w8"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-chevron-right"><!--[--><!----><path d="m9 18 6-6-6-6"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div></div></div></section><!----> <section class="relative border-t border-white/5 py-20"><div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"><div class="mb-12 flex flex-col justify-between gap-4 md:flex-row md:items-end"><div><div class="mb-2 font-mono text-xs uppercase tracking-widest text-amber-400">BEYOND REAL ESTATE</div> <h2 class="font-serif text-3xl font-bold text-white sm:text-4xl">Interior, Supply &amp; Construction Divisions</h2></div> <a href="/services" class="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-400 transition-colors hover:text-emerald-300">Explore All Services <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a></div> <div class="grid grid-cols-2 gap-4 md:grid-cols-4"><!--[--><a href="/services/interior-design" class="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-[0_12px_30px_-10px_rgba(5,150,105,0.25)]"><div class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 transition-transform duration-300 group-hover:scale-110"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-lamp"><!--[--><!----><path d="M8 2h8l4 10H4L8 2Z"><!----></path><!----><!----><path d="M12 12v6"><!----></path><!----><!----><path d="M8 22v-2c0-1.1.9-2 2-2h4a2 2 0 0 1 2 2v2H8Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div> <h3 class="mb-1 text-sm font-bold text-white">Interior Design</h3> <p class="mb-4 line-clamp-2 text-[11px] leading-relaxed text-stone-400">Bespoke residential &amp; commercial interior concepts</p> <div class="flex items-center justify-between"><span class="rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">Interior</span> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right text-stone-600 transition-all group-hover:translate-x-1 group-hover:text-emerald-400"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div></a><a href="/services/decoration-styling" class="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-[0_12px_30px_-10px_rgba(5,150,105,0.25)]"><div class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 transition-transform duration-300 group-hover:scale-110"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-sparkles"><!--[--><!----><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"><!----></path><!----><!----><path d="M20 3v4"><!----></path><!----><!----><path d="M22 5h-4"><!----></path><!----><!----><path d="M4 17v2"><!----></path><!----><!----><path d="M5 18H3"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div> <h3 class="mb-1 text-sm font-bold text-white">Decoration &amp; Styling</h3> <p class="mb-4 line-clamp-2 text-[11px] leading-relaxed text-stone-400">Events, show units &amp; model home styling</p> <div class="flex items-center justify-between"><span class="rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">Interior</span> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right text-stone-600 transition-all group-hover:translate-x-1 group-hover:text-emerald-400"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div></a><a href="/services/furnishing" class="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-[0_12px_30px_-10px_rgba(5,150,105,0.25)]"><div class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 transition-transform duration-300 group-hover:scale-110"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-sofa"><!--[--><!----><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"><!----></path><!----><!----><path d="M2 16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"><!----></path><!----><!----><path d="M4 18v2"><!----></path><!----><!----><path d="M20 18v2"><!----></path><!----><!----><path d="M12 4v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div> <h3 class="mb-1 text-sm font-bold text-white">Furnishing</h3> <p class="mb-4 line-clamp-2 text-[11px] leading-relaxed text-stone-400">Complete furnishing packages for homes &amp; offices</p> <div class="flex items-center justify-between"><span class="rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">Interior</span> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right text-stone-600 transition-all group-hover:translate-x-1 group-hover:text-emerald-400"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div></a><a href="/services/turkish-tiles-supply" class="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-[0_12px_30px_-10px_rgba(5,150,105,0.25)]"><div class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 transition-transform duration-300 group-hover:scale-110"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-grid-3x3"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!----><path d="M3 9h18"><!----></path><!----><!----><path d="M3 15h18"><!----></path><!----><!----><path d="M9 3v18"><!----></path><!----><!----><path d="M15 3v18"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div> <h3 class="mb-1 text-sm font-bold text-white">Turkish &amp; Foreign Tiles</h3> <p class="mb-4 line-clamp-2 text-[11px] leading-relaxed text-stone-400">Direct-import porcelain, ceramic &amp; marble tiles</p> <div class="flex items-center justify-between"><span class="rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">Materials</span> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right text-stone-600 transition-all group-hover:translate-x-1 group-hover:text-emerald-400"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div></a><a href="/services/building-materials-supply" class="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-[0_12px_30px_-10px_rgba(5,150,105,0.25)]"><div class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 transition-transform duration-300 group-hover:scale-110"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-hard-hat"><!--[--><!----><path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"><!----></path><!----><!----><path d="M14 6a6 6 0 0 1 6 6v3"><!----></path><!----><!----><path d="M4 15v-3a6 6 0 0 1 6-6"><!----></path><!----><!----><rect x="2" y="15" width="20" height="4" rx="1"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div> <h3 class="mb-1 text-sm font-bold text-white">Building Materials Supply</h3> <p class="mb-4 line-clamp-2 text-[11px] leading-relaxed text-stone-400">Cement, roofing, iron rods &amp; finishing materials</p> <div class="flex items-center justify-between"><span class="rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">Materials</span> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right text-stone-600 transition-all group-hover:translate-x-1 group-hover:text-emerald-400"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div></a><a href="/services/smart-home-installation" class="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-[0_12px_30px_-10px_rgba(5,150,105,0.25)]"><div class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 transition-transform duration-300 group-hover:scale-110"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-cpu"><!--[--><!----><rect width="16" height="16" x="4" y="4" rx="2"><!----></rect><!----><!----><rect width="6" height="6" x="9" y="9" rx="1"><!----></rect><!----><!----><path d="M15 2v2"><!----></path><!----><!----><path d="M15 20v2"><!----></path><!----><!----><path d="M2 15h2"><!----></path><!----><!----><path d="M2 9h2"><!----></path><!----><!----><path d="M20 15h2"><!----></path><!----><!----><path d="M20 9h2"><!----></path><!----><!----><path d="M9 2v2"><!----></path><!----><!----><path d="M9 20v2"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div> <h3 class="mb-1 text-sm font-bold text-white">Smart Home Installation</h3> <p class="mb-4 line-clamp-2 text-[11px] leading-relaxed text-stone-400">Automation, security &amp; energy systems</p> <div class="flex items-center justify-between"><span class="rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">Smart</span> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right text-stone-600 transition-all group-hover:translate-x-1 group-hover:text-emerald-400"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div></a><a href="/services/construction-services" class="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-[0_12px_30px_-10px_rgba(5,150,105,0.25)]"><div class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 transition-transform duration-300 group-hover:scale-110"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-building-2"><!--[--><!----><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"><!----></path><!----><!----><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"><!----></path><!----><!----><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"><!----></path><!----><!----><path d="M10 6h4"><!----></path><!----><!----><path d="M10 10h4"><!----></path><!----><!----><path d="M10 14h4"><!----></path><!----><!----><path d="M10 18h4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div> <h3 class="mb-1 text-sm font-bold text-white">Construction</h3> <p class="mb-4 line-clamp-2 text-[11px] leading-relaxed text-stone-400">Houses, commercial &amp; recreational centers</p> <div class="flex items-center justify-between"><span class="rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">Construction</span> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right text-stone-600 transition-all group-hover:translate-x-1 group-hover:text-emerald-400"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div></a><a href="/services/general-contracts" class="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-[0_12px_30px_-10px_rgba(5,150,105,0.25)]"><div class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 transition-transform duration-300 group-hover:scale-110"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-file-pen-line"><!--[--><!----><path d="m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"><!----></path><!----><!----><path d="M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"><!----></path><!----><!----><path d="M8 18h1"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div> <h3 class="mb-1 text-sm font-bold text-white">General Contracts</h3> <p class="mb-4 line-clamp-2 text-[11px] leading-relaxed text-stone-400">Corporate, government &amp; private contracts</p> <div class="flex items-center justify-between"><span class="rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">Advisory</span> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right text-stone-600 transition-all group-hover:translate-x-1 group-hover:text-emerald-400"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div></a><!--]--></div> <div class="mt-8 flex flex-col items-center justify-between gap-4 rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-950/30 to-emerald-950/20 p-6 md:flex-row"><div><h3 class="font-serif text-lg font-bold text-white">Buy a property, move in fully finished.</h3> <p class="text-sm text-stone-400">Bundle purchase with interior design, furnishing and smart-home installation in one contract.</p></div> <a href="/request?service=interior-design" class="btn-secondary flex-shrink-0 px-6 py-3 text-sm">Request a Bundle Quote</a></div></div></section><!----> <section class="trust-banner py-20 relative overflow-hidden text-white s-Shie5EE_QAlH"><div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] opacity-20 s-Shie5EE_QAlH"></div> <div class="container mx-auto px-6 relative z-10 s-Shie5EE_QAlH"><div class="flex flex-col lg:flex-row gap-12 items-center s-Shie5EE_QAlH"><div class="w-full lg:w-1/3 text-center lg:text-left s-Shie5EE_QAlH"><div class="inline-block relative p-1 rounded-2xl bg-gradient-to-r from-emerald-400 to-amber-500 mb-6 s-Shie5EE_QAlH"><div class="bg-[#050A0E] px-6 py-3 rounded-xl flex items-center gap-3 s-Shie5EE_QAlH"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check text-emerald-400"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="text-xl font-extrabold tracking-wide uppercase s-Shie5EE_QAlH">100% Legal Guarantee</span></div></div> <h3 class="text-4xl font-extrabold mb-4 s-Shie5EE_QAlH">Zero Fraud Cases in 15 Years.</h3> <p class="text-gray-300 s-Shie5EE_QAlH">Our multi-layered verification system ensures your investment is completely secure and legally binding.</p></div> <div class="w-full lg:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-6 relative s-Shie5EE_QAlH"><div class="scanner-line hidden md:block s-Shie5EE_QAlH"></div> <!--[--><div class="bg-white/5 border border-white/10 rounded-2xl p-6 flex gap-4 items-start relative overflow-hidden group s-Shie5EE_QAlH"><div class="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0 s-Shie5EE_QAlH"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-file-text text-emerald-400"><!--[--><!----><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"><!----></path><!----><!----><path d="M14 2v4a2 2 0 0 0 2 2h4"><!----></path><!----><!----><path d="M10 9H8"><!----></path><!----><!----><path d="M16 13H8"><!----></path><!----><!----><path d="M16 17H8"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div> <div class="s-Shie5EE_QAlH"><h4 class="font-bold text-lg mb-1 s-Shie5EE_QAlH">C of O &amp; Title Deeds</h4> <p class="text-sm text-gray-400 s-Shie5EE_QAlH">Verified documents directly with land registries.</p></div></div><div class="bg-white/5 border border-white/10 rounded-2xl p-6 flex gap-4 items-start relative overflow-hidden group s-Shie5EE_QAlH"><div class="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0 s-Shie5EE_QAlH"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-building text-emerald-400"><!--[--><!----><rect width="16" height="20" x="4" y="2" rx="2" ry="2"><!----></rect><!----><!----><path d="M9 22v-4h6v4"><!----></path><!----><!----><path d="M8 6h.01"><!----></path><!----><!----><path d="M16 6h.01"><!----></path><!----><!----><path d="M12 6h.01"><!----></path><!----><!----><path d="M12 10h.01"><!----></path><!----><!----><path d="M12 14h.01"><!----></path><!----><!----><path d="M16 10h.01"><!----></path><!----><!----><path d="M16 14h.01"><!----></path><!----><!----><path d="M8 10h.01"><!----></path><!----><!----><path d="M8 14h.01"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div> <div class="s-Shie5EE_QAlH"><h4 class="font-bold text-lg mb-1 s-Shie5EE_QAlH">CAC Verified</h4> <p class="text-sm text-gray-400 s-Shie5EE_QAlH">All agencies and developers are registered entities.</p></div></div><div class="bg-white/5 border border-white/10 rounded-2xl p-6 flex gap-4 items-start relative overflow-hidden group s-Shie5EE_QAlH"><div class="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0 s-Shie5EE_QAlH"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-lock text-emerald-400"><!--[--><!----><rect width="18" height="11" x="3" y="11" rx="2" ry="2"><!----></rect><!----><!----><path d="M7 11V7a5 5 0 0 1 10 0v4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div> <div class="s-Shie5EE_QAlH"><h4 class="font-bold text-lg mb-1 s-Shie5EE_QAlH">Secure Payments</h4> <p class="text-sm text-gray-400 s-Shie5EE_QAlH">Escrow options and encrypted transaction pathways.</p></div></div><div class="bg-white/5 border border-white/10 rounded-2xl p-6 flex gap-4 items-start relative overflow-hidden group s-Shie5EE_QAlH"><div class="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0 s-Shie5EE_QAlH"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check text-emerald-400"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--></div> <div class="s-Shie5EE_QAlH"><h4 class="font-bold text-lg mb-1 s-Shie5EE_QAlH">AGIS Registered</h4> <p class="text-sm text-gray-400 s-Shie5EE_QAlH">Compliant with Abuja Geographic Information Systems.</p></div></div><!--]--></div></div> <div class="mt-16 pt-8 border-t border-white/10 s-Shie5EE_QAlH"><p class="text-center text-xs text-gray-500 uppercase tracking-widest mb-6 s-Shie5EE_QAlH">Trusted &amp; Verified By</p> <div class="flex flex-wrap justify-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500 s-Shie5EE_QAlH"><div class="text-2xl font-black italic s-Shie5EE_QAlH">CBN</div> <div class="text-2xl font-bold tracking-tighter s-Shie5EE_QAlH">paystack</div> <div class="text-2xl font-serif s-Shie5EE_QAlH">CAC</div> <div class="text-2xl font-bold border-2 border-current px-2 s-Shie5EE_QAlH">AGIS</div></div></div></div></section><!----> <section class="py-24 bg-[#050A0E] text-white s-Gt-7X6dNW2G2"><div class="container mx-auto px-6 max-w-6xl s-Gt-7X6dNW2G2"><div class="text-center mb-16 s-Gt-7X6dNW2G2"><h2 class="text-3xl md:text-5xl font-extrabold mb-4 s-Gt-7X6dNW2G2">Investment ROI Calculator</h2> <p class="text-gray-400 s-Gt-7X6dNW2G2">Project your returns on Nigerian real estate investments over time.</p></div> <div class="calc-card rounded-3xl p-6 md:p-10 grid grid-cols-1 lg:grid-cols-2 gap-12 s-Gt-7X6dNW2G2"><div class="space-y-8 s-Gt-7X6dNW2G2"><div class="flex justify-between items-center bg-white/5 p-2 rounded-xl border border-white/10 w-fit s-Gt-7X6dNW2G2"><button class="px-6 py-2 rounded-lg font-bold text-sm transition-colors bg-emerald-600 text-white s-Gt-7X6dNW2G2">NGN (₦)</button> <button class="px-6 py-2 rounded-lg font-bold text-sm transition-colors text-gray-400 hover:text-white s-Gt-7X6dNW2G2">USD ($)</button></div> <div class="s-Gt-7X6dNW2G2"><div class="flex justify-between mb-2 s-Gt-7X6dNW2G2"><label class="font-semibold text-gray-300 s-Gt-7X6dNW2G2">Initial Investment</label> <span class="font-bold text-amber-400 s-Gt-7X6dNW2G2">₦50M</span></div> <input type="range" min="10" max="500" step="10" value="50" class="s-Gt-7X6dNW2G2"/> <div class="flex justify-between text-xs text-gray-500 mt-1 s-Gt-7X6dNW2G2"><span class="s-Gt-7X6dNW2G2">₦10M</span> <span class="s-Gt-7X6dNW2G2">₦500M</span></div></div> <div class="s-Gt-7X6dNW2G2"><div class="flex justify-between mb-2 s-Gt-7X6dNW2G2"><label class="font-semibold text-gray-300 s-Gt-7X6dNW2G2">Investment Duration</label> <span class="font-bold text-amber-400 s-Gt-7X6dNW2G2">5 Years</span></div> <input type="range" min="1" max="20" step="1" value="5" class="s-Gt-7X6dNW2G2"/></div> <div class="s-Gt-7X6dNW2G2"><div class="flex justify-between mb-2 s-Gt-7X6dNW2G2"><label class="font-semibold text-gray-300 flex items-center gap-1 s-Gt-7X6dNW2G2">Expected Growth Rate <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-info text-gray-500"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="M12 16v-4"><!----></path><!----><!----><path d="M12 8h.01"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></label> <span class="font-bold text-amber-400 s-Gt-7X6dNW2G2">12% / year</span></div> <input type="range" min="5" max="30" step="1" value="12" class="s-Gt-7X6dNW2G2"/> <p class="text-xs mt-2 font-bold text-amber-400 s-Gt-7X6dNW2G2">Medium Risk Projection</p></div></div> <div class="bg-black/40 rounded-2xl p-6 border border-white/5 flex flex-col s-Gt-7X6dNW2G2"><div class="grid grid-cols-2 gap-4 mb-8 s-Gt-7X6dNW2G2"><div class="p-4 bg-white/5 rounded-xl s-Gt-7X6dNW2G2"><p class="text-sm text-gray-400 mb-1 s-Gt-7X6dNW2G2">Projected Value</p> <p class="text-2xl md:text-3xl font-bold text-emerald-400 s-Gt-7X6dNW2G2">₦88.1M</p></div> <div class="p-4 bg-white/5 rounded-xl s-Gt-7X6dNW2G2"><p class="text-sm text-gray-400 mb-1 s-Gt-7X6dNW2G2">Total Profit</p> <p class="text-2xl md:text-3xl font-bold text-amber-400 s-Gt-7X6dNW2G2">+₦38.1M</p></div></div> <div class="flex-grow flex items-end gap-2 h-40 mb-6 s-Gt-7X6dNW2G2"><!--[--><div class="flex-1 bg-gradient-to-t from-emerald-900 to-emerald-500 rounded-t-sm transition-all duration-500 relative group s-Gt-7X6dNW2G2" style="height: 30%;"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity s-Gt-7X6dNW2G2">Yr 1</div></div><div class="flex-1 bg-gradient-to-t from-emerald-900 to-emerald-500 rounded-t-sm transition-all duration-500 relative group s-Gt-7X6dNW2G2" style="height: 44%;"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity s-Gt-7X6dNW2G2">Yr 2</div></div><div class="flex-1 bg-gradient-to-t from-emerald-900 to-emerald-500 rounded-t-sm transition-all duration-500 relative group s-Gt-7X6dNW2G2" style="height: 58%;"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity s-Gt-7X6dNW2G2">Yr 3</div></div><div class="flex-1 bg-gradient-to-t from-emerald-900 to-emerald-500 rounded-t-sm transition-all duration-500 relative group s-Gt-7X6dNW2G2" style="height: 72%;"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity s-Gt-7X6dNW2G2">Yr 4</div></div><div class="flex-1 bg-gradient-to-t from-emerald-900 to-emerald-500 rounded-t-sm transition-all duration-500 relative group s-Gt-7X6dNW2G2" style="height: 86%;"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity s-Gt-7X6dNW2G2">Yr 5</div></div><!--]--></div> <button class="w-full py-4 border border-white/10 hover:bg-white/10 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors mt-auto s-Gt-7X6dNW2G2"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-download"><!--[--><!----><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"><!----></path><!----><!----><polyline points="7 10 12 15 17 10"><!----></polyline><!----><!----><line x1="12" x2="12" y1="15" y2="3"><!----></line><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Download Projection PDF</button></div></div></div></section><!----> <section class="py-24 bg-[#050A0E] text-white s-b3pdUTLi6DVQ"><div class="container mx-auto px-6 s-b3pdUTLi6DVQ"><div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto s-b3pdUTLi6DVQ"><div class="cta-card glow-emerald rounded-3xl p-10 flex flex-col group s-b3pdUTLi6DVQ"><div class="w-16 h-16 rounded-2xl bg-emerald-500/20 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform s-b3pdUTLi6DVQ"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-house text-emerald-400"><!--[--><!----><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"><!----></path><!----><!----><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div> <h3 class="text-3xl font-extrabold mb-4 s-b3pdUTLi6DVQ">Looking to Buy or Rent?</h3> <p class="text-gray-400 mb-8 leading-relaxed s-b3pdUTLi6DVQ">Browse 1,200+ verified properties with our advanced search. Skip the middleman and connect directly with trusted owners.</p> <ul class="space-y-3 mb-10 text-sm font-medium text-gray-300 s-b3pdUTLi6DVQ"><li class="flex items-center gap-3 s-b3pdUTLi6DVQ"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-circle-check text-emerald-500"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Government-verified titles</li> <li class="flex items-center gap-3 s-b3pdUTLi6DVQ"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-circle-check text-emerald-500"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Schedule physical/virtual viewings</li> <li class="flex items-center gap-3 s-b3pdUTLi6DVQ"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-circle-check text-emerald-500"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Track documents via portal</li></ul> <div class="mt-auto s-b3pdUTLi6DVQ"><a href="/properties" class="inline-flex w-full md:w-auto items-center justify-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold transition-colors s-b3pdUTLi6DVQ">Start Searching <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a></div></div> <div class="cta-card glow-amber rounded-3xl p-10 flex flex-col group s-b3pdUTLi6DVQ"><div class="w-16 h-16 rounded-2xl bg-amber-500/20 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform s-b3pdUTLi6DVQ"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-trophy text-amber-400"><!--[--><!----><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"><!----></path><!----><!----><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"><!----></path><!----><!----><path d="M4 22h16"><!----></path><!----><!----><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"><!----></path><!----><!----><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"><!----></path><!----><!----><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div> <h3 class="text-3xl font-extrabold mb-4 s-b3pdUTLi6DVQ">Are You a Professional?</h3> <p class="text-gray-400 mb-8 leading-relaxed s-b3pdUTLi6DVQ">Join 86 verified agents generating over ₦2.4B in commissions. Access premium leads and powerful management tools.</p> <ul class="space-y-3 mb-10 text-sm font-medium text-gray-300 s-b3pdUTLi6DVQ"><li class="flex items-center gap-3 s-b3pdUTLi6DVQ"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-circle-check text-amber-500"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> List unlimited properties</li> <li class="flex items-center gap-3 s-b3pdUTLi6DVQ"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-circle-check text-amber-500"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Manage leads in one dashboard</li> <li class="flex items-center gap-3 s-b3pdUTLi6DVQ"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-circle-check text-amber-500"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Earn industry-leading commissions</li></ul> <div class="mt-auto flex flex-col sm:flex-row gap-4 s-b3pdUTLi6DVQ"><a href="/register/agent" class="inline-flex flex-1 items-center justify-center gap-2 px-8 py-4 bg-amber-600 hover:bg-amber-500 rounded-xl font-bold transition-colors text-white s-b3pdUTLi6DVQ">Join as Agent <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a> <a href="/register/manager" class="inline-flex flex-1 items-center justify-center gap-2 px-8 py-4 border border-white/20 hover:bg-white/10 rounded-xl font-bold transition-colors s-b3pdUTLi6DVQ">Register Manager</a></div></div></div></div></section><!----></main><!--]--><!--]--><!--]--></main> <!--[0--><footer class="relative mt-24 border-t border-emerald-900/50 bg-stone-900 overflow-hidden"><div class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50 shadow-[0_0_20px_rgba(5,150,105,1)]"></div> <div class="container mx-auto px-4 lg:px-8 pt-16 pb-8"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16"><div class="flex flex-col gap-6 lg:col-span-1"><a href="/" class="flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_15px_rgba(5,150,105,0.4)]"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div> <span class="text-xl font-serif font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-stone-400">Aliko Diamond Key</span></a> <p class="text-sm text-stone-400 leading-relaxed">Nigeria's premier real estate, interior design and construction ecosystem. Verified titles, elite agents and turnkey building services.</p> <div class="flex items-center gap-4"><a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-twitter"><!--[--><!----><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a> <a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-linkedin"><!--[--><!----><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"><!----></path><!----><!----><rect width="4" height="12" x="2" y="9"><!----></rect><!----><!----><circle cx="4" cy="4" r="2"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a> <a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-instagram"><!--[--><!----><rect width="20" height="20" x="2" y="2" rx="5" ry="5"><!----></rect><!----><!----><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"><!----></path><!----><!----><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"><!----></line><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a> <a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-rose-400 hover:bg-rose-900/20 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-youtube"><!--[--><!----><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"><!----></path><!----><!----><path d="m10 15 5-3-5-3z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a></div></div> <div class="flex flex-col gap-4"><h4 class="text-white font-serif text-lg mb-2">Properties</h4> <a href="/properties" class="text-sm text-stone-400 hover:text-white transition-colors">All Listings</a> <a href="/properties?type=residential" class="text-sm text-stone-400 hover:text-white transition-colors">Residential</a> <a href="/properties?type=commercial" class="text-sm text-stone-400 hover:text-white transition-colors">Commercial</a> <a href="/properties?featured=true" class="text-sm text-stone-400 hover:text-emerald-400 transition-colors">Featured Estates</a> <a href="/map" class="text-sm text-stone-400 hover:text-white transition-colors">Map Search</a></div> <div class="flex flex-col gap-3"><h4 class="text-white font-serif text-lg mb-2">Services</h4> <a href="/services/interior-design" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-lamp"><!--[--><!----><path d="M8 2h8l4 10H4L8 2Z"><!----></path><!----><!----><path d="M12 12v6"><!----></path><!----><!----><path d="M8 22v-2c0-1.1.9-2 2-2h4a2 2 0 0 1 2 2v2H8Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Interior Design</a> <a href="/services/furnishing" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-sofa text-amber-400/80"><!--[--><!----><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"><!----></path><!----><!----><path d="M2 16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"><!----></path><!----><!----><path d="M4 18v2"><!----></path><!----><!----><path d="M20 18v2"><!----></path><!----><!----><path d="M12 4v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Furnishing</a> <a href="/services/turkish-tiles-supply" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-grid-3x3 text-cyan-400/80"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!----><path d="M3 9h18"><!----></path><!----><!----><path d="M3 15h18"><!----></path><!----><!----><path d="M9 3v18"><!----></path><!----><!----><path d="M15 3v18"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Turkish Tiles</a> <a href="/services/building-materials-supply" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-hard-hat text-amber-400/80"><!--[--><!----><path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"><!----></path><!----><!----><path d="M14 6a6 6 0 0 1 6 6v3"><!----></path><!----><!----><path d="M4 15v-3a6 6 0 0 1 6-6"><!----></path><!----><!----><rect x="2" y="15" width="20" height="4" rx="1"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Building Materials</a> <a href="/services/smart-home-installation" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-cpu text-purple-400/80"><!--[--><!----><rect width="16" height="16" x="4" y="4" rx="2"><!----></rect><!----><!----><rect width="6" height="6" x="9" y="9" rx="1"><!----></rect><!----><!----><path d="M15 2v2"><!----></path><!----><!----><path d="M15 20v2"><!----></path><!----><!----><path d="M2 15h2"><!----></path><!----><!----><path d="M2 9h2"><!----></path><!----><!----><path d="M20 15h2"><!----></path><!----><!----><path d="M20 9h2"><!----></path><!----><!----><path d="M9 2v2"><!----></path><!----><!----><path d="M9 20v2"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Smart Homes</a> <a href="/services/construction-services" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-building text-emerald-400/80"><!--[--><!----><rect width="16" height="20" x="4" y="2" rx="2" ry="2"><!----></rect><!----><!----><path d="M9 22v-4h6v4"><!----></path><!----><!----><path d="M8 6h.01"><!----></path><!----><!----><path d="M16 6h.01"><!----></path><!----><!----><path d="M12 6h.01"><!----></path><!----><!----><path d="M12 10h.01"><!----></path><!----><!----><path d="M12 14h.01"><!----></path><!----><!----><path d="M16 10h.01"><!----></path><!----><!----><path d="M16 14h.01"><!----></path><!----><!----><path d="M8 10h.01"><!----></path><!----><!----><path d="M8 14h.01"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Construction</a> <a href="/services" class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 mt-1">View all services →</a></div> <div class="flex flex-col gap-4"><h4 class="text-white font-serif text-lg mb-2">Company</h4> <a href="/agents" class="text-sm text-stone-400 hover:text-white transition-colors">Our Agents</a> <a href="/register/agent" class="text-sm text-stone-400 hover:text-white transition-colors">Careers — Join as Agent</a> <a href="/legal/track" class="text-sm text-stone-400 hover:text-white transition-colors">Document Tracking</a> <div class="mt-2 flex flex-col gap-2"><a href="/register/agent" class="btn-primary text-xs py-1.5 w-full text-center">Join as Agent</a> <a href="/register/manager" class="btn-secondary text-xs py-1.5 w-full text-center">Become a Manager</a></div></div> <div class="flex flex-col gap-4"><h4 class="text-white font-serif text-lg mb-2">Contact &amp; Newsletter</h4> <div class="flex flex-col gap-2 text-sm text-stone-400"><span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin text-emerald-500"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Abuja FCT &amp; Lagos, Nigeria</span> <span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-phone text-emerald-500"><!--[--><!----><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> +234 800 DIAMOND</span> <span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-mail text-emerald-500"><!--[--><!----><rect width="20" height="16" x="2" y="4" rx="2"><!----></rect><!----><!----><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> contact@adk.com</span></div> <form class="mt-4 flex flex-col gap-2"><p class="text-xs text-stone-400 mb-1">Subscribe for exclusive listings</p> <div class="flex gap-2"><input type="email" placeholder="Email address" class="w-full bg-stone-800 border border-stone-700 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all" required=""/> <button type="submit" class="btn-primary px-3 py-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-mail"><!--[--><!----><rect width="20" height="16" x="2" y="4" rx="2"><!----></rect><!----><!----><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div></form></div></div> <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4"><p class="text-xs text-stone-500">© 2026 Aliko Diamond Key. All rights reserved.</p> <div class="flex items-center gap-4 text-xs text-stone-500"><a href="/legal/track" class="hover:text-white transition-colors">Track a Document</a> <a href="/services/general-contracts" class="hover:text-white transition-colors">Contract Proposals</a></div> <p class="text-xs font-mono text-stone-600 flex items-center gap-1">Powered by <span class="text-emerald-500/70">ADK Platform</span></p></div></div></footer><!----><!--]--> <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 w-full max-w-sm pointer-events-none s-918YXh7FMLIr"><!--[--><!--]--></div><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_dev = {
+						base: new URL(".", location).pathname.slice(0, -1),
+						env: {}
+					};
 
-          <!-- Trust Badges -->
-          <div class="flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-stone-400">
-            <div class="flex items-center gap-2">
-              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> AGIS Registered
-            </div>
-            <div class="flex items-center gap-2">
-              <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> 100% C of O Verified
-            </div>
-            <div class="flex items-center gap-2">
-              <i data-lucide="lock" class="w-4 h-4 text-emerald-400"></i> CBN Bank-Grade Escrow
-            </div>
-          </div>
-        </div>
+					const element = document.currentScript.parentElement;
 
-        <!-- Right: 3D Floating Property Card Stack -->
-        <div class="lg:col-span-5 relative">
-          <!-- Ambient Glow -->
-          <div class="absolute -top-10 -right-10 w-72 h-72 rounded-full bg-emerald-600/20 blur-[90px] pointer-events-none"></div>
-          <div class="absolute -bottom-10 -left-10 w-72 h-72 rounded-full bg-amber-600/20 blur-[90px] pointer-events-none"></div>
-
-          <!-- Card 1: Featured Listing Showcase -->
-          <div class="glass-card rounded-3xl p-5 shadow-2xl relative z-20 border border-emerald-500/30">
-            <div class="relative aspect-[16/10] rounded-2xl overflow-hidden mb-4">
-              <img src="https://picsum.photos/seed/property1/800/600" alt="Featured Villa" class="w-full h-full object-cover">
-              <div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-semibold text-emerald-400 border border-emerald-500/30">
-                ⭐ FEATURED MASTERPIECE
-              </div>
-              <div class="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-emerald-500 text-black text-xs font-bold font-mono">
-                ₦185,000,000
-              </div>
-            </div>
-
-            <div class="flex items-start justify-between mb-2">
-              <div>
-                <h3 class="text-lg font-serif font-bold text-white">5-Bedroom Royal Duplex</h3>
-                <p class="text-xs text-stone-400 flex items-center gap-1 mt-0.5">
-                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-400"></i> Aso Drive, Maitama, Abuja FCT
-                </p>
-              </div>
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                AVAILABLE
-              </span>
-            </div>
-
-            <!-- Metrics row -->
-            <div class="grid grid-cols-3 gap-2 py-3 my-2 border-y border-white/5 text-center text-xs">
-              <div>
-                <span class="text-stone-500 text-[10px] block">Bedrooms</span>
-                <span class="font-bold text-white">5 Beds</span>
-              </div>
-              <div>
-                <span class="text-stone-500 text-[10px] block">Land Size</span>
-                <span class="font-bold text-white">800 sqm</span>
-              </div>
-              <div>
-                <span class="text-stone-500 text-[10px] block">Title</span>
-                <span class="font-bold text-emerald-400">C of O</span>
-              </div>
-            </div>
-
-            <div class="flex items-center justify-between pt-2">
-              <div class="flex items-center gap-2">
-                <img src="https://i.pravatar.cc/150?u=agent1" class="w-8 h-8 rounded-full border border-emerald-500/50" alt="Agent">
-                <div class="text-left">
-                  <div class="text-xs font-semibold text-white">Adaeze Okonkwo</div>
-                  <div class="text-[10px] text-stone-400">Verified Prime Agent</div>
-                </div>
-              </div>
-              <a href="property-detail.html?id=prop-001" class="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs">
-                Inspect ↗
-              </a>
-            </div>
-          </div>
-
-          <!-- Floating Teaser Card -->
-          <div class="glass-card p-3.5 rounded-2xl shadow-xl absolute -bottom-6 -left-6 z-30 max-w-xs flex items-center gap-3 border border-amber-500/30">
-            <div class="p-2.5 rounded-xl bg-amber-500/20 text-amber-400">
-              <i data-lucide="trending-up" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <div class="text-xs font-bold text-white">+31.4% Value Appreciation</div>
-              <div class="text-[10px] text-stone-400">FCT Prime Sector 2024-2026</div>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ==================== SECTION 2: STATS STRIP ==================== -->
-  <section class="border-y border-white/5 bg-white/[0.02] py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-        <div class="p-4 rounded-2xl glass">
-          <div class="text-3xl lg:text-4xl font-serif font-bold text-gradient-gold mb-1">1,240+</div>
-          <div class="text-xs text-stone-400 font-mono uppercase tracking-wider">Verified Listings</div>
-        </div>
-        <div class="p-4 rounded-2xl glass">
-          <div class="text-3xl lg:text-4xl font-serif font-bold text-gradient-emerald mb-1">₦18.4B+</div>
-          <div class="text-xs text-stone-400 font-mono uppercase tracking-wider">Transaction Volume</div>
-        </div>
-        <div class="p-4 rounded-2xl glass">
-          <div class="text-3xl lg:text-4xl font-serif font-bold text-gradient-gold mb-1">86</div>
-          <div class="text-xs text-stone-400 font-mono uppercase tracking-wider">Licensed Agents</div>
-        </div>
-        <div class="p-4 rounded-2xl glass">
-          <div class="text-3xl lg:text-4xl font-serif font-bold text-gradient-emerald mb-1">100%</div>
-          <div class="text-xs text-stone-400 font-mono uppercase tracking-wider">Clean Title Guarantee</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==================== SECTION 3: FEATURED PROPERTIES ==================== -->
-  <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
-      <div>
-        <div class="text-emerald-400 text-xs font-mono uppercase tracking-widest mb-2">CURATED RESIDENCES & PLOTS</div>
-        <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">Featured Properties</h2>
-      </div>
-      <a href="properties.html" class="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-400 hover:text-emerald-300">
-        Explore All 1,240+ Properties <i data-lucide="arrow-right" class="w-4 h-4"></i>
-      </a>
-    </div>
-
-    <!-- 3-Column Grid of 6 Properties -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      
-      <!-- Card 1 -->
-      <div class="glass-card rounded-2xl overflow-hidden transition-all duration-300 flex flex-col">
-        <div class="relative aspect-[3/2] overflow-hidden">
-          <img src="https://picsum.photos/seed/prop1/800/600" class="w-full h-full object-cover" alt="Villa">
-          <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-semibold text-white">
-            Duplex
-          </div>
-          <div class="absolute bottom-3 left-3 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500 text-black uppercase font-mono">
-            Available
-          </div>
-        </div>
-        <div class="p-5 flex-1 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-2xl font-bold font-serif text-amber-400">₦185,000,000</span>
-              <span class="text-xs text-stone-500">Maitama, Abuja</span>
-            </div>
-            <h3 class="text-base font-bold text-white mb-2">5-Bedroom Architectural Villa</h3>
-            <p class="text-xs text-stone-400 line-clamp-2 mb-4">State-of-the-art smart automation, swimming pool, and dedicated security quarter in prime Aso Drive.</p>
-          </div>
-          <div class="flex items-center justify-between pt-3 border-t border-white/5 text-xs text-stone-400">
-            <span>5 Beds • 6 Baths • 800 sqm</span>
-            <a href="property-detail.html?id=prop-001" class="text-emerald-400 font-semibold hover:underline">View ↗</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 2 -->
-      <div class="glass-card rounded-2xl overflow-hidden transition-all duration-300 flex flex-col">
-        <div class="relative aspect-[3/2] overflow-hidden">
-          <img src="https://picsum.photos/seed/prop3/800/600" class="w-full h-full object-cover" alt="Penthouse">
-          <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-semibold text-white">
-            Penthouse
-          </div>
-          <div class="absolute bottom-3 left-3 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500 text-black uppercase font-mono">
-            Available
-          </div>
-        </div>
-        <div class="p-5 flex-1 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-2xl font-bold font-serif text-amber-400">₦450,000,000</span>
-              <span class="text-xs text-stone-500">VI, Lagos</span>
-            </div>
-            <h3 class="text-base font-bold text-white mb-2">Skyline Atlantic Penthouse</h3>
-            <p class="text-xs text-stone-400 line-clamp-2 mb-4">Direct ocean panorama, private rooftop lounge, floor-to-ceiling glass architecture.</p>
-          </div>
-          <div class="flex items-center justify-between pt-3 border-t border-white/5 text-xs text-stone-400">
-            <span>4 Beds • 4 Baths • 400 sqm</span>
-            <a href="property-detail.html?id=prop-002" class="text-emerald-400 font-semibold hover:underline">View ↗</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 3 -->
-      <div class="glass-card rounded-2xl overflow-hidden transition-all duration-300 flex flex-col">
-        <div class="relative aspect-[3/2] overflow-hidden">
-          <img src="https://picsum.photos/seed/prop4/800/600" class="w-full h-full object-cover" alt="Apartment">
-          <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-semibold text-white">
-            Apartment
-          </div>
-          <div class="absolute bottom-3 left-3 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500 text-black uppercase font-mono">
-            Reserved
-          </div>
-        </div>
-        <div class="p-5 flex-1 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-2xl font-bold font-serif text-amber-400">₦75,000,000</span>
-              <span class="text-xs text-stone-500">Wuse 2, Abuja</span>
-            </div>
-            <h3 class="text-base font-bold text-white mb-2">Modern 3-Bed City Residence</h3>
-            <p class="text-xs text-stone-400 line-clamp-2 mb-4">Centrally positioned in Abuja’s lifestyle epicentre, featuring 24/7 backup power and high rental yields.</p>
-          </div>
-          <div class="flex items-center justify-between pt-3 border-t border-white/5 text-xs text-stone-400">
-            <span>3 Beds • 3 Baths • 220 sqm</span>
-            <a href="property-detail.html?id=prop-003" class="text-emerald-400 font-semibold hover:underline">View ↗</a>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ==================== SECTION 4: PROPERTY TYPES ==================== -->
-  <section class="py-16 border-t border-white/5 bg-white/[0.01]">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-2xl mx-auto mb-12">
-        <div class="text-emerald-400 text-xs font-mono uppercase tracking-widest mb-2">PORTFOLIO DIVERSIFICATION</div>
-        <h2 class="text-3xl font-serif font-bold text-white">Browse by Asset Class</h2>
-      </div>
-
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <a href="properties.html?type=Duplex" class="p-5 rounded-2xl glass text-center group hover:bg-emerald-950/30 transition-all border border-white/5 hover:border-emerald-500/40">
-          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-            <i data-lucide="home" class="w-6 h-6"></i>
-          </div>
-          <div class="text-sm font-bold text-white">Duplexes</div>
-          <div class="text-[11px] text-stone-400 mt-1">214 Listings</div>
-        </a>
-
-        <a href="properties.html?type=Penthouse" class="p-5 rounded-2xl glass text-center group hover:bg-emerald-950/30 transition-all border border-white/5 hover:border-emerald-500/40">
-          <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-            <i data-lucide="crown" class="w-6 h-6"></i>
-          </div>
-          <div class="text-sm font-bold text-white">Penthouses</div>
-          <div class="text-[11px] text-stone-400 mt-1">42 Listings</div>
-        </a>
-
-        <a href="properties.html?type=Apartment" class="p-5 rounded-2xl glass text-center group hover:bg-emerald-950/30 transition-all border border-white/5 hover:border-emerald-500/40">
-          <div class="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-            <i data-lucide="building" class="w-6 h-6"></i>
-          </div>
-          <div class="text-sm font-bold text-white">Apartments</div>
-          <div class="text-[11px] text-stone-400 mt-1">480 Listings</div>
-        </a>
-
-        <a href="properties.html?type=Land" class="p-5 rounded-2xl glass text-center group hover:bg-emerald-950/30 transition-all border border-white/5 hover:border-emerald-500/40">
-          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-            <i data-lucide="map" class="w-6 h-6"></i>
-          </div>
-          <div class="text-sm font-bold text-white">Verified Plots</div>
-          <div class="text-[11px] text-stone-400 mt-1">360 Plots</div>
-        </a>
-
-        <a href="properties.html?type=Commercial" class="p-5 rounded-2xl glass text-center group hover:bg-emerald-950/30 transition-all border border-white/5 hover:border-emerald-500/40">
-          <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-            <i data-lucide="briefcase" class="w-6 h-6"></i>
-          </div>
-          <div class="text-sm font-bold text-white">Commercial</div>
-          <div class="text-[11px] text-stone-400 mt-1">88 Spaces</div>
-        </a>
-
-        <a href="properties.html?type=Residential" class="p-5 rounded-2xl glass text-center group hover:bg-emerald-950/30 transition-all border border-white/5 hover:border-emerald-500/40">
-          <div class="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-            <i data-lucide="shield" class="w-6 h-6"></i>
-          </div>
-          <div class="text-sm font-bold text-white">Gated Estates</div>
-          <div class="text-[11px] text-stone-400 mt-1">56 Estates</div>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==================== SECTION 5: HOW IT WORKS ==================== -->
-  <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center max-w-2xl mx-auto mb-16">
-      <div class="text-emerald-400 text-xs font-mono uppercase tracking-widest mb-2">END-TO-END TRANSACTIONS</div>
-      <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">How Aliko Diamond Key Works</h2>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
-      <div class="glass-card p-6 rounded-2xl relative">
-        <div class="text-4xl font-serif font-bold text-emerald-500/30 mb-3 font-mono">01</div>
-        <h3 class="text-lg font-bold text-white mb-2">Discover & Filter</h3>
-        <p class="text-xs text-stone-400 leading-relaxed">Browse verified listings using 3D walkthroughs, satellite coordinates, and price-per-sqm metrics.</p>
-      </div>
-
-      <div class="glass-card p-6 rounded-2xl relative">
-        <div class="text-4xl font-serif font-bold text-emerald-500/30 mb-3 font-mono">02</div>
-        <h3 class="text-lg font-bold text-white mb-2">Schedule Inspection</h3>
-        <p class="text-xs text-stone-400 leading-relaxed">Book in-person physical inspections with licensed realtors or receive live drone feeds if abroad.</p>
-      </div>
-
-      <div class="glass-card p-6 rounded-2xl relative">
-        <div class="text-4xl font-serif font-bold text-emerald-500/30 mb-3 font-mono">03</div>
-        <h3 class="text-lg font-bold text-white mb-2">Legal Verification</h3>
-        <p class="text-xs text-stone-400 leading-relaxed">Automated AGIS title searches, survey beacons verification, and encumbrance-free deed validation.</p>
-      </div>
-
-      <div class="glass-card p-6 rounded-2xl relative">
-        <div class="text-4xl font-serif font-bold text-emerald-500/30 mb-3 font-mono">04</div>
-        <h3 class="text-lg font-bold text-white mb-2">Instant Deed of Ownership</h3>
-        <p class="text-xs text-stone-400 leading-relaxed">Digitally signed contracts and legal assignment documents generated seamlessly within 24 hours.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==================== SECTION 6: INTERACTIVE MAP PREVIEW ==================== -->
-  <section class="py-16 border-t border-white/5 bg-[#0A1118]/80">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid lg:grid-cols-12 gap-8 items-center">
-        <div class="lg:col-span-5">
-          <div class="text-emerald-400 text-xs font-mono uppercase tracking-widest mb-2">GEOSPATIAL INTELLIGENCE</div>
-          <h2 class="text-3xl font-serif font-bold text-white mb-4">Explore Prime Corridors on Google & Carto Maps</h2>
-          <p class="text-stone-400 text-sm leading-relaxed mb-6">
-            Switch between satellite topology, road connectivity, and land parcel boundaries. Discover proximity to international schools, diplomatic zones, and expressways.
-          </p>
-          <div class="space-y-3 mb-8">
-            <div class="flex items-center gap-3 text-xs text-stone-300">
-              <span class="w-3 h-3 rounded-full bg-emerald-500"></span> <strong>Abuja FCT:</strong> Maitama, Asokoro, Guzape, Katampe
-            </div>
-            <div class="flex items-center gap-3 text-xs text-stone-300">
-              <span class="w-3 h-3 rounded-full bg-amber-500"></span> <strong>Lagos Coastal:</strong> Ikoyi, Victoria Island, Lekki Phase 1, Epe
-            </div>
-          </div>
-          <a href="properties.html?view=map" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-400 text-white font-semibold text-xs shadow-lg">
-            <i data-lucide="map" class="w-4 h-4"></i> Open Fullscreen Map Explorer
-          </a>
-        </div>
-
-        <!-- Embedded Map Box -->
-        <div class="lg:col-span-7 h-96 rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative">
-          <div id="homeMap" class="w-full h-full bg-[#050A0E]"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==================== SECTION 7: ROI CALCULATOR ==================== -->
-  <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="glass-card rounded-3xl p-8 lg:p-12 border border-emerald-900/40">
-      <div class="grid lg:grid-cols-12 gap-10 items-center">
-        
-        <div class="lg:col-span-6">
-          <div class="text-amber-400 text-xs font-mono uppercase tracking-widest mb-2">INVESTMENT METRICS</div>
-          <h2 class="text-3xl font-serif font-bold text-white mb-4">Calculate Your Real Estate Appreciation</h2>
-          <p class="text-stone-400 text-sm leading-relaxed mb-6">
-            Historically, prime property in Abuja and Lagos outpaces equity markets and provides an inflation-proof store of wealth.
-          </p>
-
-          <div class="space-y-6">
-            <div>
-              <div class="flex justify-between text-xs font-mono mb-2">
-                <span class="text-stone-400">Capital Outlay:</span>
-                <span id="capitalDisplay" class="text-amber-400 font-bold">₦50,000,000</span>
-              </div>
-              <input id="capitalSlider" type="range" min="10" max="500" value="50" step="5" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-amber-500">
-            </div>
-
-            <div>
-              <div class="flex justify-between text-xs font-mono mb-2">
-                <span class="text-stone-400">Holding Period:</span>
-                <span id="periodDisplay" class="text-emerald-400 font-bold">5 Years</span>
-              </div>
-              <input id="periodSlider" type="range" min="1" max="10" value="5" step="1" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-emerald-500">
-            </div>
-          </div>
-        </div>
-
-        <!-- Result Projection Box -->
-        <div class="lg:col-span-6 p-6 rounded-2xl bg-black/50 border border-white/10">
-          <div class="text-xs font-mono text-stone-500 uppercase mb-1">Estimated 5-Year Net Value</div>
-          <div id="projectedValue" class="text-4xl lg:text-5xl font-serif font-bold text-emerald-400 mb-2">
-            ₦146,500,000
-          </div>
-          <div class="text-xs text-amber-400 font-semibold mb-6">
-            +193% Projected Total Return (at 24% annual growth rate)
-          </div>
-
-          <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/5 text-xs">
-            <div>
-              <span class="text-stone-500 block">Est. Annual Rental Yield</span>
-              <span class="text-white font-bold text-sm">₦4,200,000 / yr</span>
-            </div>
-            <div>
-              <span class="text-stone-500 block">Inflation Hedge Factor</span>
-              <span class="text-white font-bold text-sm">3.2x vs Cash Naira</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ==================== SECTION 8: DUAL CTAS (BUYERS VS REALTORS) ==================== -->
-  <section class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid md:grid-cols-2 gap-8">
-      
-      <!-- Buyer CTA -->
-      <div class="glass-card p-8 rounded-3xl border border-emerald-500/30 flex flex-col justify-between">
-        <div>
-          <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4">
-            <i data-lucide="home" class="w-6 h-6"></i>
-          </div>
-          <h3 class="text-2xl font-serif font-bold text-white mb-2">Looking to Buy or Lease?</h3>
-          <p class="text-stone-400 text-xs sm:text-sm leading-relaxed mb-6">
-            Access certified residential listings, luxury penthouses, and high-yield commercial hubs with legal escrow protection.
-          </p>
-        </div>
-        <a href="properties.html" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-400 text-white font-bold text-xs sm:text-sm text-center shadow-lg">
-          Browse Verified Listings ↗
-        </a>
-      </div>
-
-      <!-- Agent & Manager CTA -->
-      <div class="glass-card p-8 rounded-3xl border border-amber-500/30 flex flex-col justify-between">
-        <div>
-          <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-4">
-            <i data-lucide="award" class="w-6 h-6"></i>
-          </div>
-          <h3 class="text-2xl font-serif font-bold text-white mb-2">Real Estate Professional?</h3>
-          <p class="text-stone-400 text-xs sm:text-sm leading-relaxed mb-6">
-            Register your agency, showcase properties to high-net-worth diaspora buyers, and manage your tenant portfolio with enterprise tooling.
-          </p>
-        </div>
-        <div class="flex gap-3">
-          <a href="agent-registration.html" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-400 text-black font-bold text-xs sm:text-sm text-center shadow-lg">
-            Agent Sign Up
-          </a>
-          <a href="manager-registration.html" class="flex-1 py-3.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm text-center border border-white/10">
-            Estate Manager
-          </a>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ==================== FOOTER ==================== -->
-  <footer class="border-t border-white/10 bg-[#020508] py-16 text-stone-400 text-xs">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-        <div>
-          <h4 class="text-white font-serif font-bold text-base mb-4">Aliko Diamond Key</h4>
-          <p class="text-stone-500 leading-relaxed mb-4">
-            Abuja FCT & Lagos State prime real estate acquisition, title authentication, and asset management ecosystem.
-          </p>
-          <div class="text-stone-600 font-mono text-[11px]">
-            RC: 1849204 (CAC Nigeria)
-          </div>
-        </div>
-
-        <div>
-          <h4 class="text-white font-semibold mb-4">Quick Navigation</h4>
-          <ul class="space-y-2">
-            <li><a href="properties.html" class="hover:text-white">Properties Directory</a></li>
-            <li><a href="agents.html" class="hover:text-white">Licensed Agents</a></li>
-            <li><a href="properties.html?view=map" class="hover:text-white">Interactive Map</a></li>
-            <li><a href="auth.html" class="hover:text-white">Client Portal</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="text-white font-semibold mb-4">Professional Onboarding</h4>
-          <ul class="space-y-2">
-            <li><a href="agent-registration.html" class="hover:text-white">Realtor 5-Step Wizard</a></li>
-            <li><a href="manager-registration.html" class="hover:text-white">Estate Manager Sign Up</a></li>
-            <li><a href="dashboard-manager.html" class="hover:text-white">Manager Portal</a></li>
-            <li><a href="dashboard-agent.html" class="hover:text-white">Agent Portal</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="text-white font-semibold mb-4">Contact & Head Office</h4>
-          <p class="text-stone-500 mb-2">Plot 412 Constitution Avenue, Central Business District, Abuja FCT, Nigeria.</p>
-          <p class="text-stone-500 mb-2">Phone: +234 (0) 800 25456 342</p>
-          <p class="text-emerald-400">support@alikodiamondkey.com</p>
-        </div>
-      </div>
-
-      <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-stone-600 text-[11px]">
-        <div>© 2026 Aliko Diamond Key Ltd. All rights reserved. Government Documented.</div>
-        <div class="flex gap-6">
-          <a href="#" class="hover:text-stone-400">Terms of Service</a>
-          <a href="#" class="hover:text-stone-400">Privacy Policy</a>
-          <a href="#" class="hover:text-stone-400">AGIS Compliance</a>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    // Initialize Lucide Icons
-    lucide.createIcons();
-
-    // Mobile Menu Toggle
-    const mobileBtn = document.getElementById('mobileMenuBtn');
-    const mobileDrawer = document.getElementById('mobileDrawer');
-    if (mobileBtn && mobileDrawer) {
-      mobileBtn.addEventListener('click', () => {
-        mobileDrawer.classList.toggle('hidden');
-      });
-    }
-
-    // Leaflet Interactive Map Preview
-    const homeMapEl = document.getElementById('homeMap');
-    if (homeMapEl) {
-      const map = L.map('homeMap').setView([9.0579, 7.4951], 12);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap contributors & CARTO',
-        maxZoom: 18
-      }).addTo(map);
-
-      // Add pins for prime estates
-      const markers = [
-        { lat: 9.0765, lng: 7.4985, title: 'Maitama Luxury Duplexes - ₦185M' },
-        { lat: 9.0432, lng: 7.5210, title: 'Asokoro Penthouses - ₦450M' },
-        { lat: 9.0610, lng: 7.4680, title: 'Wuse 2 Modern Apartments - ₦75M' },
-        { lat: 9.1020, lng: 7.4100, title: 'Gwarinpa Residential Plots - ₦35M' }
-      ];
-
-      markers.forEach(m => {
-        L.marker([m.lat, m.lng]).addTo(map).bindPopup(m.title);
-      });
-    }
-
-    // Interactive ROI Calculator Logic
-    const capitalSlider = document.getElementById('capitalSlider');
-    const periodSlider = document.getElementById('periodSlider');
-    const capitalDisplay = document.getElementById('capitalDisplay');
-    const periodDisplay = document.getElementById('periodDisplay');
-    const projectedValue = document.getElementById('projectedValue');
-
-    function calculateROI() {
-      if (!capitalSlider || !periodSlider) return;
-      const capital = parseInt(capitalSlider.value) * 1000000;
-      const years = parseInt(periodSlider.value);
-      const rate = 0.24; // 24% annual appreciation
-      const futureVal = Math.round(capital * Math.pow(1 + rate, years));
-      capitalDisplay.textContent = `₦${(capital / 1000000).toLocaleString()}M`;
-      periodDisplay.textContent = `${years} Year${years > 1 ? 's' : ''}`;
-      projectedValue.textContent = `₦${(futureVal / 1000000).toFixed(1)}M`;
-    }
-
-    if (capitalSlider && periodSlider) {
-      capitalSlider.addEventListener('input', calculateROI);
-      periodSlider.addEventListener('input', calculateROI);
-      calculateROI();
-    }
-  </script>
-</body>
+					Promise.all([
+						import("/@fs/C:/Users/انتو/Downloads/adk-svelte/node_modules/@sveltejs/kit/src/runtime/client/entry.js"),
+						import("/@fs/C:/Users/انتو/Downloads/adk-svelte/.svelte-kit/generated/client/app.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 3],
+							data: [{type:"data",data:{session:null},uses:{}},null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+  </body>
 </html>

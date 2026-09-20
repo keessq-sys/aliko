@@ -1,7 +1,13 @@
 <script lang="ts">
   import "../app.css";
   import { setupConvex } from "convex-svelte";
-  import { PUBLIC_CONVEX_URL } from "$env/static/public";
+  import { env as publicEnv } from "$env/dynamic/public";
+  // Falls back to a placeholder when no deployment is configured: setupConvex
+  // requires a non-empty URL, and ConvexClient is constructed disabled during
+  // SSR, so nothing connects unless a real PUBLIC_CONVEX_URL is provided in .env.
+  const PUBLIC_CONVEX_URL =
+    (publicEnv as Record<string, string | undefined>).PUBLIC_CONVEX_URL ?? "";
+  const convexUrl = PUBLIC_CONVEX_URL || "https://preview-placeholder.convex.cloud";
   import Header from "$lib/components/layout/Header.svelte";
   import Footer from "$lib/components/layout/Footer.svelte";
   import Toast from "$lib/components/ui/Toast.svelte";
@@ -9,8 +15,8 @@
 
   export let data: { session?: { user?: { name?: string | null; role?: string } } | null };
 
-  // Initialize Convex real-time client
-  setupConvex(PUBLIC_CONVEX_URL);
+  // Initialize Convex real-time client (falls back gracefully when unset)
+  setupConvex(convexUrl);
 
   // Hide header/footer on dashboard and auth routes
   $: isDashboardRoute = $page.url.pathname.startsWith("/dashboard");
@@ -45,4 +51,3 @@
 
 <!-- Global Toast Notifications -->
 <Toast />
-

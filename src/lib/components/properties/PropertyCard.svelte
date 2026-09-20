@@ -80,15 +80,15 @@
     <div class="mt-auto pt-4 border-t border-white/5 flex items-end justify-between">
       <div>
         <div class="text-2xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent">
-          ₦{(property.price).toLocaleString()}
+          ₦{Number(property.price ?? 0).toLocaleString()}
         </div>
         <div class="text-xs text-stone-400">
-          ₦{(property.pricePerSqm).toLocaleString()} / sqm
+          {property.pricePerSqm ? `₦${Number(property.pricePerSqm).toLocaleString()} / sqm` : 'Price on request'}
         </div>
       </div>
       
       <div class="flex items-center gap-2">
-        <img src={property.agent.avatar} alt={property.agent.name} class="w-8 h-8 rounded-full border border-white/10" />
+        <img src={property.agent?.avatar} alt={property.agent?.name ?? 'ADK Agent'} class="w-8 h-8 rounded-full border border-white/10" />
       </div>
     </div>
   </div>

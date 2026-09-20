@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { Menu, X, Bell, User, LogOut, Settings, LayoutDashboard, Map as MapIcon, Building2 } from 'lucide-svelte';
+  import { Menu, X, Bell, User, LogOut, Settings, LayoutDashboard, Map as MapIcon, ChevronDown, ChevronRight, Lamp, Building, HardHat, Cpu, Grid3x3, Sofa, Sparkles, FileSignature } from 'lucide-svelte';
   import { slide } from 'svelte/transition';
   import { page } from '$app/stores';
 
   let isMobileMenuOpen = false;
   let isProfileMenuOpen = false;
-  
+  let isServicesOpen = false;
+
   // Mock auth state for demo
   let isLoggedIn = false;
   let unreadNotifications = 3;
@@ -18,10 +19,23 @@
     { name: 'Map View', href: '/map' }
   ];
 
+  const serviceLinks = [
+    { name: 'Interior Design', href: '/services/interior-design', icon: Lamp },
+    { name: 'Decoration & Styling', href: '/services/decoration-styling', icon: Sparkles },
+    { name: 'Furnishing', href: '/services/furnishing', icon: Sofa },
+    { name: 'Turkish & Foreign Tiles', href: '/services/turkish-tiles-supply', icon: Grid3x3 },
+    { name: 'Building Materials', href: '/services/building-materials-supply', icon: HardHat },
+    { name: 'Smart Home Installation', href: '/services/smart-home-installation', icon: Cpu },
+    { name: 'Construction', href: '/services/construction-services', icon: Building },
+    { name: 'General Contracts', href: '/services/general-contracts', icon: FileSignature }
+  ];
+
+  $: dashboardHref = userRole === 'agent' ? '/dashboard/agent' : userRole === 'manager' ? '/dashboard/manager' : '/dashboard/client';
+
   function toggleMobileMenu() {
     isMobileMenuOpen = !isMobileMenuOpen;
   }
-  
+
   function toggleProfileMenu() {
     isProfileMenuOpen = !isProfileMenuOpen;
   }
@@ -30,7 +44,7 @@
 <header class="sticky top-0 z-40 w-full glass-l2 border-b border-white/10">
   <div class="container mx-auto px-4 lg:px-8">
     <div class="flex items-center justify-between h-20">
-      
+
       <!-- Logo -->
       <a href="/" class="flex items-center gap-3 group">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_15px_rgba(5,150,105,0.4)] group-hover:scale-105 transition-transform duration-300">
@@ -46,8 +60,8 @@
       <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center gap-8">
         {#each navLinks as link}
-          <a 
-            href={link.href} 
+          <a
+            href={link.href}
             class="text-sm font-medium transition-colors hover:text-emerald-400 relative {$page.url.pathname === link.href ? 'text-emerald-400' : 'text-stone-300'}"
           >
             {link.name}
@@ -56,6 +70,40 @@
             {/if}
           </a>
         {/each}
+
+        <!-- Services Dropdown -->
+        <div class="relative"
+             on:mouseenter={() => (isServicesOpen = true)}
+             on:mouseleave={() => (isServicesOpen = false)}>
+          <button
+            class="flex items-center gap-1 text-sm font-medium transition-colors {isServicesOpen || $page.url.pathname.startsWith('/services') ? 'text-emerald-400' : 'text-stone-300 hover:text-emerald-400'}"
+            on:click={() => (isServicesOpen = !isServicesOpen)}
+          >
+            Services
+            <ChevronDown size={14} class="transition-transform {isServicesOpen ? 'rotate-180' : ''}" />
+          </button>
+
+          {#if isServicesOpen}
+            <div class="absolute right-0 top-full pt-3 z-50" transition:slide={{ duration: 180 }}>
+              <div class="w-72 rounded-2xl glass-l3 border border-white/10 shadow-2xl p-2">
+                <a href="/services" class="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold uppercase tracking-wider text-emerald-400 hover:bg-white/5">
+                  All Services <ChevronRight size={12} />
+                </a>
+                <div class="h-px bg-white/10 my-1"></div>
+                {#each serviceLinks as s}
+                  <a
+                    href={s.href}
+                    class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-stone-300 transition-colors hover:bg-white/5 hover:text-white"
+                    on:click={() => (isServicesOpen = false)}
+                  >
+                    <s.icon size={15} class="text-emerald-400/80" />
+                    {s.name}
+                  </a>
+                {/each}
+              </div>
+            </div>
+          {/if}
+        </div>
       </nav>
 
       <!-- Desktop Actions -->
@@ -67,14 +115,13 @@
               <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full shadow-[0_0_8px_rgba(225,29,72,0.8)] animate-pulse"></span>
             {/if}
           </button>
-          
+
           <div class="relative">
             <button class="flex items-center gap-2 p-1 pl-3 pr-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors" on:click={toggleProfileMenu}>
               <span class="text-sm font-medium text-stone-300">John D.</span>
               <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Avatar" class="w-8 h-8 rounded-full border border-emerald-500/50" />
             </button>
-            
-            <!-- Profile Dropdown -->
+
             {#if isProfileMenuOpen}
               <div class="absolute right-0 mt-3 w-56 rounded-xl glass-l3 border border-white/10 shadow-2xl py-2 flex flex-col z-50">
                 <div class="px-4 py-2 border-b border-white/10 mb-2">
@@ -82,15 +129,15 @@
                   <p class="text-xs text-stone-400">john@example.com</p>
                   <div class="mt-2 badge-agent inline-block">Agent</div>
                 </div>
-                
-                <a href="/dashboard" class="flex items-center gap-3 px-4 py-2 text-sm text-stone-300 hover:text-white hover:bg-white/5 transition-colors">
+
+                <a href={dashboardHref} class="flex items-center gap-3 px-4 py-2 text-sm text-stone-300 hover:text-white hover:bg-white/5 transition-colors">
                   <LayoutDashboard size={16} /> Dashboard
                 </a>
-                <a href="/profile" class="flex items-center gap-3 px-4 py-2 text-sm text-stone-300 hover:text-white hover:bg-white/5 transition-colors">
+                <a href={dashboardHref} class="flex items-center gap-3 px-4 py-2 text-sm text-stone-300 hover:text-white hover:bg-white/5 transition-colors">
                   <User size={16} /> Profile
                 </a>
-                <a href="/settings" class="flex items-center gap-3 px-4 py-2 text-sm text-stone-300 hover:text-white hover:bg-white/5 transition-colors">
-                  <Settings size={16} /> Settings
+                <a href="/legal/track" class="flex items-center gap-3 px-4 py-2 text-sm text-stone-300 hover:text-white hover:bg-white/5 transition-colors">
+                  <Settings size={16} /> Track Documents
                 </a>
                 <div class="h-px bg-white/10 my-2"></div>
                 <button class="flex items-center gap-3 px-4 py-2 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors w-full text-left" on:click={() => isLoggedIn = false}>
@@ -120,26 +167,38 @@
   <!-- Mobile Menu Drawer -->
   {#if isMobileMenuOpen}
     <div class="md:hidden absolute top-20 left-0 w-full glass-l3 border-b border-white/10 shadow-2xl" transition:slide={{duration: 300}}>
-      <div class="flex flex-col p-4 gap-2">
+      <div class="flex flex-col p-4 gap-2 max-h-[70vh] overflow-y-auto">
         {#each navLinks as link}
-          <a 
-            href={link.href} 
+          <a
+            href={link.href}
             class="px-4 py-3 rounded-lg text-base font-medium {$page.url.pathname === link.href ? 'bg-emerald-900/30 text-emerald-400 border border-emerald-500/20' : 'text-stone-300 hover:bg-white/5'}"
             on:click={() => isMobileMenuOpen = false}
           >
             {link.name}
           </a>
         {/each}
-        
+
+        <div class="px-2 pt-3 pb-1 text-xs uppercase font-mono text-stone-500 tracking-wider">Services</div>
+        {#each serviceLinks as s}
+          <a
+            href={s.href}
+            class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5"
+            on:click={() => isMobileMenuOpen = false}
+          >
+            <s.icon size={15} class="text-emerald-400/80" />
+            {s.name}
+          </a>
+        {/each}
+
         <div class="h-px bg-white/10 my-4"></div>
 
         <div class="px-2 py-1 text-xs uppercase font-mono text-stone-500 tracking-wider">Dashboards</div>
         <a href="/dashboard/manager" class="px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5" on:click={() => isMobileMenuOpen = false}>🏢 Estate Manager</a>
         <a href="/dashboard/agent" class="px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5" on:click={() => isMobileMenuOpen = false}>🤝 Agent Dashboard</a>
         <a href="/dashboard/client" class="px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5" on:click={() => isMobileMenuOpen = false}>🏠 Client Portal</a>
-        
+
         <div class="h-px bg-white/10 my-2"></div>
-        
+
         {#if isLoggedIn}
           <button class="px-4 py-3 rounded-lg text-base font-medium text-rose-400 hover:bg-rose-500/10 text-left w-full" on:click={() => {isLoggedIn = false; isMobileMenuOpen = false;}}>Sign out</button>
         {:else}

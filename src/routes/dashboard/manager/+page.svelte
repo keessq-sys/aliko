@@ -2,7 +2,7 @@
   import { 
     LayoutDashboard, Home, Users, Briefcase, DollarSign, 
     FileText, BarChart2, Settings, LogOut, Bell, ChevronDown, 
-    Search, Plus, Filter, Download
+    Search, Plus, Filter, Download, AlertTriangle
   } from 'lucide-svelte';
   
   import StatCard from '$lib/components/dashboard/StatCard.svelte';

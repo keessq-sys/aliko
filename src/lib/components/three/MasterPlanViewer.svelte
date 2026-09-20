@@ -24,6 +24,8 @@
     OFF_PLAN:          0x7c3aed,
   };
 
+  let resizeObs: ResizeObserver | undefined;
+
   onMount(async () => {
     const THREE = await import("three");
 
@@ -172,13 +174,13 @@
       camera.updateProjectionMatrix();
     });
     ro.observe(container);
-
-    return () => ro.disconnect();
+    resizeObs = ro;
   });
 
   onDestroy(() => {
     cancelAnimationFrame(animFrame);
     renderer?.dispose();
+    resizeObs?.disconnect();
   });
 </script>
 

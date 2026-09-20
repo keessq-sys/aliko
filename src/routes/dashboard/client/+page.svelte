@@ -1,7 +1,11 @@
 <script lang="ts">
-  import { Heart, Calendar, FileText, MessageSquare, User, MapPin, Bed, Bath, Download, CalendarPlus, X } from 'lucide-svelte';
+  import { Heart, Calendar, FileText, MessageSquare, User, MapPin, Bed, Bath, Download, CalendarPlus, X, Inbox, ArrowRight } from 'lucide-svelte';
+  import { useQuery } from '$lib/convex/queries';
+  import { api } from '$lib/convex/_generated/api';
+  import { formatNaira } from '$lib/utils/format';
+  import { REQUEST_STATUS_META } from '$lib/types/services';
 
-  let currentTab = 'saved';
+  let currentTab = 'requests';
 
   const SAVED_PROPERTIES = [
     { id: 'p1', title: 'Maitama Luxury Villa', price: 850000000, beds: 5, baths: 6, location: 'Maitama, Abuja', image: 'https://picsum.photos/seed/prop1/400/300', date: '2 days ago' },
@@ -18,12 +22,22 @@
   ];
 
   const tabs = [
+    { id: 'requests', label: 'My Requests', icon: Inbox },
     { id: 'saved', label: 'Saved', icon: Heart },
     { id: 'viewings', label: 'Viewings', icon: Calendar },
     { id: 'documents', label: 'Documents', icon: FileText },
     { id: 'messages', label: 'Messages', icon: MessageSquare },
     { id: 'profile', label: 'Profile', icon: User },
   ];
+
+  // Live service requests submitted by this client (falls back to demo rows when signed out)
+  const myRequests = useQuery(api.serviceRequests.getMyRequests, {});
+
+  const DEMO_REQUESTS = [
+    { _id: 'demo-1', reference: 'ADK-SVC-2026-4821', serviceSlug: 'turkish-tiles-supply', requestType: 'SUPPLY_CONTRACT', status: 'QUOTED', quoteAmount: 4_200_000, adminResponse: 'Quote attached: 480sqm Turkish porcelain incl. delivery to Lekki. Valid 14 days.', createdAt: Date.now() - 6 * 86400_000 },
+    { _id: 'demo-2', reference: 'ADK-SVC-2026-5107', serviceSlug: 'interior-design', requestType: 'INTERIOR_DESIGN', status: 'REVIEWING', adminResponse: undefined, createdAt: Date.now() - 2 * 86400_000 },
+  ];
+  $: requests = $myRequests === undefined ? undefined : $myRequests.length > 0 ? $myRequests : DEMO_REQUESTS;
 </script>
 
 <div class="min-h-screen bg-[#050A0E] text-stone-300 font-sans">
@@ -62,8 +76,63 @@
 
   <!-- Main Content -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    
-    {#if currentTab === 'saved'}
+
+    {#if currentTab === 'requests'}
+      <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-xl font-semibold text-white">My Service Requests</h2>
+        <a href="/services" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-500">
+          New Request <ArrowRight class="h-4 w-4" />
+        </a>
+      </div>
+
+      {#if requests === undefined}
+        <div class="grid grid-cols-1 gap-4">
+          {#each Array(2) as _}
+            <div class="skeleton h-24 rounded-xl" />
+          {/each}
+        </div>
+      {:else if requests.length === 0}
+        <div class="flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/[0.02] py-16 text-center">
+          <Inbox class="mb-3 h-12 w-12 text-stone-700" />
+          <p class="mb-1 font-medium text-white">No requests yet</p>
+          <p class="mb-6 max-w-sm text-sm text-stone-400">Submit a request for interior design, Turkish tiles, smart homes, construction or any of our eight services.</p>
+          <a href="/services" class="btn-primary px-6 py-2.5 text-sm">Browse Services</a>
+        </div>
+      {:else}
+        <div class="space-y-4">
+          {#each requests as req (req._id)}
+            <div class="rounded-xl border border-white/5 bg-white/[0.02] p-5">
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div class="flex items-center gap-3">
+                    <h3 class="font-semibold text-white">{req.requestType.replace(/_/g, ' ')}</h3>
+                    <span class="rounded-full px-2.5 py-0.5 text-[11px] font-bold {REQUEST_STATUS_META[req.status]?.classes ?? ''}">
+                      {REQUEST_STATUS_META[req.status]?.label ?? req.status}
+                    </span>
+                  </div>
+                  <p class="mt-0.5 font-mono text-xs text-stone-600">{req.reference} · {req.serviceSlug}</p>
+                </div>
+                {#if req.quoteAmount}
+                  <div class="text-right">
+                    <p class="text-[10px] uppercase tracking-wider text-stone-600">Quote</p>
+                    <p class="font-bold text-amber-400">{formatNaira(req.quoteAmount)}</p>
+                  </div>
+                {/if}
+              </div>
+              {#if req.adminResponse}
+                <div class="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-500">ADK Response</p>
+                  <p class="mt-1 text-sm text-emerald-100">{req.adminResponse}</p>
+                </div>
+              {:else}
+                <p class="mt-3 text-xs text-stone-500">Our admin desk responds within 48 hours of submission.</p>
+              {/if}
+            </div>
+          {/each}
+        </div>
+      {/if}
+
+    {:else if currentTab === 'saved'}
       <div class="mb-6 flex justify-between items-center">
         <h2 class="text-xl font-semibold text-white">Your Wishlist ({SAVED_PROPERTIES.length} properties)</h2>
       </div>

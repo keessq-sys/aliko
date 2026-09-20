@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#050A0E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!--12qhfyh--><link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/> <meta name="description" content="Aliko Diamond Key — Nigeria's Premier Real Estate &amp; Property Management Platform"/> <meta property="og:type" content="website"/> <meta property="og:title" content="Aliko Diamond Key — Premium Real Estate"/> <meta property="og:description" content="1,200+ verified properties across Nigeria. Zero legal risk. Automated title documentation."/> <meta name="theme-color" content="#050A0E"/><!----><!--1orga13--><meta name="description" content="Bespoke residential &amp; commercial interior concepts"/><!----><title>Interior Design Services — Aliko Diamond Key</title>
+		<style data-sveltekit>@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --c-indigo: #4F46E5;
+    --c-rose: #E11D48;
+    --c-purple: #9333ea;
+    --c-blue-dark: #1e3a8a;
+  }
+  body {
+    background-color: #050A0E;
+    color: #e7e5e4; /* stone-200 */
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Instrument Serif', Georgia, serif;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-400 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(5,150,105,0.5),0_0_60px_rgba(5,150,105,0.2)];
+    transform: translateZ(0);
+  }
+  
+  .btn-secondary {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-amber-600 via-amber-500 to-amber-300 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(217,119,6,0.5),0_0_60px_rgba(217,119,6,0.2)];
+    transform: translateZ(0);
+  }
+
+  .btn-ghost {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-white/10 rounded-lg bg-white/5 backdrop-blur-md hover:bg-white/10 hover:scale-[1.03] active:scale-[0.97];
+    transform: translateZ(0);
+  }
+
+  .btn-danger {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-rose-600 to-rose-400 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(225,29,72,0.5),0_0_60px_rgba(225,29,72,0.2)];
+    transform: translateZ(0);
+  }
+
+  /* Tabs */
+  .tab-pill {
+    @apply px-4 py-2 text-sm font-medium transition-all duration-250 rounded-full text-stone-400 hover:text-white hover:bg-white/5;
+  }
+  
+  .tab-pill-active {
+    @apply px-4 py-2 text-sm font-medium transition-all duration-250 rounded-full text-emerald-400 bg-emerald-900/30 border border-emerald-500/30 shadow-[0_0_10px_rgba(5,150,105,0.2)];
+  }
+
+  /* Wizard */
+  .wizard-step-inactive {
+    @apply flex items-center justify-center w-8 h-8 rounded-full border border-stone-700 bg-stone-800 text-stone-400 transition-all duration-450;
+  }
+  .wizard-step-active {
+    @apply flex items-center justify-center w-8 h-8 rounded-full border border-emerald-400 bg-emerald-900/50 text-emerald-300 shadow-[0_0_15px_rgba(5,150,105,0.4)] transition-all duration-450 transform -translate-y-1;
+  }
+  .wizard-step-complete {
+    @apply flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white transition-all duration-450;
+  }
+
+  /* Cards */
+  .card-3d {
+    @apply relative overflow-hidden transition-all duration-450 ease-[cubic-bezier(0.16,1,0.3,1)] border border-white/5 rounded-2xl bg-white/5 backdrop-blur-xl hover:-translate-y-2 hover:shadow-xl;
+    transform: translateZ(0);
+    perspective: 1200px;
+  }
+
+  /* Badges */
+  .badge-client {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-800 text-stone-300 border border-stone-700;
+  }
+  .badge-agent {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-900/40 text-emerald-300 border border-emerald-700/50;
+  }
+  .badge-manager {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-900/40 text-amber-300 border border-amber-700/50;
+  }
+
+  .sidebar-item {
+    @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-stone-400 hover:text-white hover:bg-white/5 transition-all duration-250;
+  }
+  .sidebar-item-active {
+    @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-emerald-400 bg-emerald-900/20 border border-emerald-500/20 transition-all duration-250;
+  }
+
+  .map-container {
+    @apply w-full h-full rounded-xl overflow-hidden border border-white/10 bg-stone-900;
+  }
+
+  .gradient-border {
+    position: relative;
+    background: transparent;
+  }
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(5,150,105,0.6), rgba(217,119,6,0.6), rgba(99,102,241,0.5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  
+  .prose-dark {
+    @apply prose prose-invert prose-emerald max-w-none text-stone-300;
+  }
+}
+
+@layer utilities {
+  .neon-emerald {
+    box-shadow: 0 0 20px rgba(5,150,105,0.5), 0 0 60px rgba(5,150,105,0.2);
+  }
+  .neon-gold {
+    box-shadow: 0 0 20px rgba(217,119,6,0.5), 0 0 60px rgba(217,119,6,0.2);
+  }
+  .glass-l1 {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .glass-l2 {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+  .glass-l3 {
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+}
+
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  0% { opacity: 0; transform: translateX(20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes countUp {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes morphGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes particleFloat {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
+
+
+  @keyframes s-918YXh7FMLIr-shrink {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
+ .s-918YXh7FMLIr{}</style>
+  </head>
+  <body data-sveltekit-preload-data="hover" class="bg-surface-0 text-white antialiased">
+    <div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><header class="sticky top-0 z-40 w-full glass-l2 border-b border-white/10"><div class="container mx-auto px-4 lg:px-8"><div class="flex items-center justify-between h-20"><a href="/" class="flex items-center gap-3 group"><div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_15px_rgba(5,150,105,0.4)] group-hover:scale-105 transition-transform duration-300"><svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div> <span class="text-xl font-serif font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-stone-400">Aliko Diamond Key</span></a> <nav class="hidden md:flex items-center gap-8"><!--[--><a href="/" class="text-sm font-medium transition-colors hover:text-emerald-400 relative text-stone-300">Home <!--[-1--><!--]--></a><a href="/properties" class="text-sm font-medium transition-colors hover:text-emerald-400 relative text-stone-300">Properties <!--[-1--><!--]--></a><a href="/agents" class="text-sm font-medium transition-colors hover:text-emerald-400 relative text-stone-300">Agents <!--[-1--><!--]--></a><a href="/map" class="text-sm font-medium transition-colors hover:text-emerald-400 relative text-stone-300">Map View <!--[-1--><!--]--></a><!--]--> <div class="relative"><button class="flex items-center gap-1 text-sm font-medium transition-colors text-emerald-400">Services <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-chevron-down transition-transform "><!--[--><!----><path d="m6 9 6 6 6-6"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button> <!--[-1--><!--]--></div></nav> <div class="hidden md:flex items-center gap-4"><!--[-1--><a href="/auth?tab=signin" class="text-sm font-medium text-stone-300 hover:text-white transition-colors px-4 py-2">Sign In</a> <a href="/auth?tab=signup" class="btn-primary">Register</a><!--]--></div> <button class="md:hidden p-2 text-stone-300 hover:text-white"><!--[-1--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-menu"><!--[--><!----><line x1="4" x2="20" y1="12" y2="12"><!----></line><!----><!----><line x1="4" x2="20" y1="6" y2="6"><!----></line><!----><!----><line x1="4" x2="20" y1="18" y2="18"><!----></line><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><!--]--></button></div></div> <!--[-1--><!--]--></header><!----><!--]--> <main class="pt-20 min-h-screen bg-[#050A0E]"><!--[--><!--[-1--><!--[--><!--[0--><div class="min-h-screen bg-[#050A0E] text-white"><section class="relative h-[46vh] min-h-[380px] overflow-hidden"><img src="https://picsum.photos/seed/adk-interior/900/600" alt="Interior Design" class="absolute inset-0 h-full w-full object-cover"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-[#050A0E]/60 to-transparent"></div> <div class="absolute inset-x-0 bottom-0"><div class="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8"><a href="/services" class="mb-4 inline-flex items-center gap-1.5 text-xs text-stone-400 transition-colors hover:text-emerald-400"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-left"><!--[--><!----><path d="m12 19-7-7 7-7"><!----></path><!----><!----><path d="M19 12H5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> All Services</a> <div class="mb-2 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-black/50 px-3 py-1 text-[11px] font-semibold text-emerald-300 backdrop-blur-md">Interior &amp; Decoration</div> <h1 class="font-serif text-4xl font-bold sm:text-5xl">Interior Design</h1> <p class="mt-2 max-w-2xl text-stone-300">Bespoke residential &amp; commercial interior concepts</p></div></div></section> <section class="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8"><div class="grid gap-10 lg:grid-cols-3"><div class="space-y-6 lg:col-span-2"><div class="rounded-2xl border border-white/5 bg-white/[0.03] p-6"><h2 class="mb-4 font-serif text-2xl font-bold text-white">What We Deliver</h2> <ul class="grid grid-cols-1 gap-3 sm:grid-cols-2"><!--[--><li class="flex items-start gap-2 text-sm text-stone-300"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-circle-check mt-0.5 flex-shrink-0 text-emerald-400"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> 3D concept renderings</li><li class="flex items-start gap-2 text-sm text-stone-300"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-circle-check mt-0.5 flex-shrink-0 text-emerald-400"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Space planning &amp; mood boards</li><li class="flex items-start gap-2 text-sm text-stone-300"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-circle-check mt-0.5 flex-shrink-0 text-emerald-400"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Premium finishes curation</li><li class="flex items-start gap-2 text-sm text-stone-300"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-circle-check mt-0.5 flex-shrink-0 text-emerald-400"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Turnkey project supervision</li><!--]--></ul></div> <div class="grid grid-cols-1 gap-4 sm:grid-cols-3"><div class="glass rounded-xl p-4"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check mb-2 text-emerald-400"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <p class="text-xs text-stone-400">Quality guaranteed with verified suppliers &amp; licensed crews</p></div> <div class="glass rounded-xl p-4"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-clock mb-2 text-amber-400"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><polyline points="12 6 12 12 16 14"><!----></polyline><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <p class="text-xs text-stone-400">48-hour admin response on every submitted request</p></div> <div class="glass rounded-xl p-4"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin mb-2 text-blue-400"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <p class="text-xs text-stone-400">Nationwide delivery &amp; site coverage across Nigeria</p></div></div> <!--[0--><div><h3 class="mb-4 font-serif text-xl font-bold text-white">Related Services</h3> <div class="grid grid-cols-1 gap-4 sm:grid-cols-3"><!--[--><a href="/services/decoration-styling" class="group overflow-hidden rounded-xl border border-white/5 bg-white/[0.03] transition-colors hover:border-emerald-500/40"><div class="h-24 overflow-hidden"><img src="https://picsum.photos/seed/adk-decor/900/600" alt="Decoration &amp; Styling" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"/></div> <p class="p-3 text-sm font-medium text-white">Decoration &amp; Styling</p></a><a href="/services/furnishing" class="group overflow-hidden rounded-xl border border-white/5 bg-white/[0.03] transition-colors hover:border-emerald-500/40"><div class="h-24 overflow-hidden"><img src="https://picsum.photos/seed/adk-furnish/900/600" alt="Furnishing" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"/></div> <p class="p-3 text-sm font-medium text-white">Furnishing</p></a><!--]--></div></div><!--]--></div> <div class="lg:col-span-1"><div class="sticky top-24"><h2 class="mb-4 font-serif text-2xl font-bold text-white">Request This Service</h2> <!--[0--><p class="mb-4 text-sm text-stone-400">Starting from <span class="font-bold text-amber-400">₦1,500,000</span> <span class="text-stone-600">per project</span></p><!--]--></div></div></div> <div class="mt-10 border-t border-white/5 pt-10"><!--[-1--><!--[--><form class="mx-auto max-w-2xl rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 backdrop-blur-xl"><div class="mb-6 flex items-center gap-3 border-b border-white/10 pb-4"><span class="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300">Interior Design Brief</span> <span class="text-xs text-stone-500">All fields marked * are required</span></div> <div class="grid grid-cols-1 gap-5 sm:grid-cols-2"><label class="block"><span class="mb-1 block text-sm text-stone-400">Full Name *</span> <input type="text" value="" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500" placeholder="e.g. Adaeze Okonkwo"/></label> <label class="block"><span class="mb-1 block text-sm text-stone-400">Email Address *</span> <input type="email" value="" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500" placeholder="you@example.com"/></label> <label class="block"><span class="mb-1 block text-sm text-stone-400">Phone Number *</span> <div class="flex"><span class="inline-flex items-center rounded-l-lg border border-r-0 border-white/10 bg-black/60 px-3 text-stone-400">+234</span> <input type="tel" value="" class="w-full rounded-r-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500" placeholder="801 234 5678"/></div></label> <label class="block"><span class="mb-1 block text-sm text-stone-400">Company (optional)</span> <input type="text" value="" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500" placeholder="Company / Organisation"/></label> <label class="block sm:col-span-2"><span class="mb-1 block text-sm text-stone-400">Project Location</span> <input type="text" value="" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500" placeholder="e.g. Lekki Phase 1, Lagos"/></label> <label class="block sm:col-span-2"><span class="mb-1 flex justify-between text-sm text-stone-400"><span>Project Brief *</span> <span class="text-xs text-stone-600">0/1500</span></span> <textarea maxlength="1500" rows="5" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500" placeholder="Describe your project: scope, rooms/area, preferred styles or material specs, expected start date..."></textarea></label> <label class="block"><span class="mb-1 block text-sm text-stone-400">Budget Range</span> <select class="w-full rounded-lg border border-white/10 bg-[#0A1628] px-4 py-2.5 text-white outline-none focus:border-emerald-500"><option value="-1" selected="">Prefer not to say</option><!--[--><option value="0">Under ₦1M</option><option value="1">₦1M – ₦5M</option><option value="2">₦5M – ₦20M</option><option value="3">₦20M – ₦100M</option><option value="4">₦100M+</option><!--]--></select></label> <label class="block"><span class="mb-1 block text-sm text-stone-400">Expected Timeline</span> <select class="w-full rounded-lg border border-white/10 bg-[#0A1628] px-4 py-2.5 text-white outline-none focus:border-emerald-500"><!--[--><option value="Immediate">Immediate</option><option value="Within 1 month">Within 1 month</option><option value="1–3 months" selected="">1–3 months</option><option value="3–6 months">3–6 months</option><option value="6+ months / Flexible">6+ months / Flexible</option><!--]--></select></label></div> <!--[-1--><!--]--> <div class="mt-6 flex items-start gap-2 rounded-lg border border-blue-500/20 bg-blue-500/5 p-3 text-xs text-blue-200"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-info mt-0.5 flex-shrink-0"><!--[--><!----><circle cx="12" cy="12" r="10"><!----></circle><!----><!----><path d="M12 16v-4"><!----></path><!----><!----><path d="M12 8h.01"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Your request goes directly to the ADK super-admin desk. You will receive a quote and a dedicated contact within 48 hours.</div> <button type="submit" class="btn-primary mt-6 w-full py-3.5 text-sm disabled:cursor-not-allowed disabled:opacity-60"><!--[-1--><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-send mr-2"><!--[--><!----><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"><!----></path><!----><!----><path d="m21.854 2.147-10.94 10.939"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Submit Interior Design Brief Request<!--]--></button></form><!--]--><!--]--><!----><!----></div></section></div><!--]--><!--]--><!--]--><!--]--></main> <!--[0--><footer class="relative mt-24 border-t border-emerald-900/50 bg-stone-900 overflow-hidden"><div class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50 shadow-[0_0_20px_rgba(5,150,105,1)]"></div> <div class="container mx-auto px-4 lg:px-8 pt-16 pb-8"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16"><div class="flex flex-col gap-6 lg:col-span-1"><a href="/" class="flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_15px_rgba(5,150,105,0.4)]"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div> <span class="text-xl font-serif font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-stone-400">Aliko Diamond Key</span></a> <p class="text-sm text-stone-400 leading-relaxed">Nigeria's premier real estate, interior design and construction ecosystem. Verified titles, elite agents and turnkey building services.</p> <div class="flex items-center gap-4"><a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-twitter"><!--[--><!----><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a> <a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-linkedin"><!--[--><!----><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"><!----></path><!----><!----><rect width="4" height="12" x="2" y="9"><!----></rect><!----><!----><circle cx="4" cy="4" r="2"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a> <a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-instagram"><!--[--><!----><rect width="20" height="20" x="2" y="2" rx="5" ry="5"><!----></rect><!----><!----><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"><!----></path><!----><!----><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"><!----></line><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a> <a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-rose-400 hover:bg-rose-900/20 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-youtube"><!--[--><!----><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"><!----></path><!----><!----><path d="m10 15 5-3-5-3z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a></div></div> <div class="flex flex-col gap-4"><h4 class="text-white font-serif text-lg mb-2">Properties</h4> <a href="/properties" class="text-sm text-stone-400 hover:text-white transition-colors">All Listings</a> <a href="/properties?type=residential" class="text-sm text-stone-400 hover:text-white transition-colors">Residential</a> <a href="/properties?type=commercial" class="text-sm text-stone-400 hover:text-white transition-colors">Commercial</a> <a href="/properties?featured=true" class="text-sm text-stone-400 hover:text-emerald-400 transition-colors">Featured Estates</a> <a href="/map" class="text-sm text-stone-400 hover:text-white transition-colors">Map Search</a></div> <div class="flex flex-col gap-3"><h4 class="text-white font-serif text-lg mb-2">Services</h4> <a href="/services/interior-design" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-lamp"><!--[--><!----><path d="M8 2h8l4 10H4L8 2Z"><!----></path><!----><!----><path d="M12 12v6"><!----></path><!----><!----><path d="M8 22v-2c0-1.1.9-2 2-2h4a2 2 0 0 1 2 2v2H8Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Interior Design</a> <a href="/services/furnishing" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-sofa text-amber-400/80"><!--[--><!----><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"><!----></path><!----><!----><path d="M2 16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"><!----></path><!----><!----><path d="M4 18v2"><!----></path><!----><!----><path d="M20 18v2"><!----></path><!----><!----><path d="M12 4v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Furnishing</a> <a href="/services/turkish-tiles-supply" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-grid-3x3 text-cyan-400/80"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!----><path d="M3 9h18"><!----></path><!----><!----><path d="M3 15h18"><!----></path><!----><!----><path d="M9 3v18"><!----></path><!----><!----><path d="M15 3v18"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Turkish Tiles</a> <a href="/services/building-materials-supply" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-hard-hat text-amber-400/80"><!--[--><!----><path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"><!----></path><!----><!----><path d="M14 6a6 6 0 0 1 6 6v3"><!----></path><!----><!----><path d="M4 15v-3a6 6 0 0 1 6-6"><!----></path><!----><!----><rect x="2" y="15" width="20" height="4" rx="1"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Building Materials</a> <a href="/services/smart-home-installation" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-cpu text-purple-400/80"><!--[--><!----><rect width="16" height="16" x="4" y="4" rx="2"><!----></rect><!----><!----><rect width="6" height="6" x="9" y="9" rx="1"><!----></rect><!----><!----><path d="M15 2v2"><!----></path><!----><!----><path d="M15 20v2"><!----></path><!----><!----><path d="M2 15h2"><!----></path><!----><!----><path d="M2 9h2"><!----></path><!----><!----><path d="M20 15h2"><!----></path><!----><!----><path d="M20 9h2"><!----></path><!----><!----><path d="M9 2v2"><!----></path><!----><!----><path d="M9 20v2"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Smart Homes</a> <a href="/services/construction-services" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-building text-emerald-400/80"><!--[--><!----><rect width="16" height="20" x="4" y="2" rx="2" ry="2"><!----></rect><!----><!----><path d="M9 22v-4h6v4"><!----></path><!----><!----><path d="M8 6h.01"><!----></path><!----><!----><path d="M16 6h.01"><!----></path><!----><!----><path d="M12 6h.01"><!----></path><!----><!----><path d="M12 10h.01"><!----></path><!----><!----><path d="M12 14h.01"><!----></path><!----><!----><path d="M16 10h.01"><!----></path><!----><!----><path d="M16 14h.01"><!----></path><!----><!----><path d="M8 10h.01"><!----></path><!----><!----><path d="M8 14h.01"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Construction</a> <a href="/services" class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 mt-1">View all services →</a></div> <div class="flex flex-col gap-4"><h4 class="text-white font-serif text-lg mb-2">Company</h4> <a href="/agents" class="text-sm text-stone-400 hover:text-white transition-colors">Our Agents</a> <a href="/register/agent" class="text-sm text-stone-400 hover:text-white transition-colors">Careers — Join as Agent</a> <a href="/legal/track" class="text-sm text-stone-400 hover:text-white transition-colors">Document Tracking</a> <div class="mt-2 flex flex-col gap-2"><a href="/register/agent" class="btn-primary text-xs py-1.5 w-full text-center">Join as Agent</a> <a href="/register/manager" class="btn-secondary text-xs py-1.5 w-full text-center">Become a Manager</a></div></div> <div class="flex flex-col gap-4"><h4 class="text-white font-serif text-lg mb-2">Contact &amp; Newsletter</h4> <div class="flex flex-col gap-2 text-sm text-stone-400"><span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin text-emerald-500"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Abuja FCT &amp; Lagos, Nigeria</span> <span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-phone text-emerald-500"><!--[--><!----><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> +234 800 DIAMOND</span> <span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-mail text-emerald-500"><!--[--><!----><rect width="20" height="16" x="2" y="4" rx="2"><!----></rect><!----><!----><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> contact@adk.com</span></div> <form class="mt-4 flex flex-col gap-2"><p class="text-xs text-stone-400 mb-1">Subscribe for exclusive listings</p> <div class="flex gap-2"><input type="email" placeholder="Email address" class="w-full bg-stone-800 border border-stone-700 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all" required=""/> <button type="submit" class="btn-primary px-3 py-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-mail"><!--[--><!----><rect width="20" height="16" x="2" y="4" rx="2"><!----></rect><!----><!----><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div></form></div></div> <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4"><p class="text-xs text-stone-500">© 2026 Aliko Diamond Key. All rights reserved.</p> <div class="flex items-center gap-4 text-xs text-stone-500"><a href="/legal/track" class="hover:text-white transition-colors">Track a Document</a> <a href="/services/general-contracts" class="hover:text-white transition-colors">Contract Proposals</a></div> <p class="text-xs font-mono text-stone-600 flex items-center gap-1">Powered by <span class="text-emerald-500/70">ADK Platform</span></p></div></div></footer><!----><!--]--> <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 w-full max-w-sm pointer-events-none s-918YXh7FMLIr"><!--[--><!--]--></div><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_dev = {
+						base: new URL("..", location).pathname.slice(0, -1),
+						env: {}
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("/@fs/C:/Users/انتو/Downloads/adk-svelte/node_modules/@sveltejs/kit/src/runtime/client/entry.js"),
+						import("/@fs/C:/Users/انتو/Downloads/adk-svelte/.svelte-kit/generated/client/app.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 31],
+							data: [{type:"data",data:{session:null},uses:{}},null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+  </body>
+</html>

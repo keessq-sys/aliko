@@ -1,550 +1,242 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Property Listings — Aliko Diamond Key</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#050A0E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!--12qhfyh--><link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/> <meta name="description" content="Aliko Diamond Key — Nigeria's Premier Real Estate &amp; Property Management Platform"/> <meta property="og:type" content="website"/> <meta property="og:title" content="Aliko Diamond Key — Premium Real Estate"/> <meta property="og:description" content="1,200+ verified properties across Nigeria. Zero legal risk. Automated title documentation."/> <meta name="theme-color" content="#050A0E"/><!----><!--zu32by--><meta name="description" content="Explore verified houses, lands, penthouses, duplexes and commercial properties across Nigeria."/><!----><title>Properties &amp; Real Estate Listings — Aliko Diamond Key</title>
+		<style data-sveltekit>@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  <style>
-    body { background-color: #050A0E; color: #f3f4f6; font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Playfair Display', serif; }
-    .font-mono { font-family: 'JetBrains Mono', monospace; }
-    .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .glass-card { background: rgba(10, 17, 24, 0.75); backdrop-filter: blur(20px); border: 1px solid rgba(5, 150, 105, 0.2); }
-    .glass-card:hover { border-color: rgba(5, 150, 105, 0.4); transform: translateY(-4px); box-shadow: 0 12px 30px -10px rgba(5, 150, 105, 0.3); }
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #064E3B; border-radius: 3px; }
-  </style>
-</head>
-<body class="selection:bg-emerald-500/30">
+@layer base {
+  :root {
+    --c-indigo: #4F46E5;
+    --c-rose: #E11D48;
+    --c-purple: #9333ea;
+    --c-blue-dark: #1e3a8a;
+  }
+  body {
+    background-color: #050A0E;
+    color: #e7e5e4; /* stone-200 */
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Instrument Serif', Georgia, serif;
+  }
+}
 
-  <!-- ==================== HEADER ==================== -->
-  <header class="sticky top-0 z-50 w-full glass border-b border-white/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-20">
-        <a href="index.html" class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center shadow-[0_0_20px_rgba(5,150,105,0.4)]">
-            <i data-lucide="diamond" class="w-5 h-5 text-white"></i>
-          </div>
-          <div>
-            <span class="text-xl font-serif font-bold text-white tracking-wide">Aliko Diamond Key</span>
-            <span class="block text-[10px] text-emerald-400 font-mono tracking-widest uppercase -mt-1">Verified Marketplace</span>
-          </div>
-        </a>
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-400 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(5,150,105,0.5),0_0_60px_rgba(5,150,105,0.2)];
+    transform: translateZ(0);
+  }
+  
+  .btn-secondary {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-amber-600 via-amber-500 to-amber-300 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(217,119,6,0.5),0_0_60px_rgba(217,119,6,0.2)];
+    transform: translateZ(0);
+  }
 
-        <nav class="hidden md:flex items-center gap-8">
-          <a href="index.html" class="text-sm font-medium text-stone-300 hover:text-emerald-400">Home</a>
-          <a href="properties.html" class="text-sm font-medium text-emerald-400">Properties</a>
-          <a href="agents.html" class="text-sm font-medium text-stone-300 hover:text-emerald-400">Verified Agents</a>
-          <a href="properties.html?view=map" class="text-sm font-medium text-stone-300 hover:text-emerald-400">Interactive Map</a>
-        </nav>
+  .btn-ghost {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-white/10 rounded-lg bg-white/5 backdrop-blur-md hover:bg-white/10 hover:scale-[1.03] active:scale-[0.97];
+    transform: translateZ(0);
+  }
 
-        <div class="flex items-center gap-3">
-          <a href="auth.html" class="text-sm font-medium text-stone-300 hover:text-white px-3 py-2">Sign In</a>
-          <a href="auth.html?mode=register" class="text-xs font-semibold px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-400 text-white shadow-lg">Get Started</a>
-        </div>
-      </div>
-    </div>
-  </header>
+  .btn-danger {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-rose-600 to-rose-400 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(225,29,72,0.5),0_0_60px_rgba(225,29,72,0.2)];
+    transform: translateZ(0);
+  }
 
-  <!-- ==================== TOP HERO BANNER ==================== -->
-  <div class="border-b border-white/5 bg-gradient-to-b from-emerald-950/20 to-transparent py-10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <div class="text-xs font-mono text-emerald-400 uppercase tracking-widest mb-1">GOVERNMENT DOCUMENTED INVENTORY</div>
-          <h1 class="text-3xl sm:text-4xl font-serif font-bold text-white mb-2">Verified Real Estate Listings</h1>
-          <p class="text-stone-400 text-sm max-w-xl">
-            Explore premium duplexes, waterfront penthouses, luxury apartments, and registered land parcels with clean titles.
-          </p>
-        </div>
+  /* Tabs */
+  .tab-pill {
+    @apply px-4 py-2 text-sm font-medium transition-all duration-250 rounded-full text-stone-400 hover:text-white hover:bg-white/5;
+  }
+  
+  .tab-pill-active {
+    @apply px-4 py-2 text-sm font-medium transition-all duration-250 rounded-full text-emerald-400 bg-emerald-900/30 border border-emerald-500/30 shadow-[0_0_10px_rgba(5,150,105,0.2)];
+  }
 
-        <!-- View Mode Switcher -->
-        <div class="flex items-center gap-3">
-          <div class="p-1 rounded-xl bg-white/5 border border-white/10 flex items-center">
-            <button id="gridViewBtn" class="p-2 rounded-lg bg-emerald-600 text-white transition-colors" title="Grid View">
-              <i data-lucide="layout-grid" class="w-4 h-4"></i>
-            </button>
-            <button id="listViewBtn" class="p-2 rounded-lg text-stone-400 hover:text-white transition-colors" title="List View">
-              <i data-lucide="layout-list" class="w-4 h-4"></i>
-            </button>
-            <button id="mapViewBtn" class="p-2 rounded-lg text-stone-400 hover:text-white transition-colors" title="Map View">
-              <i data-lucide="map" class="w-4 h-4"></i>
-            </button>
-          </div>
+  /* Wizard */
+  .wizard-step-inactive {
+    @apply flex items-center justify-center w-8 h-8 rounded-full border border-stone-700 bg-stone-800 text-stone-400 transition-all duration-450;
+  }
+  .wizard-step-active {
+    @apply flex items-center justify-center w-8 h-8 rounded-full border border-emerald-400 bg-emerald-900/50 text-emerald-300 shadow-[0_0_15px_rgba(5,150,105,0.4)] transition-all duration-450 transform -translate-y-1;
+  }
+  .wizard-step-complete {
+    @apply flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white transition-all duration-450;
+  }
 
-          <!-- Sort Select -->
-          <select id="sortSelect" class="px-3 py-2 rounded-xl bg-[#0A1628] border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
-            <option value="newest">Newest Listed</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  </div>
+  /* Cards */
+  .card-3d {
+    @apply relative overflow-hidden transition-all duration-450 ease-[cubic-bezier(0.16,1,0.3,1)] border border-white/5 rounded-2xl bg-white/5 backdrop-blur-xl hover:-translate-y-2 hover:shadow-xl;
+    transform: translateZ(0);
+    perspective: 1200px;
+  }
 
-  <!-- ==================== MAIN CONTENT & FILTERS ==================== -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="flex flex-col lg:flex-row gap-8">
-      
-      <!-- Filter Sidebar (Left) -->
-      <aside class="w-full lg:w-72 flex-shrink-0">
-        <div class="glass-card p-5 rounded-2xl sticky top-28 space-y-6">
-          <div class="flex items-center justify-between pb-3 border-b border-white/10">
-            <h3 class="font-serif font-bold text-white text-base flex items-center gap-2">
-              <i data-lucide="sliders-horizontal" class="w-4 h-4 text-emerald-400"></i> Filters
-            </h3>
-            <button id="resetFilters" class="text-xs text-stone-400 hover:text-emerald-400 underline">Reset</button>
-          </div>
+  /* Badges */
+  .badge-client {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-800 text-stone-300 border border-stone-700;
+  }
+  .badge-agent {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-900/40 text-emerald-300 border border-emerald-700/50;
+  }
+  .badge-manager {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-900/40 text-amber-300 border border-amber-700/50;
+  }
 
-          <!-- Search Query -->
-          <div>
-            <label class="block text-[11px] font-mono text-stone-400 uppercase mb-1">Keywords</label>
-            <div class="relative">
-              <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-500"></i>
-              <input id="searchInput" type="text" placeholder="Location, estate, name..." class="w-full pl-9 pr-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500">
-            </div>
-          </div>
+  .sidebar-item {
+    @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-stone-400 hover:text-white hover:bg-white/5 transition-all duration-250;
+  }
+  .sidebar-item-active {
+    @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-emerald-400 bg-emerald-900/20 border border-emerald-500/20 transition-all duration-250;
+  }
 
-          <!-- Asset Class -->
-          <div>
-            <label class="block text-[11px] font-mono text-stone-400 uppercase mb-2">Asset Type</label>
-            <div class="flex flex-wrap gap-1.5" id="typeFilters">
-              <button data-type="All" class="type-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-600 text-white">All</button>
-              <button data-type="duplex" class="type-btn px-2.5 py-1 rounded-lg text-xs bg-white/5 text-stone-300 hover:bg-white/10">Duplex</button>
-              <button data-type="penthouse" class="type-btn px-2.5 py-1 rounded-lg text-xs bg-white/5 text-stone-300 hover:bg-white/10">Penthouse</button>
-              <button data-type="apartment" class="type-btn px-2.5 py-1 rounded-lg text-xs bg-white/5 text-stone-300 hover:bg-white/10">Apartment</button>
-              <button data-type="land" class="type-btn px-2.5 py-1 rounded-lg text-xs bg-white/5 text-stone-300 hover:bg-white/10">Land</button>
-              <button data-type="commercial" class="type-btn px-2.5 py-1 rounded-lg text-xs bg-white/5 text-stone-300 hover:bg-white/10">Commercial</button>
-            </div>
-          </div>
+  .map-container {
+    @apply w-full h-full rounded-xl overflow-hidden border border-white/10 bg-stone-900;
+  }
 
-          <!-- Max Price Slider -->
-          <div>
-            <div class="flex justify-between text-xs mb-1">
-              <span class="text-stone-400 font-mono">Max Price:</span>
-              <span id="priceLabel" class="text-amber-400 font-bold font-mono">Any Budget</span>
-            </div>
-            <input id="priceRange" type="range" min="30" max="1000" value="1000" step="20" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-amber-500">
-          </div>
+  .gradient-border {
+    position: relative;
+    background: transparent;
+  }
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(5,150,105,0.6), rgba(217,119,6,0.6), rgba(99,102,241,0.5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  
+  .prose-dark {
+    @apply prose prose-invert prose-emerald max-w-none text-stone-300;
+  }
+}
 
-          <!-- Bedrooms -->
-          <div>
-            <label class="block text-[11px] font-mono text-stone-400 uppercase mb-1">Bedrooms</label>
-            <select id="bedroomSelect" class="w-full px-3 py-2 rounded-xl bg-[#0A1628] border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
-              <option value="any">Any Bedrooms</option>
-              <option value="2">2+ Bedrooms</option>
-              <option value="3">3+ Bedrooms</option>
-              <option value="4">4+ Bedrooms</option>
-              <option value="5">5+ Bedrooms</option>
-            </select>
-          </div>
+@layer utilities {
+  .neon-emerald {
+    box-shadow: 0 0 20px rgba(5,150,105,0.5), 0 0 60px rgba(5,150,105,0.2);
+  }
+  .neon-gold {
+    box-shadow: 0 0 20px rgba(217,119,6,0.5), 0 0 60px rgba(217,119,6,0.2);
+  }
+  .glass-l1 {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .glass-l2 {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+  .glass-l3 {
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+}
 
-          <!-- Verified Only Toggle -->
-          <div class="pt-2 border-t border-white/5 flex items-center justify-between">
-            <span class="text-xs text-stone-300 flex items-center gap-1.5">
-              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Title Verified Only
-            </span>
-            <input id="verifiedToggle" type="checkbox" class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
-          </div>
-        </div>
-      </aside>
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
 
-      <!-- Main Results Area (Right) -->
-      <main class="flex-1 min-w-0">
-        
-        <!-- Results Counter -->
-        <div class="flex items-center justify-between text-xs text-stone-400 mb-4 pb-2 border-b border-white/5">
-          <span id="resultsCount">Showing 8 properties</span>
-          <span class="text-[11px] font-mono text-emerald-400">● Real-time Availability</span>
-        </div>
+@keyframes slideInRight {
+  0% { opacity: 0; transform: translateX(20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
 
-        <!-- Container for Grid or List -->
-        <div id="propertiesContainer" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-          <!-- Dynamic Property Cards will be injected by JavaScript below -->
-        </div>
+@keyframes countUp {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
 
-        <!-- Map Container (Hidden by default, shown when Map View selected) -->
-        <div id="mapViewContainer" class="hidden h-[600px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative">
-          <div id="propertiesMap" class="w-full h-full bg-[#050A0E]"></div>
-        </div>
+@keyframes morphGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
-      </main>
+@keyframes particleFloat {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
 
-    </div>
-  </div>
 
-  <script>
-    // Properties Mock Dataset
-    const PROPERTIES = [
-      {
-        id: "prop-001",
-        title: "5-Bedroom Luxury Duplex",
-        type: "duplex",
-        price: 185000000,
-        bedrooms: 5,
-        bathrooms: 6,
-        sizeSqm: 800,
-        location: "Aso Drive, Maitama, Abuja",
-        status: "available",
-        isVerified: true,
-        image: "https://picsum.photos/seed/prop1/800/600",
-        lat: 9.0765,
-        lng: 7.4985
-      },
-      {
-        id: "prop-002",
-        title: "Skyline Atlantic Penthouse",
-        type: "penthouse",
-        price: 450000000,
-        bedrooms: 4,
-        bathrooms: 4,
-        sizeSqm: 400,
-        location: "Skyline Towers, Victoria Island, Lagos",
-        status: "available",
-        isVerified: true,
-        image: "https://picsum.photos/seed/prop3/800/600",
-        lat: 6.4281,
-        lng: 3.4219
-      },
-      {
-        id: "prop-003",
-        title: "Modern 3-Bed City Residence",
-        type: "apartment",
-        price: 75000000,
-        bedrooms: 3,
-        bathrooms: 3,
-        sizeSqm: 220,
-        location: "Aminu Kano Way, Wuse 2, Abuja",
-        status: "reserved",
-        isVerified: true,
-        image: "https://picsum.photos/seed/prop4/800/600",
-        lat: 9.0610,
-        lng: 7.4680
-      },
-      {
-        id: "prop-004",
-        title: "Katampe Hills Residential Land",
-        type: "land",
-        price: 45000000,
-        bedrooms: 0,
-        bathrooms: 0,
-        sizeSqm: 1000,
-        location: "Katampe Extension, Abuja",
-        status: "available",
-        isVerified: true,
-        image: "https://picsum.photos/seed/land1/800/600",
-        lat: 9.1120,
-        lng: 7.4320
-      },
-      {
-        id: "prop-005",
-        title: "Commercial Grade-A Office Hub",
-        type: "commercial",
-        price: 950000000,
-        bedrooms: 0,
-        bathrooms: 12,
-        sizeSqm: 2400,
-        location: "Central Business District, Abuja",
-        status: "available",
-        isVerified: true,
-        image: "https://picsum.photos/seed/comm1/800/600",
-        lat: 9.0520,
-        lng: 7.4850
-      },
-      {
-        id: "prop-006",
-        title: "Waterfront 4-Bed Detached Villa",
-        type: "duplex",
-        price: 320000000,
-        bedrooms: 4,
-        bathrooms: 5,
-        sizeSqm: 650,
-        location: "Banana Island, Ikoyi, Lagos",
-        status: "available",
-        isVerified: true,
-        image: "https://picsum.photos/seed/prop6/800/600",
-        lat: 6.4520,
-        lng: 3.4410
-      },
-      {
-        id: "prop-007",
-        title: "Lekki Phase 1 Contemporary Maisonette",
-        type: "apartment",
-        price: 130000000,
-        bedrooms: 3,
-        bathrooms: 4,
-        sizeSqm: 310,
-        location: "Admiralty Way, Lekki Phase 1, Lagos",
-        status: "sold",
-        isVerified: true,
-        image: "https://picsum.photos/seed/prop7/800/600",
-        lat: 6.4480,
-        lng: 3.4730
-      },
-      {
-        id: "prop-008",
-        title: "Guzape Diplomatic Zone Villa",
-        type: "duplex",
-        price: 280000000,
-        bedrooms: 6,
-        bathrooms: 7,
-        sizeSqm: 900,
-        location: "Diplomatic Enclave, Guzape, Abuja",
-        status: "available",
-        isVerified: true,
-        image: "https://picsum.photos/seed/prop8/800/600",
-        lat: 9.0280,
-        lng: 7.5180
-      }
-    ];
+  @keyframes s-918YXh7FMLIr-shrink {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
+ .s-918YXh7FMLIr{}
 
-    let currentType = 'All';
-    let currentView = 'grid';
-    let leafletMapInstance = null;
+  .preserve-3d.s-0Nqe7cB3D5f3 {
+    transform-style: preserve-3d;
+  }
+ .s-0Nqe7cB3D5f3{}
 
-    const container = document.getElementById('propertiesContainer');
-    const mapViewContainer = document.getElementById('mapViewContainer');
-    const resultsCount = document.getElementById('resultsCount');
-    const searchInput = document.getElementById('searchInput');
-    const priceRange = document.getElementById('priceRange');
-    const priceLabel = document.getElementById('priceLabel');
-    const bedroomSelect = document.getElementById('bedroomSelect');
-    const verifiedToggle = document.getElementById('verifiedToggle');
-    const sortSelect = document.getElementById('sortSelect');
+  .custom-scrollbar.s-ckU4wR0G10l-::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar.s-ckU4wR0G10l-::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar.s-ckU4wR0G10l-::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+ .s-ckU4wR0G10l-{}
 
-    function filterAndRender() {
-      const q = searchInput.value.toLowerCase().trim();
-      const maxPrice = parseInt(priceRange.value) * 1000000;
-      const minBeds = bedroomSelect.value === 'any' ? 0 : parseInt(bedroomSelect.value);
-      const verifiedOnly = verifiedToggle.checked;
-      const sortBy = sortSelect.value;
+  .custom-scrollbar.s-p5FMs-hn1uxS::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar.s-p5FMs-hn1uxS::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1);
+  }
+  .custom-scrollbar.s-p5FMs-hn1uxS::-webkit-scrollbar-thumb {
+    background: rgba(5, 150, 105, 0.5);
+    border-radius: 4px;
+  }
+ .s-p5FMs-hn1uxS{}</style>
+  </head>
+  <body data-sveltekit-preload-data="hover" class="bg-surface-0 text-white antialiased">
+    <div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><header class="sticky top-0 z-40 w-full glass-l2 border-b border-white/10"><div class="container mx-auto px-4 lg:px-8"><div class="flex items-center justify-between h-20"><a href="/" class="flex items-center gap-3 group"><div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_15px_rgba(5,150,105,0.4)] group-hover:scale-105 transition-transform duration-300"><svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div> <span class="text-xl font-serif font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-stone-400">Aliko Diamond Key</span></a> <nav class="hidden md:flex items-center gap-8"><!--[--><a href="/" class="text-sm font-medium transition-colors hover:text-emerald-400 relative text-stone-300">Home <!--[-1--><!--]--></a><a href="/properties" class="text-sm font-medium transition-colors hover:text-emerald-400 relative text-emerald-400">Properties <!--[0--><div class="absolute -bottom-7 left-0 w-full h-0.5 bg-emerald-500 shadow-[0_0_10px_rgba(5,150,105,0.8)]"></div><!--]--></a><a href="/agents" class="text-sm font-medium transition-colors hover:text-emerald-400 relative text-stone-300">Agents <!--[-1--><!--]--></a><a href="/map" class="text-sm font-medium transition-colors hover:text-emerald-400 relative text-stone-300">Map View <!--[-1--><!--]--></a><!--]--> <div class="relative"><button class="flex items-center gap-1 text-sm font-medium transition-colors text-stone-300 hover:text-emerald-400">Services <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-chevron-down transition-transform "><!--[--><!----><path d="m6 9 6 6 6-6"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button> <!--[-1--><!--]--></div></nav> <div class="hidden md:flex items-center gap-4"><!--[-1--><a href="/auth?tab=signin" class="text-sm font-medium text-stone-300 hover:text-white transition-colors px-4 py-2">Sign In</a> <a href="/auth?tab=signup" class="btn-primary">Register</a><!--]--></div> <button class="md:hidden p-2 text-stone-300 hover:text-white"><!--[-1--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-menu"><!--[--><!----><line x1="4" x2="20" y1="12" y2="12"><!----></line><!----><!----><line x1="4" x2="20" y1="6" y2="6"><!----></line><!----><!----><line x1="4" x2="20" y1="18" y2="18"><!----></line><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><!--]--></button></div></div> <!--[-1--><!--]--></header><!----><!--]--> <main class="pt-20 min-h-screen bg-[#050A0E]"><!--[--><!--[-1--><!--[--><div class="min-h-screen bg-[#050A0E] text-white"><div class="relative overflow-hidden py-10 border-b border-white/5 bg-gradient-to-b from-emerald-950/20 via-transparent to-transparent"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><nav class="flex items-center gap-2 text-xs text-stone-400 mb-4"><a href="/" class="hover:text-emerald-400 transition-colors">Home</a> <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-chevron-right"><!--[--><!----><path d="m9 18 6-6-6-6"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="text-emerald-400">Properties</span></nav> <div class="flex flex-col md:flex-row md:items-end justify-between gap-4"><div><h1 class="text-3xl sm:text-4xl font-serif font-bold text-white mb-2">Verified Property Listings</h1> <p class="text-stone-400 text-sm max-w-xl">Showing <span class="text-emerald-400 font-semibold">12</span> verified properties in Abuja, Lagos, and top Nigerian growth corridors.</p></div> <div class="flex items-center gap-3"><div class="flex items-center p-1 bg-white/5 border border-white/10 rounded-xl backdrop-blur-md"><button class="p-2 rounded-lg transition-colors bg-emerald-600 text-white shadow-lg" title="Grid View"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-layout-grid"><!--[--><!----><rect width="7" height="7" x="3" y="3" rx="1"><!----></rect><!----><!----><rect width="7" height="7" x="14" y="3" rx="1"><!----></rect><!----><!----><rect width="7" height="7" x="14" y="14" rx="1"><!----></rect><!----><!----><rect width="7" height="7" x="3" y="14" rx="1"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button> <button class="p-2 rounded-lg transition-colors text-stone-400 hover:text-white" title="List View"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-layout-list"><!--[--><!----><rect width="7" height="7" x="3" y="3" rx="1"><!----></rect><!----><!----><rect width="7" height="7" x="3" y="14" rx="1"><!----></rect><!----><!----><path d="M14 4h7"><!----></path><!----><!----><path d="M14 9h7"><!----></path><!----><!----><path d="M14 15h7"><!----></path><!----><!----><path d="M14 20h7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button> <button class="p-2 rounded-lg transition-colors text-stone-400 hover:text-white" title="Map View"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map"><!--[--><!----><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"><!----></path><!----><!----><path d="M15 5.764v15"><!----></path><!----><!----><path d="M9 3.236v15"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div> <div class="relative"><select class="appearance-none bg-white/5 border border-white/10 text-white text-xs sm:text-sm rounded-xl px-4 py-2.5 pr-8 focus:outline-none focus:border-emerald-500 cursor-pointer"><option value="Newest" class="bg-[#0A1628]" selected="">Newest</option><option value="Price: Low to High" class="bg-[#0A1628]">Price: Low to High</option><option value="Price: High to Low" class="bg-[#0A1628]">Price: High to Low</option></select> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-up-down absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"><!--[--><!----><path d="m21 16-4 4-4-4"><!----></path><!----><!----><path d="M17 20V4"><!----></path><!----><!----><path d="m3 8 4-4 4 4"><!----></path><!----><!----><path d="M7 4v16"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div> <button class="md:hidden flex items-center gap-2 px-3 py-2.5 bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 rounded-xl text-xs font-medium"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-sliders-horizontal"><!--[--><!----><line x1="21" x2="14" y1="4" y2="4"><!----></line><!----><!----><line x1="10" x2="3" y1="4" y2="4"><!----></line><!----><!----><line x1="21" x2="12" y1="12" y2="12"><!----></line><!----><!----><line x1="8" x2="3" y1="12" y2="12"><!----></line><!----><!----><line x1="21" x2="16" y1="20" y2="20"><!----></line><!----><!----><line x1="12" x2="3" y1="20" y2="20"><!----></line><!----><!----><line x1="14" x2="14" y1="2" y2="6"><!----></line><!----><!----><line x1="8" x2="8" y1="10" y2="14"><!----></line><!----><!----><line x1="16" x2="16" y1="18" y2="22"><!----></line><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span>Filters</span></button></div></div> <!--[-1--><!--]--></div></div> <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><div class="flex flex-col lg:flex-row gap-8"><!--[0--><div class="hidden lg:block w-72 flex-shrink-0"><div class="sticky top-28"><div class="bg-[#0A1118]/90 backdrop-blur-xl border border-emerald-900/30 rounded-2xl h-full flex flex-col overflow-hidden shadow-2xl s-p5FMs-hn1uxS"><div class="p-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-[#0A1118]/95 z-10 s-p5FMs-hn1uxS"><div class="flex items-center gap-2 s-p5FMs-hn1uxS"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-sliders-horizontal text-emerald-500"><!--[--><!----><line x1="21" x2="14" y1="4" y2="4"><!----></line><!----><!----><line x1="10" x2="3" y1="4" y2="4"><!----></line><!----><!----><line x1="21" x2="12" y1="12" y2="12"><!----></line><!----><!----><line x1="8" x2="3" y1="12" y2="12"><!----></line><!----><!----><line x1="21" x2="16" y1="20" y2="20"><!----></line><!----><!----><line x1="12" x2="3" y1="20" y2="20"><!----></line><!----><!----><line x1="14" x2="14" y1="2" y2="6"><!----></line><!----><!----><line x1="8" x2="8" y1="10" y2="14"><!----></line><!----><!----><line x1="16" x2="16" y1="18" y2="22"><!----></line><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <h2 class="text-lg font-semibold text-white s-p5FMs-hn1uxS">Filters</h2></div> <!--[-1--><!--]--></div> <div class="p-4 overflow-y-auto custom-scrollbar flex-1 space-y-6 s-p5FMs-hn1uxS"><div class="s-p5FMs-hn1uxS"><div class="relative s-p5FMs-hn1uxS"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"><!--[--><!----><circle cx="11" cy="11" r="8"><!----></circle><!----><!----><path d="m21 21-4.3-4.3"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <input type="text" value="" placeholder="Location, Estate, etc..." class="w-full bg-black/40 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors s-p5FMs-hn1uxS"/></div></div> <label class="flex items-center justify-between cursor-pointer group s-p5FMs-hn1uxS"><span class="text-sm text-gray-300 group-hover:text-white transition-colors s-p5FMs-hn1uxS">Verified Properties Only</span> <div class="relative s-p5FMs-hn1uxS"><input type="checkbox" class="sr-only peer s-p5FMs-hn1uxS"/> <div class="w-10 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500 s-p5FMs-hn1uxS"></div></div></label> <div class="border-t border-white/5 pt-4 s-p5FMs-hn1uxS"><button class="w-full flex items-center justify-between text-sm font-medium text-gray-200 mb-3 s-p5FMs-hn1uxS">Property Type <!--[0--><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-chevron-up"><!--[--><!----><path d="m18 15-6-6-6 6"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><!--]--></button> <!--[0--><div class="flex flex-wrap gap-2 s-p5FMs-hn1uxS"><!--[--><button class="px-3 py-1.5 text-xs rounded-full border transition-colors bg-emerald-500/20 border-emerald-500 text-emerald-400 s-p5FMs-hn1uxS">All</button><button class="px-3 py-1.5 text-xs rounded-full border transition-colors bg-black/30 border-white/10 text-gray-400 hover:border-white/30 hover:text-gray-200 s-p5FMs-hn1uxS">Residential</button><button class="px-3 py-1.5 text-xs rounded-full border transition-colors bg-black/30 border-white/10 text-gray-400 hover:border-white/30 hover:text-gray-200 s-p5FMs-hn1uxS">Commercial</button><button class="px-3 py-1.5 text-xs rounded-full border transition-colors bg-black/30 border-white/10 text-gray-400 hover:border-white/30 hover:text-gray-200 s-p5FMs-hn1uxS">Apartment</button><button class="px-3 py-1.5 text-xs rounded-full border transition-colors bg-black/30 border-white/10 text-gray-400 hover:border-white/30 hover:text-gray-200 s-p5FMs-hn1uxS">Land</button><button class="px-3 py-1.5 text-xs rounded-full border transition-colors bg-black/30 border-white/10 text-gray-400 hover:border-white/30 hover:text-gray-200 s-p5FMs-hn1uxS">Duplex</button><button class="px-3 py-1.5 text-xs rounded-full border transition-colors bg-black/30 border-white/10 text-gray-400 hover:border-white/30 hover:text-gray-200 s-p5FMs-hn1uxS">Penthouse</button><!--]--></div><!--]--></div> <div class="border-t border-white/5 pt-4 s-p5FMs-hn1uxS"><button class="w-full flex items-center justify-between text-sm font-medium text-gray-200 mb-3 s-p5FMs-hn1uxS">Price Range <!--[0--><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-chevron-up"><!--[--><!----><path d="m18 15-6-6-6 6"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><!--]--></button> <!--[0--><div class="space-y-4 s-p5FMs-hn1uxS"><div class="flex items-center justify-between text-xs text-amber-400 s-p5FMs-hn1uxS"><span class="s-p5FMs-hn1uxS">₦0M</span> <span class="s-p5FMs-hn1uxS">₦1000M+</span></div> <input type="range" min="0" max="1000000000" step="10000000" value="1000000000" class="w-full accent-emerald-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer s-p5FMs-hn1uxS"/></div><!--]--></div> <div class="border-t border-white/5 pt-4 s-p5FMs-hn1uxS"><button class="w-full flex items-center justify-between text-sm font-medium text-gray-200 mb-3 s-p5FMs-hn1uxS">Rooms <!--[0--><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-chevron-up"><!--[--><!----><path d="m18 15-6-6-6 6"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><!--]--></button> <!--[0--><div class="space-y-4 s-p5FMs-hn1uxS"><div class="s-p5FMs-hn1uxS"><div class="text-xs text-gray-400 mb-2 s-p5FMs-hn1uxS">Bedrooms</div> <div class="flex gap-1 s-p5FMs-hn1uxS"><!--[--><button class="flex-1 py-1.5 text-xs rounded border text-center transition-colors bg-emerald-500/20 border-emerald-500 text-emerald-400 s-p5FMs-hn1uxS">Any</button><button class="flex-1 py-1.5 text-xs rounded border text-center transition-colors bg-black/30 border-white/10 text-gray-400 s-p5FMs-hn1uxS">1</button><button class="flex-1 py-1.5 text-xs rounded border text-center transition-colors bg-black/30 border-white/10 text-gray-400 s-p5FMs-hn1uxS">2</button><button class="flex-1 py-1.5 text-xs rounded border text-center transition-colors bg-black/30 border-white/10 text-gray-400 s-p5FMs-hn1uxS">3</button><button class="flex-1 py-1.5 text-xs rounded border text-center transition-colors bg-black/30 border-white/10 text-gray-400 s-p5FMs-hn1uxS">4</button><button class="flex-1 py-1.5 text-xs rounded border text-center transition-colors bg-black/30 border-white/10 text-gray-400 s-p5FMs-hn1uxS">5+</button><!--]--></div></div> <div class="s-p5FMs-hn1uxS"><div class="text-xs text-gray-400 mb-2 s-p5FMs-hn1uxS">Bathrooms</div> <div class="flex gap-1 s-p5FMs-hn1uxS"><!--[--><button class="flex-1 py-1.5 text-xs rounded border text-center transition-colors bg-emerald-500/20 border-emerald-500 text-emerald-400 s-p5FMs-hn1uxS">Any</button><button class="flex-1 py-1.5 text-xs rounded border text-center transition-colors bg-black/30 border-white/10 text-gray-400 s-p5FMs-hn1uxS">1</button><button class="flex-1 py-1.5 text-xs rounded border text-center transition-colors bg-black/30 border-white/10 text-gray-400 s-p5FMs-hn1uxS">2</button><button class="flex-1 py-1.5 text-xs rounded border text-center transition-colors bg-black/30 border-white/10 text-gray-400 s-p5FMs-hn1uxS">3</button><button class="flex-1 py-1.5 text-xs rounded border text-center transition-colors bg-black/30 border-white/10 text-gray-400 s-p5FMs-hn1uxS">4</button><button class="flex-1 py-1.5 text-xs rounded border text-center transition-colors bg-black/30 border-white/10 text-gray-400 s-p5FMs-hn1uxS">5+</button><!--]--></div></div></div><!--]--></div></div></div><!----></div></div><!--]--> <div class="flex-1 min-w-0"><!--[2--><div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"><!--[--><a href="/properties/prop-012" class="group relative flex flex-col bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] hover:-translate-y-1 transition-all duration-300 ease-out preserve-3d s-0Nqe7cB3D5f3"><div class="relative aspect-[3/2] overflow-hidden s-0Nqe7cB3D5f3"><img src="https://picsum.photos/seed/adk-p12a/800/600" alt="Port Harcourt Towers Office" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 s-0Nqe7cB3D5f3"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent s-0Nqe7cB3D5f3"></div> <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-xs font-medium text-white capitalize s-0Nqe7cB3D5f3">commercial</div> <div class="absolute top-3 right-3 flex items-center gap-2 s-0Nqe7cB3D5f3"><!--[0--><div class="p-1.5 rounded-full bg-emerald-500/20 backdrop-blur-sm text-emerald-400 s-0Nqe7cB3D5f3" title="Verified"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div><!--]--> <button class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 hover:bg-emerald-500/20 transition-colors s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-heart text-white"><!--[--><!----><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div> <div class="absolute bottom-3 left-3 s-0Nqe7cB3D5f3"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-500 text-black s-0Nqe7cB3D5f3">reserved</span></div></div> <div class="p-4 flex flex-col flex-grow s-0Nqe7cB3D5f3"><div class="flex items-start justify-between mb-2 gap-2 s-0Nqe7cB3D5f3"><h3 class="text-lg font-semibold text-white leading-tight line-clamp-2 group-hover:text-emerald-400 transition-colors s-0Nqe7cB3D5f3">Port Harcourt Towers Office</h3></div> <div class="flex items-center text-emerald-200/60 text-sm mb-4 s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin mr-1 flex-shrink-0"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="truncate s-0Nqe7cB3D5f3">Aba Road, Port Harcourt, Rivers</span></div> <div class="flex items-center gap-4 text-emerald-100/70 text-sm mb-4 s-0Nqe7cB3D5f3"><div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bedrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">-</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bathrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">6</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Size (sqm)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">740</span></div></div> <div class="mt-auto pt-4 border-t border-white/5 flex items-end justify-between s-0Nqe7cB3D5f3"><div class="s-0Nqe7cB3D5f3"><div class="text-2xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent s-0Nqe7cB3D5f3">₦210,000,000</div> <div class="text-xs text-stone-400 s-0Nqe7cB3D5f3">Price on request</div></div> <div class="flex items-center gap-2 s-0Nqe7cB3D5f3"><img src="https://i.pravatar.cc/150?u=agent-2" alt="Michael Okorie" class="w-8 h-8 rounded-full border border-white/10 s-0Nqe7cB3D5f3"/></div></div></div></a><!----><a href="/properties/prop-011" class="group relative flex flex-col bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] hover:-translate-y-1 transition-all duration-300 ease-out preserve-3d s-0Nqe7cB3D5f3"><div class="relative aspect-[3/2] overflow-hidden s-0Nqe7cB3D5f3"><img src="https://picsum.photos/seed/adk-p11a/800/600" alt="Epe Riverside Plots" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 s-0Nqe7cB3D5f3"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent s-0Nqe7cB3D5f3"></div> <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-xs font-medium text-white capitalize s-0Nqe7cB3D5f3">land</div> <div class="absolute top-3 right-3 flex items-center gap-2 s-0Nqe7cB3D5f3"><!--[0--><div class="p-1.5 rounded-full bg-emerald-500/20 backdrop-blur-sm text-emerald-400 s-0Nqe7cB3D5f3" title="Verified"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div><!--]--> <button class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 hover:bg-emerald-500/20 transition-colors s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-heart text-white"><!--[--><!----><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div> <div class="absolute bottom-3 left-3 s-0Nqe7cB3D5f3"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black s-0Nqe7cB3D5f3">available</span></div></div> <div class="p-4 flex flex-col flex-grow s-0Nqe7cB3D5f3"><div class="flex items-start justify-between mb-2 gap-2 s-0Nqe7cB3D5f3"><h3 class="text-lg font-semibold text-white leading-tight line-clamp-2 group-hover:text-emerald-400 transition-colors s-0Nqe7cB3D5f3">Epe Riverside Plots</h3></div> <div class="flex items-center text-emerald-200/60 text-sm mb-4 s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin mr-1 flex-shrink-0"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="truncate s-0Nqe7cB3D5f3">Epe–Ijebu Ode Road, Epe, Lagos</span></div> <div class="flex items-center gap-4 text-emerald-100/70 text-sm mb-4 s-0Nqe7cB3D5f3"><div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bedrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">-</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bathrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">-</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Size (sqm)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">600</span></div></div> <div class="mt-auto pt-4 border-t border-white/5 flex items-end justify-between s-0Nqe7cB3D5f3"><div class="s-0Nqe7cB3D5f3"><div class="text-2xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent s-0Nqe7cB3D5f3">₦8,500,000</div> <div class="text-xs text-stone-400 s-0Nqe7cB3D5f3">Price on request</div></div> <div class="flex items-center gap-2 s-0Nqe7cB3D5f3"><img src="https://i.pravatar.cc/150?u=agent-6" alt="Chidi Nwosu" class="w-8 h-8 rounded-full border border-white/10 s-0Nqe7cB3D5f3"/></div></div></div></a><!----><a href="/properties/prop-010" class="group relative flex flex-col bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] hover:-translate-y-1 transition-all duration-300 ease-out preserve-3d s-0Nqe7cB3D5f3"><div class="relative aspect-[3/2] overflow-hidden s-0Nqe7cB3D5f3"><img src="https://picsum.photos/seed/adk-p10a/800/600" alt="Ikeja GRA Classic Bungalow" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 s-0Nqe7cB3D5f3"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent s-0Nqe7cB3D5f3"></div> <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-xs font-medium text-white capitalize s-0Nqe7cB3D5f3">residential</div> <div class="absolute top-3 right-3 flex items-center gap-2 s-0Nqe7cB3D5f3"><!--[0--><div class="p-1.5 rounded-full bg-emerald-500/20 backdrop-blur-sm text-emerald-400 s-0Nqe7cB3D5f3" title="Verified"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div><!--]--> <button class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 hover:bg-emerald-500/20 transition-colors s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-heart text-white"><!--[--><!----><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div> <div class="absolute bottom-3 left-3 s-0Nqe7cB3D5f3"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black s-0Nqe7cB3D5f3">available</span></div></div> <div class="p-4 flex flex-col flex-grow s-0Nqe7cB3D5f3"><div class="flex items-start justify-between mb-2 gap-2 s-0Nqe7cB3D5f3"><h3 class="text-lg font-semibold text-white leading-tight line-clamp-2 group-hover:text-emerald-400 transition-colors s-0Nqe7cB3D5f3">Ikeja GRA Classic Bungalow</h3></div> <div class="flex items-center text-emerald-200/60 text-sm mb-4 s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin mr-1 flex-shrink-0"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="truncate s-0Nqe7cB3D5f3">Opebi Road, Ikeja GRA, Lagos</span></div> <div class="flex items-center gap-4 text-emerald-100/70 text-sm mb-4 s-0Nqe7cB3D5f3"><div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bedrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">4</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bathrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">4</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Size (sqm)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">520</span></div></div> <div class="mt-auto pt-4 border-t border-white/5 flex items-end justify-between s-0Nqe7cB3D5f3"><div class="s-0Nqe7cB3D5f3"><div class="text-2xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent s-0Nqe7cB3D5f3">₦120,000,000</div> <div class="text-xs text-stone-400 s-0Nqe7cB3D5f3">Price on request</div></div> <div class="flex items-center gap-2 s-0Nqe7cB3D5f3"><img src="https://i.pravatar.cc/150?u=agent-4" alt="Emeka Chukwu" class="w-8 h-8 rounded-full border border-white/10 s-0Nqe7cB3D5f3"/></div></div></div></a><!----><a href="/properties/prop-009" class="group relative flex flex-col bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] hover:-translate-y-1 transition-all duration-300 ease-out preserve-3d s-0Nqe7cB3D5f3"><div class="relative aspect-[3/2] overflow-hidden s-0Nqe7cB3D5f3"><img src="https://picsum.photos/seed/adk-p9a/800/600" alt="Guzape Hillside Duplex" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 s-0Nqe7cB3D5f3"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent s-0Nqe7cB3D5f3"></div> <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-xs font-medium text-white capitalize s-0Nqe7cB3D5f3">duplex</div> <div class="absolute top-3 right-3 flex items-center gap-2 s-0Nqe7cB3D5f3"><!--[0--><div class="p-1.5 rounded-full bg-emerald-500/20 backdrop-blur-sm text-emerald-400 s-0Nqe7cB3D5f3" title="Verified"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div><!--]--> <button class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 hover:bg-emerald-500/20 transition-colors s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-heart text-white"><!--[--><!----><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div> <div class="absolute bottom-3 left-3 s-0Nqe7cB3D5f3"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black s-0Nqe7cB3D5f3">available</span></div></div> <div class="p-4 flex flex-col flex-grow s-0Nqe7cB3D5f3"><div class="flex items-start justify-between mb-2 gap-2 s-0Nqe7cB3D5f3"><h3 class="text-lg font-semibold text-white leading-tight line-clamp-2 group-hover:text-emerald-400 transition-colors s-0Nqe7cB3D5f3">Guzape Hillside Duplex</h3></div> <div class="flex items-center text-emerald-200/60 text-sm mb-4 s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin mr-1 flex-shrink-0"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="truncate s-0Nqe7cB3D5f3">Guzape District, FCT Abuja</span></div> <div class="flex items-center gap-4 text-emerald-100/70 text-sm mb-4 s-0Nqe7cB3D5f3"><div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bedrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">5</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bathrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">5</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Size (sqm)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">450</span></div></div> <div class="mt-auto pt-4 border-t border-white/5 flex items-end justify-between s-0Nqe7cB3D5f3"><div class="s-0Nqe7cB3D5f3"><div class="text-2xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent s-0Nqe7cB3D5f3">₦260,000,000</div> <div class="text-xs text-stone-400 s-0Nqe7cB3D5f3">Price on request</div></div> <div class="flex items-center gap-2 s-0Nqe7cB3D5f3"><img src="https://i.pravatar.cc/150?u=agent-5" alt="Fatima Musa" class="w-8 h-8 rounded-full border border-white/10 s-0Nqe7cB3D5f3"/></div></div></div></a><!----><a href="/properties/prop-008" class="group relative flex flex-col bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] hover:-translate-y-1 transition-all duration-300 ease-out preserve-3d s-0Nqe7cB3D5f3"><div class="relative aspect-[3/2] overflow-hidden s-0Nqe7cB3D5f3"><img src="https://picsum.photos/seed/adk-p8a/800/600" alt="Katampe Extension Plot" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 s-0Nqe7cB3D5f3"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent s-0Nqe7cB3D5f3"></div> <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-xs font-medium text-white capitalize s-0Nqe7cB3D5f3">land</div> <div class="absolute top-3 right-3 flex items-center gap-2 s-0Nqe7cB3D5f3"><!--[0--><div class="p-1.5 rounded-full bg-emerald-500/20 backdrop-blur-sm text-emerald-400 s-0Nqe7cB3D5f3" title="Verified"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div><!--]--> <button class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 hover:bg-emerald-500/20 transition-colors s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-heart text-white"><!--[--><!----><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div> <div class="absolute bottom-3 left-3 s-0Nqe7cB3D5f3"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black s-0Nqe7cB3D5f3">available</span></div></div> <div class="p-4 flex flex-col flex-grow s-0Nqe7cB3D5f3"><div class="flex items-start justify-between mb-2 gap-2 s-0Nqe7cB3D5f3"><h3 class="text-lg font-semibold text-white leading-tight line-clamp-2 group-hover:text-emerald-400 transition-colors s-0Nqe7cB3D5f3">Katampe Extension Plot</h3></div> <div class="flex items-center text-emerald-200/60 text-sm mb-4 s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin mr-1 flex-shrink-0"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="truncate s-0Nqe7cB3D5f3">Katampe Extension, FCT Abuja</span></div> <div class="flex items-center gap-4 text-emerald-100/70 text-sm mb-4 s-0Nqe7cB3D5f3"><div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bedrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">-</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bathrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">-</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Size (sqm)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">648</span></div></div> <div class="mt-auto pt-4 border-t border-white/5 flex items-end justify-between s-0Nqe7cB3D5f3"><div class="s-0Nqe7cB3D5f3"><div class="text-2xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent s-0Nqe7cB3D5f3">₦45,000,000</div> <div class="text-xs text-stone-400 s-0Nqe7cB3D5f3">Price on request</div></div> <div class="flex items-center gap-2 s-0Nqe7cB3D5f3"><img src="https://i.pravatar.cc/150?u=agent-5" alt="Fatima Musa" class="w-8 h-8 rounded-full border border-white/10 s-0Nqe7cB3D5f3"/></div></div></div></a><!----><a href="/properties/prop-007" class="group relative flex flex-col bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] hover:-translate-y-1 transition-all duration-300 ease-out preserve-3d s-0Nqe7cB3D5f3"><div class="relative aspect-[3/2] overflow-hidden s-0Nqe7cB3D5f3"><img src="https://picsum.photos/seed/adk-p7a/800/600" alt="Lekki Commercial Plaza" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 s-0Nqe7cB3D5f3"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent s-0Nqe7cB3D5f3"></div> <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-xs font-medium text-white capitalize s-0Nqe7cB3D5f3">commercial</div> <div class="absolute top-3 right-3 flex items-center gap-2 s-0Nqe7cB3D5f3"><!--[0--><div class="p-1.5 rounded-full bg-emerald-500/20 backdrop-blur-sm text-emerald-400 s-0Nqe7cB3D5f3" title="Verified"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div><!--]--> <button class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 hover:bg-emerald-500/20 transition-colors s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-heart text-white"><!--[--><!----><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div> <div class="absolute bottom-3 left-3 s-0Nqe7cB3D5f3"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black s-0Nqe7cB3D5f3">available</span></div></div> <div class="p-4 flex flex-col flex-grow s-0Nqe7cB3D5f3"><div class="flex items-start justify-between mb-2 gap-2 s-0Nqe7cB3D5f3"><h3 class="text-lg font-semibold text-white leading-tight line-clamp-2 group-hover:text-emerald-400 transition-colors s-0Nqe7cB3D5f3">Lekki Commercial Plaza</h3></div> <div class="flex items-center text-emerald-200/60 text-sm mb-4 s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin mr-1 flex-shrink-0"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="truncate s-0Nqe7cB3D5f3">Admiralty Way, Lekki Phase 1, Lagos</span></div> <div class="flex items-center gap-4 text-emerald-100/70 text-sm mb-4 s-0Nqe7cB3D5f3"><div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bedrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">-</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bathrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">8</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Size (sqm)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">1600</span></div></div> <div class="mt-auto pt-4 border-t border-white/5 flex items-end justify-between s-0Nqe7cB3D5f3"><div class="s-0Nqe7cB3D5f3"><div class="text-2xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent s-0Nqe7cB3D5f3">₦680,000,000</div> <div class="text-xs text-stone-400 s-0Nqe7cB3D5f3">Price on request</div></div> <div class="flex items-center gap-2 s-0Nqe7cB3D5f3"><img src="https://i.pravatar.cc/150?u=agent-6" alt="Chidi Nwosu" class="w-8 h-8 rounded-full border border-white/10 s-0Nqe7cB3D5f3"/></div></div></div></a><!----><a href="/properties/prop-006" class="group relative flex flex-col bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] hover:-translate-y-1 transition-all duration-300 ease-out preserve-3d s-0Nqe7cB3D5f3"><div class="relative aspect-[3/2] overflow-hidden s-0Nqe7cB3D5f3"><img src="https://picsum.photos/seed/adk-p6a/800/600" alt="Ikoyi Terraced Duplex" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 s-0Nqe7cB3D5f3"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent s-0Nqe7cB3D5f3"></div> <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-xs font-medium text-white capitalize s-0Nqe7cB3D5f3">duplex</div> <div class="absolute top-3 right-3 flex items-center gap-2 s-0Nqe7cB3D5f3"><!--[0--><div class="p-1.5 rounded-full bg-emerald-500/20 backdrop-blur-sm text-emerald-400 s-0Nqe7cB3D5f3" title="Verified"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div><!--]--> <button class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 hover:bg-emerald-500/20 transition-colors s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-heart text-white"><!--[--><!----><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div> <div class="absolute bottom-3 left-3 s-0Nqe7cB3D5f3"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-rose-500 text-white s-0Nqe7cB3D5f3">sold</span></div></div> <div class="p-4 flex flex-col flex-grow s-0Nqe7cB3D5f3"><div class="flex items-start justify-between mb-2 gap-2 s-0Nqe7cB3D5f3"><h3 class="text-lg font-semibold text-white leading-tight line-clamp-2 group-hover:text-emerald-400 transition-colors s-0Nqe7cB3D5f3">Ikoyi Terraced Duplex</h3></div> <div class="flex items-center text-emerald-200/60 text-sm mb-4 s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin mr-1 flex-shrink-0"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="truncate s-0Nqe7cB3D5f3">Bourdillon Road, Ikoyi, Lagos</span></div> <div class="flex items-center gap-4 text-emerald-100/70 text-sm mb-4 s-0Nqe7cB3D5f3"><div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bedrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">4</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bathrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">5</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Size (sqm)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">380</span></div></div> <div class="mt-auto pt-4 border-t border-white/5 flex items-end justify-between s-0Nqe7cB3D5f3"><div class="s-0Nqe7cB3D5f3"><div class="text-2xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent s-0Nqe7cB3D5f3">₦320,000,000</div> <div class="text-xs text-stone-400 s-0Nqe7cB3D5f3">Price on request</div></div> <div class="flex items-center gap-2 s-0Nqe7cB3D5f3"><img src="https://i.pravatar.cc/150?u=agent-3" alt="Sarah Lawson" class="w-8 h-8 rounded-full border border-white/10 s-0Nqe7cB3D5f3"/></div></div></div></a><!----><a href="/properties/prop-005" class="group relative flex flex-col bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] hover:-translate-y-1 transition-all duration-300 ease-out preserve-3d s-0Nqe7cB3D5f3"><div class="relative aspect-[3/2] overflow-hidden s-0Nqe7cB3D5f3"><img src="https://picsum.photos/seed/adk-p5a/800/600" alt="Asokoro Sky Penthouse" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 s-0Nqe7cB3D5f3"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent s-0Nqe7cB3D5f3"></div> <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-xs font-medium text-white capitalize s-0Nqe7cB3D5f3">penthouse</div> <div class="absolute top-3 right-3 flex items-center gap-2 s-0Nqe7cB3D5f3"><!--[0--><div class="p-1.5 rounded-full bg-emerald-500/20 backdrop-blur-sm text-emerald-400 s-0Nqe7cB3D5f3" title="Verified"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div><!--]--> <button class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 hover:bg-emerald-500/20 transition-colors s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-heart text-white"><!--[--><!----><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div> <div class="absolute bottom-3 left-3 s-0Nqe7cB3D5f3"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black s-0Nqe7cB3D5f3">available</span></div></div> <div class="p-4 flex flex-col flex-grow s-0Nqe7cB3D5f3"><div class="flex items-start justify-between mb-2 gap-2 s-0Nqe7cB3D5f3"><h3 class="text-lg font-semibold text-white leading-tight line-clamp-2 group-hover:text-emerald-400 transition-colors s-0Nqe7cB3D5f3">Asokoro Sky Penthouse</h3></div> <div class="flex items-center text-emerald-200/60 text-sm mb-4 s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin mr-1 flex-shrink-0"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="truncate s-0Nqe7cB3D5f3">Yakubu Gowon Crescent, Asokoro, FCT Abuja</span></div> <div class="flex items-center gap-4 text-emerald-100/70 text-sm mb-4 s-0Nqe7cB3D5f3"><div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bedrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">4</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bathrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">5</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Size (sqm)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">520</span></div></div> <div class="mt-auto pt-4 border-t border-white/5 flex items-end justify-between s-0Nqe7cB3D5f3"><div class="s-0Nqe7cB3D5f3"><div class="text-2xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent s-0Nqe7cB3D5f3">₦550,000,000</div> <div class="text-xs text-stone-400 s-0Nqe7cB3D5f3">Price on request</div></div> <div class="flex items-center gap-2 s-0Nqe7cB3D5f3"><img src="https://i.pravatar.cc/150?u=agent-1" alt="Adaeze Okonkwo" class="w-8 h-8 rounded-full border border-white/10 s-0Nqe7cB3D5f3"/></div></div></div></a><!----><a href="/properties/prop-004" class="group relative flex flex-col bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] hover:-translate-y-1 transition-all duration-300 ease-out preserve-3d s-0Nqe7cB3D5f3"><div class="relative aspect-[3/2] overflow-hidden s-0Nqe7cB3D5f3"><img src="https://picsum.photos/seed/adk-p4a/800/600" alt="Wuse 2 Smart Apartment" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 s-0Nqe7cB3D5f3"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent s-0Nqe7cB3D5f3"></div> <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-xs font-medium text-white capitalize s-0Nqe7cB3D5f3">apartment</div> <div class="absolute top-3 right-3 flex items-center gap-2 s-0Nqe7cB3D5f3"><!--[0--><div class="p-1.5 rounded-full bg-emerald-500/20 backdrop-blur-sm text-emerald-400 s-0Nqe7cB3D5f3" title="Verified"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div><!--]--> <button class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 hover:bg-emerald-500/20 transition-colors s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-heart text-white"><!--[--><!----><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div> <div class="absolute bottom-3 left-3 s-0Nqe7cB3D5f3"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-500 text-black s-0Nqe7cB3D5f3">reserved</span></div></div> <div class="p-4 flex flex-col flex-grow s-0Nqe7cB3D5f3"><div class="flex items-start justify-between mb-2 gap-2 s-0Nqe7cB3D5f3"><h3 class="text-lg font-semibold text-white leading-tight line-clamp-2 group-hover:text-emerald-400 transition-colors s-0Nqe7cB3D5f3">Wuse 2 Smart Apartment</h3></div> <div class="flex items-center text-emerald-200/60 text-sm mb-4 s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin mr-1 flex-shrink-0"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="truncate s-0Nqe7cB3D5f3">Aminu Kano Crescent, Wuse 2, FCT Abuja</span></div> <div class="flex items-center gap-4 text-emerald-100/70 text-sm mb-4 s-0Nqe7cB3D5f3"><div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bedrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">3</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bathrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">3</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Size (sqm)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">220</span></div></div> <div class="mt-auto pt-4 border-t border-white/5 flex items-end justify-between s-0Nqe7cB3D5f3"><div class="s-0Nqe7cB3D5f3"><div class="text-2xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent s-0Nqe7cB3D5f3">₦75,000,000</div> <div class="text-xs text-stone-400 s-0Nqe7cB3D5f3">Price on request</div></div> <div class="flex items-center gap-2 s-0Nqe7cB3D5f3"><img src="https://i.pravatar.cc/150?u=agent-4" alt="Emeka Chukwu" class="w-8 h-8 rounded-full border border-white/10 s-0Nqe7cB3D5f3"/></div></div></div></a><!----><a href="/properties/prop-003" class="group relative flex flex-col bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] hover:-translate-y-1 transition-all duration-300 ease-out preserve-3d s-0Nqe7cB3D5f3"><div class="relative aspect-[3/2] overflow-hidden s-0Nqe7cB3D5f3"><img src="https://picsum.photos/seed/adk-p3a/800/600" alt="Maitama Executive Villa" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 s-0Nqe7cB3D5f3"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent s-0Nqe7cB3D5f3"></div> <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-xs font-medium text-white capitalize s-0Nqe7cB3D5f3">residential</div> <div class="absolute top-3 right-3 flex items-center gap-2 s-0Nqe7cB3D5f3"><!--[0--><div class="p-1.5 rounded-full bg-emerald-500/20 backdrop-blur-sm text-emerald-400 s-0Nqe7cB3D5f3" title="Verified"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div><!--]--> <button class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 hover:bg-emerald-500/20 transition-colors s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-heart text-white"><!--[--><!----><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div> <div class="absolute bottom-3 left-3 s-0Nqe7cB3D5f3"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black s-0Nqe7cB3D5f3">available</span></div></div> <div class="p-4 flex flex-col flex-grow s-0Nqe7cB3D5f3"><div class="flex items-start justify-between mb-2 gap-2 s-0Nqe7cB3D5f3"><h3 class="text-lg font-semibold text-white leading-tight line-clamp-2 group-hover:text-emerald-400 transition-colors s-0Nqe7cB3D5f3">Maitama Executive Villa</h3></div> <div class="flex items-center text-emerald-200/60 text-sm mb-4 s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin mr-1 flex-shrink-0"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="truncate s-0Nqe7cB3D5f3">8 Aso Drive, Maitama, FCT Abuja</span></div> <div class="flex items-center gap-4 text-emerald-100/70 text-sm mb-4 s-0Nqe7cB3D5f3"><div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bedrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">6</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bathrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">7</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Size (sqm)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">1100</span></div></div> <div class="mt-auto pt-4 border-t border-white/5 flex items-end justify-between s-0Nqe7cB3D5f3"><div class="s-0Nqe7cB3D5f3"><div class="text-2xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent s-0Nqe7cB3D5f3">₦850,000,000</div> <div class="text-xs text-stone-400 s-0Nqe7cB3D5f3">Price on request</div></div> <div class="flex items-center gap-2 s-0Nqe7cB3D5f3"><img src="https://i.pravatar.cc/150?u=agent-1" alt="Adaeze Okonkwo" class="w-8 h-8 rounded-full border border-white/10 s-0Nqe7cB3D5f3"/></div></div></div></a><!----><a href="/properties/prop-002" class="group relative flex flex-col bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] hover:-translate-y-1 transition-all duration-300 ease-out preserve-3d s-0Nqe7cB3D5f3"><div class="relative aspect-[3/2] overflow-hidden s-0Nqe7cB3D5f3"><img src="https://picsum.photos/seed/adk-p2a/800/600" alt="Victoria Island Penthouse" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 s-0Nqe7cB3D5f3"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent s-0Nqe7cB3D5f3"></div> <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-xs font-medium text-white capitalize s-0Nqe7cB3D5f3">penthouse</div> <div class="absolute top-3 right-3 flex items-center gap-2 s-0Nqe7cB3D5f3"><!--[0--><div class="p-1.5 rounded-full bg-emerald-500/20 backdrop-blur-sm text-emerald-400 s-0Nqe7cB3D5f3" title="Verified"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div><!--]--> <button class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 hover:bg-emerald-500/20 transition-colors s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-heart text-white"><!--[--><!----><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div> <div class="absolute bottom-3 left-3 s-0Nqe7cB3D5f3"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black s-0Nqe7cB3D5f3">available</span></div></div> <div class="p-4 flex flex-col flex-grow s-0Nqe7cB3D5f3"><div class="flex items-start justify-between mb-2 gap-2 s-0Nqe7cB3D5f3"><h3 class="text-lg font-semibold text-white leading-tight line-clamp-2 group-hover:text-emerald-400 transition-colors s-0Nqe7cB3D5f3">Victoria Island Penthouse</h3></div> <div class="flex items-center text-emerald-200/60 text-sm mb-4 s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin mr-1 flex-shrink-0"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="truncate s-0Nqe7cB3D5f3">Skyline Towers, Adeola Odeku, Victoria Island, Lagos</span></div> <div class="flex items-center gap-4 text-emerald-100/70 text-sm mb-4 s-0Nqe7cB3D5f3"><div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bedrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">4</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bathrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">4</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Size (sqm)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">400</span></div></div> <div class="mt-auto pt-4 border-t border-white/5 flex items-end justify-between s-0Nqe7cB3D5f3"><div class="s-0Nqe7cB3D5f3"><div class="text-2xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent s-0Nqe7cB3D5f3">₦450,000,000</div> <div class="text-xs text-stone-400 s-0Nqe7cB3D5f3">Price on request</div></div> <div class="flex items-center gap-2 s-0Nqe7cB3D5f3"><img src="https://i.pravatar.cc/150?u=agent-3" alt="Sarah Lawson" class="w-8 h-8 rounded-full border border-white/10 s-0Nqe7cB3D5f3"/></div></div></div></a><!----><a href="/properties/prop-001" class="group relative flex flex-col bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] hover:-translate-y-1 transition-all duration-300 ease-out preserve-3d s-0Nqe7cB3D5f3"><div class="relative aspect-[3/2] overflow-hidden s-0Nqe7cB3D5f3"><img src="https://picsum.photos/seed/adk-p1a/800/600" alt="Emerald Luxury Duplex" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 s-0Nqe7cB3D5f3"/> <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent s-0Nqe7cB3D5f3"></div> <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-xs font-medium text-white capitalize s-0Nqe7cB3D5f3">duplex</div> <div class="absolute top-3 right-3 flex items-center gap-2 s-0Nqe7cB3D5f3"><!--[0--><div class="p-1.5 rounded-full bg-emerald-500/20 backdrop-blur-sm text-emerald-400 s-0Nqe7cB3D5f3" title="Verified"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-shield-check"><!--[--><!----><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"><!----></path><!----><!----><path d="m9 12 2 2 4-4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div><!--]--> <button class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 hover:bg-emerald-500/20 transition-colors s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-heart text-white"><!--[--><!----><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div> <div class="absolute bottom-3 left-3 s-0Nqe7cB3D5f3"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black s-0Nqe7cB3D5f3">available</span></div></div> <div class="p-4 flex flex-col flex-grow s-0Nqe7cB3D5f3"><div class="flex items-start justify-between mb-2 gap-2 s-0Nqe7cB3D5f3"><h3 class="text-lg font-semibold text-white leading-tight line-clamp-2 group-hover:text-emerald-400 transition-colors s-0Nqe7cB3D5f3">Emerald Luxury Duplex</h3></div> <div class="flex items-center text-emerald-200/60 text-sm mb-4 s-0Nqe7cB3D5f3"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin mr-1 flex-shrink-0"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="truncate s-0Nqe7cB3D5f3">15 Diamond Avenue, Lekki Phase 1, Lagos</span></div> <div class="flex items-center gap-4 text-emerald-100/70 text-sm mb-4 s-0Nqe7cB3D5f3"><div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bedrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bed"><!--[--><!----><path d="M2 4v16"><!----></path><!----><!----><path d="M2 8h18a2 2 0 0 1 2 2v10"><!----></path><!----><!----><path d="M2 17h20"><!----></path><!----><!----><path d="M6 8v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">5</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Bathrooms"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bath"><!--[--><!----><path d="M10 4 8 6"><!----></path><!----><!----><path d="M17 19v2"><!----></path><!----><!----><path d="M2 12h20"><!----></path><!----><!----><path d="M7 19v2"><!----></path><!----><!----><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">6</span></div> <div class="flex items-center gap-1.5 s-0Nqe7cB3D5f3" title="Size (sqm)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-square"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="s-0Nqe7cB3D5f3">600</span></div></div> <div class="mt-auto pt-4 border-t border-white/5 flex items-end justify-between s-0Nqe7cB3D5f3"><div class="s-0Nqe7cB3D5f3"><div class="text-2xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent s-0Nqe7cB3D5f3">₦150,000,000</div> <div class="text-xs text-stone-400 s-0Nqe7cB3D5f3">Price on request</div></div> <div class="flex items-center gap-2 s-0Nqe7cB3D5f3"><img src="https://i.pravatar.cc/150?u=agent-2" alt="Michael Okorie" class="w-8 h-8 rounded-full border border-white/10 s-0Nqe7cB3D5f3"/></div></div></div></a><!----><!--]--></div><!--]--></div></div></div></div> <!--[-1--><!--]--><!--]--><!--]--><!--]--></main> <!--[0--><footer class="relative mt-24 border-t border-emerald-900/50 bg-stone-900 overflow-hidden"><div class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50 shadow-[0_0_20px_rgba(5,150,105,1)]"></div> <div class="container mx-auto px-4 lg:px-8 pt-16 pb-8"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16"><div class="flex flex-col gap-6 lg:col-span-1"><a href="/" class="flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_15px_rgba(5,150,105,0.4)]"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div> <span class="text-xl font-serif font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-stone-400">Aliko Diamond Key</span></a> <p class="text-sm text-stone-400 leading-relaxed">Nigeria's premier real estate, interior design and construction ecosystem. Verified titles, elite agents and turnkey building services.</p> <div class="flex items-center gap-4"><a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-twitter"><!--[--><!----><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a> <a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-linkedin"><!--[--><!----><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"><!----></path><!----><!----><rect width="4" height="12" x="2" y="9"><!----></rect><!----><!----><circle cx="4" cy="4" r="2"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a> <a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-instagram"><!--[--><!----><rect width="20" height="20" x="2" y="2" rx="5" ry="5"><!----></rect><!----><!----><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"><!----></path><!----><!----><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"><!----></line><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a> <a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-rose-400 hover:bg-rose-900/20 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-youtube"><!--[--><!----><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"><!----></path><!----><!----><path d="m10 15 5-3-5-3z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a></div></div> <div class="flex flex-col gap-4"><h4 class="text-white font-serif text-lg mb-2">Properties</h4> <a href="/properties" class="text-sm text-stone-400 hover:text-white transition-colors">All Listings</a> <a href="/properties?type=residential" class="text-sm text-stone-400 hover:text-white transition-colors">Residential</a> <a href="/properties?type=commercial" class="text-sm text-stone-400 hover:text-white transition-colors">Commercial</a> <a href="/properties?featured=true" class="text-sm text-stone-400 hover:text-emerald-400 transition-colors">Featured Estates</a> <a href="/map" class="text-sm text-stone-400 hover:text-white transition-colors">Map Search</a></div> <div class="flex flex-col gap-3"><h4 class="text-white font-serif text-lg mb-2">Services</h4> <a href="/services/interior-design" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-lamp"><!--[--><!----><path d="M8 2h8l4 10H4L8 2Z"><!----></path><!----><!----><path d="M12 12v6"><!----></path><!----><!----><path d="M8 22v-2c0-1.1.9-2 2-2h4a2 2 0 0 1 2 2v2H8Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Interior Design</a> <a href="/services/furnishing" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-sofa text-amber-400/80"><!--[--><!----><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"><!----></path><!----><!----><path d="M2 16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"><!----></path><!----><!----><path d="M4 18v2"><!----></path><!----><!----><path d="M20 18v2"><!----></path><!----><!----><path d="M12 4v9"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Furnishing</a> <a href="/services/turkish-tiles-supply" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-grid-3x3 text-cyan-400/80"><!--[--><!----><rect width="18" height="18" x="3" y="3" rx="2"><!----></rect><!----><!----><path d="M3 9h18"><!----></path><!----><!----><path d="M3 15h18"><!----></path><!----><!----><path d="M9 3v18"><!----></path><!----><!----><path d="M15 3v18"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Turkish Tiles</a> <a href="/services/building-materials-supply" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-hard-hat text-amber-400/80"><!--[--><!----><path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"><!----></path><!----><!----><path d="M14 6a6 6 0 0 1 6 6v3"><!----></path><!----><!----><path d="M4 15v-3a6 6 0 0 1 6-6"><!----></path><!----><!----><rect x="2" y="15" width="20" height="4" rx="1"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Building Materials</a> <a href="/services/smart-home-installation" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-cpu text-purple-400/80"><!--[--><!----><rect width="16" height="16" x="4" y="4" rx="2"><!----></rect><!----><!----><rect width="6" height="6" x="9" y="9" rx="1"><!----></rect><!----><!----><path d="M15 2v2"><!----></path><!----><!----><path d="M15 20v2"><!----></path><!----><!----><path d="M2 15h2"><!----></path><!----><!----><path d="M2 9h2"><!----></path><!----><!----><path d="M20 15h2"><!----></path><!----><!----><path d="M20 9h2"><!----></path><!----><!----><path d="M9 2v2"><!----></path><!----><!----><path d="M9 20v2"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Smart Homes</a> <a href="/services/construction-services" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-building text-emerald-400/80"><!--[--><!----><rect width="16" height="20" x="4" y="2" rx="2" ry="2"><!----></rect><!----><!----><path d="M9 22v-4h6v4"><!----></path><!----><!----><path d="M8 6h.01"><!----></path><!----><!----><path d="M16 6h.01"><!----></path><!----><!----><path d="M12 6h.01"><!----></path><!----><!----><path d="M12 10h.01"><!----></path><!----><!----><path d="M12 14h.01"><!----></path><!----><!----><path d="M16 10h.01"><!----></path><!----><!----><path d="M16 14h.01"><!----></path><!----><!----><path d="M8 10h.01"><!----></path><!----><!----><path d="M8 14h.01"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Construction</a> <a href="/services" class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 mt-1">View all services →</a></div> <div class="flex flex-col gap-4"><h4 class="text-white font-serif text-lg mb-2">Company</h4> <a href="/agents" class="text-sm text-stone-400 hover:text-white transition-colors">Our Agents</a> <a href="/register/agent" class="text-sm text-stone-400 hover:text-white transition-colors">Careers — Join as Agent</a> <a href="/legal/track" class="text-sm text-stone-400 hover:text-white transition-colors">Document Tracking</a> <div class="mt-2 flex flex-col gap-2"><a href="/register/agent" class="btn-primary text-xs py-1.5 w-full text-center">Join as Agent</a> <a href="/register/manager" class="btn-secondary text-xs py-1.5 w-full text-center">Become a Manager</a></div></div> <div class="flex flex-col gap-4"><h4 class="text-white font-serif text-lg mb-2">Contact &amp; Newsletter</h4> <div class="flex flex-col gap-2 text-sm text-stone-400"><span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map-pin text-emerald-500"><!--[--><!----><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"><!----></path><!----><!----><circle cx="12" cy="10" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Abuja FCT &amp; Lagos, Nigeria</span> <span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-phone text-emerald-500"><!--[--><!----><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> +234 800 DIAMOND</span> <span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-mail text-emerald-500"><!--[--><!----><rect width="20" height="16" x="2" y="4" rx="2"><!----></rect><!----><!----><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> contact@adk.com</span></div> <form class="mt-4 flex flex-col gap-2"><p class="text-xs text-stone-400 mb-1">Subscribe for exclusive listings</p> <div class="flex gap-2"><input type="email" placeholder="Email address" class="w-full bg-stone-800 border border-stone-700 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all" required=""/> <button type="submit" class="btn-primary px-3 py-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-mail"><!--[--><!----><rect width="20" height="16" x="2" y="4" rx="2"><!----></rect><!----><!----><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></button></div></form></div></div> <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4"><p class="text-xs text-stone-500">© 2026 Aliko Diamond Key. All rights reserved.</p> <div class="flex items-center gap-4 text-xs text-stone-500"><a href="/legal/track" class="hover:text-white transition-colors">Track a Document</a> <a href="/services/general-contracts" class="hover:text-white transition-colors">Contract Proposals</a></div> <p class="text-xs font-mono text-stone-600 flex items-center gap-1">Powered by <span class="text-emerald-500/70">ADK Platform</span></p></div></div></footer><!----><!--]--> <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 w-full max-w-sm pointer-events-none s-918YXh7FMLIr"><!--[--><!--]--></div><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_dev = {
+						base: new URL(".", location).pathname.slice(0, -1),
+						env: {}
+					};
 
-      let filtered = PROPERTIES.filter(p => {
-        if (q && !p.title.toLowerCase().includes(q) && !p.location.toLowerCase().includes(q)) return false;
-        if (currentType !== 'All' && p.type.toLowerCase() !== currentType.toLowerCase()) return false;
-        if (p.price > maxPrice) return false;
-        if (minBeds > 0 && p.bedrooms < minBeds) return false;
-        if (verifiedOnly && !p.isVerified) return false;
-        return true;
-      });
+					const element = document.currentScript.parentElement;
 
-      // Sort
-      if (sortBy === 'price-asc') filtered.sort((a, b) => a.price - b.price);
-      if (sortBy === 'price-desc') filtered.sort((a, b) => b.price - a.price);
-
-      resultsCount.textContent = `Showing ${filtered.length} of ${PROPERTIES.length} properties`;
-
-      if (currentView === 'map') {
-        renderMap(filtered);
-        return;
-      }
-
-      if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="col-span-full py-16 text-center">
-            <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3 text-stone-500">
-              <i data-lucide="search-x" class="w-8 h-8"></i>
-            </div>
-            <h4 class="text-white font-serif font-bold text-lg mb-1">No matching properties</h4>
-            <p class="text-stone-400 text-xs">Try relaxing your filter parameters or search terms.</p>
-          </div>
-        `;
-        lucide.createIcons();
-        return;
-      }
-
-      if (currentView === 'grid') {
-        container.className = "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6";
-        container.innerHTML = filtered.map(p => `
-          <div class="glass-card rounded-2xl overflow-hidden flex flex-col justify-between">
-            <div>
-              <div class="relative aspect-[3/2] overflow-hidden">
-                <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover">
-                <div class="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-black/60 text-[10px] uppercase font-semibold text-white capitalize">
-                  ${p.type}
-                </div>
-                <div class="absolute bottom-3 left-3 px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono ${p.status === 'available' ? 'bg-emerald-500 text-black' : p.status === 'reserved' ? 'bg-amber-500 text-black' : 'bg-rose-500 text-white'}">
-                  ${p.status}
-                </div>
-              </div>
-              <div class="p-4">
-                <div class="flex items-center justify-between mb-1">
-                  <span class="text-xl font-serif font-bold text-amber-400">₦${(p.price / 1000000).toLocaleString()}M</span>
-                </div>
-                <h3 class="text-sm font-bold text-white mb-1 line-clamp-1">${p.title}</h3>
-                <p class="text-[11px] text-stone-400 flex items-center gap-1 mb-3">
-                  <i data-lucide="map-pin" class="w-3 h-3 text-emerald-400"></i> ${p.location}
-                </p>
-                <div class="flex items-center gap-3 text-[11px] text-stone-400 py-2 border-t border-white/5">
-                  ${p.bedrooms > 0 ? `<span>${p.bedrooms} Beds</span>` : ''}
-                  ${p.bathrooms > 0 ? `<span>• ${p.bathrooms} Baths</span>` : ''}
-                  <span>• ${p.sizeSqm} sqm</span>
-                </div>
-              </div>
-            </div>
-            <div class="p-4 pt-0">
-              <a href="property-detail.html?id=${p.id}" class="w-full block py-2 rounded-xl bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white text-center text-xs font-semibold border border-emerald-500/30 transition-colors">
-                View Full Details ↗
-              </a>
-            </div>
-          </div>
-        `).join('');
-      } else if (currentView === 'list') {
-        container.className = "space-y-4";
-        container.innerHTML = filtered.map(p => `
-          <div class="glass-card rounded-2xl overflow-hidden flex flex-col md:flex-row gap-4 p-3">
-            <div class="w-full md:w-56 aspect-[3/2] md:aspect-auto rounded-xl overflow-hidden relative flex-shrink-0">
-              <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover">
-              <span class="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/70 text-[10px] text-white uppercase font-mono">${p.type}</span>
-            </div>
-            <div class="flex-1 flex flex-col justify-between py-1">
-              <div>
-                <div class="flex items-start justify-between">
-                  <div>
-                    <h3 class="text-base font-serif font-bold text-white mb-1">${p.title}</h3>
-                    <p class="text-xs text-stone-400 flex items-center gap-1">
-                      <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-400"></i> ${p.location}
-                    </p>
-                  </div>
-                  <div class="text-right">
-                    <span class="text-xl font-serif font-bold text-amber-400">₦${(p.price / 1000000).toLocaleString()}M</span>
-                    <span class="block text-[10px] font-mono uppercase ${p.status === 'available' ? 'text-emerald-400' : 'text-amber-400'}">${p.status}</span>
-                  </div>
-                </div>
-                <div class="flex items-center gap-4 text-xs text-stone-400 mt-3">
-                  ${p.bedrooms > 0 ? `<span>🛏 ${p.bedrooms} Beds</span>` : ''}
-                  ${p.bathrooms > 0 ? `<span>🚿 ${p.bathrooms} Baths</span>` : ''}
-                  <span>📐 ${p.sizeSqm} sqm</span>
-                  <span class="text-emerald-400">🛡 Title Verified</span>
-                </div>
-              </div>
-              <div class="flex justify-end gap-2 pt-3 border-t border-white/5 mt-3">
-                <a href="property-detail.html?id=${p.id}" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">
-                  Inspect Property ↗
-                </a>
-              </div>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      lucide.createIcons();
-    }
-
-    function renderMap(propsList) {
-      if (!leafletMapInstance) {
-        leafletMapInstance = L.map('propertiesMap').setView([9.0610, 7.4680], 12);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; OpenStreetMap contributors & CARTO',
-          maxZoom: 18
-        }).addTo(leafletMapInstance);
-      }
-
-      // Clear existing markers
-      leafletMapInstance.eachLayer(layer => {
-        if (layer instanceof L.Marker) {
-          leafletMapInstance.removeLayer(layer);
-        }
-      });
-
-      propsList.forEach(p => {
-        const marker = L.marker([p.lat, p.lng]).addTo(leafletMapInstance);
-        marker.bindPopup(`
-          <div style="font-family: sans-serif; min-width: 140px;">
-            <strong style="color: #fff;">${p.title}</strong><br>
-            <span style="color: #D97706; font-weight: bold;">₦${(p.price/1000000).toFixed(0)}M</span><br>
-            <a href="property-detail.html?id=${p.id}" style="color: #34D399; text-decoration: underline; font-size: 11px;">View Listing ↗</a>
-          </div>
-        `);
-      });
-    }
-
-    // Event Listeners
-    searchInput.addEventListener('input', filterAndRender);
-    sortSelect.addEventListener('change', filterAndRender);
-    bedroomSelect.addEventListener('change', filterAndRender);
-    verifiedToggle.addEventListener('change', filterAndRender);
-
-    priceRange.addEventListener('input', () => {
-      const val = parseInt(priceRange.value);
-      priceLabel.textContent = val >= 1000 ? 'Any Budget' : `₦${val}M`;
-      filterAndRender();
-    });
-
-    document.querySelectorAll('.type-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.type-btn').forEach(b => b.className = "type-btn px-2.5 py-1 rounded-lg text-xs bg-white/5 text-stone-300 hover:bg-white/10");
-        btn.className = "type-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-600 text-white";
-        currentType = btn.getAttribute('data-type');
-        filterAndRender();
-      });
-    });
-
-    // View toggles
-    document.getElementById('gridViewBtn').addEventListener('click', () => {
-      currentView = 'grid';
-      container.classList.remove('hidden');
-      mapViewContainer.classList.add('hidden');
-      updateViewButtons('gridViewBtn');
-      filterAndRender();
-    });
-
-    document.getElementById('listViewBtn').addEventListener('click', () => {
-      currentView = 'list';
-      container.classList.remove('hidden');
-      mapViewContainer.classList.add('hidden');
-      updateViewButtons('listViewBtn');
-      filterAndRender();
-    });
-
-    document.getElementById('mapViewBtn').addEventListener('click', () => {
-      currentView = 'map';
-      container.classList.add('hidden');
-      mapViewContainer.classList.remove('hidden');
-      updateViewButtons('mapViewBtn');
-      filterAndRender();
-      setTimeout(() => { if (leafletMapInstance) leafletMapInstance.invalidateSize(); }, 200);
-    });
-
-    function updateViewButtons(activeId) {
-      ['gridViewBtn', 'listViewBtn', 'mapViewBtn'].forEach(id => {
-        const b = document.getElementById(id);
-        if (id === activeId) {
-          b.className = "p-2 rounded-lg bg-emerald-600 text-white transition-colors";
-        } else {
-          b.className = "p-2 rounded-lg text-stone-400 hover:text-white transition-colors";
-        }
-      });
-    }
-
-    document.getElementById('resetFilters').addEventListener('click', () => {
-      searchInput.value = '';
-      priceRange.value = 1000;
-      priceLabel.textContent = 'Any Budget';
-      bedroomSelect.value = 'any';
-      verifiedToggle.checked = false;
-      currentType = 'All';
-      document.querySelectorAll('.type-btn').forEach(b => b.className = "type-btn px-2.5 py-1 rounded-lg text-xs bg-white/5 text-stone-300 hover:bg-white/10");
-      document.querySelector('.type-btn[data-type="All"]').className = "type-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-600 text-white";
-      filterAndRender();
-    });
-
-    // Handle initial query params (e.g. ?view=map or ?type=Penthouse)
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('view') === 'map') {
-      document.getElementById('mapViewBtn').click();
-    } else {
-      filterAndRender();
-    }
-  </script>
-</body>
+					Promise.all([
+						import("/@fs/C:/Users/انتو/Downloads/adk-svelte/node_modules/@sveltejs/kit/src/runtime/client/entry.js"),
+						import("/@fs/C:/Users/انتو/Downloads/adk-svelte/.svelte-kit/generated/client/app.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 25],
+							data: [{type:"data",data:{session:null},uses:{}},null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+  </body>
 </html>

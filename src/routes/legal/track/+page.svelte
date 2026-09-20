@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { useQuery } from "convex-svelte";
+  import { useQuery } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";

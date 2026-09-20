@@ -1,3 +1,13 @@
+export function formatDateTime(input?: number | string | null): string {
+  if (input == null) return "—";
+  try {
+    const d = new Date(input);
+    return `${formatDate(d)} · ${d.toLocaleTimeString("en-NG", { hour: "2-digit", minute: "2-digit", hour12: true })}`;
+  } catch {
+    return String(input);
+  }
+}
+
 export function formatNaira(amount: number): string {
   return new Intl.NumberFormat('en-NG', {
     style: 'currency',

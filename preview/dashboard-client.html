@@ -1,228 +1,222 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Client Investor Portal — Aliko Diamond Key</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#050A0E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!--12qhfyh--><link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/> <meta name="description" content="Aliko Diamond Key — Nigeria's Premier Real Estate &amp; Property Management Platform"/> <meta property="og:type" content="website"/> <meta property="og:title" content="Aliko Diamond Key — Premium Real Estate"/> <meta property="og:description" content="1,200+ verified properties across Nigeria. Zero legal risk. Automated title documentation."/> <meta name="theme-color" content="#050A0E"/><!---->
+		<style data-sveltekit>@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  <style>
-    body { background-color: #050A0E; color: #f3f4f6; font-family: 'Inter', sans-serif; }
-    .font-serif { font-family: 'Playfair Display', serif; }
-    .font-mono { font-family: 'JetBrains Mono', monospace; }
-    .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .glass-card { background: rgba(10, 17, 24, 0.85); backdrop-filter: blur(24px); border: 1px solid rgba(5, 150, 105, 0.25); }
-    .tab-active { background: rgba(5, 150, 105, 0.2); border-color: rgba(5, 150, 105, 0.5); color: #34D399; }
-  </style>
-</head>
-<body class="min-h-screen pb-20 selection:bg-emerald-500/30">
+@layer base {
+  :root {
+    --c-indigo: #4F46E5;
+    --c-rose: #E11D48;
+    --c-purple: #9333ea;
+    --c-blue-dark: #1e3a8a;
+  }
+  body {
+    background-color: #050A0E;
+    color: #e7e5e4; /* stone-200 */
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Instrument Serif', Georgia, serif;
+  }
+}
 
-  <!-- Header -->
-  <header class="sticky top-0 z-50 w-full glass border-b border-white/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-20">
-        <a href="index.html" class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center shadow-lg">
-            <i data-lucide="diamond" class="w-5 h-5 text-white"></i>
-          </div>
-          <div>
-            <span class="text-xl font-serif font-bold text-white">Aliko Diamond Key</span>
-            <span class="block text-[10px] text-emerald-400 font-mono uppercase">Investor & Buyer Portal</span>
-          </div>
-        </a>
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-400 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(5,150,105,0.5),0_0_60px_rgba(5,150,105,0.2)];
+    transform: translateZ(0);
+  }
+  
+  .btn-secondary {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-amber-600 via-amber-500 to-amber-300 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(217,119,6,0.5),0_0_60px_rgba(217,119,6,0.2)];
+    transform: translateZ(0);
+  }
 
-        <div class="flex items-center gap-4">
-          <a href="properties.html" class="text-xs text-stone-300 hover:text-emerald-400 flex items-center gap-1.5">
-            <i data-lucide="search" class="w-4 h-4"></i> Browse Listings
-          </a>
-          <div class="h-5 w-px bg-white/10"></div>
-          <div class="flex items-center gap-2">
-            <img src="https://i.pravatar.cc/150?u=client1" class="w-9 h-9 rounded-full border border-emerald-500" alt="">
-            <span class="text-xs font-semibold text-white">Engr. Tunde Adeleke</span>
-          </div>
-          <a href="auth.html" class="text-stone-400 hover:text-rose-400 p-2" title="Sign Out">
-            <i data-lucide="log-out" class="w-4 h-4"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-  </header>
+  .btn-ghost {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-white/10 rounded-lg bg-white/5 backdrop-blur-md hover:bg-white/10 hover:scale-[1.03] active:scale-[0.97];
+    transform: translateZ(0);
+  }
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
-    
-    <!-- Top Greeting -->
-    <div class="glass-card p-6 sm:p-8 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-serif font-bold text-white mb-1">
-          Good Day, Engr. Tunde
-        </h1>
-        <p class="text-stone-400 text-xs sm:text-sm">
-          You have <span class="text-emerald-400 font-semibold">1 confirmed inspection</span> scheduled this week and <span class="text-amber-400 font-semibold">3 saved properties</span>.
-        </p>
-      </div>
+  .btn-danger {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-rose-600 to-rose-400 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(225,29,72,0.5),0_0_60px_rgba(225,29,72,0.2)];
+    transform: translateZ(0);
+  }
 
-      <a href="properties.html" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold text-center shadow-lg">
-        Explore New Properties ↗
-      </a>
-    </div>
+  /* Tabs */
+  .tab-pill {
+    @apply px-4 py-2 text-sm font-medium transition-all duration-250 rounded-full text-stone-400 hover:text-white hover:bg-white/5;
+  }
+  
+  .tab-pill-active {
+    @apply px-4 py-2 text-sm font-medium transition-all duration-250 rounded-full text-emerald-400 bg-emerald-900/30 border border-emerald-500/30 shadow-[0_0_10px_rgba(5,150,105,0.2)];
+  }
 
-    <!-- Portal Navigation Tabs -->
-    <div class="flex flex-wrap gap-2 border-b border-white/10 pb-4">
-      <button data-tab="wishlist" class="client-tab tab-active px-4 py-2 rounded-xl text-xs font-semibold border border-transparent transition-all flex items-center gap-2">
-        <i data-lucide="heart" class="w-4 h-4"></i> Saved Wishlist (3)
-      </button>
-      <button data-tab="inspections" class="client-tab px-4 py-2 rounded-xl text-xs font-semibold text-stone-400 hover:text-white border border-transparent transition-all flex items-center gap-2">
-        <i data-lucide="calendar" class="w-4 h-4"></i> Scheduled Inspections (1)
-      </button>
-      <button data-tab="documents" class="client-tab px-4 py-2 rounded-xl text-xs font-semibold text-stone-400 hover:text-white border border-transparent transition-all flex items-center gap-2">
-        <i data-lucide="file-check" class="w-4 h-4"></i> Title Deeds & Agreements (2)
-      </button>
-      <button data-tab="messages" class="client-tab px-4 py-2 rounded-xl text-xs font-semibold text-stone-400 hover:text-white border border-transparent transition-all flex items-center gap-2">
-        <i data-lucide="message-circle" class="w-4 h-4"></i> Agent Messages (1)
-      </button>
-    </div>
+  /* Wizard */
+  .wizard-step-inactive {
+    @apply flex items-center justify-center w-8 h-8 rounded-full border border-stone-700 bg-stone-800 text-stone-400 transition-all duration-450;
+  }
+  .wizard-step-active {
+    @apply flex items-center justify-center w-8 h-8 rounded-full border border-emerald-400 bg-emerald-900/50 text-emerald-300 shadow-[0_0_15px_rgba(5,150,105,0.4)] transition-all duration-450 transform -translate-y-1;
+  }
+  .wizard-step-complete {
+    @apply flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white transition-all duration-450;
+  }
 
-    <!-- TAB 1: WISHLIST -->
-    <div id="wishlistSection" class="portal-panel space-y-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Wishlist item 1 -->
-        <div class="glass-card rounded-2xl overflow-hidden flex flex-col justify-between">
-          <div>
-            <img src="https://picsum.photos/seed/prop1/800/600" class="h-44 w-full object-cover" alt="">
-            <div class="p-4">
-              <div class="flex justify-between items-center mb-1">
-                <span class="text-lg font-serif font-bold text-amber-400">₦185,000,000</span>
-                <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">Available</span>
-              </div>
-              <h3 class="text-sm font-bold text-white mb-1">5-Bedroom Royal Duplex</h3>
-              <p class="text-xs text-stone-400">Aso Drive, Maitama, Abuja</p>
-            </div>
-          </div>
-          <div class="p-4 pt-0 flex gap-2">
-            <a href="property-detail.html?id=prop-001" class="flex-1 py-2 text-center rounded-xl bg-emerald-600 text-white text-xs font-semibold">Inspect ↗</a>
-            <button class="p-2 rounded-xl bg-white/5 text-stone-400 hover:text-rose-500" title="Remove"><i data-lucide="trash" class="w-4 h-4"></i></button>
-          </div>
-        </div>
+  /* Cards */
+  .card-3d {
+    @apply relative overflow-hidden transition-all duration-450 ease-[cubic-bezier(0.16,1,0.3,1)] border border-white/5 rounded-2xl bg-white/5 backdrop-blur-xl hover:-translate-y-2 hover:shadow-xl;
+    transform: translateZ(0);
+    perspective: 1200px;
+  }
 
-        <!-- Wishlist item 2 -->
-        <div class="glass-card rounded-2xl overflow-hidden flex flex-col justify-between">
-          <div>
-            <img src="https://picsum.photos/seed/prop3/800/600" class="h-44 w-full object-cover" alt="">
-            <div class="p-4">
-              <div class="flex justify-between items-center mb-1">
-                <span class="text-lg font-serif font-bold text-amber-400">₦450,000,000</span>
-                <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">Available</span>
-              </div>
-              <h3 class="text-sm font-bold text-white mb-1">Skyline Atlantic Penthouse</h3>
-              <p class="text-xs text-stone-400">Victoria Island, Lagos</p>
-            </div>
-          </div>
-          <div class="p-4 pt-0 flex gap-2">
-            <a href="property-detail.html?id=prop-002" class="flex-1 py-2 text-center rounded-xl bg-emerald-600 text-white text-xs font-semibold">Inspect ↗</a>
-            <button class="p-2 rounded-xl bg-white/5 text-stone-400 hover:text-rose-500" title="Remove"><i data-lucide="trash" class="w-4 h-4"></i></button>
-          </div>
-        </div>
-      </div>
-    </div>
+  /* Badges */
+  .badge-client {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-800 text-stone-300 border border-stone-700;
+  }
+  .badge-agent {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-900/40 text-emerald-300 border border-emerald-700/50;
+  }
+  .badge-manager {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-900/40 text-amber-300 border border-amber-700/50;
+  }
 
-    <!-- TAB 2: INSPECTIONS -->
-    <div id="inspectionsSection" class="portal-panel hidden space-y-4">
-      <div class="glass-card p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div class="flex items-center gap-4">
-          <img src="https://picsum.photos/seed/prop1/150/150" class="w-16 h-16 rounded-xl object-cover" alt="">
-          <div>
-            <span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 font-mono">CONFIRMED ON-SITE</span>
-            <h4 class="text-sm font-bold text-white mt-1">5-Bedroom Royal Duplex, Maitama</h4>
-            <p class="text-xs text-stone-400">Thursday, 24th Sept at 10:00 AM • Agent: Adaeze Okonkwo</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2">
-          <a href="https://wa.me/2348012345678" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
-            <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp Agent
-          </a>
-          <button class="px-4 py-2 rounded-xl bg-white/5 hover:bg-rose-500/20 text-xs text-stone-400 hover:text-rose-400">Reschedule</button>
-        </div>
-      </div>
-    </div>
+  .sidebar-item {
+    @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-stone-400 hover:text-white hover:bg-white/5 transition-all duration-250;
+  }
+  .sidebar-item-active {
+    @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-emerald-400 bg-emerald-900/20 border border-emerald-500/20 transition-all duration-250;
+  }
 
-    <!-- TAB 3: DOCUMENTS -->
-    <div id="documentsSection" class="portal-panel hidden space-y-4">
-      <div class="glass-card p-6 rounded-2xl space-y-4">
-        <h3 class="text-base font-serif font-bold text-white">Your Executed Real Estate Instruments</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="p-4 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <i data-lucide="file-check" class="w-6 h-6 text-emerald-400"></i>
-              <div>
-                <div class="text-xs font-bold text-white">Deed_of_Assignment_Maitama_Duplex.pdf</div>
-                <div class="text-[10px] text-stone-500 font-mono">AGIS VERIFIED • 3.1 MB</div>
-              </div>
-            </div>
-            <button class="text-xs text-emerald-400 hover:underline">Download</button>
-          </div>
-          <div class="p-4 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <i data-lucide="file-text" class="w-6 h-6 text-amber-400"></i>
-              <div>
-                <div class="text-xs font-bold text-white">CBN_Licensed_Escrow_Receipt.pdf</div>
-                <div class="text-[10px] text-stone-500 font-mono">PAYSTACK RECEIPT • 850 KB</div>
-              </div>
-            </div>
-            <button class="text-xs text-emerald-400 hover:underline">Download</button>
-          </div>
-        </div>
-      </div>
-    </div>
+  .map-container {
+    @apply w-full h-full rounded-xl overflow-hidden border border-white/10 bg-stone-900;
+  }
 
-    <!-- TAB 4: MESSAGES -->
-    <div id="messagesSection" class="portal-panel hidden space-y-4">
-      <div class="glass-card p-6 rounded-2xl">
-        <div class="flex items-center gap-3 pb-4 border-b border-white/10 mb-4">
-          <img src="https://i.pravatar.cc/150?u=agent1" class="w-10 h-10 rounded-full border border-emerald-500" alt="">
-          <div>
-            <h4 class="text-xs font-bold text-white">Adaeze Okonkwo</h4>
-            <span class="text-[10px] text-emerald-400 font-mono">● ONLINE NOW</span>
-          </div>
-        </div>
+  .gradient-border {
+    position: relative;
+    background: transparent;
+  }
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(5,150,105,0.6), rgba(217,119,6,0.6), rgba(99,102,241,0.5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  
+  .prose-dark {
+    @apply prose prose-invert prose-emerald max-w-none text-stone-300;
+  }
+}
 
-        <div class="space-y-3 text-xs mb-4">
-          <div class="bg-white/5 p-3 rounded-xl max-w-md">
-            <span class="text-stone-400 text-[10px] block mb-1">Adaeze • 10:45 AM</span>
-            Hello Engr. Tunde, I have uploaded the latest architectural elevation and survey beacons coordinates for the Maitama duplex. Looking forward to our inspection!
-          </div>
-        </div>
+@layer utilities {
+  .neon-emerald {
+    box-shadow: 0 0 20px rgba(5,150,105,0.5), 0 0 60px rgba(5,150,105,0.2);
+  }
+  .neon-gold {
+    box-shadow: 0 0 20px rgba(217,119,6,0.5), 0 0 60px rgba(217,119,6,0.2);
+  }
+  .glass-l1 {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .glass-l2 {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+  .glass-l3 {
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+}
 
-        <div class="flex gap-2">
-          <input type="text" placeholder="Type a message to your realtor..." class="flex-1 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500">
-          <button class="px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-semibold">Send</button>
-        </div>
-      </div>
-    </div>
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
 
-  </main>
+@keyframes slideInRight {
+  0% { opacity: 0; transform: translateX(20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
 
-  <script>
-    lucide.createIcons();
+@keyframes countUp {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
 
-    const tabs = document.querySelectorAll('.client-tab');
-    const panels = document.querySelectorAll('.portal-panel');
+@keyframes morphGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => {
-          t.className = "client-tab px-4 py-2 rounded-xl text-xs font-semibold text-stone-400 hover:text-white border border-transparent transition-all flex items-center gap-2";
-        });
-        tab.className = "client-tab tab-active px-4 py-2 rounded-xl text-xs font-semibold border border-transparent transition-all flex items-center gap-2";
+@keyframes particleFloat {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
 
-        panels.forEach(p => p.classList.add('hidden'));
-        const tabKey = tab.getAttribute('data-tab');
-        document.getElementById(`${tabKey}Section`).classList.remove('hidden');
-      });
-    });
-  </script>
-</body>
+
+  @keyframes s-918YXh7FMLIr-shrink {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
+ .s-918YXh7FMLIr{}
+
+  .hide-scrollbar.s-AUaySFas68UI::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar.s-AUaySFas68UI {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+ .s-AUaySFas68UI{}</style>
+  </head>
+  <body data-sveltekit-preload-data="hover" class="bg-surface-0 text-white antialiased">
+    <div style="display: contents"><!--[--><!--[0--><!--[--><!--[-1--><!--]--> <main class=" min-h-screen bg-[#050A0E]"><!--[--><!--[-1--><!--[--><div class="min-h-screen bg-[#050A0E] text-stone-300 font-sans s-AUaySFas68UI"><header class="border-b border-white/5 bg-[#050A0E]/80 backdrop-blur-md sticky top-0 z-20 s-AUaySFas68UI"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 s-AUaySFas68UI"><div class="flex items-center justify-between h-16 s-AUaySFas68UI"><div class="flex items-center gap-2 s-AUaySFas68UI"><div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center s-AUaySFas68UI"><span class="text-white font-bold s-AUaySFas68UI">C</span></div> <h1 class="text-xl font-bold text-white s-AUaySFas68UI">Client Portal</h1></div> <div class="flex items-center gap-4 s-AUaySFas68UI"><button class="w-8 h-8 rounded-full bg-white/10 overflow-hidden border border-white/20 s-AUaySFas68UI"><img src="https://picsum.photos/seed/client/100/100" alt="Client" class="w-full h-full object-cover s-AUaySFas68UI"/></button></div></div> <nav class="flex space-x-8 overflow-x-auto hide-scrollbar s-AUaySFas68UI"><!--[--><button class="whitespace-nowrap flex items-center gap-2 py-4 px-1 border-b-2 text-sm font-medium transition-colors border-emerald-500 text-emerald-400 s-AUaySFas68UI"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-inbox w-4 h-4"><!--[--><!----><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"><!----></polyline><!----><!----><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--> My Requests</button><button class="whitespace-nowrap flex items-center gap-2 py-4 px-1 border-b-2 text-sm font-medium transition-colors border-transparent text-stone-400 hover:text-white hover:border-white/20 s-AUaySFas68UI"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-heart w-4 h-4"><!--[--><!----><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--> Saved</button><button class="whitespace-nowrap flex items-center gap-2 py-4 px-1 border-b-2 text-sm font-medium transition-colors border-transparent text-stone-400 hover:text-white hover:border-white/20 s-AUaySFas68UI"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-calendar w-4 h-4"><!--[--><!----><path d="M8 2v4"><!----></path><!----><!----><path d="M16 2v4"><!----></path><!----><!----><rect width="18" height="18" x="3" y="4" rx="2"><!----></rect><!----><!----><path d="M3 10h18"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--> Viewings</button><button class="whitespace-nowrap flex items-center gap-2 py-4 px-1 border-b-2 text-sm font-medium transition-colors border-transparent text-stone-400 hover:text-white hover:border-white/20 s-AUaySFas68UI"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-file-text w-4 h-4"><!--[--><!----><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"><!----></path><!----><!----><path d="M14 2v4a2 2 0 0 0 2 2h4"><!----></path><!----><!----><path d="M10 9H8"><!----></path><!----><!----><path d="M16 13H8"><!----></path><!----><!----><path d="M16 17H8"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--> Documents</button><button class="whitespace-nowrap flex items-center gap-2 py-4 px-1 border-b-2 text-sm font-medium transition-colors border-transparent text-stone-400 hover:text-white hover:border-white/20 s-AUaySFas68UI"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-message-square w-4 h-4"><!--[--><!----><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--> Messages</button><button class="whitespace-nowrap flex items-center gap-2 py-4 px-1 border-b-2 text-sm font-medium transition-colors border-transparent text-stone-400 hover:text-white hover:border-white/20 s-AUaySFas68UI"><!--[--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-user w-4 h-4"><!--[--><!----><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"><!----></path><!----><!----><circle cx="12" cy="7" r="4"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!--]--> Profile</button><!--]--></nav></div></header> <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 s-AUaySFas68UI"><!--[0--><div class="mb-6 flex flex-wrap items-center justify-between gap-3 s-AUaySFas68UI"><h2 class="text-xl font-semibold text-white s-AUaySFas68UI">My Service Requests</h2> <a href="/services" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-500 s-AUaySFas68UI">New Request <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-arrow-right h-4 w-4"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="m12 5 7 7-7 7"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></a></div> <!--[0--><div class="grid grid-cols-1 gap-4 s-AUaySFas68UI"><!--[--><div class="skeleton h-24 rounded-xl s-AUaySFas68UI"></div><div class="skeleton h-24 rounded-xl s-AUaySFas68UI"></div><!--]--></div><!--]--><!--]--></main></div><!--]--><!--]--><!--]--></main> <!--[-1--><!--]--> <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 w-full max-w-sm pointer-events-none s-918YXh7FMLIr"><!--[--><!--]--></div><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_dev = {
+						base: new URL("..", location).pathname.slice(0, -1),
+						env: {}
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("/@fs/C:/Users/انتو/Downloads/adk-svelte/node_modules/@sveltejs/kit/src/runtime/client/entry.js"),
+						import("/@fs/C:/Users/انتو/Downloads/adk-svelte/.svelte-kit/generated/client/app.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 20],
+							data: [{type:"data",data:{session:null},uses:{}},null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+  </body>
 </html>

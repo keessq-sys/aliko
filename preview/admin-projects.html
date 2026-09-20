@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#050A0E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!--12qhfyh--><link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/> <meta name="description" content="Aliko Diamond Key — Nigeria's Premier Real Estate &amp; Property Management Platform"/> <meta property="og:type" content="website"/> <meta property="og:title" content="Aliko Diamond Key — Premium Real Estate"/> <meta property="og:description" content="1,200+ verified properties across Nigeria. Zero legal risk. Automated title documentation."/> <meta name="theme-color" content="#050A0E"/><!----><!--1bzxaev--><!----><title>Projects &amp; Estates — ADK Admin</title>
+		<style data-sveltekit>@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --c-indigo: #4F46E5;
+    --c-rose: #E11D48;
+    --c-purple: #9333ea;
+    --c-blue-dark: #1e3a8a;
+  }
+  body {
+    background-color: #050A0E;
+    color: #e7e5e4; /* stone-200 */
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Instrument Serif', Georgia, serif;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-400 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(5,150,105,0.5),0_0_60px_rgba(5,150,105,0.2)];
+    transform: translateZ(0);
+  }
+  
+  .btn-secondary {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-amber-600 via-amber-500 to-amber-300 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(217,119,6,0.5),0_0_60px_rgba(217,119,6,0.2)];
+    transform: translateZ(0);
+  }
+
+  .btn-ghost {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-white/10 rounded-lg bg-white/5 backdrop-blur-md hover:bg-white/10 hover:scale-[1.03] active:scale-[0.97];
+    transform: translateZ(0);
+  }
+
+  .btn-danger {
+    @apply relative inline-flex items-center justify-center px-4 py-2 font-medium text-white transition-all duration-250 ease-in-out border border-transparent rounded-lg bg-gradient-to-r from-rose-600 to-rose-400 hover:scale-[1.03] active:scale-[0.97] hover:shadow-[0_0_20px_rgba(225,29,72,0.5),0_0_60px_rgba(225,29,72,0.2)];
+    transform: translateZ(0);
+  }
+
+  /* Tabs */
+  .tab-pill {
+    @apply px-4 py-2 text-sm font-medium transition-all duration-250 rounded-full text-stone-400 hover:text-white hover:bg-white/5;
+  }
+  
+  .tab-pill-active {
+    @apply px-4 py-2 text-sm font-medium transition-all duration-250 rounded-full text-emerald-400 bg-emerald-900/30 border border-emerald-500/30 shadow-[0_0_10px_rgba(5,150,105,0.2)];
+  }
+
+  /* Wizard */
+  .wizard-step-inactive {
+    @apply flex items-center justify-center w-8 h-8 rounded-full border border-stone-700 bg-stone-800 text-stone-400 transition-all duration-450;
+  }
+  .wizard-step-active {
+    @apply flex items-center justify-center w-8 h-8 rounded-full border border-emerald-400 bg-emerald-900/50 text-emerald-300 shadow-[0_0_15px_rgba(5,150,105,0.4)] transition-all duration-450 transform -translate-y-1;
+  }
+  .wizard-step-complete {
+    @apply flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500 text-white transition-all duration-450;
+  }
+
+  /* Cards */
+  .card-3d {
+    @apply relative overflow-hidden transition-all duration-450 ease-[cubic-bezier(0.16,1,0.3,1)] border border-white/5 rounded-2xl bg-white/5 backdrop-blur-xl hover:-translate-y-2 hover:shadow-xl;
+    transform: translateZ(0);
+    perspective: 1200px;
+  }
+
+  /* Badges */
+  .badge-client {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-800 text-stone-300 border border-stone-700;
+  }
+  .badge-agent {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-900/40 text-emerald-300 border border-emerald-700/50;
+  }
+  .badge-manager {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-900/40 text-amber-300 border border-amber-700/50;
+  }
+
+  .sidebar-item {
+    @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-stone-400 hover:text-white hover:bg-white/5 transition-all duration-250;
+  }
+  .sidebar-item-active {
+    @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-emerald-400 bg-emerald-900/20 border border-emerald-500/20 transition-all duration-250;
+  }
+
+  .map-container {
+    @apply w-full h-full rounded-xl overflow-hidden border border-white/10 bg-stone-900;
+  }
+
+  .gradient-border {
+    position: relative;
+    background: transparent;
+  }
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(5,150,105,0.6), rgba(217,119,6,0.6), rgba(99,102,241,0.5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  
+  .prose-dark {
+    @apply prose prose-invert prose-emerald max-w-none text-stone-300;
+  }
+}
+
+@layer utilities {
+  .neon-emerald {
+    box-shadow: 0 0 20px rgba(5,150,105,0.5), 0 0 60px rgba(5,150,105,0.2);
+  }
+  .neon-gold {
+    box-shadow: 0 0 20px rgba(217,119,6,0.5), 0 0 60px rgba(217,119,6,0.2);
+  }
+  .glass-l1 {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .glass-l2 {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+  .glass-l3 {
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+}
+
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  0% { opacity: 0; transform: translateX(20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes countUp {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes morphGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes particleFloat {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
+
+
+  @keyframes s-918YXh7FMLIr-shrink {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
+ .s-918YXh7FMLIr{}</style>
+  </head>
+  <body data-sveltekit-preload-data="hover" class="bg-surface-0 text-white antialiased">
+    <div style="display: contents"><!--[--><!--[0--><!--[--><!--[-1--><!--]--> <main class=" min-h-screen bg-[#050A0E]"><!--[--><!--[0--><!--[--><div class="flex h-screen overflow-hidden" style="background: var(--c-obsidian)"><aside class="w-60 flex-shrink-0 flex flex-col overflow-y-auto" style="background: #0A1628; border-right: 1px solid rgba(255,255,255,0.05)"><div class="flex items-center gap-2.5 px-5 py-5" style="border-bottom: 1px solid rgba(255,255,255,0.05)"><div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #D97706, #92400E)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-diamond w-4 h-4 text-white"><!--[--><!----><path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41l-7.59-7.59a2.41 2.41 0 0 0-3.41 0Z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div> <div><p class="text-white font-bold text-xs leading-none">Aliko Diamond Key</p> <p class="text-amber-600 text-xs mt-0.5">Super Admin</p></div></div> <!--[-1--><!--]--> <nav class="flex-1 px-3 py-2 space-y-5"><!--[--><div><p class="px-3 text-stone-700 text-xs font-semibold uppercase tracking-widest mb-1">Overview</p> <!--[--><a href="/admin" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 mb-0.5 group text-stone-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-layout-dashboard w-4 h-4 flex-shrink-0 text-stone-600 group-hover:text-stone-400"><!--[--><!----><rect width="7" height="9" x="3" y="3" rx="1"><!----></rect><!----><!----><rect width="7" height="5" x="14" y="3" rx="1"><!----></rect><!----><!----><rect width="7" height="9" x="14" y="12" rx="1"><!----></rect><!----><!----><rect width="7" height="5" x="3" y="16" rx="1"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="flex-1">Dashboard</span> <!--[-1--><!--]--></a><a href="/admin/notifications" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 mb-0.5 group text-stone-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-bell w-4 h-4 flex-shrink-0 text-stone-600 group-hover:text-stone-400"><!--[--><!----><path d="M10.268 21a2 2 0 0 0 3.464 0"><!----></path><!----><!----><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="flex-1">Notifications</span> <!--[-1--><!--]--></a><!--]--></div><div><p class="px-3 text-stone-700 text-xs font-semibold uppercase tracking-widest mb-1">Service Requests</p> <!--[--><a href="/admin/requests" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 mb-0.5 group text-stone-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-inbox w-4 h-4 flex-shrink-0 text-stone-600 group-hover:text-stone-400"><!--[--><!----><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"><!----></polyline><!----><!----><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="flex-1">Requests Inbox</span> <!--[-1--><!--]--></a><a href="/admin/services" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 mb-0.5 group text-stone-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-layers w-4 h-4 flex-shrink-0 text-stone-600 group-hover:text-stone-400"><!--[--><!----><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"><!----></path><!----><!----><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"><!----></path><!----><!----><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="flex-1">Services Catalog</span> <!--[-1--><!--]--></a><!--]--></div><div><p class="px-3 text-stone-700 text-xs font-semibold uppercase tracking-widest mb-1">People</p> <!--[--><a href="/admin/agents" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 mb-0.5 group text-stone-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-briefcase w-4 h-4 flex-shrink-0 text-stone-600 group-hover:text-stone-400"><!--[--><!----><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"><!----></path><!----><!----><rect width="20" height="14" x="2" y="6" rx="2"><!----></rect><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="flex-1">Agent Approvals</span> <!--[-1--><!--]--></a><a href="/admin/managers" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 mb-0.5 group text-stone-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-building-2 w-4 h-4 flex-shrink-0 text-stone-600 group-hover:text-stone-400"><!--[--><!----><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"><!----></path><!----><!----><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"><!----></path><!----><!----><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"><!----></path><!----><!----><path d="M10 6h4"><!----></path><!----><!----><path d="M10 10h4"><!----></path><!----><!----><path d="M10 14h4"><!----></path><!----><!----><path d="M10 18h4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="flex-1">Manager Approvals</span> <!--[-1--><!--]--></a><a href="/admin/users" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 mb-0.5 group text-stone-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-user-cog w-4 h-4 flex-shrink-0 text-stone-600 group-hover:text-stone-400"><!--[--><!----><circle cx="18" cy="15" r="3"><!----></circle><!----><!----><circle cx="9" cy="7" r="4"><!----></circle><!----><!----><path d="M10 15H6a4 4 0 0 0-4 4v2"><!----></path><!----><!----><path d="m21.7 16.4-.9-.3"><!----></path><!----><!----><path d="m15.2 13.9-.9-.3"><!----></path><!----><!----><path d="m16.6 18.7.3-.9"><!----></path><!----><!----><path d="m19.1 12.2.3-.9"><!----></path><!----><!----><path d="m19.6 18.7-.4-1"><!----></path><!----><!----><path d="m16.8 12.3-.4-1"><!----></path><!----><!----><path d="m14.3 16.6 1-.4"><!----></path><!----><!----><path d="m20.7 13.8 1-.4"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="flex-1">Users &amp; Roles</span> <!--[-1--><!--]--></a><!--]--></div><div><p class="px-3 text-stone-700 text-xs font-semibold uppercase tracking-widest mb-1">Properties</p> <!--[--><a href="/admin/projects" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 mb-0.5 group text-white" style="background: rgba(5,150,105,0.15); border: 1px solid rgba(5,150,105,0.2)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-folder-open w-4 h-4 flex-shrink-0 text-emerald-400"><!--[--><!----><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="flex-1">Projects &amp; Estates</span> <!--[1--><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-chevron-right w-3.5 h-3.5 text-emerald-600"><!--[--><!----><path d="m9 18 6-6-6-6"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----><!--]--></a><a href="/admin/plots" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 mb-0.5 group text-stone-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-map w-4 h-4 flex-shrink-0 text-stone-600 group-hover:text-stone-400"><!--[--><!----><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"><!----></path><!----><!----><path d="M15 5.764v15"><!----></path><!----><!----><path d="M9 3.236v15"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="flex-1">Plot Verification</span> <!--[-1--><!--]--></a><!--]--></div><div><p class="px-3 text-stone-700 text-xs font-semibold uppercase tracking-widest mb-1">Legal &amp; Sales</p> <!--[--><a href="/admin/documents" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 mb-0.5 group text-stone-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-file-text w-4 h-4 flex-shrink-0 text-stone-600 group-hover:text-stone-400"><!--[--><!----><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"><!----></path><!----><!----><path d="M14 2v4a2 2 0 0 0 2 2h4"><!----></path><!----><!----><path d="M10 9H8"><!----></path><!----><!----><path d="M16 13H8"><!----></path><!----><!----><path d="M16 17H8"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="flex-1">Legal Documents</span> <!--[-1--><!--]--></a><a href="/admin/whatsapp" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 mb-0.5 group text-stone-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-message-square w-4 h-4 flex-shrink-0 text-stone-600 group-hover:text-stone-400"><!--[--><!----><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="flex-1">WhatsApp Queue</span> <!--[-1--><!--]--></a><!--]--></div><div><p class="px-3 text-stone-700 text-xs font-semibold uppercase tracking-widest mb-1">Construction</p> <!--[--><a href="/admin/milestones" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 mb-0.5 group text-stone-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-construction w-4 h-4 flex-shrink-0 text-stone-600 group-hover:text-stone-400"><!--[--><!----><rect x="2" y="6" width="20" height="8" rx="1"><!----></rect><!----><!----><path d="M17 14v7"><!----></path><!----><!----><path d="M7 14v7"><!----></path><!----><!----><path d="M17 3v3"><!----></path><!----><!----><path d="M7 3v3"><!----></path><!----><!----><path d="M10 14 2.3 6.3"><!----></path><!----><!----><path d="m14 6 7.7 7.7"><!----></path><!----><!----><path d="m8 6 8 8"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="flex-1">Milestones</span> <!--[-1--><!--]--></a><!--]--></div><div><p class="px-3 text-stone-700 text-xs font-semibold uppercase tracking-widest mb-1">System</p> <!--[--><a href="/admin/settings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 mb-0.5 group text-stone-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-settings w-4 h-4 flex-shrink-0 text-stone-600 group-hover:text-stone-400"><!--[--><!----><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"><!----></path><!----><!----><circle cx="12" cy="12" r="3"><!----></circle><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> <span class="flex-1">Settings</span> <!--[-1--><!--]--></a><!--]--></div><!--]--></nav> <div class="px-3 py-4" style="border-top: 1px solid rgba(255,255,255,0.05)"><!--[-1--><!--]--> <a href="/login?signout=1" class="flex items-center gap-2 px-3 py-2 rounded-xl text-stone-600 hover:text-stone-400 text-xs transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-log-out w-3.5 h-3.5"><!--[--><!----><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"><!----></path><!----><!----><polyline points="16 17 21 12 16 7"><!----></polyline><!----><!----><line x1="21" x2="9" y1="12" y2="12"><!----></line><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Sign out</a></div></aside> <div class="flex-1 overflow-y-auto"><!--[--><!--[--><div class="p-8"><div class="mb-6 flex items-center justify-between"><div><h1 class="flex items-center gap-2 text-xl font-bold text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-folder-open h-5 w-5 text-emerald-400"><!--[--><!----><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> Projects &amp; Estates</h1> <p class="mt-0.5 text-sm text-stone-500">Master list of developments and estates under management.</p></div> <button class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-plus"><!--[--><!----><path d="M5 12h14"><!----></path><!----><!----><path d="M12 5v14"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----> New Project</button></div> <!--[0--><div class="flex items-center justify-center rounded-2xl py-16" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-loader-circle h-6 w-6 animate-spin text-stone-500"><!--[--><!----><path d="M21 12a9 9 0 1 1-6.219-8.56"><!----></path><!----><!--]--><!--[--><!--[--><!--]--><!--]--></svg><!----><!----></div><!--]--></div><!--]--><!--]--></div></div><!--]--><!--]--><!--]--></main> <!--[-1--><!--]--> <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 w-full max-w-sm pointer-events-none s-918YXh7FMLIr"><!--[--><!--]--></div><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_dev = {
+						base: new URL("..", location).pathname.slice(0, -1),
+						env: {}
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("/@fs/C:/Users/انتو/Downloads/adk-svelte/node_modules/@sveltejs/kit/src/runtime/client/entry.js"),
+						import("/@fs/C:/Users/انتو/Downloads/adk-svelte/.svelte-kit/generated/client/app.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 2, 11],
+							data: [{type:"data",data:{session:null},uses:{}},null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+  </body>
+</html>

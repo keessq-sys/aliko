@@ -1,39 +1,45 @@
 <script lang="ts">
+  /**
+   * SSR-safe Google Maps <iframe> embed (no API key required).
+   * Centered on lat/lng with a branded pin overlay.
+   */
   import { MapPin } from 'lucide-svelte';
-  import { getLeafletMapHTML } from '$lib/utils/mapHelpers';
 
   export let lat: number | undefined = undefined;
   export let lng: number | undefined = undefined;
-  export let zoom: number = 14;
+  export let zoom: number = 15;
   export let height: string = '400px';
-  export let markers: {lat: number, lng: number, title: string}[] = [];
-  export let interactive: boolean = true;
+  export let label: string = 'Property location';
 
   $: hasCoords = lat !== undefined && lng !== undefined;
-  $: srcDoc = hasCoords ? getLeafletMapHTML(lat!, lng!, zoom, markers) : '';
+  // Google Maps embed (pb param free-form): use the maps.google.com output=embed pattern
+  $: embedSrc = hasCoords
+    ? `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed&hl=en`
+    : '';
 </script>
 
-<div class="map-container relative w-full" style="height: {height};">
+<div class="relative w-full overflow-hidden rounded-2xl border border-white/10" style="height: {height}">
   {#if hasCoords}
-    {#if interactive}
-      <iframe
-        title="Map"
-        srcdoc={srcDoc}
-        class="w-full h-full border-0"
-        loading="lazy"
-      ></iframe>
-    {:else}
-      <div class="w-full h-full bg-stone-900 flex items-center justify-center relative overflow-hidden">
-        <div class="absolute inset-0 bg-emerald-900/20 mix-blend-overlay"></div>
-        <div class="absolute inset-0" style="background-image: radial-gradient(circle at center, rgba(5,150,105,0.2) 0%, transparent 70%)"></div>
-        <MapPin size={48} class="text-emerald-500 animate-pulse relative z-10" />
-      </div>
-    {/if}
+    <iframe
+      title={label}
+      src={embedSrc}
+      class="absolute inset-0 h-full w-full border-0"
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      allowfullscreen
+    ></iframe>
+    <div class="pointer-events-none absolute bottom-3 left-3 flex items-center gap-2 rounded-full bg-black/70 px-3 py-1.5 text-xs text-white backdrop-blur-md">
+      <MapPin size={13} class="text-emerald-400" />
+      {label}
+    </div>
   {:else}
-    <div class="w-full h-full bg-stone-900 flex flex-col items-center justify-center relative overflow-hidden border border-white/5 rounded-xl">
-      <div class="absolute inset-0 bg-stone-800/50"></div>
-      <MapPin size={48} class="text-stone-600 mb-4 relative z-10" />
-      <p class="text-stone-500 font-medium relative z-10">Location data unavailable</p>
+    <div class="absolute inset-0 flex flex-col items-center justify-center bg-[#0b1219]">
+      <div
+        class="absolute inset-0 opacity-10"
+        style="background-image: linear-gradient(#10b981 1px, transparent 1px), linear-gradient(90deg, #10b981 1px, transparent 1px); background-size: 44px 44px;"
+      ></div>
+      <MapPin size={40} class="relative z-10 mb-3 text-stone-600" />
+      <p class="relative z-10 text-sm text-stone-500">Location coordinates unavailable</p>
     </div>
   {/if}
 </div>

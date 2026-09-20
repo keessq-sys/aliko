@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { UploadCloud, File, X, Image as ImageIcon } from 'lucide-svelte';
+  import { UploadCloud, File as FileIcon, X, Image as ImageIcon } from 'lucide-svelte';
   import { createEventDispatcher } from 'svelte';
 
   export let accept: string = '*/*';
@@ -109,7 +109,7 @@
               <img src={item.preview} alt="preview" class="w-10 h-10 object-cover rounded" />
             {:else}
               <div class="w-10 h-10 rounded bg-stone-700 flex items-center justify-center text-stone-400">
-                <File size={20} />
+                <FileIcon size={20} />
               </div>
             {/if}
             <div class="truncate text-sm">

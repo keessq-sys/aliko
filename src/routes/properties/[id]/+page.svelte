@@ -328,7 +328,7 @@
                 lng={property.location.lng}
                 zoom={15}
                 height="320px"
-                markers={[{ lat: property.location.lat, lng: property.location.lng, title: property.title }]}
+                label={property.title}
               />
             </div>
 

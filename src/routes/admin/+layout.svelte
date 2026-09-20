@@ -1,52 +1,67 @@
 <script lang="ts">
   import { page } from "$app/stores";
-  import { useQuery } from "convex-svelte";
+  import { useQuery } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
-  import { Diamond, LayoutDashboard, Map, FolderOpen, FileText, Construction, MessageSquare, Bell, Users, TrendingUp, ChevronRight, LogOut, Settings } from "lucide-svelte";
+  import { Diamond, LayoutDashboard, Map, FolderOpen, FileText, Construction, MessageSquare, Bell, ChevronRight, LogOut, Settings, Inbox, Building2, Briefcase, Layers, UserCog } from "lucide-svelte";
 
   export let data: { session?: { user?: { role?: string; name?: string | null } } | null };
 
   const stats = useQuery(api.projects.getPlatformStats, {});
+  const requestCounts = useQuery(api.serviceRequests.getStatusCounts, {});
 
   const NAV_GROUPS = [
     {
       label: "Overview",
       items: [
-        { href: "/admin",               icon: LayoutDashboard, label: "Dashboard" },
-        { href: "/admin/notifications", icon: Bell,            label: "Notifications",  badge: null },
+        { href: "/admin",                 icon: LayoutDashboard, label: "Dashboard",        badge: null as string | null },
+        { href: "/admin/notifications",   icon: Bell,            label: "Notifications",    badge: null },
+      ],
+    },
+    {
+      label: "Service Requests",
+      items: [
+        { href: "/admin/requests",        icon: Inbox,           label: "Requests Inbox",   badge: "new" },
+        { href: "/admin/services",        icon: Layers,          label: "Services Catalog", badge: null },
+      ],
+    },
+    {
+      label: "People",
+      items: [
+        { href: "/admin/agents",          icon: Briefcase,       label: "Agent Approvals",  badge: "agents" },
+        { href: "/admin/managers",        icon: Building2,       label: "Manager Approvals",badge: "managers" },
+        { href: "/admin/users",           icon: UserCog,         label: "Users & Roles",    badge: null },
       ],
     },
     {
       label: "Properties",
       items: [
-        { href: "/admin/projects",   icon: FolderOpen,    label: "Projects & Estates" },
-        { href: "/admin/plots",      icon: Map,           label: "Plot Verification",  badge: "unverified" },
+        { href: "/admin/projects",        icon: FolderOpen,      label: "Projects & Estates", badge: null },
+        { href: "/admin/plots",           icon: Map,             label: "Plot Verification",  badge: "unverified" },
       ],
     },
     {
       label: "Legal & Sales",
       items: [
-        { href: "/admin/documents",  icon: FileText,    label: "Legal Documents",   badge: "docs" },
-        { href: "/admin/whatsapp",   icon: MessageSquare,label: "WhatsApp Queue",   badge: "wa" },
+        { href: "/admin/documents",       icon: FileText,        label: "Legal Documents",  badge: null },
+        { href: "/admin/whatsapp",        icon: MessageSquare,   label: "WhatsApp Queue",   badge: null },
       ],
     },
     {
       label: "Construction",
       items: [
-        { href: "/admin/milestones", icon: Construction, label: "Milestones" },
+        { href: "/admin/milestones",      icon: Construction,    label: "Milestones",       badge: null },
+      ],
+    },
+    {
+      label: "System",
+      items: [
+        { href: "/admin/settings",        icon: Settings,        label: "Settings",         badge: null },
       ],
     },
   ];
 
   $: isActive = (href: string) =>
     href === "/admin" ? $page.url.pathname === "/admin" : $page.url.pathname.startsWith(href);
-
-  function getBadgeCount(key: string): number | null {
-    const s = $stats;
-    if (!s) return null;
-    if (key === "unverified") return s.unverifiedPlots > 0 ? s.unverifiedPlots : null;
-    return null;
-  }
 </script>
 
 <div class="flex h-screen overflow-hidden" style="background: var(--c-obsidian)">
@@ -61,20 +76,20 @@
       </div>
       <div>
         <p class="text-white font-bold text-xs leading-none">Aliko Diamond Key</p>
-        <p class="text-amber-600 text-xs mt-0.5">Admin Panel</p>
+        <p class="text-amber-600 text-xs mt-0.5">Super Admin</p>
       </div>
     </div>
 
     <!-- Stats pills -->
-    {#if $stats}
+    {#if $requestCounts}
       <div class="px-4 py-3 grid grid-cols-2 gap-2">
-        <div class="rounded-lg px-3 py-2 text-center" style="background: rgba(5,150,105,0.1); border: 1px solid rgba(5,150,105,0.15)">
-          <p class="text-emerald-400 font-black text-base">{$stats.availablePlots}</p>
-          <p class="text-stone-600 text-xs">Available</p>
+        <div class="rounded-lg px-3 py-2 text-center" style="background: rgba(37,99,235,0.12); border: 1px solid rgba(37,99,235,0.2)">
+          <p class="text-blue-300 font-black text-base">{$requestCounts.counts.NEW}</p>
+          <p class="text-stone-600 text-xs">New Requests</p>
         </div>
-        <div class="rounded-lg px-3 py-2 text-center" style="background: rgba(217,119,6,0.1); border: 1px solid rgba(217,119,6,0.15)">
-          <p class="text-amber-400 font-black text-base">{$stats.totalBookings}</p>
-          <p class="text-stone-600 text-xs">Bookings</p>
+        <div class="rounded-lg px-3 py-2 text-center" style="background: rgba(5,150,105,0.1); border: 1px solid rgba(5,150,105,0.15)">
+          <p class="text-emerald-400 font-black text-base">{$stats?.availablePlots ?? '—'}</p>
+          <p class="text-stone-600 text-xs">Plots</p>
         </div>
       </div>
     {/if}
@@ -86,7 +101,7 @@
           <p class="px-3 text-stone-700 text-xs font-semibold uppercase tracking-widest mb-1">{group.label}</p>
           {#each group.items as { href, icon: Icon, label, badge }}
             {@const active = isActive(href)}
-            {@const count = badge ? getBadgeCount(badge) : null}
+            {@const count = badge === "new" && $requestCounts && $requestCounts.counts.NEW > 0 ? $requestCounts.counts.NEW : (badge === "unverified" && $stats && $stats.unverifiedPlots > 0 ? $stats.unverifiedPlots : null)}
             <a {href}
                class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 mb-0.5 group"
                class:text-white={active}

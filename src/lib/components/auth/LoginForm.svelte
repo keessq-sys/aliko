@@ -1,16 +1,33 @@
 <script lang="ts">
   import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-svelte';
-  
+  import { goto } from '$app/navigation';
+  import { api } from '$lib/convex/_generated/api';
+  import { runMutation } from '$lib/convex/queries';
+
   let email = '';
   let password = '';
   let showPassword = false;
   let rememberMe = false;
   let loading = false;
-  
+  let errorMessage = '';
+
   let errors = {
     email: '',
     password: ''
   };
+
+  const signIn = async (args: any) => runMutation(api.auth.signIn, args);
+
+  $: redirectTo = typeof window !== 'undefined' ? window.location.search.match(/[?&]redirect=([^&]+)/)?.[1] : null;
+
+  function roleDashboard(role: string | undefined): string {
+    switch ((role ?? 'CLIENT').toUpperCase()) {
+      case 'ADMIN': return '/admin';
+      case 'AGENT': return '/dashboard/agent';
+      case 'ESTATE_MANAGER': return '/dashboard/manager';
+      default: return '/dashboard/client';
+    }
+  }
 
   const validate = () => {
     let valid = true;
@@ -31,12 +48,27 @@
 
   const handleLogin = async (e: Event) => {
     e.preventDefault();
+    errorMessage = '';
     if (!validate()) return;
     loading = true;
-    setTimeout(() => {
+    try {
+      // @convex-dev/auth password sign-in: response sets the auth session
+      const result: any = await signIn({
+        provider: 'password',
+        params: { flow: 'signIn', email: email.trim(), password }
+      } as any);
+      const target = redirectTo
+        ? decodeURIComponent(redirectTo)
+        : roleDashboard(result?.role ?? (typeof window !== 'undefined' ? localStorage.getItem('adk-role') ?? undefined : undefined));
+      if (typeof window !== 'undefined' && result?.role) localStorage.setItem('adk-role', result.role);
+      await goto(target);
+    } catch (err: any) {
+      errorMessage = err?.message?.includes('InvalidAccountId')
+        ? 'No account found with those credentials.'
+        : err?.message ?? 'Sign-in failed. Please try again.';
+    } finally {
       loading = false;
-      alert('Login successful');
-    }, 1500);
+    }
   };
 </script>
 
@@ -90,6 +122,10 @@
     {/if}
   </div>
 
+  {#if errorMessage}
+    <p class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300">{errorMessage}</p>
+  {/if}
+
   <div class="flex items-center justify-between">
     <div class="flex items-center">
       <input
@@ -101,7 +137,7 @@
       <label for="remember-me" class="ml-2 block text-sm text-gray-300">Remember me</label>
     </div>
     <div class="text-sm">
-      <a href="/auth/forgot-password" class="font-medium text-emerald-400 hover:text-emerald-300">Forgot password?</a>
+      <a href="/auth?tab=signin" class="font-medium text-emerald-400 hover:text-emerald-300">Forgot password?</a>
     </div>
   </div>
 

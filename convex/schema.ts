@@ -15,6 +15,7 @@ export default defineSchema({
       v.literal("ADMIN"),
       v.literal("AGENT"),
       v.literal("CLIENT"),
+      v.literal("ESTATE_MANAGER"),
       v.literal("DIASPORA_CLIENT"),
       v.literal("TENANT"),
     ),
@@ -342,5 +343,163 @@ export default defineSchema({
   })
     .index("by_status", ["status"])
     .index("by_agent", ["assignedAgentId"])
+    .index("by_date", ["createdAt"]),
+
+  // ── Enterprise Services Catalog ──────────────────────────────────────────
+  // Interior design & decoration, furnishing, foreign/Turkish tiles supply,
+  // building materials supply, smart-home installation, construction,
+  // commercial & recreational centers, general contracts.
+  services: defineTable({
+    slug: v.string(),
+    name: v.string(),
+    tagline: v.string(),
+    description: v.string(),
+    longDescription: v.optional(v.string()),
+    category: v.union(
+      v.literal("INTERIOR"),        // interior design, decoration, furnishing
+      v.literal("SUPPLY"),          // tiles, building materials, furnishings
+      v.literal("SMART_HOME"),      // smart-home installation
+      v.literal("CONSTRUCTION"),    // construction, general contracts
+      v.literal("CONSULTING"),      // advisory, project management
+    ),
+    heroImage: v.optional(v.string()),
+    gallery: v.optional(v.array(v.string())),
+    features: v.array(v.string()),
+    startingPrice: v.optional(v.number()),
+    priceUnit: v.optional(v.string()),  // e.g. "per sqm", "per project"
+    leadTimeDays: v.optional(v.number()),
+    isActive: v.boolean(),
+    isFeatured: v.boolean(),
+    sortOrder: v.number(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_category", ["category"])
+    .index("by_active", ["isActive"])
+    .index("by_featured", ["isFeatured"]),
+
+  // ── Service Requests / Applications ─────────────────────────────────────
+  // Supply contracts, purchases, smart-home installs, interior design &
+  // decoration briefs — submitted by clients, actioned by super admin.
+  serviceRequests: defineTable({
+    reference: v.string(),                // e.g. ADK-SVC-2026-0001
+    serviceId: v.id("services"),
+    serviceSlug: v.string(),
+    requesterId: v.optional(v.id("users")),  // null = guest submission
+    requesterName: v.string(),
+    requesterEmail: v.string(),
+    requesterPhone: v.string(),
+    company: v.optional(v.string()),
+    requestType: v.union(
+      v.literal("SUPPLY_CONTRACT"),
+      v.literal("PURCHASE"),
+      v.literal("SMART_HOME_INSTALL"),
+      v.literal("INTERIOR_DESIGN"),
+      v.literal("CONSTRUCTION_PROJECT"),
+      v.literal("GENERAL_CONTRACT"),
+    ),
+    location: v.optional(v.string()),
+    projectBrief: v.string(),
+    budgetMin: v.optional(v.number()),
+    budgetMax: v.optional(v.number()),
+    timeline: v.optional(v.string()),
+    attachments: v.optional(v.array(v.string())),  // file URLs
+    status: v.union(
+      v.literal("NEW"),
+      v.literal("REVIEWING"),
+      v.literal("QUOTED"),
+      v.literal("ACCEPTED"),
+      v.literal("REJECTED"),
+      v.literal("IN_PROGRESS"),
+      v.literal("COMPLETED"),
+    ),
+    assignedAdminId: v.optional(v.id("users")),
+    adminResponse: v.optional(v.string()),
+    quoteAmount: v.optional(v.number()),
+    quotedAt: v.optional(v.number()),
+    respondedAt: v.optional(v.number()),
+    completedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_reference", ["reference"])
+    .index("by_service", ["serviceId"])
+    .index("by_status", ["status"])
+    .index("by_requester", ["requesterId"])
+    .index("by_date", ["createdAt"]),
+
+  // ── Estate Manager Profiles ──────────────────────────────────────────────
+  estateManagers: defineTable({
+    userId: v.optional(v.id("users")),
+    companyName: v.string(),
+    contactName: v.string(),
+    email: v.string(),
+    phone: v.string(),
+    cacRcNumber: v.optional(v.string()),
+    statesOfOperation: v.array(v.string()),
+    portfolioSize: v.optional(v.string()),   // e.g. "1-10", "11-50", "50+"
+    plan: v.union(
+      v.literal("STARTER"),
+      v.literal("PROFESSIONAL"),
+      v.literal("ENTERPRISE"),
+    ),
+    status: v.union(
+      v.literal("PENDING"),
+      v.literal("APPROVED"),
+      v.literal("SUSPENDED"),
+    ),
+    approvedBy: v.optional(v.id("users")),
+    approvedAt: v.optional(v.number()),
+    monthlyFeeNgn: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_status", ["status"])
+    .index("by_email", ["email"]),
+
+  // ── Agent Applications (from the 5-step wizard) ──────────────────────────
+  agentApplications: defineTable({
+    reference: v.string(),               // e.g. ADK-AGT-2026-0001
+    userId: v.optional(v.id("users")),
+    fullName: v.string(),
+    email: v.string(),
+    phone: v.string(),
+    agencyName: v.optional(v.string()),
+    agentType: v.optional(v.string()),
+    reanNumber: v.optional(v.string()),
+    experience: v.optional(v.string()),
+    specializations: v.optional(v.array(v.string())),
+    bio: v.optional(v.string()),
+    statesOfOperation: v.optional(v.array(v.string())),
+    primaryLgas: v.optional(v.string()),
+    nin: v.optional(v.string()),
+    documentUrls: v.optional(v.array(v.string())),
+    status: v.union(
+      v.literal("PENDING"),
+      v.literal("UNDER_REVIEW"),
+      v.literal("APPROVED"),
+      v.literal("REJECTED"),
+    ),
+    reviewedBy: v.optional(v.id("users")),
+    reviewNotes: v.optional(v.string()),
+    reviewedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_reference", ["reference"])
+    .index("by_status", ["status"])
+    .index("by_email", ["email"]),
+
+  // ── Admin Presence (for audit) ───────────────────────────────────────────
+  adminAuditLog: defineTable({
+    actorId: v.optional(v.id("users")),
+    actorEmail: v.optional(v.string()),
+    action: v.string(),
+    entityType: v.optional(v.string()),
+    entityId: v.optional(v.string()),
+    detail: v.optional(v.string()),
+    createdAt: v.number(),
+  })
     .index("by_date", ["createdAt"]),
 });
