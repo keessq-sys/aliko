@@ -30,6 +30,17 @@ export const SIGNATURE_DEVELOPMENTS = [
   { name: 'Port Harcourt Marina City', location: 'GRA, Port Harcourt', image: picsum('adk-dev-ph', 1200, 900) }
 ];
 
+export const EXPLORE_LOCATIONS = [
+  { city: 'Lagos', state: 'Lagos State', listings: 412, image: picsum('adk-city-lagos', 900, 1100) },
+  { city: 'Abuja', state: 'FCT', listings: 356, image: picsum('adk-city-abuja', 900, 1100) },
+  { city: 'Port Harcourt', state: 'Rivers State', listings: 128, image: picsum('adk-city-ph', 900, 1100) },
+  { city: 'Enugu', state: 'Enugu State', listings: 94, image: picsum('adk-city-enugu', 900, 1100) },
+  { city: 'Ibadan', state: 'Oyo State', listings: 87, image: picsum('adk-city-ibadan', 900, 1100) },
+  { city: 'Kano', state: 'Kano State', listings: 61, image: picsum('adk-city-kano', 900, 1100) }
+];
+
+export const VISION_BANNER_IMAGE = picsum('adk-vision-banner', 1920, 1280);
+
 /** 4-6 gallery images per service, keyed by slug. */
 export const SERVICE_GALLERIES: Record<string, string[]> = {
   'interior-design': [picsum('adk-gal-interior-1', 900, 650), picsum('adk-gal-interior-2', 900, 650), picsum('adk-gal-interior-3', 900, 650), picsum('adk-gal-interior-4', 900, 650)],

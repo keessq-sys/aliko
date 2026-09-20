@@ -5,20 +5,29 @@
   import PropertyMapView from '$lib/components/properties/PropertyMapView.svelte';
   import PropertyFilters from '$lib/components/properties/PropertyFilters.svelte';
   import { LayoutGrid, LayoutList, Map as MapIcon, SlidersHorizontal, X, ArrowUpDown, ChevronRight } from 'lucide-svelte';
+  import { page } from '$app/stores';
+  import { SIGNATURE_DEVELOPMENTS } from '$lib/data/imagery';
+
+  const bannerImage = SIGNATURE_DEVELOPMENTS[1].image;
 
   // View state
   let currentView: 'grid' | 'list' | 'map' = 'grid';
   let isMobileFilterOpen = false;
   let selectedMapPropertyId: string | null = null;
 
+  // Seed filters from the URL so links from the homepage search bar, city
+  // explorer and signature developments carousel land pre-filtered.
+  const params = $page.url.searchParams;
+  const seedType = params.get('type');
+
   // Filter state
   let filters = {
-    search: '',
-    type: 'All',
+    search: params.get('q') ?? '',
+    type: seedType ? seedType.charAt(0).toUpperCase() + seedType.slice(1).toLowerCase() : 'All',
     status: 'All',
-    minPrice: 0,
-    maxPrice: 1000000000,
-    bedrooms: 'Any',
+    minPrice: params.has('minPrice') ? Number(params.get('minPrice')) : 0,
+    maxPrice: params.has('maxPrice') ? Number(params.get('maxPrice')) : 1000000000,
+    bedrooms: params.get('bedrooms') ?? 'Any',
     bathrooms: 'Any',
     verifiedOnly: false,
     sortBy: 'Newest'
@@ -128,8 +137,11 @@
 
 <div class="min-h-screen bg-[#050A0E] text-white">
   <!-- Header / Breadcrumb banner -->
-  <div class="relative overflow-hidden py-10 border-b border-white/5 bg-gradient-to-b from-emerald-950/20 via-transparent to-transparent">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="relative overflow-hidden py-10 border-b border-white/5">
+    <img src={bannerImage} alt="" class="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050A0E] via-[#050A0E]/90 to-[#050A0E]/60"></div>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-emerald-950/20 via-transparent to-transparent"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-xs text-stone-400 mb-4">
         <a href="/" class="hover:text-emerald-400 transition-colors">Home</a>

@@ -112,6 +112,12 @@
 }
 
 @layer utilities {
+  .text-gradient-emerald {
+    @apply bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent;
+  }
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent;
+  }
   .neon-emerald {
     box-shadow: 0 0 20px rgba(5,150,105,0.5), 0 0 60px rgba(5,150,105,0.2);
   }

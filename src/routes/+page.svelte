@@ -4,9 +4,11 @@
   import SignatureDevelopments from '$lib/components/home/SignatureDevelopments.svelte';
   import FeaturedProperties from '$lib/components/home/FeaturedProperties.svelte';
   import PropertyTypes from '$lib/components/home/PropertyTypes.svelte';
+  import ExploreLocations from '$lib/components/home/ExploreLocations.svelte';
   import HowItWorks from '$lib/components/home/HowItWorks.svelte';
   import AgentShowcase from '$lib/components/home/AgentShowcase.svelte';
   import MapPreview from '$lib/components/home/MapPreview.svelte';
+  import VisionBanner from '$lib/components/home/VisionBanner.svelte';
   import TestimonialsSection from '$lib/components/home/TestimonialsSection.svelte';
   import ServicesSection from '$lib/components/home/ServicesSection.svelte';
   import TrustBanner from '$lib/components/home/TrustBanner.svelte';
@@ -25,9 +27,11 @@
   <SignatureDevelopments />
   <FeaturedProperties />
   <PropertyTypes />
+  <ExploreLocations />
   <HowItWorks />
   <AgentShowcase />
   <MapPreview />
+  <VisionBanner />
   <TestimonialsSection />
   <ServicesSection />
   <TrustBanner />

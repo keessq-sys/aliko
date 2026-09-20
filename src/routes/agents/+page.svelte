@@ -1,5 +1,8 @@
 <script lang="ts">
   import { Search, MapPin, Star, Verified, Filter, Phone, Mail } from 'lucide-svelte';
+  import { SERVICE_GALLERIES } from '$lib/data/imagery';
+
+  const heroImage = SERVICE_GALLERIES['property-development'][1];
 
   const AGENTS = [
     { id: 1, name: "Oluwaseun Adeyemi", agency: "Apex Realtors Group", rating: 4.9, reviews: 128, listings: 45, exp: "8 yrs", verified: true, image: "https://i.pravatar.cc/150?u=1", specs: ["Residential", "Luxury"], location: "Lekki, Lagos" },
@@ -24,7 +27,10 @@
     </a>
   </div>
 
-  <div class="px-4 sm:px-6 lg:px-8 py-12 max-w-7xl mx-auto">
+  <div class="relative overflow-hidden">
+    <img src={heroImage} alt="" class="absolute inset-0 h-full w-full object-cover opacity-20" loading="eager" />
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#050A0E]/40 via-[#050A0E]/90 to-[#050A0E]"></div>
+    <div class="relative px-4 sm:px-6 lg:px-8 py-12 max-w-7xl mx-auto">
     <!-- Hero -->
     <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div>
@@ -150,5 +156,6 @@
       <span class="w-10 h-10 flex items-center justify-center text-gray-500">...</span>
       <button class="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors">&gt;</button>
     </div>
+  </div>
   </div>
 </div>
