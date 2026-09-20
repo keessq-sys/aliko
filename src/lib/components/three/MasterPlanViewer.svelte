@@ -178,7 +178,9 @@
   });
 
   onDestroy(() => {
-    cancelAnimationFrame(animFrame);
+    // onDestroy fires during SSR teardown too, where onMount never ran and
+    // cancelAnimationFrame doesn't exist at all — guard both.
+    if (typeof cancelAnimationFrame !== 'undefined') cancelAnimationFrame(animFrame);
     renderer?.dispose();
     resizeObs?.disconnect();
   });
