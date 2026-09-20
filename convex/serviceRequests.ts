@@ -1,6 +1,15 @@
 import { v } from "convex/values";
 import { query, mutation, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { Id } from "./_generated/dataModel";
+
+async function requireAdmin(ctx: any) {
+  const userId = await getAuthUserId(ctx);
+  if (!userId) throw new Error("Unauthorized");
+  const user = await ctx.db.get(userId as Id<"users">);
+  if (user?.role !== "ADMIN") throw new Error("Forbidden — ADMIN only");
+  return userId;
+}
 
 function makeRef(prefix: string): string {
   const year = new Date().getFullYear();
@@ -157,6 +166,7 @@ export const reviewServiceRequest = mutation({
     quoteAmount: v.optional(v.number()),
   },
   handler: async (ctx, { id, status, adminResponse, quoteAmount }) => {
+    await requireAdmin(ctx);
     const now = Date.now();
     const patch: Record<string, unknown> = { status, updatedAt: now };
     if (adminResponse !== undefined) {

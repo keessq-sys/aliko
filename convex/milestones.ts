@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { Id } from "./_generated/dataModel";
 
 // ── Public/Admin: milestones, optionally scoped to one project ─────────────
 export const listMilestones = query({
@@ -37,6 +38,8 @@ export const createMilestone = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Must be signed in to publish a milestone.");
+    const user = await ctx.db.get(userId as Id<"users">);
+    if (user?.role !== "ADMIN") throw new Error("Forbidden — ADMIN only");
 
     return await ctx.db.insert("milestones", {
       projectId: args.projectId,

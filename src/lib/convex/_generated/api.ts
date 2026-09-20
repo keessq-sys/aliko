@@ -115,7 +115,8 @@ const whatsapp = {
   handleIncoming: a("whatsapp:handleIncoming"),
   getSession: q("whatsapp:getSession"),
   getDocByRef: q("whatsapp:getDocByRef"),
-  updateSession: m("whatsapp:updateSession"),
+  // updateSession is an internalMutation — only callable from handleIncoming
+  // server-side, never exposed to the frontend.
   getHumanReviewQueue: q("whatsapp:getHumanReviewQueue"),
   resolveSession: m("whatsapp:resolveSession"),
 };
