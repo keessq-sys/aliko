@@ -356,11 +356,13 @@ export default defineSchema({
     description: v.string(),
     longDescription: v.optional(v.string()),
     category: v.union(
-      v.literal("INTERIOR"),        // interior design, decoration, furnishing
-      v.literal("SUPPLY"),          // tiles, building materials, furnishings
-      v.literal("SMART_HOME"),      // smart-home installation
-      v.literal("CONSTRUCTION"),    // construction, general contracts
-      v.literal("CONSULTING"),      // advisory, project management
+      v.literal("INTERIOR"),          // interior design, decoration, furnishing
+      v.literal("SUPPLY"),            // tiles, building materials, furnishings
+      v.literal("SMART_HOME"),        // smart-home installation
+      v.literal("CONSTRUCTION"),      // construction, general contracts, renovation
+      v.literal("ARCHITECTURE"),      // architectural design, space planning
+      v.literal("PROPERTY_SERVICES"), // development, facility management, land/real-estate brokerage
+      v.literal("CONSULTING"),        // advisory, project management
     ),
     heroImage: v.optional(v.string()),
     gallery: v.optional(v.array(v.string())),
@@ -398,6 +400,10 @@ export default defineSchema({
       v.literal("INTERIOR_DESIGN"),
       v.literal("CONSTRUCTION_PROJECT"),
       v.literal("GENERAL_CONTRACT"),
+      v.literal("ARCHITECTURAL_DESIGN"),
+      v.literal("SPACE_PLANNING"),
+      v.literal("PROPERTY_DEVELOPMENT"),
+      v.literal("BROKERAGE_DEAL"),
     ),
     location: v.optional(v.string()),
     projectBrief: v.string(),

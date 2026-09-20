@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { 
-    LayoutDashboard, Home, Users, Briefcase, DollarSign, 
-    FileText, BarChart2, Settings, LogOut, Bell, ChevronDown, 
-    Search, Plus, Filter, Download, AlertTriangle
+  import {
+    LayoutDashboard, Home, Users, Briefcase, DollarSign,
+    FileText, BarChart2, Settings, LogOut, Bell, ChevronDown,
+    Search, Plus, Filter, Download, AlertTriangle, Wrench, Clock, CheckCircle2
   } from 'lucide-svelte';
   
   import StatCard from '$lib/components/dashboard/StatCard.svelte';
@@ -57,10 +57,37 @@
     { name: 'Lekki_Deed_of_Assignment.pdf', type: 'PDF', property: 'Lekki Phase 1 Duplex', date: '2024-09-15', size: '1.1 MB' },
   ];
 
+  const MOCK_WORK_ORDERS = [
+    { id: 'wo1', property: 'VI Office Space', issue: 'HVAC servicing — 4th floor units', vendor: 'CoolAir Facilities Ltd', priority: 'High', status: 'In Progress', raised: '2 days ago' },
+    { id: 'wo2', property: 'Maitama Luxury Villa', issue: 'Generator scheduled maintenance', vendor: 'PowerTech Nigeria', priority: 'Medium', status: 'Scheduled', raised: '5 days ago' },
+    { id: 'wo3', property: 'Lekki Phase 1 Duplex', issue: 'Perimeter fence repair', vendor: 'Fortress Construction', priority: 'Low', status: 'Open', raised: '1 week ago' },
+    { id: 'wo4', property: 'Asokoro Penthouse', issue: 'Plumbing leak — guest bathroom', vendor: 'AquaFix Plumbers', priority: 'High', status: 'Resolved', raised: '3 weeks ago' },
+  ];
+
+  const MOCK_VENDORS = [
+    { name: 'CoolAir Facilities Ltd', category: 'HVAC & Climate', activeOrders: 2, rating: 4.8 },
+    { name: 'PowerTech Nigeria', category: 'Power & Generators', activeOrders: 1, rating: 4.9 },
+    { name: 'Fortress Construction', category: 'Structural & Renovation', activeOrders: 1, rating: 4.6 },
+    { name: 'AquaFix Plumbers', category: 'Plumbing', activeOrders: 0, rating: 4.7 },
+  ];
+
+  const PRIORITY_CLASSES: Record<string, string> = {
+    High: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
+    Medium: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+    Low: 'bg-stone-500/15 text-stone-300 border-stone-500/30',
+  };
+  const STATUS_CLASSES: Record<string, string> = {
+    Open: 'bg-blue-500/15 text-blue-300 border-blue-500/30',
+    Scheduled: 'bg-purple-500/15 text-purple-300 border-purple-500/30',
+    'In Progress': 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+    Resolved: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+  };
+
   const navItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
     { id: 'properties', label: 'My Properties', icon: Home },
     { id: 'tenants', label: 'Tenants', icon: Users },
+    { id: 'facility', label: 'Facility & Maintenance', icon: Wrench },
     { id: 'agents', label: 'My Agents', icon: Briefcase },
     { id: 'financials', label: 'Financials', icon: DollarSign },
     { id: 'documents', label: 'Documents', icon: FileText },
@@ -217,6 +244,70 @@
           </table>
         </div>
         
+      {:else if currentTab === 'facility'}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatCard title="Open Work Orders" value="3" change="1 high priority" changeType="down" icon={Wrench} iconBg="bg-rose-500/20" />
+          <StatCard title="Avg. Resolution Time" value="2.4" suffix=" days" change="-0.6 vs last month" changeType="up" icon={Clock} iconBg="bg-blue-500/20" />
+          <StatCard title="Facilities Under Management" value="47" change="Across 6 states" changeType="up" icon={Home} />
+          <StatCard title="Active Vendor Contracts" value="12" change="+2 this quarter" changeType="up" icon={CheckCircle2} iconBg="bg-emerald-500/20" />
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 rounded-xl border border-white/5 bg-[#050A0E]/80 shadow-xl overflow-hidden">
+            <div class="p-6 border-b border-white/5 flex justify-between items-center">
+              <h3 class="text-lg font-semibold text-white">Maintenance Work Orders</h3>
+              <button class="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-lg hover:bg-emerald-500">
+                <Plus class="w-4 h-4" /> New Work Order
+              </button>
+            </div>
+            <table class="w-full text-left text-sm">
+              <thead class="bg-white/5 text-stone-400">
+                <tr>
+                  <th class="px-6 py-4">Issue</th>
+                  <th class="px-6 py-4">Vendor</th>
+                  <th class="px-6 py-4">Priority</th>
+                  <th class="px-6 py-4">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5">
+                {#each MOCK_WORK_ORDERS as wo}
+                  <tr class="hover:bg-white/5">
+                    <td class="px-6 py-4">
+                      <div class="text-white font-medium">{wo.issue}</div>
+                      <div class="text-xs text-stone-500">{wo.property} &middot; raised {wo.raised}</div>
+                    </td>
+                    <td class="px-6 py-4 text-stone-300">{wo.vendor}</td>
+                    <td class="px-6 py-4">
+                      <span class="px-2 py-1 rounded-full text-xs border {PRIORITY_CLASSES[wo.priority]}">{wo.priority}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                      <span class="px-2 py-1 rounded-full text-xs border {STATUS_CLASSES[wo.status]}">{wo.status}</span>
+                    </td>
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="lg:col-span-1 rounded-xl border border-white/5 bg-white/[0.02] p-6">
+            <h3 class="text-lg font-semibold text-white mb-4">Vendor Directory</h3>
+            <div class="space-y-3">
+              {#each MOCK_VENDORS as vendor}
+                <div class="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5">
+                  <div>
+                    <p class="text-sm font-medium text-white">{vendor.name}</p>
+                    <p class="text-xs text-stone-500">{vendor.category}</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-xs text-emerald-400">&#9733; {vendor.rating}</p>
+                    <p class="text-xs text-stone-500">{vendor.activeOrders} active</p>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          </div>
+        </div>
+
       {:else if currentTab === 'agents'}
         <div class="mb-6 flex justify-between items-center">
           <h3 class="text-lg font-medium text-white">Agent Roster</h3>
@@ -262,6 +353,30 @@
           {/each}
         </div>
         
+      {:else if currentTab === 'reports'}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {#each [
+            { name: 'Monthly Portfolio Summary', period: 'September 2026' },
+            { name: 'Facility Maintenance Log', period: 'Q3 2026' },
+            { name: 'Occupancy & Revenue Report', period: 'September 2026' },
+          ] as report}
+            <div class="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/5">
+              <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-500/20 text-blue-400 rounded-lg">
+                  <BarChart2 class="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 class="text-sm font-medium text-white">{report.name}</h4>
+                  <p class="text-xs text-stone-400">{report.period}</p>
+                </div>
+              </div>
+              <button class="p-2 hover:bg-white/10 rounded-full text-stone-400">
+                <Download class="w-4 h-4" />
+              </button>
+            </div>
+          {/each}
+        </div>
+
       {:else}
         <div class="max-w-2xl">
           <div class="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-6">

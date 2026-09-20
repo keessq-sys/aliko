@@ -1,11 +1,16 @@
 <script lang="ts">
-  import { ArrowRight, Lamp, Sparkles, Sofa, Grid3x3, HardHat, Cpu, Building2, FileSignature, CheckCircle2 } from 'lucide-svelte';
+  import { ArrowRight, Lamp, Sparkles, Sofa, Grid3x3, HardHat, Cpu, Building2, FileSignature, CheckCircle2, Hammer, DraftingCompass, LayoutGrid, Landmark } from 'lucide-svelte';
   import { SERVICES, SERVICE_CATEGORY_META, servicesWithFallback } from '$lib/types/services';
   import { formatNaira } from '$lib/utils/format';
+  import { SERVICE_GALLERIES } from '$lib/data/imagery';
+
+  const heroImage = SERVICE_GALLERIES['architectural-design'][0];
 
   const ICONS: Record<string, any> = {
     lamp: Lamp, sparkles: Sparkles, sofa: Sofa, grid: Grid3x3,
-    'hard-hat': HardHat, cpu: Cpu, building: Building2, 'file-signature': FileSignature
+    'hard-hat': HardHat, cpu: Cpu, building: Building2, 'file-signature': FileSignature,
+    hammer: Hammer, 'drafting-compass': DraftingCompass, 'layout-grid': LayoutGrid,
+    'building-2': Building2, landmark: Landmark
   };
   const services = servicesWithFallback(undefined);
   const categories = Object.keys(SERVICE_CATEGORY_META);
@@ -18,10 +23,12 @@
 
 <div class="min-h-screen bg-[#050A0E] text-white">
   <!-- Hero -->
-  <section class="relative overflow-hidden border-b border-white/5 py-20">
+  <section class="relative overflow-hidden border-b border-white/5 py-24">
+    <img src={heroImage} alt="" class="absolute inset-0 h-full w-full object-cover opacity-30" loading="eager" />
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050A0E] via-[#050A0E]/85 to-[#050A0E]/40"></div>
     <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-emerald-950/30 via-transparent to-transparent"></div>
     <div class="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-amber-600/10 blur-[120px]"></div>
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="max-w-2xl">
         <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/60 px-3 py-1 font-mono text-xs text-emerald-400">
           <span class="h-2 w-2 animate-ping rounded-full bg-emerald-400"></span>

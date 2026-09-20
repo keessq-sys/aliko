@@ -1,5 +1,7 @@
+import { SERVICE_GALLERIES } from '$lib/data/imagery';
+
 export interface ServiceCategoryMeta {
-  key: 'INTERIOR' | 'SUPPLY' | 'SMART_HOME' | 'CONSTRUCTION' | 'CONSULTING';
+  key: 'INTERIOR' | 'SUPPLY' | 'SMART_HOME' | 'CONSTRUCTION' | 'ARCHITECTURE' | 'PROPERTY_SERVICES' | 'CONSULTING';
   label: string;
   color: string;
 }
@@ -8,19 +10,26 @@ export const SERVICE_CATEGORY_META: Record<string, ServiceCategoryMeta> = {
   INTERIOR: { key: 'INTERIOR', label: 'Interior & Decoration', color: 'text-amber-400' },
   SUPPLY: { key: 'SUPPLY', label: 'Materials & Supply', color: 'text-cyan-400' },
   SMART_HOME: { key: 'SMART_HOME', label: 'Smart Home', color: 'text-purple-400' },
-  CONSTRUCTION: { key: 'CONSTRUCTION', label: 'Construction & Contracts', color: 'text-emerald-400' },
+  CONSTRUCTION: { key: 'CONSTRUCTION', label: 'Construction & Renovation', color: 'text-emerald-400' },
+  ARCHITECTURE: { key: 'ARCHITECTURE', label: 'Architecture & Space Planning', color: 'text-sky-400' },
+  PROPERTY_SERVICES: { key: 'PROPERTY_SERVICES', label: 'Property, Development & Facility Management', color: 'text-yellow-400' },
   CONSULTING: { key: 'CONSULTING', label: 'Advisory & Project Management', color: 'text-rose-400' }
 };
 
-/** The eight service slugs baked into the platform architecture. */
+/** The thirteen service slugs baked into the platform architecture. */
 export const SERVICE_SLUGS = [
   'interior-design',
   'decoration-styling',
   'furnishing',
+  'renovation-refurbishment',
   'turkish-tiles-supply',
   'building-materials-supply',
   'smart-home-installation',
   'construction-services',
+  'architectural-design',
+  'space-planning',
+  'property-development',
+  'land-real-estate-brokerage',
   'general-contracts'
 ] as const;
 
@@ -32,9 +41,20 @@ export interface ServiceMeta {
   tagline: string;
   category: keyof typeof SERVICE_CATEGORY_META;
   icon: string;
-  requestType: 'SUPPLY_CONTRACT' | 'PURCHASE' | 'SMART_HOME_INSTALL' | 'INTERIOR_DESIGN' | 'CONSTRUCTION_PROJECT' | 'GENERAL_CONTRACT';
+  requestType:
+    | 'SUPPLY_CONTRACT'
+    | 'PURCHASE'
+    | 'SMART_HOME_INSTALL'
+    | 'INTERIOR_DESIGN'
+    | 'CONSTRUCTION_PROJECT'
+    | 'GENERAL_CONTRACT'
+    | 'ARCHITECTURAL_DESIGN'
+    | 'SPACE_PLANNING'
+    | 'PROPERTY_DEVELOPMENT'
+    | 'BROKERAGE_DEAL';
   requestTypeLabel: string;
   image: string;
+  gallery?: string[];
   startingPrice?: number;
   priceUnit?: string;
   features: string[];
@@ -50,6 +70,7 @@ export const SERVICES: ServiceMeta[] = [
     requestType: 'INTERIOR_DESIGN',
     requestTypeLabel: 'Interior Design Brief',
     image: 'https://picsum.photos/seed/adk-interior/900/600',
+    gallery: SERVICE_GALLERIES['interior-design'],
     startingPrice: 1_500_000,
     priceUnit: 'per project',
     features: ['3D concept renderings', 'Space planning & mood boards', 'Premium finishes curation', 'Turnkey project supervision']
@@ -63,6 +84,7 @@ export const SERVICES: ServiceMeta[] = [
     requestType: 'INTERIOR_DESIGN',
     requestTypeLabel: 'Decoration Request',
     image: 'https://picsum.photos/seed/adk-decor/900/600',
+    gallery: SERVICE_GALLERIES['decoration-styling'],
     startingPrice: 350_000,
     priceUnit: 'per engagement',
     features: ['Model home staging', 'Seasonal & event decoration', 'Soft furnishing selection', 'Art & accessory curation']
@@ -76,6 +98,7 @@ export const SERVICES: ServiceMeta[] = [
     requestType: 'PURCHASE',
     requestTypeLabel: 'Furnishing Purchase',
     image: 'https://picsum.photos/seed/adk-furnish/900/600',
+    gallery: SERVICE_GALLERIES['furnishing'],
     startingPrice: 2_000_000,
     priceUnit: 'per package',
     features: ['Imported & local furniture', 'Custom upholstery', 'Curtains, blinds & rugs', 'Appliance bundling options']
@@ -89,6 +112,7 @@ export const SERVICES: ServiceMeta[] = [
     requestType: 'SUPPLY_CONTRACT',
     requestTypeLabel: 'Tiles Supply Contract',
     image: 'https://picsum.photos/seed/adk-tiles/900/600',
+    gallery: SERVICE_GALLERIES['turkish-tiles-supply'],
     startingPrice: 12_000,
     priceUnit: 'per sqm',
     features: ['Direct from Turkey & Spain', 'Porcelain, ceramic & marble', 'Bulk project pricing', 'Container tracking & logistics']
@@ -102,6 +126,7 @@ export const SERVICES: ServiceMeta[] = [
     requestType: 'SUPPLY_CONTRACT',
     requestTypeLabel: 'Materials Supply Contract',
     image: 'https://picsum.photos/seed/adk-materials/900/600',
+    gallery: SERVICE_GALLERIES['building-materials-supply'],
     startingPrice: 0,
     priceUnit: 'bulk quoted',
     features: ['Dangote & BUA cement', 'Iron rods & roofing sheets', 'POP, paint & finishing supplies', 'Site delivery nationwide']
@@ -115,6 +140,7 @@ export const SERVICES: ServiceMeta[] = [
     requestType: 'SMART_HOME_INSTALL',
     requestTypeLabel: 'Smart Home Installation',
     image: 'https://picsum.photos/seed/adk-smart/900/600',
+    gallery: SERVICE_GALLERIES['smart-home-installation'],
     startingPrice: 3_500_000,
     priceUnit: 'per home',
     features: ['Lighting & blind automation', 'CCTV & smart access', 'Solar & inverter integration', 'Voice & app control setup']
@@ -128,6 +154,7 @@ export const SERVICES: ServiceMeta[] = [
     requestType: 'CONSTRUCTION_PROJECT',
     requestTypeLabel: 'Construction Project Brief',
     image: 'https://picsum.photos/seed/adk-build/900/600',
+    gallery: SERVICE_GALLERIES['construction-services'],
     startingPrice: 0,
     priceUnit: 'per BOQ',
     features: ['Residential & duplex builds', 'Commercial complexes', 'Recreational centers', 'Architectural & engineering teams']
@@ -141,9 +168,78 @@ export const SERVICES: ServiceMeta[] = [
     requestType: 'GENERAL_CONTRACT',
     requestTypeLabel: 'General Contract Proposal',
     image: 'https://picsum.photos/seed/adk-contract/900/600',
+    gallery: SERVICE_GALLERIES['general-contracts'],
     startingPrice: 0,
     priceUnit: 'negotiated',
     features: ['Procurement & logistics', 'Facility management', 'Renovation & fit-out works', 'Project management services']
+  },
+  {
+    slug: 'renovation-refurbishment',
+    name: 'Renovation & Refurbishing',
+    tagline: 'Full property renovation, upgrades & refurbishment',
+    category: 'CONSTRUCTION',
+    icon: 'hammer',
+    requestType: 'CONSTRUCTION_PROJECT',
+    requestTypeLabel: 'Renovation Brief',
+    image: 'https://picsum.photos/seed/adk-reno/900/600',
+    gallery: SERVICE_GALLERIES['renovation-refurbishment'],
+    startingPrice: 2_500_000,
+    priceUnit: 'per project',
+    features: ['Full & partial home renovation', 'Kitchen & bathroom refurbishment', 'Structural upgrades & repairs', 'Before/after project documentation']
+  },
+  {
+    slug: 'architectural-design',
+    name: 'Architectural Design',
+    tagline: 'Concept-to-construction architectural drawings',
+    category: 'ARCHITECTURE',
+    icon: 'drafting-compass',
+    requestType: 'ARCHITECTURAL_DESIGN',
+    requestTypeLabel: 'Architectural Design Brief',
+    image: 'https://picsum.photos/seed/adk-arch/900/600',
+    gallery: SERVICE_GALLERIES['architectural-design'],
+    startingPrice: 1_200_000,
+    priceUnit: 'per project',
+    features: ['Concept & schematic design', 'Working & approval drawings', '3D visualization & walkthroughs', 'Regulatory & planning liaison']
+  },
+  {
+    slug: 'space-planning',
+    name: 'Space Planning & Management',
+    tagline: 'Layout optimization for homes & office spaces',
+    category: 'ARCHITECTURE',
+    icon: 'layout-grid',
+    requestType: 'SPACE_PLANNING',
+    requestTypeLabel: 'Space Planning Brief',
+    image: 'https://picsum.photos/seed/adk-space/900/600',
+    gallery: SERVICE_GALLERIES['space-planning'],
+    startingPrice: 600_000,
+    priceUnit: 'per engagement',
+    features: ['Residential & office space audits', 'Floor plan & workflow optimization', 'Space utilization reports', 'Ongoing facility space management']
+  },
+  {
+    slug: 'property-development',
+    name: 'Property Development & Facility Management',
+    tagline: 'End-to-end development and facility oversight',
+    category: 'PROPERTY_SERVICES',
+    icon: 'building-2',
+    requestType: 'PROPERTY_DEVELOPMENT',
+    requestTypeLabel: 'Development Brief',
+    image: 'https://picsum.photos/seed/adk-propdev/900/600',
+    gallery: SERVICE_GALLERIES['property-development'],
+    priceUnit: 'negotiated',
+    features: ['Site feasibility & development planning', 'Developer & consultant partnerships', 'Facility & estate management', 'Maintenance & vendor coordination']
+  },
+  {
+    slug: 'land-real-estate-brokerage',
+    name: 'Land & Real Estate Brokerage',
+    tagline: 'Acquire, sell and broker land, buildings & property deals',
+    category: 'PROPERTY_SERVICES',
+    icon: 'landmark',
+    requestType: 'BROKERAGE_DEAL',
+    requestTypeLabel: 'Brokerage Deal Brief',
+    image: 'https://picsum.photos/seed/adk-brokerage/900/600',
+    gallery: SERVICE_GALLERIES['land-real-estate-brokerage'],
+    priceUnit: 'commission based',
+    features: ['Land acquisition & disposal', 'Building & real estate sales', 'Landed property deal structuring', 'Title verification & due diligence']
   }
 ];
 

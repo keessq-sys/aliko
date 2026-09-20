@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Twitter, Linkedin, Instagram, Youtube, Mail, MapPin, Phone, Lamp, Sofa, Grid3x3, HardHat, Cpu, Building } from 'lucide-svelte';
+  import { Twitter, Linkedin, Instagram, Youtube, Mail, MapPin, Phone, Lamp, Cpu, Building, Hammer, DraftingCompass, LayoutGrid, Building2, Landmark } from 'lucide-svelte';
 </script>
 
 <footer class="relative mt-24 border-t border-emerald-900/50 bg-stone-900 overflow-hidden">
@@ -25,10 +25,10 @@
           Nigeria's premier real estate, interior design and construction ecosystem. Verified titles, elite agents and turnkey building services.
         </p>
         <div class="flex items-center gap-4">
-          <a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all"><Twitter size={18} /></a>
-          <a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all"><Linkedin size={18} /></a>
-          <a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all"><Instagram size={18} /></a>
-          <a href="#" class="p-2 rounded-full bg-white/5 text-stone-400 hover:text-rose-400 hover:bg-rose-900/20 transition-all"><Youtube size={18} /></a>
+          <span class="p-2 rounded-full bg-white/5 text-stone-500" title="Social links coming soon"><Twitter size={18} /></span>
+          <span class="p-2 rounded-full bg-white/5 text-stone-500" title="Social links coming soon"><Linkedin size={18} /></span>
+          <span class="p-2 rounded-full bg-white/5 text-stone-500" title="Social links coming soon"><Instagram size={18} /></span>
+          <span class="p-2 rounded-full bg-white/5 text-stone-500" title="Social links coming soon"><Youtube size={18} /></span>
         </div>
       </div>
 
@@ -38,7 +38,7 @@
         <a href="/properties" class="text-sm text-stone-400 hover:text-white transition-colors">All Listings</a>
         <a href="/properties?type=residential" class="text-sm text-stone-400 hover:text-white transition-colors">Residential</a>
         <a href="/properties?type=commercial" class="text-sm text-stone-400 hover:text-white transition-colors">Commercial</a>
-        <a href="/properties?featured=true" class="text-sm text-stone-400 hover:text-emerald-400 transition-colors">Featured Estates</a>
+        <a href="/properties?type=land" class="text-sm text-stone-400 hover:text-white transition-colors">Land & Plots</a>
         <a href="/map" class="text-sm text-stone-400 hover:text-white transition-colors">Map Search</a>
       </div>
 
@@ -46,11 +46,13 @@
       <div class="flex flex-col gap-3">
         <h4 class="text-white font-serif text-lg mb-2">Services</h4>
         <a href="/services/interior-design" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><Lamp size={14} /> Interior Design</a>
-        <a href="/services/furnishing" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><Sofa size={14} class="text-amber-400/80" /> Furnishing</a>
-        <a href="/services/turkish-tiles-supply" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><Grid3x3 size={14} class="text-cyan-400/80" /> Turkish Tiles</a>
-        <a href="/services/building-materials-supply" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><HardHat size={14} class="text-amber-400/80" /> Building Materials</a>
+        <a href="/services/renovation-refurbishment" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><Hammer size={14} class="text-emerald-400/80" /> Renovation & Refurbishing</a>
+        <a href="/services/architectural-design" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><DraftingCompass size={14} class="text-sky-400/80" /> Architectural Design</a>
+        <a href="/services/space-planning" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><LayoutGrid size={14} class="text-sky-400/80" /> Space Planning</a>
         <a href="/services/smart-home-installation" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><Cpu size={14} class="text-purple-400/80" /> Smart Homes</a>
         <a href="/services/construction-services" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><Building size={14} class="text-emerald-400/80" /> Construction</a>
+        <a href="/services/property-development" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><Building2 size={14} class="text-yellow-400/80" /> Property & Facility Mgmt</a>
+        <a href="/services/land-real-estate-brokerage" class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"><Landmark size={14} class="text-yellow-400/80" /> Land & Real Estate Brokerage</a>
         <a href="/services" class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 mt-1">View all services →</a>
       </div>
 

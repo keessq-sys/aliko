@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Menu, X, Bell, User, LogOut, Settings, LayoutDashboard, Map as MapIcon, ChevronDown, ChevronRight, Lamp, Building, HardHat, Cpu, Grid3x3, Sofa, Sparkles, FileSignature } from 'lucide-svelte';
+  import { Menu, X, Bell, User, LogOut, Settings, LayoutDashboard, Map as MapIcon, ChevronDown, ChevronRight, Lamp, Building, HardHat, Cpu, Grid3x3, Sofa, Sparkles, FileSignature, Hammer, DraftingCompass, LayoutGrid, Building2, Landmark } from 'lucide-svelte';
   import { slide } from 'svelte/transition';
   import { page } from '$app/stores';
 
@@ -23,10 +23,15 @@
     { name: 'Interior Design', href: '/services/interior-design', icon: Lamp },
     { name: 'Decoration & Styling', href: '/services/decoration-styling', icon: Sparkles },
     { name: 'Furnishing', href: '/services/furnishing', icon: Sofa },
+    { name: 'Renovation & Refurbishing', href: '/services/renovation-refurbishment', icon: Hammer },
     { name: 'Turkish & Foreign Tiles', href: '/services/turkish-tiles-supply', icon: Grid3x3 },
     { name: 'Building Materials', href: '/services/building-materials-supply', icon: HardHat },
     { name: 'Smart Home Installation', href: '/services/smart-home-installation', icon: Cpu },
     { name: 'Construction', href: '/services/construction-services', icon: Building },
+    { name: 'Architectural Design', href: '/services/architectural-design', icon: DraftingCompass },
+    { name: 'Space Planning & Management', href: '/services/space-planning', icon: LayoutGrid },
+    { name: 'Property & Facility Management', href: '/services/property-development', icon: Building2 },
+    { name: 'Land & Real Estate Brokerage', href: '/services/land-real-estate-brokerage', icon: Landmark },
     { name: 'General Contracts', href: '/services/general-contracts', icon: FileSignature }
   ];
 
@@ -85,21 +90,23 @@
 
           {#if isServicesOpen}
             <div class="absolute right-0 top-full pt-3 z-50" transition:slide={{ duration: 180 }}>
-              <div class="w-72 rounded-2xl glass-l3 border border-white/10 shadow-2xl p-2">
+              <div class="w-[34rem] rounded-2xl glass-l3 border border-white/10 shadow-2xl p-3">
                 <a href="/services" class="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold uppercase tracking-wider text-emerald-400 hover:bg-white/5">
                   All Services <ChevronRight size={12} />
                 </a>
                 <div class="h-px bg-white/10 my-1"></div>
-                {#each serviceLinks as s}
-                  <a
-                    href={s.href}
-                    class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-stone-300 transition-colors hover:bg-white/5 hover:text-white"
-                    on:click={() => (isServicesOpen = false)}
-                  >
-                    <s.icon size={15} class="text-emerald-400/80" />
-                    {s.name}
-                  </a>
-                {/each}
+                <div class="grid grid-cols-2 gap-0.5">
+                  {#each serviceLinks as s}
+                    <a
+                      href={s.href}
+                      class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-stone-300 transition-colors hover:bg-white/5 hover:text-white"
+                      on:click={() => (isServicesOpen = false)}
+                    >
+                      <s.icon size={15} class="flex-shrink-0 text-emerald-400/80" />
+                      <span class="truncate">{s.name}</span>
+                    </a>
+                  {/each}
+                </div>
               </div>
             </div>
           {/if}

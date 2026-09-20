@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { query, mutation, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 function makeRef(prefix: string): string {
@@ -23,6 +23,10 @@ export const submitServiceRequest = mutation({
       v.literal("INTERIOR_DESIGN"),
       v.literal("CONSTRUCTION_PROJECT"),
       v.literal("GENERAL_CONTRACT"),
+      v.literal("ARCHITECTURAL_DESIGN"),
+      v.literal("SPACE_PLANNING"),
+      v.literal("PROPERTY_DEVELOPMENT"),
+      v.literal("BROKERAGE_DEAL"),
     ),
     location: v.optional(v.string()),
     projectBrief: v.string(),
@@ -166,6 +170,32 @@ export const reviewServiceRequest = mutation({
     if (status === "COMPLETED") patch.completedAt = now;
     await ctx.db.patch(id, patch);
     return id;
+  },
+});
+
+// ── Cron: nudge admin on service requests sitting unreviewed >48h ──────────
+export const flagStaleRequests = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const cutoff = Date.now() - 48 * 60 * 60 * 1000;
+    const stale = await ctx.db
+      .query("serviceRequests")
+      .withIndex("by_status", (q) => q.eq("status", "NEW"))
+      .collect();
+    const overdue = stale.filter((r) => r.createdAt < cutoff);
+    for (const r of overdue) {
+      await ctx.db.insert("notificationLog", {
+        channel: "EMAIL",
+        recipient: "admin",
+        subject: "Service request awaiting review",
+        message: `Request ${r.reference} (${r.serviceSlug}) from ${r.requesterName} has been unreviewed for over 48 hours.`,
+        status: "QUEUED",
+        relatedId: r._id,
+        relatedType: "serviceRequests",
+        createdAt: Date.now(),
+      });
+    }
+    return { flagged: overdue.length };
   },
 });
 

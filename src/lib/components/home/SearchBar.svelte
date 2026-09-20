@@ -1,14 +1,29 @@
 <script lang="ts">
   import { MapPin, Home, Banknote, Bed, Search } from 'lucide-svelte';
+  import { goto } from '$app/navigation';
 
   let location = 'All';
   let propertyType = 'All';
   let priceRange = 'Any';
   let bedrooms = 'Any';
 
+  const PRICE_BRACKETS: Record<string, { min?: number; max?: number }> = {
+    Under30M: { max: 30_000_000 },
+    Under50M: { max: 50_000_000 },
+    Under100M: { max: 100_000_000 },
+    Under200M: { max: 200_000_000 },
+    '500M+': { min: 500_000_000 }
+  };
+
   const handleSearch = () => {
-    // In a real app, this would navigate: goto(`/properties?loc=${location}&type=${propertyType}...`)
-    console.log('Searching:', { location, propertyType, priceRange, bedrooms });
+    const params = new URLSearchParams();
+    if (location !== 'All') params.set('q', location === 'PortHarcourt' ? 'Port Harcourt' : location);
+    if (propertyType !== 'All') params.set('type', propertyType);
+    if (bedrooms !== 'Any') params.set('bedrooms', bedrooms);
+    const bracket = PRICE_BRACKETS[priceRange];
+    if (bracket?.min) params.set('minPrice', String(bracket.min));
+    if (bracket?.max) params.set('maxPrice', String(bracket.max));
+    goto(`/properties${params.toString() ? `?${params.toString()}` : ''}`);
   };
 </script>
 
