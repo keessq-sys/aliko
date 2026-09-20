@@ -1,9 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { MapPin, CheckCircle2, TrendingUp, Search } from 'lucide-svelte';
+  import { MapPin, CheckCircle2, TrendingUp, Search, MessageCircle } from 'lucide-svelte';
   import SearchBar from './SearchBar.svelte';
   import { fade } from 'svelte/transition';
   import { HERO_IMAGES } from '$lib/data/imagery';
+  import { whatsappHref } from '$lib/data/contact';
 
   /**
    * Drop a real property walkthrough clip's URL here (mp4/webm, muted,
@@ -151,12 +152,15 @@
         </div>
 
         <div transition:fade={{duration: 800, delay: 500}} class="flex flex-wrap gap-4 mt-6">
-          <button class="px-8 py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-xl font-bold text-white shadow-[0_0_20px_rgba(5,150,105,0.4)] transition-all hover:scale-105">
+          <a href="/properties" class="px-8 py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-xl font-bold text-white shadow-[0_0_20px_rgba(5,150,105,0.4)] transition-all hover:scale-105">
             Browse Properties
-          </button>
-          <button class="px-8 py-4 glass-panel rounded-xl font-bold hover:bg-white/10 transition-all flex items-center gap-2">
+          </a>
+          <a href="/map" class="px-8 py-4 glass-panel rounded-xl font-bold hover:bg-white/10 transition-all flex items-center gap-2">
             <MapPin size={20} /> View on Map
-          </button>
+          </a>
+          <a href={whatsappHref("Hi, I'd like to speak with someone about a property.")} target="_blank" rel="noopener noreferrer" class="px-8 py-4 rounded-xl font-bold border border-[#25D366]/40 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-all flex items-center gap-2">
+            <MessageCircle size={20} /> Chat on WhatsApp
+          </a>
         </div>
 
         <div transition:fade={{duration: 800, delay: 600}} class="flex items-center gap-6 mt-8 text-sm text-gray-400 font-medium">

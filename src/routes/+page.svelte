@@ -15,6 +15,7 @@
   import ROICalculator from '$lib/components/home/ROICalculator.svelte';
   import FAQSection from '$lib/components/home/FAQSection.svelte';
   import DualCTABanner from '$lib/components/home/DualCTABanner.svelte';
+  import WhatsAppFloatButton from '$lib/components/ui/WhatsAppFloatButton.svelte';
 </script>
 
 <svelte:head>
@@ -39,4 +40,5 @@
   <ROICalculator />
   <FAQSection />
   <DualCTABanner />
+  <WhatsAppFloatButton message="Hi, I'd like to know more about properties and services on Aliko Diamond Key." />
 </main>
