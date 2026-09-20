@@ -3,6 +3,14 @@
   import { MapPin, CheckCircle2, TrendingUp, Search } from 'lucide-svelte';
   import SearchBar from './SearchBar.svelte';
   import { fade } from 'svelte/transition';
+  import { HERO_IMAGES } from '$lib/data/imagery';
+
+  /**
+   * Drop a real property walkthrough clip's URL here (mp4/webm, muted,
+   * looping, <15s) to switch the hero background from image to video —
+   * everything else (overlay, content, layout) stays the same.
+   */
+  export let heroVideoUrl: string | null = null;
 
   let mouseX = 0;
   let mouseY = 0;
@@ -32,10 +40,35 @@
 <style>
   .hero-bg {
     background-color: #050A0E;
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(5, 150, 105, 0.15) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(217, 119, 6, 0.1) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(5, 150, 105, 0.1) 0px, transparent 50%);
+  }
+
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero-media img,
+  .hero-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: kenburns 22s ease-in-out infinite alternate;
+  }
+
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(at 0% 0%, rgba(5, 150, 105, 0.2) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(217, 119, 6, 0.12) 0px, transparent 50%),
+      linear-gradient(to top, #050A0E 5%, rgba(5, 10, 14, 0.55) 55%, rgba(5, 10, 14, 0.75) 100%);
+  }
+
+  @keyframes kenburns {
+    0% { transform: scale(1) translate(0, 0); }
+    100% { transform: scale(1.12) translate(-1%, -1%); }
   }
 
   .grid-floor {
@@ -79,6 +112,14 @@
 </style>
 
 <section class="relative min-h-screen hero-bg flex items-center pt-24 pb-12 overflow-hidden text-white">
+  <div class="hero-media">
+    {#if heroVideoUrl}
+      <video src={heroVideoUrl} poster={HERO_IMAGES.posterForFutureVideo} autoplay muted loop playsinline></video>
+    {:else}
+      <img src={HERO_IMAGES.home} alt="Premium property skyline" />
+    {/if}
+  </div>
+  <div class="hero-scrim"></div>
   <div class="grid-floor"></div>
 
   <!-- Floating Orbs -->

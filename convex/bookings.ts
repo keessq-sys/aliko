@@ -225,3 +225,34 @@ export const getBookingInternal = query({
   handler: async (ctx, { bookingId }) => ctx.db.get(bookingId),
   // This query is called from actions via internal references
 });
+
+// ── Cron: remind clients with an installment due in the next 3 days ────────
+export const remindUpcomingPayments = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const now = Date.now();
+    const window = now + 3 * 24 * 60 * 60 * 1000;
+    const due = await ctx.db
+      .query("bookings")
+      .withIndex("by_status", (q) => q.eq("paymentStatus", "PARTIAL"))
+      .collect();
+    const upcoming = due.filter(
+      (b) => b.nextPaymentDate !== undefined && b.nextPaymentDate >= now && b.nextPaymentDate <= window
+    );
+    for (const b of upcoming) {
+      const client = await ctx.db.get(b.clientId);
+      if (!client) continue;
+      await ctx.db.insert("notificationLog", {
+        channel: "WHATSAPP",
+        recipient: client.phone ?? client.email,
+        subject: "Upcoming installment due",
+        message: `Reminder: your next installment of ${b.nextPaymentAmount ?? ""} for booking ${b.reference} is due on ${new Date(b.nextPaymentDate!).toDateString()}.`,
+        status: "QUEUED",
+        relatedId: b._id,
+        relatedType: "bookings",
+        createdAt: now,
+      });
+    }
+    return { reminded: upcoming.length };
+  },
+});

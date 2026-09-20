@@ -1,6 +1,7 @@
 <script lang="ts">
   import HeroSection from '$lib/components/home/HeroSection.svelte';
   import StatsStrip from '$lib/components/home/StatsStrip.svelte';
+  import SignatureDevelopments from '$lib/components/home/SignatureDevelopments.svelte';
   import FeaturedProperties from '$lib/components/home/FeaturedProperties.svelte';
   import PropertyTypes from '$lib/components/home/PropertyTypes.svelte';
   import HowItWorks from '$lib/components/home/HowItWorks.svelte';
@@ -21,6 +22,7 @@
 <main class="bg-[#050A0E] min-h-screen text-white selection:bg-emerald-500/30">
   <HeroSection />
   <StatsStrip />
+  <SignatureDevelopments />
   <FeaturedProperties />
   <PropertyTypes />
   <HowItWorks />

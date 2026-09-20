@@ -12,6 +12,7 @@
   import { SERVICES, SERVICE_CATEGORY_META, serviceBySlug } from '$lib/types/services';
   import { formatNaira } from '$lib/utils/format';
   import ServiceRequestForm from '$lib/components/services/ServiceRequestForm.svelte';
+  import ImageGallery from '$lib/components/services/ImageGallery.svelte';
 
   export let data: { params?: { slug?: string } } = {};
 
@@ -81,6 +82,10 @@
               <p class="text-xs text-stone-400">Nationwide delivery & site coverage across Nigeria</p>
             </div>
           </div>
+
+          {#if service.gallery?.length}
+            <ImageGallery images={service.gallery} title="{service.name} Gallery" />
+          {/if}
 
           {#if related.length}
             <div>
