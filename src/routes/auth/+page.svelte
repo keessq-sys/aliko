@@ -1,12 +1,14 @@
 <script lang="ts">
   import { Shield, CheckCircle, Award } from 'lucide-svelte';
   import { fade } from 'svelte/transition';
+  import { page } from '$app/stores';
   import LoginForm from '$lib/components/auth/LoginForm.svelte';
   import ClientSignup from '$lib/components/auth/ClientSignup.svelte';
   import AgentSignup from '$lib/components/auth/AgentSignup.svelte';
   import ManagerSignup from '$lib/components/auth/ManagerSignup.svelte';
 
-  let activeTab: 'signin' | 'signup' = 'signin';
+  const tabParam = $page.url.searchParams.get('tab');
+  let activeTab: 'signin' | 'signup' = tabParam === 'signup' ? 'signup' : 'signin';
   let activeRole: 'client' | 'agent' | 'manager' = 'client';
 </script>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { useQuery, runMutation } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
-  import { Layers, Power, PowerOff } from "lucide-svelte";
+  import { Layers, Power, PowerOff, DatabaseZap, Loader2 } from "lucide-svelte";
   import { formatNaira } from "$lib/utils/format";
   import { SERVICES, SERVICE_CATEGORY_META } from "$lib/types/services";
 
@@ -24,15 +24,67 @@
   function toggle(row: (typeof rows)[number]) {
     if (!row.isLocal) setActive({ id: row.id, isActive: !row.isActive });
   }
+
+  let seeding = false;
+  let seedError = "";
+  let seedDone = false;
+
+  async function seedCatalog() {
+    seeding = true;
+    seedError = "";
+    try {
+      for (let i = 0; i < SERVICES.length; i++) {
+        const s = SERVICES[i];
+        await runMutation(api.services.upsertService, {
+          slug: s.slug,
+          name: s.name,
+          tagline: s.tagline,
+          description: s.tagline,
+          category: s.category,
+          heroImage: s.image,
+          features: s.features,
+          startingPrice: s.startingPrice,
+          priceUnit: s.priceUnit,
+          isActive: true,
+          isFeatured: i < 4,
+          sortOrder: i,
+        });
+      }
+      seedDone = true;
+    } catch (err: any) {
+      seedError = err?.message ?? "Seeding failed.";
+    } finally {
+      seeding = false;
+    }
+  }
 </script>
 
 <svelte:head><title>Services Catalog — ADK Admin</title></svelte:head>
 
 <div class="p-8">
-  <div class="mb-6">
-    <h1 class="flex items-center gap-2 text-xl font-bold text-white"><Layers class="h-5 w-5 text-emerald-400" /> Services Catalog</h1>
-    <p class="mt-0.5 text-sm text-stone-500">Manage the enterprise service divisions offered across the platform.</p>
+  <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="flex items-center gap-2 text-xl font-bold text-white"><Layers class="h-5 w-5 text-emerald-400" /> Services Catalog</h1>
+      <p class="mt-0.5 text-sm text-stone-500">Manage the enterprise service divisions offered across the platform.</p>
+    </div>
+    {#if $catalog && $catalog.length === 0}
+      <button
+        on:click={seedCatalog}
+        disabled={seeding}
+        class="flex-shrink-0 inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-sm font-medium text-emerald-300 transition-colors hover:bg-emerald-500/20 disabled:opacity-50"
+      >
+        {#if seeding}<Loader2 size={15} class="animate-spin" />{:else}<DatabaseZap size={15} />{/if}
+        {seeding ? 'Seeding…' : `Seed ${SERVICES.length} services to database`}
+      </button>
+    {/if}
   </div>
+
+  {#if seedError}
+    <p class="mb-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300">{seedError}</p>
+  {/if}
+  {#if seedDone}
+    <p class="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-300">Catalog seeded — reload to see live database entries.</p>
+  {/if}
 
   {#if $catalog === undefined}
     <p class="text-sm text-stone-500">Loading catalog from database… (static fallback shown below once resolved)</p>

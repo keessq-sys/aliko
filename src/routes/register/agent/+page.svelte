@@ -243,7 +243,7 @@
                 <div>
                   <label class="block text-sm text-gray-400 mb-1 flex justify-between">
                     <span>REAN Membership Number</span>
-                    <a href="#" class="text-amber-500 text-xs hover:underline">Join REAN &rarr;</a>
+                    <span class="text-stone-500 text-xs" title="Real Estate Agents Network — membership optional">Optional</span>
                   </label>
                   <input type="text" bind:value={formData.reanNumber} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500" placeholder="Optional" />
                 </div>
