@@ -16,6 +16,7 @@
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'Properties', href: '/properties' },
+    { name: 'Land Plots', href: '/plots' },
     { name: 'Agents', href: '/agents' },
     { name: 'Map View', href: '/map' }
   ];

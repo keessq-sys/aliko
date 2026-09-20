@@ -37,7 +37,7 @@
         <a href="/properties" class="text-sm text-stone-400 hover:text-white transition-colors">All Listings</a>
         <a href="/properties?type=residential" class="text-sm text-stone-400 hover:text-white transition-colors">Residential</a>
         <a href="/properties?type=commercial" class="text-sm text-stone-400 hover:text-white transition-colors">Commercial</a>
-        <a href="/properties?type=land" class="text-sm text-stone-400 hover:text-white transition-colors">Land & Plots</a>
+        <a href="/plots" class="text-sm text-stone-400 hover:text-white transition-colors">Land & Plots (Live Registry)</a>
         <a href="/map" class="text-sm text-stone-400 hover:text-white transition-colors">Map Search</a>
       </div>
 
