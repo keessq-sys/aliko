@@ -3,6 +3,9 @@
   import { goto } from '$app/navigation';
   import { api } from '$lib/convex/_generated/api';
   import { runMutation } from '$lib/convex/queries';
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher<{ forgotPassword: void }>();
 
   let email = '';
   let password = '';
@@ -139,7 +142,7 @@
       <label for="remember-me" class="ml-2 block text-sm text-gray-300">Remember me</label>
     </div>
     <div class="text-sm">
-      <a href="/auth?tab=signin" class="font-medium text-emerald-400 hover:text-emerald-300">Forgot password?</a>
+      <button type="button" on:click={() => dispatch('forgotPassword')} class="font-medium text-emerald-400 hover:text-emerald-300">Forgot password?</button>
     </div>
   </div>
 

@@ -3,12 +3,13 @@
   import { fade } from 'svelte/transition';
   import { page } from '$app/stores';
   import LoginForm from '$lib/components/auth/LoginForm.svelte';
+  import ForgotPasswordForm from '$lib/components/auth/ForgotPasswordForm.svelte';
   import ClientSignup from '$lib/components/auth/ClientSignup.svelte';
   import AgentSignup from '$lib/components/auth/AgentSignup.svelte';
   import ManagerSignup from '$lib/components/auth/ManagerSignup.svelte';
 
   const tabParam = $page.url.searchParams.get('tab');
-  let activeTab: 'signin' | 'signup' = tabParam === 'signup' ? 'signup' : 'signin';
+  let activeTab: 'signin' | 'signup' | 'reset' = tabParam === 'signup' ? 'signup' : 'signin';
   let activeRole: 'client' | 'agent' | 'manager' = 'client';
 </script>
 
@@ -78,7 +79,11 @@
       <div class="relative min-h-[400px]">
         {#if activeTab === 'signin'}
           <div in:fade={{ duration: 200 }}>
-            <LoginForm />
+            <LoginForm on:forgotPassword={() => (activeTab = 'reset')} />
+          </div>
+        {:else if activeTab === 'reset'}
+          <div in:fade={{ duration: 200 }}>
+            <ForgotPasswordForm on:backToSignIn={() => (activeTab = 'signin')} />
           </div>
         {:else}
           <div in:fade={{ duration: 200 }} class="flex flex-col space-y-6">
