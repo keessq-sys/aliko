@@ -1,12 +1,48 @@
 <script lang="ts">
-  import { Heart, Calendar, FileText, MessageSquare, User, MapPin, Bed, Bath, Download, CalendarPlus, X, Inbox, ArrowRight } from 'lucide-svelte';
-  import { useQuery } from '$lib/convex/queries';
+  import { Heart, Calendar, FileText, MessageSquare, User, MapPin, Bed, Bath, Download, CalendarPlus, X, Inbox, ArrowRight, Landmark, Loader2, CreditCard } from 'lucide-svelte';
+  import { useQuery, runAction } from '$lib/convex/queries';
   import { api } from '$lib/convex/_generated/api';
   import { formatNaira } from '$lib/utils/format';
   import { REQUEST_STATUS_META } from '$lib/types/services';
   import { fly } from 'svelte/transition';
+  import { page } from '$app/stores';
 
-  let currentTab = 'requests';
+  let currentTab = 'bookings';
+
+  const myBookings = useQuery(api.bookings.getMyBookings, {});
+
+  const BOOKING_STATUS_META: Record<string, string> = {
+    PENDING: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
+    PARTIAL: 'text-blue-300 bg-blue-500/10 border-blue-500/30',
+    SUCCESS: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30',
+    FAILED: 'text-rose-400 bg-rose-500/10 border-rose-500/30',
+    REFUNDED: 'text-stone-400 bg-stone-500/10 border-stone-500/30'
+  };
+
+  let payingId: string | null = null;
+  let payError = '';
+
+  async function payNow(bookingId: string, reference: string) {
+    const email = $page.data?.session?.user?.email;
+    if (!email) {
+      payError = 'Please sign in again — your account has no email on file.';
+      return;
+    }
+    payingId = bookingId;
+    payError = '';
+    try {
+      const callbackUrl = `${window.location.origin}/plots/payment-callback?reference=${encodeURIComponent(reference)}`;
+      const checkout = await runAction(api.bookings.initializePaystackPayment, {
+        bookingId: bookingId as any,
+        email,
+        callbackUrl
+      });
+      window.location.href = checkout.authorization_url;
+    } catch (err) {
+      payError = (err as Error).message ?? 'Could not start payment. Please try again.';
+      payingId = null;
+    }
+  }
 
   const SAVED_PROPERTIES = [
     { id: 'p1', title: 'Maitama Luxury Villa', price: 850000000, beds: 5, baths: 6, location: 'Maitama, Abuja', image: 'https://picsum.photos/seed/prop1/400/300', date: '2 days ago' },
@@ -23,6 +59,7 @@
   ];
 
   const tabs = [
+    { id: 'bookings', label: 'My Bookings', icon: Landmark },
     { id: 'requests', label: 'My Requests', icon: Inbox },
     { id: 'saved', label: 'Saved', icon: Heart },
     { id: 'viewings', label: 'Viewings', icon: Calendar },
@@ -80,7 +117,77 @@
 
     {#key currentTab}
     <div in:fly={{ y: 10, duration: 220, delay: 80 }}>
-    {#if currentTab === 'requests'}
+    {#if currentTab === 'bookings'}
+      <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-xl font-semibold text-white">My Bookings</h2>
+        <a href="/plots" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-500">
+          Browse Plots <ArrowRight class="h-4 w-4" />
+        </a>
+      </div>
+
+      {#if payError}
+        <p class="mb-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300">{payError}</p>
+      {/if}
+
+      {#if $myBookings === undefined}
+        <div class="grid grid-cols-1 gap-4">
+          {#each Array(2) as _}
+            <div class="skeleton h-24 rounded-xl"></div>
+          {/each}
+        </div>
+      {:else if $myBookings.length === 0}
+        <div class="flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/[0.02] py-16 text-center">
+          <Landmark class="mb-3 h-12 w-12 text-stone-700" />
+          <p class="mb-1 font-medium text-white">No plot bookings yet</p>
+          <p class="mb-6 max-w-sm text-sm text-stone-400">Reserve a verified land plot and track your payment status here.</p>
+          <a href="/plots" class="btn-primary px-6 py-2.5 text-sm">Browse Plots</a>
+        </div>
+      {:else}
+        <div class="space-y-4">
+          {#each $myBookings as b (b._id)}
+            <div class="rounded-xl border border-white/5 bg-white/[0.02] p-5">
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div class="flex items-center gap-3">
+                    <h3 class="font-semibold text-white">{b.plot?.beaconNumber ?? 'Plot'}</h3>
+                    <span class="rounded-full border px-2.5 py-0.5 text-[11px] font-bold {BOOKING_STATUS_META[b.paymentStatus] ?? ''}">
+                      {b.paymentStatus}
+                    </span>
+                  </div>
+                  <p class="mt-0.5 font-mono text-xs text-stone-600">{b.reference} · {b.project?.name ?? ''}</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[10px] uppercase tracking-wider text-stone-600">Paid / Total</p>
+                  <p class="font-bold text-amber-400">{formatNaira(b.paidAmount)} <span class="text-xs text-stone-500">/ {formatNaira(b.totalAmount)}</span></p>
+                </div>
+              </div>
+              {#if b.paymentStatus === 'PENDING'}
+                <!-- initializePaystackPayment always charges the full totalAmount,
+                     so a retry is only safe here (paidAmount is 0) — never for
+                     PARTIAL, where re-charging the full amount would overcharge. -->
+                <button
+                  type="button"
+                  disabled={payingId === b._id}
+                  on:click={() => payNow(b._id, b.reference)}
+                  class="mt-3 inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/20 disabled:opacity-50"
+                >
+                  {#if payingId === b._id}<Loader2 size={13} class="animate-spin" />{:else}<CreditCard size={13} />{/if} Pay Now
+                </button>
+              {:else if b.paymentStatus === 'PARTIAL'}
+                <a
+                  href={`/plots/payment-callback?reference=${b.reference}`}
+                  class="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:underline"
+                >
+                  View payment status <ArrowRight class="h-3 w-3" />
+                </a>
+                <p class="mt-1 text-[11px] text-stone-600">Remaining-balance payment is arranged with your agent for installment plans.</p>
+              {/if}
+            </div>
+          {/each}
+        </div>
+      {/if}
+
+    {:else if currentTab === 'requests'}
       <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h2 class="text-xl font-semibold text-white">My Service Requests</h2>
         <a href="/services" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-500">
