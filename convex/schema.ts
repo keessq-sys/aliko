@@ -324,6 +324,7 @@ export default defineSchema({
   enquiries: defineTable({
     plotId: v.optional(v.id("plots")),
     projectId: v.optional(v.id("projects")),
+    propertyId: v.optional(v.id("properties")),
     name: v.string(),
     email: v.string(),
     phone: v.string(),
@@ -343,7 +344,55 @@ export default defineSchema({
   })
     .index("by_status", ["status"])
     .index("by_agent", ["assignedAgentId"])
-    .index("by_date", ["createdAt"]),
+    .index("by_date", ["createdAt"])
+    .index("by_property", ["propertyId"]),
+
+  // ── Built-unit Property Listings ─────────────────────────────────────────
+  // Finished/for-sale structures (houses, apartments, duplexes, penthouses,
+  // commercial units) — distinct from `plots`, which are raw land parcels
+  // sold inside a `projects` estate with their own title/booking pipeline.
+  // Properties are browse-and-inquire (see `enquiries.propertyId`), not
+  // booked/paid through this table; that would require its own deposit,
+  // installment-schedule and payment design before it could be automated.
+  properties: defineTable({
+    slug: v.string(),
+    title: v.string(),
+    type: v.union(
+      v.literal("RESIDENTIAL"),
+      v.literal("APARTMENT"),
+      v.literal("DUPLEX"),
+      v.literal("PENTHOUSE"),
+      v.literal("COMMERCIAL"),
+      v.literal("LAND"),
+    ),
+    description: v.string(),
+    price: v.number(),
+    location: v.string(),
+    state: v.string(),
+    bedrooms: v.optional(v.number()),
+    bathrooms: v.optional(v.number()),
+    parkingSpots: v.optional(v.number()),
+    sizeSqm: v.optional(v.number()),
+    yearBuilt: v.optional(v.number()),
+    amenities: v.array(v.string()),
+    images: v.array(v.string()),
+    status: v.union(
+      v.literal("AVAILABLE"),
+      v.literal("RESERVED"),
+      v.literal("SOLD"),
+    ),
+    isFeatured: v.boolean(),
+    isActive: v.boolean(),
+    agentId: v.optional(v.id("users")),
+    latitude: v.optional(v.number()),
+    longitude: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_active", ["isActive"])
+    .index("by_featured", ["isFeatured"])
+    .index("by_type", ["type"]),
 
   // ── Enterprise Services Catalog ──────────────────────────────────────────
   // Interior design & decoration, furnishing, foreign/Turkish tiles supply,

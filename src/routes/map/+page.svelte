@@ -1,7 +1,12 @@
 <script lang="ts">
-  import { properties as allPropertiesStore } from '$lib/stores/properties';
+  import { useQuery } from '$lib/convex/queries';
+  import { api } from '$lib/convex/_generated/api';
+  import { toDisplayProperty } from '$lib/utils/propertyAdapter';
   import PropertyMapView from '$lib/components/properties/PropertyMapView.svelte';
   import { ChevronRight, ArrowLeft } from 'lucide-svelte';
+
+  const liveProperties = useQuery(api.properties.listProperties, { activeOnly: true, limit: 200 });
+  $: mapProperties = ($liveProperties ?? []).map(toDisplayProperty);
 
   let selectedId: string | null = null;
 </script>
@@ -22,12 +27,12 @@
       <h1 class="text-base sm:text-lg font-serif font-bold text-white">Interactive Property Map</h1>
     </div>
     <div class="text-xs text-stone-400">
-      <span class="text-emerald-400 font-semibold">{$allPropertiesStore.length}</span> properties on map
+      <span class="text-emerald-400 font-semibold">{mapProperties.length}</span> properties on map
     </div>
   </div>
 
   <!-- Full Height Map View -->
   <div class="p-4 sm:p-6 max-w-[1600px] mx-auto h-[calc(100vh-140px)]">
-    <PropertyMapView properties={$allPropertiesStore} bind:selectedId />
+    <PropertyMapView properties={mapProperties} bind:selectedId />
   </div>
 </div>

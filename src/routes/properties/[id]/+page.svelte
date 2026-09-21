@@ -1,6 +1,9 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { properties as allPropertiesStore, type Property } from '$lib/stores/properties';
+  import type { Property } from '$lib/stores/properties';
+  import { useQuery, runMutation } from '$lib/convex/queries';
+  import { api } from '$lib/convex/_generated/api';
+  import { toDisplayProperty } from '$lib/utils/propertyAdapter';
   import PropertyGallery from '$lib/components/properties/PropertyGallery.svelte';
   import PropertyCard from '$lib/components/properties/PropertyCard.svelte';
   import MapEmbed from '$lib/components/ui/MapEmbed.svelte';
@@ -29,8 +32,13 @@
   } from 'lucide-svelte';
 
   $: propertyId = $page.params.id;
-  $: property = $allPropertiesStore.find((p) => p.id === propertyId);
-  $: similarProperties = $allPropertiesStore.filter((p) => p.id !== propertyId && (p.type === property?.type || p.location.state === property?.location.state)).slice(0, 3);
+  $: liveProperty = useQuery(api.properties.getProperty, { slug: propertyId });
+  $: property = $liveProperty ? toDisplayProperty($liveProperty) : $liveProperty === null ? null : undefined;
+  $: liveCatalog = useQuery(api.properties.listProperties, { activeOnly: true, limit: 200 });
+  $: similarProperties = ($liveCatalog ?? [])
+    .map(toDisplayProperty)
+    .filter((p: Property) => p.id !== propertyId && (p.type === property?.type || p.location.state === property?.location.state))
+    .slice(0, 3);
 
   let isSaved = false;
   let inquiryName = '';
@@ -60,26 +68,38 @@
     }
   }
 
-  function submitInquiry(e: Event) {
+  async function submitInquiry(e: Event) {
     e.preventDefault();
-    if (!inquiryName || !inquiryEmail) {
+    if (!inquiryName || !inquiryEmail || !inquiryPhone) {
       addToast({
         type: 'error',
-        message: 'Please provide your name and email address.'
+        message: 'Please provide your name, email and phone number.'
       });
       return;
     }
+    if (!$liveProperty?._id) return;
     isSendingInquiry = true;
-    setTimeout(() => {
-      isSendingInquiry = false;
+    try {
+      await runMutation(api.enquiries.submitEnquiry, {
+        propertyId: $liveProperty._id,
+        name: inquiryName,
+        email: inquiryEmail,
+        phone: inquiryPhone,
+        message: inquiryMessage,
+        source: 'website'
+      } as any);
       addToast({
         type: 'success',
-        message: `Inquiry sent to ${property?.agent.name}! They will contact you shortly.`
+        message: `Inquiry sent! Our team will contact you shortly about ${property?.title}.`
       });
       inquiryName = '';
       inquiryEmail = '';
       inquiryPhone = '';
-    }, 800);
+    } catch (err) {
+      addToast({ type: 'error', message: (err as Error).message ?? 'Could not send inquiry. Please try again.' });
+    } finally {
+      isSendingInquiry = false;
+    }
   }
 
   function scheduleViewing() {
@@ -103,7 +123,11 @@
 </svelte:head>
 
 <div class="min-h-screen bg-[#050A0E] text-white pb-20">
-  {#if !property}
+  {#if property === undefined}
+    <div class="flex min-h-[60vh] items-center justify-center">
+      <div class="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent"></div>
+    </div>
+  {:else if !property}
     <!-- Not Found State -->
     <div class="max-w-4xl mx-auto px-4 py-28 text-center">
       <div class="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 mx-auto mb-6">
@@ -480,6 +504,7 @@
                   type="tel"
                   bind:value={inquiryPhone}
                   placeholder="Phone Number (+234)"
+                  required
                   class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>

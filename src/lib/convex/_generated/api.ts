@@ -38,6 +38,12 @@ const bookings = {
 
 const http = {};
 
+const enquiries = {
+  submitEnquiry: m("enquiries:submitEnquiry"),
+  listEnquiries: q("enquiries:listEnquiries"),
+  updateEnquiryStatus: m("enquiries:updateEnquiryStatus"),
+};
+
 const legalDocuments = {
   getDocumentByReference: q("legalDocuments:getDocumentByReference"),
   getMyDocuments: q("legalDocuments:getMyDocuments"),
@@ -75,6 +81,14 @@ const plots = {
   updatePlotStatus: m("plots:updatePlotStatus"),
   updatePlotPrice: m("plots:updatePlotPrice"),
   generateUploadUrl: m("plots:generateUploadUrl"),
+};
+
+const properties = {
+  listProperties: q("properties:listProperties"),
+  getProperty: q("properties:getProperty"),
+  createProperty: m("properties:createProperty"),
+  updateProperty: m("properties:updateProperty"),
+  upsertProperty: m("properties:upsertProperty"),
 };
 
 const projects = {
@@ -128,12 +142,14 @@ const whatsapp = {
 export const api: {
   auth: typeof auth;
   bookings: typeof bookings;
+  enquiries: typeof enquiries;
   http: typeof http;
   legalDocuments: typeof legalDocuments;
   milestones: typeof milestones;
   notifications: typeof notifications;
   partners: typeof partners;
   plots: typeof plots;
+  properties: typeof properties;
   projects: typeof projects;
   serviceRequests: typeof serviceRequests;
   services: typeof services;
@@ -143,12 +159,14 @@ export const api: {
 } = {
   auth,
   bookings,
+  enquiries,
   http,
   legalDocuments,
   milestones,
   notifications,
   partners,
   plots,
+  properties,
   projects,
   serviceRequests,
   services,
