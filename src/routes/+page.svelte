@@ -16,14 +16,24 @@
   import FAQSection from '$lib/components/home/FAQSection.svelte';
   import DualCTABanner from '$lib/components/home/DualCTABanner.svelte';
   import WhatsAppFloatButton from '$lib/components/ui/WhatsAppFloatButton.svelte';
+  import SEO from '$lib/components/SEO.svelte';
+
+  export let data: import('./$types').PageData;
 </script>
 
-<svelte:head>
-  <title>Aliko Diamond Key — Nigeria's Premier Real Estate Platform</title>
-  <meta name="description" content="Discover ultra-premium homes, land, and commercial spaces across Nigeria with our government-verified, zero-fraud guarantee." />
-</svelte:head>
+<SEO seo={data.seo} />
 
 <main class="bg-[#050A0E] min-h-screen text-white selection:bg-emerald-500/30">
+  <!-- Answer-first TL;DR: a direct, self-contained answer to "what is Aliko
+       Diamond Key" above the fold, ahead of the animated hero, so an AI
+       crawler or reader gets the core claim in the first paragraph of HTML. -->
+  <p class="sr-only">
+    Aliko Diamond Key Realtors Ltd is a government-verified real estate, land and
+    property-services marketplace operating in Abuja FCT and Lagos, Nigeria. Every
+    listing is title-checked against CAC, AGIS and State Ministry of Lands records
+    before publication, and clients can bundle a purchase with interior design,
+    construction, smart-home installation or facility management from the same platform.
+  </p>
   <HeroSection />
   <StatsStrip />
   <SignatureDevelopments />

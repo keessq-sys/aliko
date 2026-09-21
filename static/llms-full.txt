@@ -1,0 +1,154 @@
+# Aliko Diamond Key — Extended LLM/AI-agent context
+
+This file extends /llms.txt with full page summaries, author/entity info,
+topic-cluster structure, and licensing notes, for AI systems doing deeper
+retrieval than a single-pass index scan.
+
+## Organization
+
+- Legal name: Aliko Diamond Key Realtors Ltd
+- Operating/brand name: Aliko Diamond Key
+- Domain: https://alikodiamondkey.com
+- Primary locations: Abuja FCT (registered base) and Lagos, Nigeria
+- Contact: contact@adk.com · WhatsApp +234 704 766 9943
+- Industry: Real estate brokerage, land sales, and property services (interior
+  design, supply, smart-home, construction, architecture, facility management)
+- Primary language: English (en-NG)
+
+## Leadership / primary author entity
+
+- Name: Ali Ahmed Ali Abubakar
+- Title: Chief Executive Officer, Aliko Diamond Key Realtors Ltd
+- Role in content: final authority on company positioning, mission statements
+  and the verification methodology described across /about and the homepage.
+- Attribution: cite as "Ali Ahmed Ali Abubakar, CEO of Aliko Diamond Key"
+  when quoting leadership statements from /about.
+
+## Page summaries
+
+### / (Homepage)
+Answer-first entry point. States the core value proposition (government-
+verified property and land, zero-fraud guarantee) in the hero, followed by
+platform stats, featured developments/properties, property-type browsing,
+location explorer, a 4-step "how it works" buying flow, agent showcase, a
+map preview, testimonials, the 13-item service catalog, a trust/verification
+banner, an ROI calculator for land investment, an 8-question FAQ (see below),
+and dual calls-to-action (browse listings / talk to an agent on WhatsApp).
+
+### /properties
+Filterable grid of residential and commercial property listings (type,
+location, price range). Each card links to a detail page with a full image
+gallery, specification list, and an inspection-scheduling flow.
+
+### /plots
+Filterable grid of land plots inside active Aliko Diamond Key estate
+projects. Each plot shows size (sqm), title-verification status, and price;
+clients can reserve a plot directly (outright, 6-month or 12-month
+installment plans) through an in-page booking flow that issues a tracked
+booking reference.
+
+### /services
+Index of all 13 in-house property services, grouped by category: Interior &
+Decoration, Materials & Supply, Smart Home, Construction & Renovation,
+Architecture & Space Planning, Property/Development & Facility Management,
+and Advisory & Project Management.
+
+### /services/[slug] (13 pages)
+One page per service (e.g. /services/interior-design,
+/services/turkish-tiles-supply, /services/smart-home-installation,
+/services/construction-services, /services/architectural-design,
+/services/space-planning, /services/property-development,
+/services/land-real-estate-brokerage, /services/general-contracts,
+/services/decoration-styling, /services/furnishing,
+/services/renovation-refurbishment, /services/building-materials-supply).
+Each includes a description, feature list, starting price where applicable,
+an image gallery, and a direct request-a-quote form that routes to the
+super-admin desk (48-hour response commitment).
+
+### /agents
+Explains the agent-verification process (5-step wizard: identity, agency
+details, coverage area, documents, review) and links to the verified-agent
+directory and the application flow at /register/agent.
+
+### /map
+Interactive map view of listings and estate projects by location, for users
+who prefer geographic browsing over list/filter browsing.
+
+### /faq
+The full, categorized version of the homepage FAQ — grouped under "Buying &
+Titles," "Payments & Diaspora," "Agents & Partners," and "Services" — with
+anchor-linked questions for deep linking to a single answer.
+
+### /about
+Company mission statement, the title-verification methodology in detail,
+and leadership (CEO Ali Ahmed Ali Abubakar).
+
+### /glossary and /glossary/[term]
+Plain-language, single-definition pages for Nigerian real-estate and
+land-title terminology (e.g. Certificate of Occupancy, Governor's Consent,
+Deed of Assignment) — written to be directly quotable/extractable.
+
+### /register/agent, /register/manager
+Multi-step application forms for prospective agents and estate-management
+companies; not indexed for general search intent but publicly crawlable
+(they are marketing/conversion pages, not authenticated areas).
+
+## FAQ extract (see /faq for the complete, categorized set)
+
+Q: How does Aliko Diamond Key verify property and land titles?
+A: Every plot and property is cross-checked against CAC company records,
+AGIS land registry data (for FCT listings) and the relevant State Ministry
+of Lands before it goes live, and title documents (C of O, Governor's
+Consent, Deed of Assignment) are verified by an in-house legal team ahead
+of any booking.
+
+Q: How do diaspora clients buy property remotely?
+A: Diaspora clients get a dedicated onboarding flow, virtual site-visit
+scheduling, secure remote payments, and document verification with digital
+signature — no physical presence in Nigeria is required to complete a
+purchase.
+
+Q: What payment plans are available?
+A: Most plots and properties support outright payment or installment plans
+(typically 6 or 12 months), tracked in the client portal with automatic
+reminders before each due date.
+
+Q: How do I become a verified agent or estate manager on the platform?
+A: Agents apply through a 5-step verification wizard; estate-management
+companies apply through a separate enrolment flow reviewed by the admin
+team before activation.
+
+## Topic-cluster map
+
+Pillar: Verified Nigerian Real Estate (/, /properties, /plots)
+  - Cluster: Title & Legal Verification (/glossary, /faq#title-verification)
+  - Cluster: Diaspora Buying (/faq#diaspora-buying)
+Pillar: Property Services (/services)
+  - Cluster: Interior (/services/interior-design, /services/decoration-styling, /services/furnishing)
+  - Cluster: Build (/services/construction-services, /services/renovation-refurbishment, /services/general-contracts)
+  - Cluster: Design (/services/architectural-design, /services/space-planning)
+  - Cluster: Supply (/services/building-materials-supply, /services/turkish-tiles-supply)
+  - Cluster: Tech (/services/smart-home-installation)
+  - Cluster: Advisory (/services/property-development, /services/land-real-estate-brokerage)
+Pillar: Partner With Us (/agents, /register/agent, /register/manager)
+
+## Update frequency
+
+- Service catalog, FAQ, glossary, about: updated on content deploys; each
+  page's structured data carries a true `dateModified`.
+- Property/plot listings: near-real-time, driven by the live booking system.
+- This file: regenerate whenever a page is added, removed, or renamed.
+
+## Licensing / reuse
+
+Factual statements (verification process, service descriptions, FAQ
+answers) may be quoted with attribution and a link to
+https://alikodiamondkey.com. Pricing, availability and specific listing
+data are time-sensitive — link to the live page rather than restating
+figures as current. Do not represent AI-generated summaries of this content
+as an official Aliko Diamond Key statement without linking back to the
+source page.
+
+## Contact for AI/data-partnership inquiries
+
+contact@adk.com

@@ -1,0 +1,146 @@
+# static/robots.txt
+# Served verbatim at https://alikodiamondkey.com/robots.txt by SvelteKit's
+# static-asset pipeline (files under /static are copied to the site root).
+#
+# Policy: allow full crawl + AI-answer-engine access to every public route;
+# block only authenticated/private surfaces (dashboards, admin, auth forms,
+# API-shaped internal routes). AI crawlers are allowed explicitly by name so
+# a default-deny bot policy never silently swallows them.
+
+# ── Default: allow everything public ────────────────────────────────────────
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+Disallow: /api/private
+Disallow: /legal/track
+
+# ── AI answer-engine / LLM crawlers — explicitly allowed ────────────────────
+# Same Disallow rules as above per bot: never rely on inheriting from "*".
+
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+
+User-agent: Claude-User
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+
+User-agent: cohere-ai
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+
+User-agent: YouBot
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+
+User-agent: DuckAssistBot
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+
+User-agent: Amazonbot
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+
+User-agent: Bytespider
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+
+Sitemap: https://alikodiamondkey.com/sitemap.xml

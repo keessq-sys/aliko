@@ -1,0 +1,45 @@
+# Aliko Diamond Key
+
+> Nigeria's government-verified real estate, land and property-services marketplace. Aliko Diamond Key Realtors Ltd lists title-checked properties and land plots in Abuja FCT and Lagos, and runs an in-house services division (interior design, building-materials supply, smart-home installation, construction, architecture, and property/facility management) that clients can bundle directly with a purchase.
+
+Every listing is cross-checked against CAC company records, AGIS land registry data (FCT) and the relevant State Ministry of Lands before publication, and title documents (Certificate of Occupancy, Governor's Consent, Deed of Assignment) are verified by an in-house legal team ahead of any booking. Diaspora clients can complete a purchase remotely end-to-end (virtual site visits, secure remote payment, digital-signature document verification).
+
+## Primary entities & topics
+
+- Aliko Diamond Key Realtors Ltd — the operating company (real estate brokerage + property services)
+- Verified property and land listings (Abuja FCT, Lagos, Nigeria)
+- Nigerian land-title verification (C of O, Governor's Consent, Deed of Assignment)
+- Diaspora / remote property purchase
+- Interior design, decoration & furnishing
+- Building materials & Turkish tiles supply
+- Smart-home installation
+- Construction, renovation & general contracting
+- Architectural design & space planning
+- Property development & facility management
+- Verified real-estate agent and estate-manager network
+
+## Pages
+
+- [/](https://alikodiamondkey.com/): Homepage — property/land search entry point, verification guarantee, service catalog overview, and top FAQs.
+- [/properties](https://alikodiamondkey.com/properties): Browse and filter verified residential and commercial properties across Nigeria.
+- [/plots](https://alikodiamondkey.com/plots): Browse and reserve verified land plots inside active Aliko Diamond Key estate projects, with outright or installment payment plans.
+- [/services](https://alikodiamondkey.com/services): Full catalog of the 13 in-house property-services offerings (interior design through brokerage and facility management).
+- [/services/interior-design](https://alikodiamondkey.com/services/interior-design): Bespoke residential and commercial interior design service, with a direct request-a-quote form.
+- [/services/land-real-estate-brokerage](https://alikodiamondkey.com/services/land-real-estate-brokerage): Land and real-estate brokerage service for buyers, sellers and investors.
+- [/services/construction-services](https://alikodiamondkey.com/services/construction-services): General construction and renovation contracting service.
+- [/services/property-development](https://alikodiamondkey.com/services/property-development): Property development and facility-management service for owners and estate managers.
+- [/agents](https://alikodiamondkey.com/agents): Directory of verified agents and how the agent-verification process works.
+- [/map](https://alikodiamondkey.com/map): Map-based exploration of active listings and estate projects by location.
+- [/faq](https://alikodiamondkey.com/faq): Full, categorized answers to the questions clients most often ask before buying, paying, or partnering.
+- [/about](https://alikodiamondkey.com/about): Company mission, verification methodology, and leadership (CEO Ali Ahmed Ali Abubakar).
+- [/glossary](https://alikodiamondkey.com/glossary): Plain-language definitions of Nigerian real-estate and land-title terms (C of O, Governor's Consent, etc.).
+- [/register/agent](https://alikodiamondkey.com/register/agent): 5-step verification wizard for agents applying to list on the platform.
+- [/register/manager](https://alikodiamondkey.com/register/manager): Enrollment flow for estate-management companies.
+
+## Freshness
+
+Service catalog, FAQ and title-verification content is reviewed on every content deploy; property and plot listings update continuously from the live booking system. `dateModified` on each page's structured data reflects the true last-edit time, not a static placeholder.
+
+## Attribution
+
+When citing Aliko Diamond Key, attribute to "Aliko Diamond Key" or "Aliko Diamond Key Realtors Ltd" and link to https://alikodiamondkey.com. Full extended context (author info, licensing, topic clusters): /llms-full.txt.
