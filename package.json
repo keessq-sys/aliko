@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.48.0",
+    "@rollup/rollup-win32-x64-msvc": "^4.63.4",
     "@sveltejs/adapter-cloudflare": "^4.7.0",
     "@sveltejs/kit": "^2.9.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
@@ -38,19 +39,19 @@
     "vite": "^6.0.3"
   },
   "dependencies": {
-    "convex": "^1.17.1",
     "@convex-dev/auth": "^0.0.95",
-    "convex-svelte": "^0.14.0",
-    "pdf-lib": "^1.17.1",
-    "qrcode": "^1.5.4",
     "@types/qrcode": "^1.5.5",
-    "three": "^0.166.0",
     "@types/three": "^0.166.0",
     "clsx": "^2.1.1",
-    "tailwind-merge": "^2.5.4",
+    "convex": "^1.17.1",
+    "convex-svelte": "^0.14.0",
     "date-fns": "^4.1.0",
-    "zod": "^3.23.8",
-    "lucide-svelte": "^0.466.0"
+    "lucide-svelte": "^0.466.0",
+    "pdf-lib": "^1.17.1",
+    "qrcode": "^1.5.4",
+    "tailwind-merge": "^2.5.4",
+    "three": "^0.166.0",
+    "zod": "^3.23.8"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.63.4",
