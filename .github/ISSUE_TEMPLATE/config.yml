@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentation
+    url: https://github.com/your-org/aliko-diamond-key/tree/main/docs
+    about: Check the documentation for setup, deployment, and configuration guides
+  - name: 💬 Discussions
+    url: https://github.com/your-org/aliko-diamond-key/discussions
+    about: Ask questions, share ideas, or discuss features
+  - name: 🔒 Security Advisory
+    url: https://github.com/your-org/aliko-diamond-key/security/advisories/new
+    about: Report sensitive security vulnerabilities privately

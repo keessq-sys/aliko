@@ -1,0 +1,92 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement
+title: "[FEATURE] "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Please fill out the form below to help us understand your request.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? What is the pain point?
+      placeholder: Users currently cannot...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the feature you'd like to see implemented
+      placeholder: I would like a way to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Describe any alternative solutions or features you've considered
+      placeholder: I considered X but it doesn't work because...
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature?
+      options:
+        - Critical (blocking major workflow)
+        - High (significant value add)
+        - Medium (nice to have)
+        - Low (minor improvement)
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the application does this affect?
+      options:
+        - Authentication / User Management
+        - Property Listings / Search
+        - Booking / Payments
+        - Legal Documents / E-Signatures
+        - WhatsApp Bot / Notifications
+        - Admin Dashboard
+        - Agent / Manager Dashboards
+        - KYC / Verification
+        - Site Visits / Calendar
+        - Services Marketplace
+        - UI / UX / Design
+        - Performance / Infrastructure
+        - Documentation
+        - Other
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups / Designs
+      description: Add links to Figma, sketches, or describe the UI/UX
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: What would make this feature complete? (Given/When/Then format preferred)
+      placeholder: |
+        Given a user on the properties page
+        When they filter by price range
+        Then only matching properties are shown
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched for existing feature requests
+          required: true
+        - label: This feature aligns with the product roadmap
+          required: false

@@ -1,0 +1,88 @@
+name: 🔒 Security Vulnerability Report
+description: Report a security vulnerability (use GitHub Security Advisories for sensitive issues)
+title: "[SECURITY] "
+labels: ["security", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **⚠️ For sensitive security issues, please use [GitHub Security Advisories](https://github.com/your-org/aliko-diamond-key/security/advisories/new) instead of this form.**
+
+        This form is for non-sensitive security concerns or general security questions.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the security concern
+      placeholder: |
+        The application exposes sensitive data in...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity (CVSS if known)
+      options:
+        - Critical (CVSS 9.0-10.0)
+        - High (CVSS 7.0-8.9)
+        - Medium (CVSS 4.0-6.9)
+        - Low (CVSS 0.1-3.9)
+        - Informational
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Vulnerability Type
+      options:
+        - Injection (SQL, NoSQL, Command, etc.)
+        - Broken Authentication
+        - Sensitive Data Exposure
+        - XML External Entities (XXE)
+        - Broken Access Control
+        - Security Misconfiguration
+        - Cross-Site Scripting (XSS)
+        - Insecure Deserialization
+        - Using Components with Known Vulnerabilities
+        - Insufficient Logging & Monitoring
+        - Other
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: What is the potential impact if exploited?
+      placeholder: |
+        An attacker could access user PII including...
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction Steps
+      description: Steps to reproduce or verify the vulnerability
+      placeholder: |
+        1. Navigate to...
+        2. Submit payload...
+        3. Observe...
+
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Suggested Mitigation
+      description: How should this be fixed?
+      placeholder: |
+        Implement input validation on...
+        Add rate limiting to...
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have not disclosed this vulnerability publicly
+          required: true
+        - label: I have reported this via Security Advisories if sensitive
+          required: true
