@@ -66,6 +66,7 @@ const partners = {
   submitAgentApplication: m("partners:submitAgentApplication"),
   submitManagerApplication: m("partners:submitManagerApplication"),
   listAgentApplications: q("partners:listAgentApplications"),
+  listApprovedAgents: q("partners:listApprovedAgents"),
   reviewAgentApplication: m("partners:reviewAgentApplication"),
   listManagers: q("partners:listManagers"),
   reviewManagerApplication: m("partners:reviewManagerApplication"),

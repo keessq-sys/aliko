@@ -105,6 +105,31 @@ export const listAgentApplications = query({
   },
 });
 
+// ── Public: verified-agent directory ────────────────────────────────────
+// Only APPROVED applications, and only the fields meant to be public — no
+// NIN, no internal review notes, no raw document URLs. Backs the public
+// /agents directory, which previously rendered 8 hardcoded fake agents.
+export const listApprovedAgents = query({
+  args: { limit: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    const rows = await ctx.db
+      .query("agentApplications")
+      .withIndex("by_status", (q) => q.eq("status", "APPROVED"))
+      .collect();
+    rows.sort((a, b) => b.createdAt - a.createdAt);
+    return rows.slice(0, args.limit ?? 100).map((r) => ({
+      _id: r._id,
+      fullName: r.fullName,
+      phone: r.phone,
+      agencyName: r.agencyName,
+      specializations: r.specializations ?? [],
+      statesOfOperation: r.statesOfOperation ?? [],
+      experience: r.experience,
+      bio: r.bio
+    }));
+  }
+});
+
 export const reviewAgentApplication = mutation({
   args: {
     id: v.id("agentApplications"),
