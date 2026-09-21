@@ -2,7 +2,11 @@ name = "aliko-diamond-key"
 compatibility_date = "2024-12-01"
 pages_build_output_dir = ".svelte-kit/cloudflare"
 
-# ── Environment variables ──────────────────────────────────────────────────
+# ── Environment variables (local `wrangler dev` defaults only) ─────────────
+# Named environments below ([env.preview], [env.production]) do NOT inherit
+# top-level vars/kv_namespaces/r2_buckets — Wrangler warns and silently
+# drops them for the deployed environment otherwise, so every binding below
+# is repeated explicitly per environment rather than relying on inheritance.
 [vars]
 NODE_VERSION = "22"
 
@@ -35,9 +39,42 @@ bucket_name = "aliko-property-images"
 # GOOGLE_SERVICE_ACCOUNT_KEY   (single-line JSON)
 # GOOGLE_CALENDAR_ID
 
-# ── Dev-only environment overrides ─────────────────────────────────────────
+# ── Preview environment (Cloudflare Pages preview/branch deploys) ──────────
+[env.preview]
+
 [env.preview.vars]
+NODE_VERSION = "22"
 NODE_ENV = "preview"
 
+[[env.preview.kv_namespaces]]
+binding = "SESSIONS_KV"
+id = "YOUR_KV_NAMESPACE_ID"          # replace after `wrangler kv namespace create SESSIONS`
+preview_id = "YOUR_PREVIEW_KV_ID"
+
+[[env.preview.r2_buckets]]
+binding = "DOCUMENTS_R2"
+bucket_name = "aliko-documents"
+
+[[env.preview.r2_buckets]]
+binding = "IMAGES_R2"
+bucket_name = "aliko-property-images"
+
+# ── Production environment (Cloudflare Pages production branch deploy) ─────
+[env.production]
+
 [env.production.vars]
+NODE_VERSION = "22"
 NODE_ENV = "production"
+
+[[env.production.kv_namespaces]]
+binding = "SESSIONS_KV"
+id = "YOUR_KV_NAMESPACE_ID"          # replace after `wrangler kv namespace create SESSIONS`
+preview_id = "YOUR_PREVIEW_KV_ID"
+
+[[env.production.r2_buckets]]
+binding = "DOCUMENTS_R2"
+bucket_name = "aliko-documents"
+
+[[env.production.r2_buckets]]
+binding = "IMAGES_R2"
+bucket_name = "aliko-property-images"
