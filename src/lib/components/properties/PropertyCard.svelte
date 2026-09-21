@@ -1,6 +1,7 @@
 <script lang="ts">
   import { MapPin, Bed, Bath, Square, Heart, ShieldCheck } from 'lucide-svelte';
-  
+  import { tilt } from '$lib/actions/tilt';
+
   export let property: any;
 
   let isSaved = false;
@@ -11,7 +12,7 @@
   };
 </script>
 
-<a href="/properties/{property.id}" class="group relative flex flex-col bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] hover:-translate-y-1 transition-all duration-300 ease-out preserve-3d">
+<a href="/properties/{property.id}" use:tilt={{ max: 6, scale: 1.015 }} class="group relative flex flex-col bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] transition-shadow duration-300 ease-out preserve-3d">
   <!-- Image container -->
   <div class="relative aspect-[3/2] overflow-hidden">
     <img 

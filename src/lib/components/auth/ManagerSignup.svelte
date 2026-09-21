@@ -63,7 +63,7 @@
         <input
           type="text"
           bind:value={contactName}
-          class="block w-full rounded-lg border {errors.contactName ? 'border-red-500' : 'border-white/10'} bg-black/20 py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all"
+          class="block w-full rounded-lg border {errors.contactName ? 'border-red-500' : 'border-white/10'} bg-black/20 min-h-[44px] py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all"
           placeholder="Chidi Nwosu"
         />
       </div>
@@ -78,7 +78,7 @@
         <input
           type="text"
           bind:value={companyName}
-          class="block w-full rounded-lg border {errors.companyName ? 'border-red-500' : 'border-white/10'} bg-black/20 py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all"
+          class="block w-full rounded-lg border {errors.companyName ? 'border-red-500' : 'border-white/10'} bg-black/20 min-h-[44px] py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all"
           placeholder="ADK Estates Ltd"
         />
       </div>
@@ -95,7 +95,7 @@
       <input
         type="email"
         bind:value={email}
-        class="block w-full rounded-lg border {errors.email ? 'border-red-500' : 'border-white/10'} bg-black/20 py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all"
+        class="block w-full rounded-lg border {errors.email ? 'border-red-500' : 'border-white/10'} bg-black/20 min-h-[44px] py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all"
         placeholder="manager@company.com"
       />
     </div>
@@ -111,7 +111,7 @@
       <input
         type="password"
         bind:value={password}
-        class="block w-full rounded-lg border {errors.password ? 'border-red-500' : 'border-white/10'} bg-black/20 py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all"
+        class="block w-full rounded-lg border {errors.password ? 'border-red-500' : 'border-white/10'} bg-black/20 min-h-[44px] py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all"
         placeholder="Min. 8 characters"
       />
     </div>

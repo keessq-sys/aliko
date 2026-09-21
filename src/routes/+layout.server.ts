@@ -1,4 +1,12 @@
 import type { LayoutServerLoad } from "./$types";
+import { defaultSEO } from "$lib/seo";
+import { buildOrganizationSchema, buildWebSiteSchema } from "$lib/schema/builders";
+import { buildPageGraph } from "$lib/schema/graph";
+
+// Organization + WebSite are site-wide entities (not page-specific), so they
+// are built once here and merged into every page's @graph in +layout.svelte,
+// rather than being rebuilt by every route.
+const globalSchema = [buildOrganizationSchema(), buildWebSiteSchema()];
 
 export const load: LayoutServerLoad = async ({ cookies }) => {
   // Convex auth stores a session token in a cookie named "__convexAuthJWT"
@@ -7,8 +15,10 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
   // Convex's real-time subscription, so this is just for SSR pre-rendering).
   const token = cookies.get("__convexAuthJWT");
 
+  const seoBase = { seo: defaultSEO, globalSchemaJson: buildPageGraph(globalSchema) };
+
   if (!token) {
-    return { session: null };
+    return { session: null, ...seoBase };
   }
 
   try {
@@ -24,8 +34,9 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
           id: payload.sub ?? null,
         },
       },
+      ...seoBase,
     };
   } catch {
-    return { session: null };
+    return { session: null, ...seoBase };
   }
 };

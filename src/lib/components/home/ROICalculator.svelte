@@ -1,5 +1,6 @@
 <script lang="ts">
   import { TrendingUp, Download, Info } from 'lucide-svelte';
+  import { reveal } from '$lib/actions/reveal';
 
   let investment = 50; // Millions
   let years = 5;
@@ -31,6 +32,7 @@
 
   input[type=range] {
     -webkit-appearance: none;
+    appearance: none;
     width: 100%;
     background: transparent;
   }
@@ -53,7 +55,7 @@
   }
 </style>
 
-<section class="py-24 bg-[#050A0E] text-white">
+<section class="py-24 bg-[#050A0E] text-white" use:reveal>
   <div class="container mx-auto px-6 max-w-6xl">
     
     <div class="text-center mb-16">
@@ -72,10 +74,10 @@
 
         <div>
           <div class="flex justify-between mb-2">
-            <label class="font-semibold text-gray-300">Initial Investment</label>
+            <label for="roi-investment" class="font-semibold text-gray-300">Initial Investment</label>
             <span class="font-bold text-amber-400">{symbol}{currency === 'NGN' ? investment : Number(displayInvestment).toLocaleString()}{suffix}</span>
           </div>
-          <input type="range" min="10" max="500" step="10" bind:value={investment} />
+          <input id="roi-investment" type="range" min="10" max="500" step="10" bind:value={investment} />
           <div class="flex justify-between text-xs text-gray-500 mt-1">
             <span>₦10M</span>
             <span>₦500M</span>
@@ -84,10 +86,10 @@
 
         <div>
           <div class="flex justify-between mb-2">
-            <label class="font-semibold text-gray-300">Investment Duration</label>
+            <label for="roi-duration" class="font-semibold text-gray-300">Investment Duration</label>
             <span class="font-bold text-amber-400">{years} Years</span>
           </div>
-          <input type="range" min="1" max="20" step="1" bind:value={years} />
+          <input id="roi-duration" type="range" min="1" max="20" step="1" bind:value={years} />
         </div>
 
         <div>

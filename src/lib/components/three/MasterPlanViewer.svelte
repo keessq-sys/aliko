@@ -178,21 +178,23 @@
   });
 
   onDestroy(() => {
-    cancelAnimationFrame(animFrame);
+    // onDestroy fires during SSR teardown too, where onMount never ran and
+    // cancelAnimationFrame doesn't exist at all — guard both.
+    if (typeof cancelAnimationFrame !== 'undefined') cancelAnimationFrame(animFrame);
     renderer?.dispose();
     resizeObs?.disconnect();
   });
 </script>
 
 <div bind:this={container} class="relative w-full h-full rounded-2xl overflow-hidden" style="background:#050A0E">
-  <canvas bind:this={canvas} class="w-full h-full block" />
+  <canvas bind:this={canvas} class="w-full h-full block"></canvas>
 
   <!-- Legend -->
   <div class="absolute bottom-4 left-4 flex flex-wrap gap-2">
     {#each [["#059669","Available"],["#d97706","Reserved"],["#dc2626","Sold"],["#2563eb","In Dev"]] as [color, label]}
       <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs text-white/70 font-medium"
            style="background:rgba(0,0,0,0.55);backdrop-filter:blur(8px)">
-        <span class="w-2 h-2 rounded-sm" style="background:{color}" />
+        <span class="w-2 h-2 rounded-sm" style="background:{color}"></span>
         {label}
       </div>
     {/each}
@@ -201,7 +203,7 @@
   <!-- Live indicator -->
   <div class="absolute top-4 right-4 flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full"
        style="background:rgba(0,0,0,0.55);color:#F59E0B;backdrop-filter:blur(8px)">
-    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" style="animation:glowPulse 2s infinite" />
+    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" style="animation:glowPulse 2s infinite"></span>
     Live Plot Map
   </div>
 

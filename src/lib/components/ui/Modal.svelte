@@ -26,21 +26,21 @@
 <svelte:window on:keydown={handleKeydown} />
 
 {#if open}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" transition:fade={{duration: 200}}>
+  <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6" transition:fade={{duration: 200}}>
     <!-- Backdrop -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" on:click={close}></div>
-    
-    <!-- Modal Card -->
-    <div 
-      class="relative flex flex-col w-full {sizeClasses[size]} bg-stone-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden glass-l2"
+
+    <!-- Modal Card: full-width bottom sheet on mobile, centered dialog on desktop -->
+    <div
+      class="relative flex flex-col w-full {sizeClasses[size]} max-h-[90vh] sm:max-h-[85vh] bg-stone-900 border border-white/10 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden glass-l2"
       transition:scale={{duration: 250, start: 0.95, opacity: 0}}
     >
       <!-- Header -->
       <div class="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/5">
         <h3 class="text-xl font-serif text-white">{title}</h3>
-        <button on:click={close} class="p-1 rounded-full text-stone-400 hover:text-white hover:bg-white/10 transition-colors">
+        <button on:click={close} aria-label="Close" class="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full text-stone-400 hover:text-white hover:bg-white/10 transition-colors">
           <X size={20} />
         </button>
       </div>

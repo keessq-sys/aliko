@@ -1,10 +1,14 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { properties as allPropertiesStore, type Property } from '$lib/stores/properties';
+  import type { Property } from '$lib/stores/properties';
+  import { useQuery, runMutation } from '$lib/convex/queries';
+  import { api } from '$lib/convex/_generated/api';
+  import { toDisplayProperty } from '$lib/utils/propertyAdapter';
   import PropertyGallery from '$lib/components/properties/PropertyGallery.svelte';
   import PropertyCard from '$lib/components/properties/PropertyCard.svelte';
   import MapEmbed from '$lib/components/ui/MapEmbed.svelte';
   import { addToast } from '$lib/stores/ui';
+  import { whatsappHref } from '$lib/data/contact';
   import {
     MapPin,
     Bed,
@@ -28,8 +32,13 @@
   } from 'lucide-svelte';
 
   $: propertyId = $page.params.id;
-  $: property = $allPropertiesStore.find((p) => p.id === propertyId);
-  $: similarProperties = $allPropertiesStore.filter((p) => p.id !== propertyId && (p.type === property?.type || p.location.state === property?.location.state)).slice(0, 3);
+  $: liveProperty = useQuery(api.properties.getProperty, { slug: propertyId });
+  $: property = $liveProperty ? toDisplayProperty($liveProperty) : $liveProperty === null ? null : undefined;
+  $: liveCatalog = useQuery(api.properties.listProperties, { activeOnly: true, limit: 200 });
+  $: similarProperties = ($liveCatalog ?? [])
+    .map(toDisplayProperty)
+    .filter((p: Property) => p.id !== propertyId && (p.type === property?.type || p.location.state === property?.location.state))
+    .slice(0, 3);
 
   let isSaved = false;
   let inquiryName = '';
@@ -59,26 +68,38 @@
     }
   }
 
-  function submitInquiry(e: Event) {
+  async function submitInquiry(e: Event) {
     e.preventDefault();
-    if (!inquiryName || !inquiryEmail) {
+    if (!inquiryName || !inquiryEmail || !inquiryPhone) {
       addToast({
         type: 'error',
-        message: 'Please provide your name and email address.'
+        message: 'Please provide your name, email and phone number.'
       });
       return;
     }
+    if (!$liveProperty?._id) return;
     isSendingInquiry = true;
-    setTimeout(() => {
-      isSendingInquiry = false;
+    try {
+      await runMutation(api.enquiries.submitEnquiry, {
+        propertyId: $liveProperty._id,
+        name: inquiryName,
+        email: inquiryEmail,
+        phone: inquiryPhone,
+        message: inquiryMessage,
+        source: 'website'
+      } as any);
       addToast({
         type: 'success',
-        message: `Inquiry sent to ${property?.agent.name}! They will contact you shortly.`
+        message: `Inquiry sent! Our team will contact you shortly about ${property?.title}.`
       });
       inquiryName = '';
       inquiryEmail = '';
       inquiryPhone = '';
-    }, 800);
+    } catch (err) {
+      addToast({ type: 'error', message: (err as Error).message ?? 'Could not send inquiry. Please try again.' });
+    } finally {
+      isSendingInquiry = false;
+    }
   }
 
   function scheduleViewing() {
@@ -102,7 +123,11 @@
 </svelte:head>
 
 <div class="min-h-screen bg-[#050A0E] text-white pb-20">
-  {#if !property}
+  {#if property === undefined}
+    <div class="flex min-h-[60vh] items-center justify-center">
+      <div class="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent"></div>
+    </div>
+  {:else if !property}
     <!-- Not Found State -->
     <div class="max-w-4xl mx-auto px-4 py-28 text-center">
       <div class="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 mx-auto mb-6">
@@ -428,7 +453,7 @@
                 <span>Call</span>
               </a>
               <a
-                href="https://wa.me/{property.agent.phone.replace(/[^0-9]/g, '')}?text=Hi%20{property.agent.name},%20I'm%20interested%20in%20{property.title}"
+                href={whatsappHref(`Hi, I'm interested in ${property.title} (via ${property.agent.name}).`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-white/5 hover:bg-emerald-900/30 border border-white/10 text-xs font-medium text-stone-300 hover:text-emerald-400 transition-colors"
@@ -479,6 +504,7 @@
                   type="tel"
                   bind:value={inquiryPhone}
                   placeholder="Phone Number (+234)"
+                  required
                   class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
@@ -529,6 +555,7 @@
     <div
       on:click={() => isViewingModalOpen = false}
       class="absolute inset-0 bg-black/80 backdrop-blur-md"
+      role="presentation"
     ></div>
 
     <!-- Modal Box -->
@@ -540,19 +567,21 @@
 
       <div class="space-y-4 mb-6">
         <div>
-          <label class="block text-xs font-medium text-stone-300 mb-1">Preferred Date</label>
+          <label for="viewing-date" class="block text-xs font-medium text-stone-300 mb-1">Preferred Date</label>
           <input
+            id="viewing-date"
             type="date"
             bind:value={viewingDate}
             min={new Date().toISOString().split('T')[0]}
-            class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-emerald-500"
+            class="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-emerald-500"
           />
         </div>
         <div>
-          <label class="block text-xs font-medium text-stone-300 mb-1">Preferred Time</label>
+          <label for="viewing-time" class="block text-xs font-medium text-stone-300 mb-1">Preferred Time</label>
           <select
+            id="viewing-time"
             bind:value={viewingTime}
-            class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-emerald-500"
+            class="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-emerald-500"
           >
             <option value="09:00" class="bg-[#0A1628]">09:00 AM</option>
             <option value="11:00" class="bg-[#0A1628]">11:00 AM</option>
@@ -565,13 +594,13 @@
       <div class="flex items-center justify-end gap-3">
         <button
           on:click={() => isViewingModalOpen = false}
-          class="px-4 py-2 rounded-xl text-xs font-medium text-stone-400 hover:text-white"
+          class="min-h-[44px] px-4 py-2 rounded-xl text-xs font-medium text-stone-400 hover:text-white"
         >
           Cancel
         </button>
         <button
           on:click={scheduleViewing}
-          class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg"
+          class="min-h-[44px] px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg"
         >
           Confirm Request
         </button>

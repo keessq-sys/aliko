@@ -56,6 +56,27 @@
     <p class="mb-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300">{error}</p>
   {/if}
 
+  {#if $plots}
+    <div class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div class="rounded-xl px-4 py-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06)">
+        <p class="text-xl font-black text-white">{$plots.length}</p>
+        <p class="text-xs text-stone-500">Total Plots</p>
+      </div>
+      <div class="rounded-xl px-4 py-3" style="background: rgba(5,150,105,0.08); border: 1px solid rgba(5,150,105,0.2)">
+        <p class="text-xl font-black text-emerald-400">{$plots.filter((p: any) => p.status === 'AVAILABLE').length}</p>
+        <p class="text-xs text-stone-500">Available</p>
+      </div>
+      <div class="rounded-xl px-4 py-3" style="background: rgba(217,119,6,0.08); border: 1px solid rgba(217,119,6,0.2)">
+        <p class="text-xl font-black text-amber-400">{$plots.filter((p: any) => !p.titleVerified).length}</p>
+        <p class="text-xs text-stone-500">Unverified Titles</p>
+      </div>
+      <div class="rounded-xl px-4 py-3" style="background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2)">
+        <p class="text-xl font-black text-blue-300">{$plots.filter((p: any) => p.status === 'SOLD').length}</p>
+        <p class="text-xs text-stone-500">Sold</p>
+      </div>
+    </div>
+  {/if}
+
   <div class="overflow-hidden rounded-2xl" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)">
     {#if $plots === undefined}
       <div class="flex items-center justify-center py-16 text-stone-500"><Loader2 class="h-6 w-6 animate-spin" /></div>
@@ -65,6 +86,7 @@
         <p class="text-sm text-stone-500">{onlyUnverified ? 'All plots are verified. 🎉' : 'No plots found.'}</p>
       </div>
     {:else}
+      <div class="overflow-x-auto">
       <table class="w-full text-left text-sm">
         <thead class="bg-white/5 text-stone-400">
           <tr>
@@ -108,6 +130,7 @@
           {/each}
         </tbody>
       </table>
+      </div>
     {/if}
   </div>
 </div>

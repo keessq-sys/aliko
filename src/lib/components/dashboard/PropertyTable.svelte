@@ -33,6 +33,7 @@
 
   <!-- Table -->
   <div class="overflow-x-auto">
+    <div class="overflow-x-auto">
     <table class="w-full text-left text-sm text-stone-300">
       <thead class="bg-white/5 text-xs uppercase text-stone-400">
         <tr>
@@ -88,5 +89,6 @@
         {/each}
       </tbody>
     </table>
+    </div>
   </div>
 </div>

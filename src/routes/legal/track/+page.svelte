@@ -77,7 +77,7 @@
     {#if submitted}
       {#if $docQuery === undefined}
         <div class="space-y-3">
-          {#each Array(4) as _}<div class="skeleton h-14 rounded-2xl" />{/each}
+          {#each Array(4) as _}<div class="skeleton h-14 rounded-2xl"></div>{/each}
         </div>
 
       {:else if $docQuery === null}
@@ -140,13 +140,13 @@
           </div>
           <div class="p-5">
             <div class="relative">
-              <div class="absolute left-3.5 top-0 bottom-0 w-px" style="background: rgba(255,255,255,0.06)" />
+              <div class="absolute left-3.5 top-0 bottom-0 w-px" style="background: rgba(255,255,255,0.06)"></div>
               <div class="space-y-4">
                 {#each doc.auditLog as entry}
                   <div class="flex items-start gap-4 relative">
                     <div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 relative z-10"
                          style="background: #0A1628; border: 2px solid rgba(5,150,105,0.4)">
-                      <div class="w-2 h-2 rounded-full bg-emerald-500" />
+                      <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
                     </div>
                     <div class="flex-1 pb-1">
                       <p class="text-white text-sm font-medium">{ACTION_LABELS[entry.action] ?? entry.action}</p>

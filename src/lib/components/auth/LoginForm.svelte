@@ -3,6 +3,9 @@
   import { goto } from '$app/navigation';
   import { api } from '$lib/convex/_generated/api';
   import { runMutation } from '$lib/convex/queries';
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher<{ forgotPassword: void }>();
 
   let email = '';
   let password = '';
@@ -82,8 +85,9 @@
       <input
         type="email"
         id="email"
+        inputmode="email"
         bind:value={email}
-        class="block w-full pl-10 pr-3 py-2.5 bg-black/20 border {errors.email ? 'border-red-500 focus:ring-red-500' : 'border-white/10 focus:ring-emerald-500'} rounded-lg text-white placeholder-gray-400 backdrop-blur-sm transition-all"
+        class="block w-full min-h-[44px] pl-10 pr-3 py-2.5 bg-black/20 border {errors.email ? 'border-red-500 focus:ring-red-500' : 'border-white/10 focus:ring-emerald-500'} rounded-lg text-white placeholder-gray-400 backdrop-blur-sm transition-all"
         placeholder="you@example.com"
       />
     </div>
@@ -102,12 +106,13 @@
         type={showPassword ? 'text' : 'password'}
         id="password"
         bind:value={password}
-        class="block w-full pl-10 pr-10 py-2.5 bg-black/20 border {errors.password ? 'border-red-500 focus:ring-red-500' : 'border-white/10 focus:ring-emerald-500'} rounded-lg text-white placeholder-gray-400 backdrop-blur-sm transition-all"
+        class="block w-full min-h-[44px] pl-10 pr-10 py-2.5 bg-black/20 border {errors.password ? 'border-red-500 focus:ring-red-500' : 'border-white/10 focus:ring-emerald-500'} rounded-lg text-white placeholder-gray-400 backdrop-blur-sm transition-all"
         placeholder="••••••••"
       />
       <button
         type="button"
-        class="absolute inset-y-0 right-0 pr-3 flex items-center"
+        aria-label={showPassword ? 'Hide password' : 'Show password'}
+        class="absolute inset-y-0 right-0 min-w-[44px] flex items-center justify-center"
         on:click={() => showPassword = !showPassword}
       >
         {#if showPassword}
@@ -137,7 +142,7 @@
       <label for="remember-me" class="ml-2 block text-sm text-gray-300">Remember me</label>
     </div>
     <div class="text-sm">
-      <a href="/auth?tab=signin" class="font-medium text-emerald-400 hover:text-emerald-300">Forgot password?</a>
+      <button type="button" on:click={() => dispatch('forgotPassword')} class="font-medium text-emerald-400 hover:text-emerald-300">Forgot password?</button>
     </div>
   </div>
 

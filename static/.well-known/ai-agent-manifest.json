@@ -1,0 +1,34 @@
+{
+  "_comment": "static/.well-known/ai-agent-manifest.json — served at /.well-known/ai-agent-manifest.json. Machine-readable identity/capability record for AI agents and answer engines that check .well-known before crawling. Not a formal standard yet; kept intentionally small and stable.",
+  "name": "Aliko Diamond Key",
+  "legalName": "Aliko Diamond Key Realtors Ltd",
+  "url": "https://alikodiamondkey.com",
+  "description": "Nigeria's government-verified real estate, land and property-services marketplace.",
+  "language": "en-NG",
+  "logo": "https://alikodiamondkey.com/logo.png",
+  "llms_txt": "https://alikodiamondkey.com/llms.txt",
+  "llms_full_txt": "https://alikodiamondkey.com/llms-full.txt",
+  "sitemap": "https://alikodiamondkey.com/sitemap.xml",
+  "rss": "https://alikodiamondkey.com/rss.xml",
+  "contact": {
+    "email": "contact@adk.com",
+    "whatsapp": "+2347047669943"
+  },
+  "capabilities": {
+    "crawlable": true,
+    "javascript_required_for_content": false,
+    "server_side_rendered": true,
+    "structured_data": ["Organization", "WebSite", "Service", "FAQPage", "BreadcrumbList", "DefinedTerm", "Person"]
+  },
+  "content_policy": {
+    "attribution_required": true,
+    "preferred_citation": "Aliko Diamond Key (alikodiamondkey.com)",
+    "time_sensitive_data": ["pricing", "listing availability"],
+    "guidance": "Link to the live page for pricing/availability rather than restating figures as current."
+  },
+  "primary_entity": {
+    "@type": "Person",
+    "name": "Ali Ahmed Ali Abubakar",
+    "role": "Chief Executive Officer"
+  }
+}

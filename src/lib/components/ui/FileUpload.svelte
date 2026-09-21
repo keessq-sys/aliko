@@ -70,14 +70,16 @@
 </script>
 
 <div class="w-full">
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div 
+  <div
     class="relative w-full p-8 border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer overflow-hidden {isDragging ? 'border-emerald-500 bg-emerald-900/20' : 'border-stone-700 bg-stone-900 hover:border-emerald-500/50 hover:bg-stone-800'}"
+    role="button"
+    tabindex="0"
     on:dragenter={handleDragEnter}
     on:dragleave={handleDragLeave}
     on:dragover={handleDragOver}
     on:drop={handleDrop}
     on:click={() => fileInput.click()}
+    on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), fileInput.click())}
   >
     <input 
       type="file" 

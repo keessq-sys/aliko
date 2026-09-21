@@ -39,6 +39,7 @@
 </script>
 
 <div class="w-full overflow-x-auto rounded-xl border border-white/10 bg-white/5 backdrop-blur-md">
+  <div class="overflow-x-auto">
   <table class="w-full text-left text-sm whitespace-nowrap">
     <thead class="bg-stone-900/50 text-stone-400 border-b border-white/10">
       <tr>
@@ -107,4 +108,5 @@
       {/if}
     </tbody>
   </table>
+  </div>
 </div>

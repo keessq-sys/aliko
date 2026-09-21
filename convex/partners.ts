@@ -1,6 +1,15 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { Id } from "./_generated/dataModel";
+
+async function requireAdmin(ctx: any) {
+  const userId = await getAuthUserId(ctx);
+  if (!userId) throw new Error("Unauthorized");
+  const user = await ctx.db.get(userId as Id<"users">);
+  if (user?.role !== "ADMIN") throw new Error("Forbidden — ADMIN only");
+  return userId;
+}
 
 function makeRef(prefix: string): string {
   const year = new Date().getFullYear();
@@ -96,6 +105,31 @@ export const listAgentApplications = query({
   },
 });
 
+// ── Public: verified-agent directory ────────────────────────────────────
+// Only APPROVED applications, and only the fields meant to be public — no
+// NIN, no internal review notes, no raw document URLs. Backs the public
+// /agents directory, which previously rendered 8 hardcoded fake agents.
+export const listApprovedAgents = query({
+  args: { limit: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    const rows = await ctx.db
+      .query("agentApplications")
+      .withIndex("by_status", (q) => q.eq("status", "APPROVED"))
+      .collect();
+    rows.sort((a, b) => b.createdAt - a.createdAt);
+    return rows.slice(0, args.limit ?? 100).map((r) => ({
+      _id: r._id,
+      fullName: r.fullName,
+      phone: r.phone,
+      agencyName: r.agencyName,
+      specializations: r.specializations ?? [],
+      statesOfOperation: r.statesOfOperation ?? [],
+      experience: r.experience,
+      bio: r.bio
+    }));
+  }
+});
+
 export const reviewAgentApplication = mutation({
   args: {
     id: v.id("agentApplications"),
@@ -103,6 +137,7 @@ export const reviewAgentApplication = mutation({
     reviewNotes: v.optional(v.string()),
   },
   handler: async (ctx, { id, status, reviewNotes }) => {
+    await requireAdmin(ctx);
     const patch: Record<string, unknown> = { status, updatedAt: Date.now() };
     if (reviewNotes !== undefined) patch.reviewNotes = reviewNotes;
     await ctx.db.patch(id, patch);
@@ -130,6 +165,7 @@ export const reviewManagerApplication = mutation({
     status: v.union(v.literal("PENDING"), v.literal("APPROVED"), v.literal("SUSPENDED")),
   },
   handler: async (ctx, { id, status }) => {
+    await requireAdmin(ctx);
     const patch: Record<string, unknown> = { status, updatedAt: Date.now() };
     if (status === "APPROVED") patch.approvedAt = Date.now();
     await ctx.db.patch(id, patch);

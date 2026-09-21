@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Search, CalendarDays, ShieldCheck, Key } from 'lucide-svelte';
+  import { reveal, revealStagger } from '$lib/actions/reveal';
 
   const steps = [
     {
@@ -58,7 +59,7 @@
   }
 </style>
 
-<section class="py-24 bg-[#050A0E] text-white relative overflow-hidden">
+<section class="py-24 bg-[#050A0E] text-white relative overflow-hidden" use:reveal>
   <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
   
   <div class="container mx-auto px-6 relative z-10">
@@ -73,7 +74,7 @@
       <div class="absolute top-1/2 left-0 w-full h-[2px] line-dashed hidden lg:block -translate-y-1/2 z-0"></div>
       <div class="absolute left-8 top-0 h-full w-[2px] line-dashed lg:hidden z-0"></div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-6 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-6 relative z-10" use:revealStagger={{ step: 120 }}>
         {#each steps as step}
           <div class="step-card rounded-2xl p-6 relative flex flex-row lg:flex-col items-start lg:items-center text-left lg:text-center gap-6 lg:gap-4 group">
             

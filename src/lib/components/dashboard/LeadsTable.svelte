@@ -66,6 +66,7 @@
   <!-- Table -->
   <div class="overflow-x-auto">
     {#if filteredLeads.length > 0}
+      <div class="overflow-x-auto">
       <table class="w-full text-left text-sm text-stone-300">
         <thead class="bg-white/5 text-xs uppercase text-stone-400">
           <tr>
@@ -115,6 +116,7 @@
           {/each}
         </tbody>
       </table>
+      </div>
     {:else}
       <div class="flex flex-col items-center justify-center py-12 text-center">
         <div class="mb-4 rounded-full bg-white/5 p-4">

@@ -77,7 +77,7 @@
                 <p class="text-xs text-stone-500 mt-2">{notif.timestamp}</p>
               </div>
               {#if !notif.read}
-                <button class="h-6 w-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-white/10 transition-all">
+                <button type="button" aria-label="Mark notification as read" class="h-6 w-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-white/10 transition-all">
                   <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
                 </button>
               {/if}

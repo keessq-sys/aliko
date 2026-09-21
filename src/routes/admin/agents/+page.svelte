@@ -1,7 +1,7 @@
 <script lang="ts">
   import { useQuery, runMutation } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
-  import { Briefcase, CheckCircle, XCircle, Loader2 } from "lucide-svelte";
+  import { Briefcase, CheckCircle, XCircle, Loader2, Search } from "lucide-svelte";
   import { formatRelative } from "$lib/utils/format";
   import { REQUEST_STATUS_META } from "$lib/types/services";
 
@@ -10,6 +10,15 @@
 
   let actingId: string | null = null;
   let error = "";
+  let search = "";
+
+  $: filtered = ($applications ?? []).filter((a: any) => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return a.fullName.toLowerCase().includes(q) || a.email.toLowerCase().includes(q) || (a.agencyName ?? '').toLowerCase().includes(q);
+  });
+  $: pendingCount = ($applications ?? []).filter((a: any) => a.status === 'PENDING' || a.status === 'UNDER_REVIEW').length;
+  $: approvedCount = ($applications ?? []).filter((a: any) => a.status === 'APPROVED').length;
 
   async function act(id: any, status: "APPROVED" | "REJECTED" | "UNDER_REVIEW") {
     actingId = String(id);
@@ -27,10 +36,33 @@
 <svelte:head><title>Agent Approvals — ADK Admin</title></svelte:head>
 
 <div class="p-8">
-  <div class="mb-6">
-    <h1 class="flex items-center gap-2 text-xl font-bold text-white"><Briefcase class="h-5 w-5 text-amber-400" /> Agent Applications</h1>
-    <p class="mt-0.5 text-sm text-stone-500">Review and approve agents from the 5-step registration wizard.</p>
+  <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div>
+      <h1 class="flex items-center gap-2 text-xl font-bold text-white"><Briefcase class="h-5 w-5 text-amber-400" /> Agent Applications</h1>
+      <p class="mt-0.5 text-sm text-stone-500">Review and approve agents from the 5-step registration wizard.</p>
+    </div>
+    <div class="relative">
+      <Search class="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-500" />
+      <input type="text" bind:value={search} placeholder="Search name, email, agency…" class="w-64 rounded-xl border border-white/10 bg-white/5 py-2 pl-8 pr-3 text-xs text-white placeholder-stone-600 outline-none focus:border-emerald-500" />
+    </div>
   </div>
+
+  {#if $applications}
+    <div class="mb-6 grid grid-cols-3 gap-3">
+      <div class="rounded-xl px-4 py-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06)">
+        <p class="text-xl font-black text-white">{$applications.length}</p>
+        <p class="text-xs text-stone-500">Total Applications</p>
+      </div>
+      <div class="rounded-xl px-4 py-3" style="background: rgba(217,119,6,0.08); border: 1px solid rgba(217,119,6,0.2)">
+        <p class="text-xl font-black text-amber-400">{pendingCount}</p>
+        <p class="text-xs text-stone-500">Pending Review</p>
+      </div>
+      <div class="rounded-xl px-4 py-3" style="background: rgba(5,150,105,0.08); border: 1px solid rgba(5,150,105,0.2)">
+        <p class="text-xl font-black text-emerald-400">{approvedCount}</p>
+        <p class="text-xs text-stone-500">Approved</p>
+      </div>
+    </div>
+  {/if}
 
   {#if error}
     <p class="mb-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300">{error}</p>
@@ -39,9 +71,10 @@
   <div class="overflow-hidden rounded-2xl" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)">
     {#if $applications === undefined}
       <div class="flex items-center justify-center py-16 text-stone-500"><Loader2 class="h-6 w-6 animate-spin" /></div>
-    {:else if $applications.length === 0}
-      <p class="py-16 text-center text-sm text-stone-600">No agent applications yet. New wizard submissions appear here instantly.</p>
+    {:else if filtered.length === 0}
+      <p class="py-16 text-center text-sm text-stone-600">{$applications.length === 0 ? "No agent applications yet. New wizard submissions appear here instantly." : "No applications match your search."}</p>
     {:else}
+      <div class="overflow-x-auto">
       <table class="w-full text-left text-sm">
         <thead class="bg-white/5 text-stone-400">
           <tr>
@@ -54,7 +87,7 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-white/5">
-          {#each $applications as app (app._id)}
+          {#each filtered as app (app._id)}
             <tr class="hover:bg-white/5">
               <td class="px-6 py-4">
                 <p class="font-medium text-white">{app.fullName}</p>
@@ -96,6 +129,7 @@
           {/each}
         </tbody>
       </table>
+      </div>
     {/if}
   </div>
 </div>

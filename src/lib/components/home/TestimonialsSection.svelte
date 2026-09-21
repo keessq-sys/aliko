@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-svelte';
+  import { reveal } from '$lib/actions/reveal';
 
   const testimonials = [
     {
@@ -49,7 +50,7 @@
   }
 </style>
 
-<section class="py-24 bg-[#050A0E] text-white overflow-hidden relative">
+<section class="py-24 bg-[#050A0E] text-white overflow-hidden relative" use:reveal>
   <!-- Decorative background elements -->
   <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-600/5 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -62,7 +63,7 @@
     <div class="max-w-4xl mx-auto relative">
       
       <!-- Carousel Container -->
-      <div class="overflow-hidden rounded-3xl" on:mouseenter={() => clearInterval(timer)} on:mouseleave={() => timer = setInterval(next, 5000)}>
+      <div class="overflow-hidden rounded-3xl" role="region" aria-label="Testimonials carousel" on:mouseenter={() => clearInterval(timer)} on:mouseleave={() => timer = setInterval(next, 5000)}>
         <div class="flex transition-transform duration-500 ease-in-out" style="transform: translateX(-{currentIndex * 100}%);">
           {#each testimonials as item}
             <div class="w-full shrink-0 p-4 md:p-8">
@@ -97,7 +98,7 @@
         </button>
         <div class="flex gap-2">
           {#each testimonials as _, i}
-            <button on:click={() => currentIndex = i} class={`h-2 rounded-full transition-all ${currentIndex === i ? 'w-8 bg-emerald-500' : 'w-2 bg-white/20'}`}></button>
+            <button on:click={() => currentIndex = i} aria-label="Go to testimonial {i + 1}" class={`h-2 rounded-full transition-all ${currentIndex === i ? 'w-8 bg-emerald-500' : 'w-2 bg-white/20'}`}></button>
           {/each}
         </div>
         <button on:click={next} class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">

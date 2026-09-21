@@ -13,22 +13,21 @@
   import { formatNaira } from '$lib/utils/format';
   import ServiceRequestForm from '$lib/components/services/ServiceRequestForm.svelte';
   import ImageGallery from '$lib/components/services/ImageGallery.svelte';
+  import SEO from '$lib/components/SEO.svelte';
 
-  export let data: { params?: { slug?: string } } = {};
+  export let data: import('./$types').PageData;
 
-  // `data.params` is not always populated during SSR component init; the
-  // `$page` store always carries the route params, so use it as fallback.
-  $: slug = data?.params?.slug ?? $page.params?.slug ?? '';
+  // The route's own load() (+page.server.ts) 404s on an unknown slug before
+  // this component ever renders; `$page.params` remains the source of truth
+  // for the slug shown here, unchanged from before.
+  $: slug = $page.params?.slug ?? '';
   $: service = serviceBySlug(slug);
   $: related = service
     ? SERVICES.filter((s) => s.slug !== service.slug && s.category === service.category).slice(0, 3)
     : [];
 </script>
 
-<svelte:head>
-  <title>{service ? `${service.name} Services` : 'Services'} — Aliko Diamond Key</title>
-  <meta name="description" content={service?.tagline ?? 'Aliko Diamond Key enterprise services'} />
-</svelte:head>
+<SEO seo={data.seo} />
 
 {#if service}
   {@const Icon = service.icon}

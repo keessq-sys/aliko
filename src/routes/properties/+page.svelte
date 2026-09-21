@@ -1,5 +1,8 @@
 <script lang="ts">
-  import { properties as allPropertiesStore, type Property } from '$lib/stores/properties';
+  import type { Property } from '$lib/stores/properties';
+  import { useQuery } from '$lib/convex/queries';
+  import { api } from '$lib/convex/_generated/api';
+  import { toDisplayProperty } from '$lib/utils/propertyAdapter';
   import PropertyCard from '$lib/components/properties/PropertyCard.svelte';
   import PropertyListItem from '$lib/components/properties/PropertyListItem.svelte';
   import PropertyMapView from '$lib/components/properties/PropertyMapView.svelte';
@@ -9,6 +12,13 @@
   import { SIGNATURE_DEVELOPMENTS } from '$lib/data/imagery';
 
   const bannerImage = SIGNATURE_DEVELOPMENTS[1].image;
+
+  // Real Convex-backed catalog, adapted into the same `Property` shape this
+  // page's filtering/sorting logic and PropertyCard/PropertyListItem/
+  // PropertyMapView already expect (see $lib/utils/propertyAdapter.ts) —
+  // this file previously read from a hardcoded 12-item mock store.
+  const liveProperties = useQuery(api.properties.listProperties, { activeOnly: true, limit: 200 });
+  $: allProperties = ($liveProperties ?? []).map(toDisplayProperty);
 
   // View state
   let currentView: 'grid' | 'list' | 'map' = 'grid';
@@ -48,7 +58,7 @@
   }
 
   // Reactive filtering
-  $: filteredProperties = $allPropertiesStore.filter((p) => {
+  $: filteredProperties = allProperties.filter((p: Property) => {
     // Search
     if (filters.search) {
       const q = filters.search.toLowerCase();
@@ -102,7 +112,7 @@
     }
 
     return true;
-  }).sort((a, b) => {
+  }).sort((a: Property, b: Property) => {
     if (filters.sortBy === 'Price: Low to High') return a.price - b.price;
     if (filters.sortBy === 'Price: High to Low') return b.price - a.price;
     return b.id.localeCompare(a.id); // default newest
@@ -293,13 +303,14 @@
     <div
       on:click={() => isMobileFilterOpen = false}
       class="absolute inset-0 bg-black/80 backdrop-blur-sm"
+      role="presentation"
     ></div>
 
     <!-- Drawer Content -->
     <div class="absolute inset-y-0 right-0 w-full max-w-sm bg-[#050A0E] border-l border-white/10 shadow-2xl flex flex-col p-4">
       <div class="flex items-center justify-between pb-4 border-b border-white/10">
         <h3 class="text-lg font-serif font-bold text-white">Filter Properties</h3>
-        <button on:click={() => isMobileFilterOpen = false} class="p-2 text-stone-400 hover:text-white">
+        <button on:click={() => isMobileFilterOpen = false} aria-label="Close filters" class="flex items-center justify-center min-h-[44px] min-w-[44px] -mr-2 text-stone-400 hover:text-white">
           <X size={20} />
         </button>
       </div>

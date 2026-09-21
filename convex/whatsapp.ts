@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { action, internalAction, query, mutation } from "./_generated/server";
+import { action, internalAction, internalMutation, query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
@@ -109,7 +109,11 @@ export const getDocByRef = query({
   handler: async (ctx, { ref }) => ctx.db.query("legalDocuments").withIndex("by_reference", q => q.eq("referenceCode", ref)).unique(),
 });
 
-export const updateSession = mutation({
+// Only ever called from handleIncoming (the WhatsApp webhook action) via
+// internal.whatsapp.updateSession — never exposed to any client directly,
+// since session state is driven by inbound WhatsApp messages, not by an
+// authenticated app user.
+export const updateSession = internalMutation({
   args: {
     phone: v.string(),
     state: v.string(),
@@ -140,6 +144,8 @@ export const resolveSession = mutation({
   handler: async (ctx, { sessionId }) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized");
+    const user = await ctx.db.get(userId as Id<"users">);
+    if (!user || !["ADMIN", "AGENT"].includes(user.role)) throw new Error("Forbidden");
     await ctx.db.patch(sessionId, { needsHumanReview: false, resolvedAt: Date.now(), updatedAt: Date.now() });
   },
 });

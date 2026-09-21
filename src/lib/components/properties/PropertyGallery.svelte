@@ -39,8 +39,8 @@
     
     <!-- Controls -->
     <div class="absolute inset-0 z-20 pointer-events-none flex items-center justify-between p-4">
-      <button on:click={prev} class="pointer-events-auto p-2 rounded-full bg-black/50 backdrop-blur-md text-white hover:bg-emerald-500/80 transition-colors opacity-0 group-hover:opacity-100"><ChevronLeft size={24} /></button>
-      <button on:click={next} class="pointer-events-auto p-2 rounded-full bg-black/50 backdrop-blur-md text-white hover:bg-emerald-500/80 transition-colors opacity-0 group-hover:opacity-100"><ChevronRight size={24} /></button>
+      <button on:click={prev} aria-label="Previous image" class="pointer-events-auto flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-black/50 backdrop-blur-md text-white hover:bg-emerald-500/80 transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100"><ChevronLeft size={24} /></button>
+      <button on:click={next} aria-label="Next image" class="pointer-events-auto flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-black/50 backdrop-blur-md text-white hover:bg-emerald-500/80 transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100"><ChevronRight size={24} /></button>
     </div>
 
     <!-- Badge & Expand -->
@@ -48,7 +48,7 @@
       <div class="px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-md text-white text-sm font-medium border border-white/10">
         {currentIndex + 1} / {images.length}
       </div>
-      <button on:click={() => isFullscreen = true} class="p-1.5 rounded-lg bg-black/60 backdrop-blur-md text-white border border-white/10 hover:bg-white/20 transition-colors">
+      <button on:click={() => isFullscreen = true} aria-label="View fullscreen" class="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg bg-black/60 backdrop-blur-md text-white border border-white/10 hover:bg-white/20 transition-colors">
         <Maximize2 size={20} />
       </button>
     </div>
@@ -72,13 +72,13 @@
   <div class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col">
     <div class="p-4 flex justify-between items-center text-white">
       <div class="font-medium">{currentIndex + 1} / {images.length} - {title}</div>
-      <button on:click={() => isFullscreen = false} class="p-2 hover:bg-white/10 rounded-full transition-colors"><X size={24}/></button>
+      <button on:click={() => isFullscreen = false} aria-label="Close" class="flex items-center justify-center min-h-[44px] min-w-[44px] hover:bg-white/10 rounded-full transition-colors"><X size={24}/></button>
     </div>
-    
+
     <div class="flex-1 relative flex items-center justify-center p-4">
       <img src={images[currentIndex]} alt={title} class="max-w-full max-h-full object-contain" />
-      <button on:click={prev} class="absolute left-8 p-3 rounded-full bg-black/50 text-white hover:bg-emerald-500/80"><ChevronLeft size={32} /></button>
-      <button on:click={next} class="absolute right-8 p-3 rounded-full bg-black/50 text-white hover:bg-emerald-500/80"><ChevronRight size={32} /></button>
+      <button on:click={prev} aria-label="Previous image" class="absolute left-2 md:left-8 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-black/50 text-white hover:bg-emerald-500/80"><ChevronLeft size={32} /></button>
+      <button on:click={next} aria-label="Next image" class="absolute right-2 md:right-8 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-black/50 text-white hover:bg-emerald-500/80"><ChevronRight size={32} /></button>
     </div>
   </div>
 {/if}

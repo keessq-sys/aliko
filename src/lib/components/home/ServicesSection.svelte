@@ -1,31 +1,48 @@
 <script lang="ts">
-  import { ArrowRight, Lamp, Sparkles, Sofa, Grid3x3, HardHat, Cpu, Building2, FileSignature } from 'lucide-svelte';
+  import { ArrowRight, Lamp, Sparkles, Sofa, Grid3x3, HardHat, Cpu, Building2, FileSignature, Hammer, DraftingCompass, LayoutGrid, Landmark } from 'lucide-svelte';
   import { SERVICES, SERVICE_CATEGORY_META } from '$lib/types/services';
 
   const ICONS: Record<string, any> = {
     lamp: Lamp, sparkles: Sparkles, sofa: Sofa, grid: Grid3x3,
-    'hard-hat': HardHat, cpu: Cpu, building: Building2, 'file-signature': FileSignature
+    'hard-hat': HardHat, cpu: Cpu, building: Building2, 'file-signature': FileSignature,
+    hammer: Hammer, 'drafting-compass': DraftingCompass, 'layout-grid': LayoutGrid,
+    'building-2': Building2, landmark: Landmark
   };
+
+  // Teaser grid: one representative service per category rather than all 13,
+  // so this stays a homepage teaser instead of duplicating the /services page.
+  const FEATURED_SLUGS = [
+    'interior-design', 'renovation-refurbishment', 'turkish-tiles-supply',
+    'smart-home-installation', 'construction-services', 'architectural-design',
+    'property-development', 'land-real-estate-brokerage'
+  ];
+  const featuredServices = FEATURED_SLUGS
+    .map((slug) => SERVICES.find((s) => s.slug === slug))
+    .filter((s): s is (typeof SERVICES)[number] => !!s);
+
+  import { reveal, revealStagger } from '$lib/actions/reveal';
+  import { tilt } from '$lib/actions/tilt';
 </script>
 
-<section class="relative border-t border-white/5 py-20">
+<section class="relative border-t border-white/5 py-20" use:reveal>
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="mb-12 flex flex-col justify-between gap-4 md:flex-row md:items-end">
       <div>
         <div class="mb-2 font-mono text-xs uppercase tracking-widest text-amber-400">BEYOND REAL ESTATE</div>
-        <h2 class="font-serif text-3xl font-bold text-white sm:text-4xl">Interior, Supply & Construction Divisions</h2>
+        <h2 class="font-serif text-3xl font-bold text-white sm:text-4xl">{SERVICES.length} Service Divisions, One Contract</h2>
       </div>
       <a href="/services" class="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-400 transition-colors hover:text-emerald-300">
         Explore All Services <ArrowRight size={16} />
       </a>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
-      {#each SERVICES as service}
+    <div class="grid grid-cols-2 gap-4 md:grid-cols-4" use:revealStagger={{ step: 70 }}>
+      {#each featuredServices as service}
         {@const Icon = ICONS[service.icon] ?? Lamp}
         <a
           href="/services/{service.slug}"
-          class="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-[0_12px_30px_-10px_rgba(5,150,105,0.25)]"
+          use:tilt={{ max: 8, scale: 1.03 }}
+          class="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] p-5 transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_12px_30px_-10px_rgba(5,150,105,0.25)]"
         >
           <div class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 transition-transform duration-300 group-hover:scale-110">
             <Icon size={22} />

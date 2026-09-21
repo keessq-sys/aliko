@@ -1,5 +1,6 @@
 <script lang="ts">
   import { ShieldCheck, FileText, Lock, Building } from 'lucide-svelte';
+  import { reveal } from '$lib/actions/reveal';
 
   const pillars = [
     { icon: FileText, title: 'C of O & Title Deeds', desc: 'Verified documents directly with land registries.' },
@@ -34,7 +35,7 @@
   }
 </style>
 
-<section class="trust-banner py-20 relative overflow-hidden text-white">
+<section class="trust-banner py-20 relative overflow-hidden text-white" use:reveal>
   <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] opacity-20"></div>
   
   <div class="container mx-auto px-6 relative z-10">
@@ -71,15 +72,15 @@
 
     </div>
 
-    <!-- Partner Logos Placeholder -->
+    <!-- What we actually check documents against — not a claim of partnership or endorsement -->
     <div class="mt-16 pt-8 border-t border-white/10">
-      <p class="text-center text-xs text-gray-500 uppercase tracking-widest mb-6">Trusted & Verified By</p>
-      <div class="flex flex-wrap justify-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-        <div class="text-2xl font-black italic">CBN</div>
-        <div class="text-2xl font-bold tracking-tighter">paystack</div>
-        <div class="text-2xl font-serif">CAC</div>
-        <div class="text-2xl font-bold border-2 border-current px-2">AGIS</div>
+      <p class="text-center text-xs text-gray-500 uppercase tracking-widest mb-6">Every Title Is Cross-Checked Against</p>
+      <div class="flex flex-wrap justify-center gap-x-12 gap-y-4 opacity-60">
+        <div class="text-sm font-semibold tracking-wide">CAC Company Registry</div>
+        <div class="text-sm font-semibold tracking-wide">AGIS Land Records (FCT)</div>
+        <div class="text-sm font-semibold tracking-wide">State Ministry of Lands</div>
       </div>
+      <p class="mt-6 text-center text-xs text-gray-600">Payments processed securely via Paystack.</p>
     </div>
   </div>
 </section>

@@ -1,5 +1,7 @@
 <script lang="ts">
   import { Star, MapPin, CheckCircle2, ArrowRight } from 'lucide-svelte';
+  import { reveal, revealStagger } from '$lib/actions/reveal';
+  import { tilt } from '$lib/actions/tilt';
 
   const agents = [
     {
@@ -34,11 +36,10 @@
   .agent-card:hover {
     border-color: rgba(217, 119, 6, 0.4);
     box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
-    transform: translateY(-5px);
   }
 </style>
 
-<section class="py-24 bg-[#050A0E] text-white">
+<section class="py-24 bg-[#050A0E] text-white" use:reveal>
   <div class="container mx-auto px-6">
     
     <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
@@ -52,9 +53,9 @@
       </a>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" use:revealStagger={{ step: 90 }}>
       {#each agents as agent}
-        <div class="agent-card rounded-2xl p-6 flex flex-col relative group">
+        <div class="agent-card rounded-2xl p-6 flex flex-col relative group" use:tilt={{ max: 6 }}>
           
           <!-- Verification Badge -->
           <div class="absolute top-4 right-4 bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-md text-[10px] font-bold border border-emerald-500/30 flex items-center gap-1">

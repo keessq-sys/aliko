@@ -36,3 +36,11 @@ export async function runMutation<Mutation extends FunctionReference<'mutation'>
   const client = getConvexClient();
   return await client.mutation(mutation, args);
 }
+
+export async function runAction<Action extends FunctionReference<'action'>>(
+  action: Action,
+  args: FunctionArgs<Action>
+): Promise<FunctionReturnType<Action>> {
+  const client = getConvexClient();
+  return await client.action(action, args);
+}

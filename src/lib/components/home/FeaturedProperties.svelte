@@ -1,64 +1,11 @@
 <script lang="ts">
   import { MapPin, Bed, Bath, Square, ArrowRight } from 'lucide-svelte';
+  import { reveal } from '$lib/actions/reveal';
+  import { useQuery } from '$lib/convex/queries';
+  import { api } from '$lib/convex/_generated/api';
+  import { formatNaira } from '$lib/utils/format';
 
-  const properties = [
-    {
-      id: 1,
-      title: 'Maitama Luxury Duplex',
-      location: 'Maitama, Abuja',
-      price: '185,000,000',
-      beds: 5, baths: 6, size: '450',
-      type: 'Duplex', status: 'Available',
-      image: 'https://picsum.photos/seed/prop1/800/600'
-    },
-    {
-      id: 2,
-      title: 'Asokoro Skyline Penthouse',
-      location: 'Asokoro, Abuja',
-      price: '320,000,000',
-      beds: 4, baths: 4.5, size: '320',
-      type: 'Penthouse', status: 'Just Listed',
-      image: 'https://picsum.photos/seed/prop2/800/600'
-    },
-    {
-      id: 3,
-      title: 'Wuse 2 Smart Apartment',
-      location: 'Wuse 2, Abuja',
-      price: '75,000,000',
-      beds: 3, baths: 3, size: '180',
-      type: 'Apartment', status: 'Available',
-      image: 'https://picsum.photos/seed/prop3/800/600'
-    },
-    {
-      id: 4,
-      title: 'Gwarinpa Family Home',
-      location: 'Gwarinpa, Abuja',
-      price: '45,000,000',
-      beds: 4, baths: 3, size: '250',
-      type: 'House', status: 'Available',
-      image: 'https://picsum.photos/seed/prop4/800/600'
-    },
-    {
-      id: 5,
-      title: 'Lekki Phase 1 Waterfront',
-      location: 'Lekki Phase 1, Lagos',
-      price: '220,000,000',
-      beds: 5, baths: 5, size: '500',
-      type: 'Villa', status: 'Hot Deal',
-      image: 'https://picsum.photos/seed/prop5/800/600'
-    },
-    {
-      id: 6,
-      title: 'VI Commercial Plaza',
-      location: 'Victoria Island, Lagos',
-      price: '950,000,000',
-      beds: 0, baths: 12, size: '1200',
-      type: 'Commercial', status: 'Available',
-      image: 'https://picsum.photos/seed/prop6/800/600'
-    }
-  ];
-
-  // TODO: replace with useQuery(api.properties.list, {})
+  const featured = useQuery(api.properties.listProperties, { isFeatured: true, limit: 6 });
 </script>
 
 <style>
@@ -75,7 +22,7 @@
   }
 </style>
 
-<section class="py-24 bg-[#050A0E] text-white">
+<section class="py-24 bg-[#050A0E] text-white" use:reveal>
   <div class="container mx-auto px-6">
     
     <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
@@ -89,61 +36,75 @@
       </a>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {#each properties as prop}
-        <div class="prop-card rounded-2xl overflow-hidden group cursor-pointer flex flex-col h-full">
-          <!-- Image Header -->
-          <div class="relative h-64 overflow-hidden">
-            <img src={prop.image} alt={prop.title} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-            <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent opacity-80"></div>
-            
-            <div class="absolute top-4 left-4">
-              <span class="bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold border border-white/10 uppercase tracking-wider text-amber-400">
-                {prop.type}
-              </span>
-            </div>
-            
-            <div class="absolute top-4 right-4">
-              <span class="bg-emerald-500/90 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
-                {prop.status}
-              </span>
-            </div>
-          </div>
+    {#if $featured === undefined}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {#each Array(3) as _}
+          <div class="prop-card rounded-2xl h-[420px] animate-pulse bg-white/[0.02]"></div>
+        {/each}
+      </div>
+    {:else if $featured.length === 0}
+      <p class="text-center text-sm text-stone-500 py-12">Featured listings are being curated — check back shortly.</p>
+    {:else}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {#each $featured as prop (prop._id)}
+          <a href={`/properties/${prop.slug}`} class="prop-card rounded-2xl overflow-hidden group cursor-pointer flex flex-col h-full">
+            <!-- Image Header -->
+            <div class="relative h-64 overflow-hidden">
+              <img src={prop.images?.[0]} alt={prop.title} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent opacity-80"></div>
 
-          <!-- Content -->
-          <div class="p-6 flex flex-col flex-grow">
-            <div class="mb-4">
-              <h3 class="text-xl font-bold mb-2 group-hover:text-emerald-400 transition-colors">{prop.title}</h3>
-              <p class="text-gray-400 text-sm flex items-center gap-1">
-                <MapPin size={16} class="text-gray-500" /> {prop.location}
-              </p>
-            </div>
+              <div class="absolute top-4 left-4">
+                <span class="bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold border border-white/10 uppercase tracking-wider text-amber-400">
+                  {prop.type}
+                </span>
+              </div>
 
-            <!-- Specs -->
-            <div class="flex items-center justify-between py-4 border-y border-white/5 mb-4 text-sm text-gray-300">
-              {#if prop.beds > 0}
-                <div class="flex items-center gap-2"><Bed size={16} class="text-gray-500"/> {prop.beds} Beds</div>
-              {/if}
-              <div class="flex items-center gap-2"><Bath size={16} class="text-gray-500"/> {prop.baths} Baths</div>
-              <div class="flex items-center gap-2"><Square size={16} class="text-gray-500"/> {prop.size} sqm</div>
+              <div class="absolute top-4 right-4">
+                <span class="bg-emerald-500/90 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
+                  {prop.status === 'AVAILABLE' ? 'Available' : prop.status}
+                </span>
+              </div>
             </div>
 
-            <!-- Footer -->
-            <div class="mt-auto flex items-center justify-between">
-              <div>
-                <p class="text-xs text-gray-500 mb-1">Asking Price</p>
-                <p class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
-                  ₦{prop.price}
+            <!-- Content -->
+            <div class="p-6 flex flex-col flex-grow">
+              <div class="mb-4">
+                <h3 class="text-xl font-bold mb-2 group-hover:text-emerald-400 transition-colors">{prop.title}</h3>
+                <p class="text-gray-400 text-sm flex items-center gap-1">
+                  <MapPin size={16} class="text-gray-500" /> {prop.location}, {prop.state}
                 </p>
               </div>
-              <button class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:border-emerald-400 transition-all">
-                <ArrowRight size={18} class="group-hover:text-white" />
-              </button>
+
+              <!-- Specs -->
+              <div class="flex items-center justify-between py-4 border-y border-white/5 mb-4 text-sm text-gray-300">
+                {#if prop.bedrooms}
+                  <div class="flex items-center gap-2"><Bed size={16} class="text-gray-500"/> {prop.bedrooms} Beds</div>
+                {/if}
+                {#if prop.bathrooms}
+                  <div class="flex items-center gap-2"><Bath size={16} class="text-gray-500"/> {prop.bathrooms} Baths</div>
+                {/if}
+                {#if prop.sizeSqm}
+                  <div class="flex items-center gap-2"><Square size={16} class="text-gray-500"/> {prop.sizeSqm} sqm</div>
+                {/if}
+              </div>
+
+              <!-- Footer -->
+              <div class="mt-auto flex items-center justify-between">
+                <div>
+                  <p class="text-xs text-gray-500 mb-1">Asking Price</p>
+                  <p class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
+                    {formatNaira(prop.price)}
+                  </p>
+                </div>
+                <span class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:border-emerald-400 transition-all">
+                  <ArrowRight size={18} class="group-hover:text-white" />
+                </span>
+              </div>
             </div>
-          </div>
-        </div>
-      {/each}
-    </div>
+          </a>
+        {/each}
+      </div>
+    {/if}
 
   </div>
 </section>

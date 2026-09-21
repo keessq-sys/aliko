@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { Home, Trophy, ArrowRight, CheckCircle2 } from 'lucide-svelte';
+  import { Home, Trophy, ArrowRight, CheckCircle2, MessageCircle } from 'lucide-svelte';
+  import { reveal } from '$lib/actions/reveal';
+  import { whatsappHref } from '$lib/data/contact';
 </script>
 
 <style>
@@ -24,6 +26,7 @@
     padding: 2px;
     background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
@@ -38,7 +41,7 @@
   }
 </style>
 
-<section class="py-24 bg-[#050A0E] text-white">
+<section class="py-24 bg-[#050A0E] text-white" use:reveal>
   <div class="container mx-auto px-6">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
       
@@ -89,6 +92,18 @@
         </div>
       </div>
 
+    </div>
+
+    <div class="mt-10 flex max-w-6xl mx-auto items-center justify-center gap-3 rounded-2xl border border-[#25D366]/30 bg-[#25D366]/5 px-6 py-5 text-center sm:justify-between sm:text-left">
+      <p class="text-sm text-gray-300">Prefer to talk it through first? Our team is on WhatsApp right now.</p>
+      <a
+        href={whatsappHref("Hi, I'd like to speak with someone at Aliko Diamond Key.")}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex flex-shrink-0 items-center gap-2 rounded-xl bg-[#25D366] px-5 py-2.5 text-sm font-bold text-white transition-transform hover:scale-105"
+      >
+        <MessageCircle size={16} /> Chat on WhatsApp
+      </a>
     </div>
   </div>
 </section>

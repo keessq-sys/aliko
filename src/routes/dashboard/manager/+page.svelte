@@ -2,16 +2,58 @@
   import {
     LayoutDashboard, Home, Users, Briefcase, DollarSign,
     FileText, BarChart2, Settings, LogOut, Bell, ChevronDown,
-    Search, Plus, Filter, Download, AlertTriangle, Wrench, Clock, CheckCircle2
+    Search, Plus, Filter, Download, AlertTriangle, Wrench, Clock, CheckCircle2, Menu, X, Loader2
   } from 'lucide-svelte';
-  
+  import { fly } from 'svelte/transition';
+  import { useQuery, runMutation } from '$lib/convex/queries';
+  import { api } from '$lib/convex/_generated/api';
+
   import StatCard from '$lib/components/dashboard/StatCard.svelte';
   import ActivityFeed from '$lib/components/dashboard/ActivityFeed.svelte';
+
+  // ── Real data where it exists. There's no property-to-manager
+  // assignment in the schema yet, so "Total Properties" shows the real
+  // platform-wide active count rather than a per-manager figure; occupancy/
+  // revenue/pending-tasks need tenant-lease and financial-ledger concepts
+  // that don't exist at all yet, so those show "coming soon" instead of a
+  // fabricated number. Facility management (work orders, vendors, tenants)
+  // below is unchanged mock data — it's a genuinely separate subsystem.
+  const allActiveProperties = useQuery(api.properties.listProperties, { activeOnly: true, limit: 500 });
+  $: totalPropertiesCount = $allActiveProperties?.length;
+  const myProfile = useQuery(api.users.getMyProfile, {});
+  let profileName = '';
+  let profilePhone = '';
+  let profileLoaded = false;
+  $: if ($myProfile && !profileLoaded) {
+    profileName = $myProfile.name ?? '';
+    profilePhone = $myProfile.phone ?? '';
+    profileLoaded = true;
+  }
+  let savingProfile = false;
+  let profileSaved = false;
+  let profileError = '';
+  async function saveProfile(e: Event) {
+    e.preventDefault();
+    savingProfile = true;
+    profileSaved = false;
+    profileError = '';
+    try {
+      await runMutation(api.users.updateMyProfile, { name: profileName.trim(), phone: profilePhone.trim() } as any);
+      profileSaved = true;
+    } catch (err) {
+      profileError = (err as Error).message ?? 'Could not save changes.';
+    } finally {
+      savingProfile = false;
+    }
+  }
   import PropertyTable from '$lib/components/dashboard/PropertyTable.svelte';
   import RevenueChart from '$lib/components/dashboard/RevenueChart.svelte';
   import AgentCard from '$lib/components/agent/AgentCard.svelte';
-  
+
   let currentTab = 'overview';
+  // Mobile drawer — desktop sidebar below is hidden md:flex; on mobile the
+  // same navItems render inside this slide-in drawer.
+  let isMobileNavOpen = false;
   
   const MOCK_AGENTS = [
     { id: 'a1', name: 'Adaeze Okonkwo', photo: 'https://picsum.photos/seed/agent1/100/100', agency: 'ADK Premium Estates', listings: 32, revenue: 2_400_000_000, rating: 4.9, status: 'active', joinDate: '2022-03-15', clients: 127 },
@@ -130,26 +172,68 @@
     </nav>
     
     <div class="p-4 border-t border-white/5">
-      <button class="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors">
+      <a href="/login?signout=1" class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors">
         <LogOut class="h-5 w-5" />
         Sign Out
-      </button>
+      </a>
     </div>
   </aside>
+
+  <!-- Mobile drawer -->
+  {#if isMobileNavOpen}
+    <div class="fixed inset-0 z-50 md:hidden">
+      <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" role="presentation" on:click={() => (isMobileNavOpen = false)}></div>
+      <aside class="absolute inset-y-0 left-0 w-[85%] max-w-xs bg-[#0A0F14] border-r border-white/5 flex flex-col overflow-y-auto">
+        <div class="flex items-center justify-between p-6 border-b border-white/5">
+          <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center">
+              <span class="text-white font-bold">A</span>
+            </div>
+            ADK Manager
+          </h1>
+          <button class="flex items-center justify-center w-11 h-11 rounded-xl text-stone-400 active:bg-white/10" aria-label="Close menu" on:click={() => (isMobileNavOpen = false)}>
+            <X class="w-5 h-5" />
+          </button>
+        </div>
+        <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+          {#each navItems as item}
+            <button
+              on:click={() => { currentTab = item.id; isMobileNavOpen = false; }}
+              class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium transition-all {currentTab === item.id ? 'bg-emerald-500/10 text-emerald-400 border-l-2 border-emerald-500' : 'text-stone-400 hover:bg-white/5 hover:text-white'}"
+            >
+              <svelte:component this={item.icon} class="h-5 w-5" />
+              {item.label}
+            </button>
+          {/each}
+        </nav>
+        <div class="p-4 border-t border-white/5">
+          <a href="/login?signout=1" class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors">
+            <LogOut class="h-5 w-5" />
+            Sign Out
+          </a>
+        </div>
+      </aside>
+    </div>
+  {/if}
 
   <!-- Main Content -->
   <main class="flex-1 flex flex-col h-screen overflow-hidden">
     <!-- Header -->
-    <header class="h-20 flex-shrink-0 border-b border-white/5 bg-[#050A0E]/80 backdrop-blur-md flex items-center justify-between px-8 z-10">
-      <h2 class="text-2xl font-semibold text-white capitalize">{currentTab.replace('-', ' ')}</h2>
-      
-      <div class="flex items-center gap-6">
+    <header class="h-20 flex-shrink-0 border-b border-white/5 bg-[#050A0E]/80 backdrop-blur-md flex items-center justify-between px-4 md:px-8 z-10 gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <button class="md:hidden flex items-center justify-center w-11 h-11 -ml-2 flex-shrink-0 rounded-full text-stone-300 active:bg-white/10" aria-label="Open menu" on:click={() => (isMobileNavOpen = true)}>
+          <Menu class="h-6 w-6" />
+        </button>
+        <h2 class="text-lg md:text-2xl font-semibold text-white capitalize truncate">{currentTab.replace('-', ' ')}</h2>
+      </div>
+
+      <div class="flex items-center gap-3 md:gap-6">
         <div class="relative hidden sm:block">
           <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
           <input type="text" placeholder="Search..." class="w-64 rounded-full border border-white/10 bg-white/5 py-2 pl-10 pr-4 text-sm focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50" />
         </div>
-        
-        <button class="relative rounded-full p-2 text-stone-400 hover:bg-white/10 transition-colors">
+
+        <button class="relative rounded-full p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-400 hover:bg-white/10 transition-colors">
           <Bell class="h-5 w-5" />
           <span class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-[#050A0E]"></span>
         </button>
@@ -158,14 +242,15 @@
 
     <!-- Scrollable Content Area -->
     <div class="flex-1 overflow-y-auto p-8 hide-scrollbar">
-      
+      {#key currentTab}
+      <div in:fly={{ y: 10, duration: 220, delay: 80 }}>
       {#if currentTab === 'overview'}
         <!-- KPI Row -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard title="Total Properties" value="47" change="+3 this month" changeType="up" icon={Home} />
-          <StatCard title="Occupancy Rate" value="89%" change="+2% vs last month" changeType="up" icon={Users} iconBg="bg-blue-500/20" />
-          <StatCard title="Monthly Revenue" value="14.2" prefix="₦" suffix="M" change="+₦1.1M" changeType="up" icon={DollarSign} iconBg="bg-emerald-500/20" />
-          <StatCard title="Pending Tasks" value="8" change="3 urgent" changeType="down" icon={AlertTriangle} iconBg="bg-amber-500/20" />
+          <StatCard title="Total Properties" value={totalPropertiesCount ?? '—'} change="Platform-wide active listings" changeType="up" icon={Home} />
+          <StatCard title="Occupancy Rate" value="—" change="Tenant/lease tracking coming soon" changeType="up" icon={Users} iconBg="bg-blue-500/20" />
+          <StatCard title="Monthly Revenue" value="—" change="Financial ledger coming soon" changeType="up" icon={DollarSign} iconBg="bg-emerald-500/20" />
+          <StatCard title="Pending Tasks" value="—" change="Work-order tracking coming soon" changeType="down" icon={AlertTriangle} iconBg="bg-amber-500/20" />
         </div>
 
         <!-- Chart Row -->
@@ -209,6 +294,7 @@
               <Filter class="w-4 h-4" /> Filter
             </button>
           </div>
+          <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="bg-white/5 text-stone-400">
               <tr>
@@ -242,6 +328,7 @@
               {/each}
             </tbody>
           </table>
+          </div>
         </div>
         
       {:else if currentTab === 'facility'}
@@ -260,6 +347,7 @@
                 <Plus class="w-4 h-4" /> New Work Order
               </button>
             </div>
+            <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
               <thead class="bg-white/5 text-stone-400">
                 <tr>
@@ -287,6 +375,7 @@
                 {/each}
               </tbody>
             </table>
+            </div>
           </div>
 
           <div class="lg:col-span-1 rounded-xl border border-white/5 bg-white/[0.02] p-6">
@@ -379,27 +468,47 @@
 
       {:else}
         <div class="max-w-2xl">
-          <div class="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-6">
+          <form class="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-6" on:submit={saveProfile}>
             <h3 class="text-lg font-medium text-white border-b border-white/10 pb-4">Profile Settings</h3>
-            
-            <div class="grid grid-cols-2 gap-4">
-              <div class="space-y-2">
-                <label class="text-sm text-stone-400">Full Name</label>
-                <input type="text" value="Chief Manager" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+
+            {#if $myProfile === undefined}
+              <div class="grid grid-cols-2 gap-4">
+                {#each Array(2) as _}<div class="skeleton h-11 rounded-lg"></div>{/each}
               </div>
-              <div class="space-y-2">
-                <label class="text-sm text-stone-400">Email Address</label>
-                <input type="email" value="manager@adk.com" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+            {:else}
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                  <label for="manager-name" class="text-sm text-stone-400">Full Name</label>
+                  <input id="manager-name" type="text" bind:value={profileName} class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+                </div>
+                <div class="space-y-2">
+                  <label for="manager-email" class="text-sm text-stone-400">Email Address</label>
+                  <input id="manager-email" type="email" value={$myProfile?.email ?? ''} disabled title="Contact support to change your sign-in email" class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-stone-500 cursor-not-allowed" />
+                </div>
+                <div class="space-y-2">
+                  <label for="manager-phone" class="text-sm text-stone-400">Phone</label>
+                  <input id="manager-phone" type="tel" inputmode="tel" bind:value={profilePhone} class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+                </div>
               </div>
-            </div>
-            
+            {/if}
+
+            {#if profileError}
+              <p class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300">{profileError}</p>
+            {/if}
+            {#if profileSaved}
+              <p class="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-300">Profile updated.</p>
+            {/if}
+
             <div class="pt-4">
-              <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-lg font-medium">Save Changes</button>
+              <button type="submit" disabled={savingProfile} class="flex min-h-[44px] items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-lg font-medium disabled:opacity-60">
+                {#if savingProfile}<Loader2 class="h-4 w-4 animate-spin" />{/if} Save Changes
+              </button>
             </div>
-          </div>
+          </form>
         </div>
       {/if}
-      
+      </div>
+      {/key}
     </div>
   </main>
 </div>

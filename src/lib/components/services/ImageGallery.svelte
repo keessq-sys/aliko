@@ -53,17 +53,18 @@
     <div
       class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm"
       on:click={close}
+      on:keydown={(e) => e.key === 'Escape' && close()}
       role="dialog"
       aria-modal="true"
       aria-label="{title} image viewer"
       tabindex="-1"
     >
-      <button type="button" class="absolute right-5 top-5 rounded-full bg-white/10 p-2 text-white hover:bg-white/20" on:click={close} aria-label="Close">
+      <button type="button" class="absolute right-5 top-5 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-white/10 text-white hover:bg-white/20" on:click={close} aria-label="Close">
         <X size={22} />
       </button>
       <button
         type="button"
-        class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 sm:left-6"
+        class="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-white/10 text-white hover:bg-white/20 sm:left-6"
         on:click|stopPropagation={prev}
         aria-label="Previous image"
       >
@@ -78,7 +79,7 @@
       </div>
       <button
         type="button"
-        class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 sm:right-6"
+        class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-white/10 text-white hover:bg-white/20 sm:right-6"
         on:click|stopPropagation={next}
         aria-label="Next image"
       >

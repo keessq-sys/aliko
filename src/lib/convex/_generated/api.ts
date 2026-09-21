@@ -38,6 +38,12 @@ const bookings = {
 
 const http = {};
 
+const enquiries = {
+  submitEnquiry: m("enquiries:submitEnquiry"),
+  listEnquiries: q("enquiries:listEnquiries"),
+  updateEnquiryStatus: m("enquiries:updateEnquiryStatus"),
+};
+
 const legalDocuments = {
   getDocumentByReference: q("legalDocuments:getDocumentByReference"),
   getMyDocuments: q("legalDocuments:getMyDocuments"),
@@ -60,6 +66,7 @@ const partners = {
   submitAgentApplication: m("partners:submitAgentApplication"),
   submitManagerApplication: m("partners:submitManagerApplication"),
   listAgentApplications: q("partners:listAgentApplications"),
+  listApprovedAgents: q("partners:listApprovedAgents"),
   reviewAgentApplication: m("partners:reviewAgentApplication"),
   listManagers: q("partners:listManagers"),
   reviewManagerApplication: m("partners:reviewManagerApplication"),
@@ -75,6 +82,15 @@ const plots = {
   updatePlotStatus: m("plots:updatePlotStatus"),
   updatePlotPrice: m("plots:updatePlotPrice"),
   generateUploadUrl: m("plots:generateUploadUrl"),
+};
+
+const properties = {
+  listProperties: q("properties:listProperties"),
+  getProperty: q("properties:getProperty"),
+  getMyPropertiesCount: q("properties:getMyPropertiesCount"),
+  createProperty: m("properties:createProperty"),
+  updateProperty: m("properties:updateProperty"),
+  upsertProperty: m("properties:upsertProperty"),
 };
 
 const projects = {
@@ -101,11 +117,28 @@ const services = {
   setServiceActive: m("services:setServiceActive"),
 };
 
+const settings = {
+  getIntegrationStatus: q("settings:getIntegrationStatus"),
+};
+
+const users = {
+  listUsers: q("users:listUsers"),
+  getRoleCounts: q("users:getRoleCounts"),
+  getMyProfile: q("users:getMyProfile"),
+  updateMyProfile: m("users:updateMyProfile"),
+};
+
+const milestones = {
+  listMilestones: q("milestones:listMilestones"),
+  createMilestone: m("milestones:createMilestone"),
+};
+
 const whatsapp = {
   handleIncoming: a("whatsapp:handleIncoming"),
   getSession: q("whatsapp:getSession"),
   getDocByRef: q("whatsapp:getDocByRef"),
-  updateSession: m("whatsapp:updateSession"),
+  // updateSession is an internalMutation — only callable from handleIncoming
+  // server-side, never exposed to the frontend.
   getHumanReviewQueue: q("whatsapp:getHumanReviewQueue"),
   resolveSession: m("whatsapp:resolveSession"),
 };
@@ -113,25 +146,35 @@ const whatsapp = {
 export const api: {
   auth: typeof auth;
   bookings: typeof bookings;
+  enquiries: typeof enquiries;
   http: typeof http;
   legalDocuments: typeof legalDocuments;
+  milestones: typeof milestones;
   notifications: typeof notifications;
   partners: typeof partners;
   plots: typeof plots;
+  properties: typeof properties;
   projects: typeof projects;
   serviceRequests: typeof serviceRequests;
   services: typeof services;
+  settings: typeof settings;
+  users: typeof users;
   whatsapp: typeof whatsapp;
 } = {
   auth,
   bookings,
+  enquiries,
   http,
   legalDocuments,
+  milestones,
   notifications,
   partners,
   plots,
+  properties,
   projects,
   serviceRequests,
   services,
+  settings,
+  users,
   whatsapp,
 };

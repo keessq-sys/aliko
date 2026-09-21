@@ -24,9 +24,17 @@
 <svelte:head><title>WhatsApp Queue — ADK Admin</title></svelte:head>
 
 <div class="p-8">
-  <div class="mb-6">
-    <h1 class="flex items-center gap-2 text-xl font-bold text-white"><MessageSquare class="h-5 w-5 text-emerald-400" /> WhatsApp Review Queue</h1>
-    <p class="mt-0.5 text-sm text-stone-500">Conversations the bot escalated to a human agent.</p>
+  <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div>
+      <h1 class="flex items-center gap-2 text-xl font-bold text-white"><MessageSquare class="h-5 w-5 text-emerald-400" /> WhatsApp Review Queue</h1>
+      <p class="mt-0.5 text-sm text-stone-500">Conversations the bot escalated to a human agent.</p>
+    </div>
+    {#if $queue}
+      <div class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5" style="background: rgba(5,150,105,0.08); border: 1px solid rgba(5,150,105,0.2)">
+        <span class="text-xl font-black text-emerald-400">{$queue.length}</span>
+        <span class="text-xs text-stone-400 leading-tight">awaiting<br />review</span>
+      </div>
+    {/if}
   </div>
 
   <div class="overflow-hidden rounded-2xl" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)">

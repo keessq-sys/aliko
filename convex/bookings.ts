@@ -180,6 +180,10 @@ export const cancelBooking = mutation({
 
     const booking = await ctx.db.get(args.bookingId);
     if (!booking) throw new Error("Booking not found");
+    if (booking.clientId !== userId) {
+      const user = await ctx.db.get(userId as Id<"users">);
+      if (!user || !["ADMIN", "AGENT"].includes(user.role)) throw new Error("Forbidden — not your booking");
+    }
     if (booking.paidAmount > 0) throw new Error("Cannot cancel a paid booking — contact support");
 
     await ctx.db.patch(args.bookingId, { paymentStatus: "FAILED", updatedAt: Date.now() });
