@@ -2,7 +2,7 @@
   import { page } from "$app/stores";
   import { useQuery } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
-  import { LayoutDashboard, Map, FolderOpen, FileText, Construction, MessageSquare, Bell, ChevronRight, LogOut, Settings, Inbox, Building2, Briefcase, Layers, UserCog, Menu, X } from "lucide-svelte";
+  import { LayoutDashboard, Map, FolderOpen, FileText, Construction, MessageSquare, Bell, ChevronRight, LogOut, Settings, Inbox, Building2, Briefcase, Layers, UserCog, Menu, X, DollarSign } from "lucide-svelte";
   import DiamondMark from "$lib/components/ui/DiamondMark.svelte";
 
   export let data: { session?: { user?: { role?: string; name?: string | null } } | null };
@@ -49,6 +49,7 @@
     {
       label: "Legal & Sales",
       items: [
+        { href: "/admin/bookings",        icon: DollarSign,      label: "Bookings",         badge: null },
         { href: "/admin/documents",       icon: FileText,        label: "Legal Documents",  badge: null },
         { href: "/admin/whatsapp",        icon: MessageSquare,   label: "WhatsApp Queue",   badge: null },
       ],

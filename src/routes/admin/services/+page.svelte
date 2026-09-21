@@ -6,23 +6,46 @@
   import { SERVICES, SERVICE_CATEGORY_META } from "$lib/types/services";
 
   const catalog = useQuery(api.services.listServices, { activeOnly: false });
-  const setActive = async (args: any) => runMutation(api.services.setServiceActive, args);
 
-  const rows = [
-    ...SERVICES.map((s) => ({
-      slug: s.slug,
-      name: s.name,
-      category: s.category as string,
-      price: s.startingPrice ?? null,
-      priceUnit: s.priceUnit ?? null,
-      isActive: true,
-      isLocal: true,
-      id: null as any,
-    })),
-  ];
+  // Once the catalog has been seeded (non-empty), the live database rows are
+  // the source of truth and their toggle is live; until then, show the
+  // static fallback catalog (read-only — nothing to toggle, there's no row
+  // to patch yet).
+  $: rows = $catalog && $catalog.length > 0
+    ? $catalog.map((s: any) => ({
+        slug: s.slug,
+        name: s.name,
+        category: s.category as string,
+        price: s.startingPrice ?? null,
+        priceUnit: s.priceUnit ?? null,
+        isActive: s.isActive,
+        isLocal: false,
+        id: s._id as string
+      }))
+    : SERVICES.map((s) => ({
+        slug: s.slug,
+        name: s.name,
+        category: s.category as string,
+        price: s.startingPrice ?? null,
+        priceUnit: s.priceUnit ?? null,
+        isActive: true,
+        isLocal: true,
+        id: null as string | null
+      }));
 
-  function toggle(row: (typeof rows)[number]) {
-    if (!row.isLocal) setActive({ id: row.id, isActive: !row.isActive });
+  let togglingId: string | null = null;
+
+  async function toggle(row: (typeof rows)[number]) {
+    if (row.isLocal || !row.id) return;
+    togglingId = row.id;
+    try {
+      await runMutation(api.services.setServiceActive, { id: row.id, isActive: !row.isActive } as any);
+    } catch (err) {
+      console.error("[admin/services] toggle failed", err);
+      alert((err as Error).message ?? "Failed to update service. Please try again.");
+    } finally {
+      togglingId = null;
+    }
   }
 
   let seeding = false;
@@ -119,11 +142,17 @@
             <td class="px-6 py-4 text-right">
               <button
                 on:click={() => toggle(row)}
-                class="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-stone-300 transition-colors hover:bg-white/10 {row.isLocal ? 'opacity-50' : ''}"
-                disabled={row.isLocal}
-                title={row.isLocal ? 'Seeded catalog entry (activate once DB is seeded)' : 'Toggle'}
+                class="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-stone-300 transition-colors hover:bg-white/10 disabled:opacity-50"
+                disabled={row.isLocal || togglingId === row.id}
+                title={row.isLocal ? 'Not yet in the database — seed the catalog to manage this service' : 'Toggle active status'}
               >
-                {#if row.isActive}<Power size={13} class="text-emerald-400" />{:else}<PowerOff size={13} class="text-stone-500" />{/if}
+                {#if togglingId === row.id}
+                  <Loader2 size={13} class="animate-spin" />
+                {:else if row.isActive}
+                  <Power size={13} class="text-emerald-400" />
+                {:else}
+                  <PowerOff size={13} class="text-stone-500" />
+                {/if}
                 {row.isActive ? 'Active' : 'Enable'}
               </button>
             </td>

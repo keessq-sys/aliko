@@ -1,10 +1,24 @@
 <script lang="ts">
-  import { useQuery } from "$lib/convex/queries";
+  import { useQuery, runMutation } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
-  import { FileText, Loader2, Search } from "lucide-svelte";
+  import { FileText, Loader2, Search, Check, X } from "lucide-svelte";
   import { formatRelative } from "$lib/utils/format";
 
   const documents = useQuery(api.legalDocuments.getPendingDocuments, {});
+
+  let reviewingId: string | null = null;
+
+  async function review(documentId: string, decision: "VERIFIED" | "REJECTED") {
+    reviewingId = documentId;
+    try {
+      await runMutation(api.legalDocuments.reviewDocument, { documentId, decision } as any);
+    } catch (err) {
+      console.error("[admin/documents] review failed", err);
+      alert((err as Error).message ?? "Review failed. Please try again.");
+    } finally {
+      reviewingId = null;
+    }
+  }
 
   const STATUS_CLASSES: Record<string, string> = {
     DRAFT: "text-stone-400",
@@ -89,7 +103,7 @@
     {:else}
       <div class="divide-y" style="border-color: rgba(255,255,255,0.04)">
         {#each filtered as doc (doc._id)}
-          <div class="flex items-center gap-4 px-6 py-4">
+          <div class="flex flex-wrap items-center gap-4 px-6 py-4">
             <div class="rounded-lg bg-amber-500/10 p-2.5 text-amber-400"><FileText size={16} /></div>
             <div class="min-w-0 flex-1">
               <p class="text-sm font-medium text-white">{doc.type.replace(/_/g, " ")}</p>
@@ -97,6 +111,26 @@
             </div>
             <span class="text-xs font-semibold {STATUS_CLASSES[doc.status] ?? 'text-stone-400'}">{doc.status.replace(/_/g, " ")}</span>
             <span class="hidden text-xs text-stone-600 sm:block">{formatRelative(new Date(doc.createdAt))}</span>
+            {#if doc.status === "SIGNED"}
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={reviewingId === doc._id}
+                  on:click={() => review(doc._id, "VERIFIED")}
+                  class="flex min-h-[44px] items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/20 disabled:opacity-50"
+                >
+                  {#if reviewingId === doc._id}<Loader2 size={14} class="animate-spin" />{:else}<Check size={14} />{/if} Verify
+                </button>
+                <button
+                  type="button"
+                  disabled={reviewingId === doc._id}
+                  on:click={() => review(doc._id, "REJECTED")}
+                  class="flex min-h-[44px] items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs font-semibold text-rose-300 transition-colors hover:bg-rose-500/20 disabled:opacity-50"
+                >
+                  <X size={14} /> Reject
+                </button>
+              </div>
+            {/if}
           </div>
         {/each}
       </div>

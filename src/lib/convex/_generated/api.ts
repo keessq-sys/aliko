@@ -101,6 +101,10 @@ const services = {
   setServiceActive: m("services:setServiceActive"),
 };
 
+const settings = {
+  getIntegrationStatus: q("settings:getIntegrationStatus"),
+};
+
 const users = {
   listUsers: q("users:listUsers"),
   getRoleCounts: q("users:getRoleCounts"),
@@ -133,6 +137,7 @@ export const api: {
   projects: typeof projects;
   serviceRequests: typeof serviceRequests;
   services: typeof services;
+  settings: typeof settings;
   users: typeof users;
   whatsapp: typeof whatsapp;
 } = {
@@ -147,6 +152,7 @@ export const api: {
   projects,
   serviceRequests,
   services,
+  settings,
   users,
   whatsapp,
 };
