@@ -1,5 +1,36 @@
 import { v } from "convex/values";
-import { query } from "./_generated/server";
+import { query, mutation } from "./_generated/server";
+import { getAuthUserId } from "@convex-dev/auth/server";
+import { Id } from "./_generated/dataModel";
+
+// ── Self-service: the signed-in user's own profile ──────────────────────
+export const getMyProfile = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+    return ctx.db.get(userId as Id<"users">);
+  },
+});
+
+export const updateMyProfile = mutation({
+  args: {
+    name: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    country: v.optional(v.string()),
+    occupation: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Unauthorized");
+    // Note: email is intentionally not editable here — it's the account's
+    // sign-in identifier and changing it needs its own re-verification
+    // flow, which doesn't exist yet.
+    const patch = Object.fromEntries(Object.entries(args).filter(([, val]) => val !== undefined));
+    if (Object.keys(patch).length === 0) return;
+    await ctx.db.patch(userId as Id<"users">, { ...patch, lastActiveAt: Date.now() });
+  },
+});
 
 // ── Admin: full user roster, optionally filtered by role ───────────────────
 export const listUsers = query({

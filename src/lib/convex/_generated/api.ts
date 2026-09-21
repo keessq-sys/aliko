@@ -87,6 +87,7 @@ const plots = {
 const properties = {
   listProperties: q("properties:listProperties"),
   getProperty: q("properties:getProperty"),
+  getMyPropertiesCount: q("properties:getMyPropertiesCount"),
   createProperty: m("properties:createProperty"),
   updateProperty: m("properties:updateProperty"),
   upsertProperty: m("properties:upsertProperty"),
@@ -123,6 +124,8 @@ const settings = {
 const users = {
   listUsers: q("users:listUsers"),
   getRoleCounts: q("users:getRoleCounts"),
+  getMyProfile: q("users:getMyProfile"),
+  updateMyProfile: m("users:updateMyProfile"),
 };
 
 const milestones = {

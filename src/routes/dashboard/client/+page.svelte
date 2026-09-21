@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Heart, Calendar, FileText, MessageSquare, User, MapPin, Bed, Bath, Download, CalendarPlus, X, Inbox, ArrowRight, Landmark, Loader2, CreditCard } from 'lucide-svelte';
-  import { useQuery, runAction } from '$lib/convex/queries';
+  import { Heart, Calendar, FileText, MessageSquare, User, MapPin, Bed, Bath, Download, CalendarPlus, X, Inbox, ArrowRight, Landmark, Loader2, CreditCard, LogOut } from 'lucide-svelte';
+  import { useQuery, runAction, runMutation } from '$lib/convex/queries';
   import { api } from '$lib/convex/_generated/api';
   import { formatNaira } from '$lib/utils/format';
   import { REQUEST_STATUS_META } from '$lib/types/services';
@@ -41,6 +41,40 @@
     } catch (err) {
       payError = (err as Error).message ?? 'Could not start payment. Please try again.';
       payingId = null;
+    }
+  }
+
+  // ── Profile ───────────────────────────────────────────────────────────
+  const myProfile = useQuery(api.users.getMyProfile, {});
+
+  let profileName = '';
+  let profilePhone = '';
+  let profileNameLoaded = false;
+
+  // Only seed the editable fields from the loaded profile once, so typing
+  // isn't clobbered by the query's own live updates while editing.
+  $: if ($myProfile && !profileNameLoaded) {
+    profileName = $myProfile.name ?? '';
+    profilePhone = $myProfile.phone ?? '';
+    profileNameLoaded = true;
+  }
+
+  let savingProfile = false;
+  let profileSaved = false;
+  let profileError = '';
+
+  async function saveProfile(e: Event) {
+    e.preventDefault();
+    savingProfile = true;
+    profileSaved = false;
+    profileError = '';
+    try {
+      await runMutation(api.users.updateMyProfile, { name: profileName.trim(), phone: profilePhone.trim() } as any);
+      profileSaved = true;
+    } catch (err) {
+      profileError = (err as Error).message ?? 'Could not save changes. Please try again.';
+    } finally {
+      savingProfile = false;
     }
   }
 
@@ -341,34 +375,55 @@
       <div class="max-w-2xl mx-auto">
         <div class="rounded-xl border border-white/5 bg-white/[0.02] p-6 sm:p-8">
           <h2 class="text-xl font-semibold text-white mb-6 border-b border-white/10 pb-4">Personal Information</h2>
-          <form class="space-y-6">
+          <form class="space-y-6" on:submit={saveProfile}>
             <div class="flex items-center gap-4 mb-8">
               <img src="https://picsum.photos/seed/client/100/100" alt="Profile" class="w-20 h-20 rounded-full border-2 border-emerald-500/50" />
-              <button type="button" class="px-4 py-2 bg-white/5 rounded-lg text-sm hover:bg-white/10 text-white">Change Photo</button>
+              <button type="button" disabled title="Photo upload is coming soon" class="px-4 py-2 bg-white/5 rounded-lg text-sm text-stone-500 cursor-not-allowed">Change Photo</button>
             </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div class="space-y-2">
-                <label for="client-name" class="text-sm text-stone-400">Full Name</label>
-                <input id="client-name" type="text" value="Amara Eze" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white focus:border-emerald-500 outline-none" />
+
+            {#if $myProfile === undefined}
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {#each Array(3) as _}<div class="skeleton h-11 rounded-lg"></div>{/each}
               </div>
-              <div class="space-y-2">
-                <label for="client-email" class="text-sm text-stone-400">Email</label>
-                <input id="client-email" type="email" value="amara@example.com" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white focus:border-emerald-500 outline-none" />
+            {:else}
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                  <label for="client-name" class="text-sm text-stone-400">Full Name</label>
+                  <input id="client-name" type="text" bind:value={profileName} class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white focus:border-emerald-500 outline-none" />
+                </div>
+                <div class="space-y-2">
+                  <label for="client-email" class="text-sm text-stone-400">Email</label>
+                  <input id="client-email" type="email" value={$myProfile?.email ?? ''} disabled title="Contact support to change your sign-in email" class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-stone-500 outline-none cursor-not-allowed" />
+                </div>
+                <div class="space-y-2">
+                  <label for="client-phone" class="text-sm text-stone-400">Phone</label>
+                  <input id="client-phone" type="tel" inputmode="tel" bind:value={profilePhone} class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white focus:border-emerald-500 outline-none" />
+                </div>
               </div>
-              <div class="space-y-2">
-                <label for="client-phone" class="text-sm text-stone-400">Phone</label>
-                <input id="client-phone" type="tel" value="+234 801 111 1111" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white focus:border-emerald-500 outline-none" />
-              </div>
-            </div>
-            
+            {/if}
+
+            {#if profileError}
+              <p class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300">{profileError}</p>
+            {/if}
+            {#if profileSaved}
+              <p class="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-300">Profile updated.</p>
+            {/if}
+
             <div class="pt-4 flex justify-end">
-              <button type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-lg font-medium">Save Changes</button>
+              <button type="submit" disabled={savingProfile} class="flex min-h-[44px] items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-lg font-medium disabled:opacity-60">
+                {#if savingProfile}<Loader2 class="h-4 w-4 animate-spin" />{/if} Save Changes
+              </button>
             </div>
           </form>
         </div>
+
+        <div class="mt-6 flex justify-center">
+          <a href="/login?signout=1" class="flex items-center gap-2 min-h-[44px] px-4 text-sm font-medium text-rose-400 hover:text-rose-300">
+            <LogOut class="h-4 w-4" /> Sign Out
+          </a>
+        </div>
       </div>
-      
+
     {:else}
       <div class="flex flex-col items-center justify-center py-20 text-stone-500">
          <MessageSquare class="w-16 h-16 mb-4 opacity-20" />

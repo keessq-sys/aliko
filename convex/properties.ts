@@ -3,6 +3,24 @@ import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { Id } from "./_generated/dataModel";
 
+// ── Self-service: how many listings are assigned to the signed-in agent ──
+// Note: nothing in the admin UI currently assigns an agentId to a property
+// (createProperty/upsertProperty don't take one), so this is honestly 0 for
+// every agent today — real, not fabricated, until that assignment step is
+// built. Better than the hardcoded "12" this dashboard used to show.
+export const getMyPropertiesCount = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return 0;
+    const rows = await ctx.db
+      .query("properties")
+      .filter((q) => q.eq(q.field("agentId"), userId))
+      .collect();
+    return rows.length;
+  }
+});
+
 async function requireAdmin(ctx: any) {
   const userId = await getAuthUserId(ctx);
   if (!userId) throw new Error("Unauthorized");

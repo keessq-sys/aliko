@@ -1,13 +1,47 @@
 <script lang="ts">
   import {
     LayoutDashboard, Home, Users, DollarSign, Calendar,
-    MessageSquare, Settings, LogOut, Bell, Plus, Phone, Mail, Gift, Send, CheckCircle2, Clock, Menu, X
+    MessageSquare, Settings, LogOut, Bell, Plus, Phone, Mail, Gift, Send, CheckCircle2, Clock, Menu, X, Loader2
   } from 'lucide-svelte';
   import { fly } from 'svelte/transition';
+  import { useQuery, runMutation } from '$lib/convex/queries';
+  import { api } from '$lib/convex/_generated/api';
 
   // Mobile drawer — desktop sidebar below is hidden md:flex; on mobile the
   // same navItems render inside this slide-in drawer.
   let isMobileNavOpen = false;
+
+  // ── Real data. Lead assignment, viewing scheduling and commission
+  // tracking have no backend concept yet (see the audit in session
+  // history), so those stat cards show "coming soon" rather than a
+  // fabricated number — only listing count and profile are real here. ───
+  const myListingsCount = useQuery(api.properties.getMyPropertiesCount, {});
+  const myProfile = useQuery(api.users.getMyProfile, {});
+  let profileName = '';
+  let profilePhone = '';
+  let profileLoaded = false;
+  $: if ($myProfile && !profileLoaded) {
+    profileName = $myProfile.name ?? '';
+    profilePhone = $myProfile.phone ?? '';
+    profileLoaded = true;
+  }
+  let savingProfile = false;
+  let profileSaved = false;
+  let profileError = '';
+  async function saveProfile(e: Event) {
+    e.preventDefault();
+    savingProfile = true;
+    profileSaved = false;
+    profileError = '';
+    try {
+      await runMutation(api.users.updateMyProfile, { name: profileName.trim(), phone: profilePhone.trim() } as any);
+      profileSaved = true;
+    } catch (err) {
+      profileError = (err as Error).message ?? 'Could not save changes.';
+    } finally {
+      savingProfile = false;
+    }
+  }
 
   import StatCard from '$lib/components/dashboard/StatCard.svelte';
   import RevenueChart from '$lib/components/dashboard/RevenueChart.svelte';
@@ -109,6 +143,13 @@
         </button>
       {/each}
     </nav>
+
+    <div class="p-4 border-t border-white/5">
+      <a href="/login?signout=1" class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors">
+        <LogOut class="h-5 w-5" />
+        Sign Out
+      </a>
+    </div>
   </aside>
 
   <!-- Mobile drawer -->
@@ -138,6 +179,12 @@
             </button>
           {/each}
         </nav>
+        <div class="p-4 border-t border-white/5">
+          <a href="/login?signout=1" class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors">
+            <LogOut class="h-5 w-5" />
+            Sign Out
+          </a>
+        </div>
       </aside>
     </div>
   {/if}
@@ -160,10 +207,10 @@
       <div in:fly={{ y: 10, duration: 220, delay: 80 }}>
       {#if currentTab === 'overview'}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard title="Active Listings" value="12" change="Stable" changeType="up" icon={Home} />
-          <StatCard title="New Leads" value="23" change="+5 this month" changeType="up" icon={Users} iconBg="bg-blue-500/20" />
-          <StatCard title="Viewings Scheduled" value="7" change="Next: Today 2PM" changeType="up" icon={Calendar} iconBg="bg-purple-500/20" />
-          <StatCard title="Commission Earned" value="2.4" prefix="₦" suffix="M" change="+18%" changeType="up" icon={DollarSign} iconBg="bg-emerald-500/20" />
+          <StatCard title="Active Listings" value={$myListingsCount ?? '—'} change="Assigned to you" changeType="up" icon={Home} />
+          <StatCard title="New Leads" value="—" change="Lead assignment coming soon" changeType="up" icon={Users} iconBg="bg-blue-500/20" />
+          <StatCard title="Viewings Scheduled" value="—" change="Viewing scheduling coming soon" changeType="up" icon={Calendar} iconBg="bg-purple-500/20" />
+          <StatCard title="Commission Earned" value="—" change="Commission tracking coming soon" changeType="up" icon={DollarSign} iconBg="bg-emerald-500/20" />
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -312,22 +359,40 @@
 
       {:else}
         <div class="max-w-2xl">
-          <div class="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-6">
+          <form class="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-6" on:submit={saveProfile}>
             <h3 class="text-lg font-medium text-white border-b border-white/10 pb-4">Profile Settings</h3>
-            <div class="grid grid-cols-2 gap-4">
-              <div class="space-y-2">
-                <label for="agent-profile-name" class="text-sm text-stone-400">Full Name</label>
-                <input id="agent-profile-name" type="text" value="Adaeze Okonkwo" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+            {#if $myProfile === undefined}
+              <div class="grid grid-cols-2 gap-4">
+                {#each Array(2) as _}<div class="skeleton h-11 rounded-lg"></div>{/each}
               </div>
-              <div class="space-y-2">
-                <label for="agent-profile-email" class="text-sm text-stone-400">Email Address</label>
-                <input id="agent-profile-email" type="email" value="adaeze@adkpremium.com" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+            {:else}
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                  <label for="agent-profile-name" class="text-sm text-stone-400">Full Name</label>
+                  <input id="agent-profile-name" type="text" bind:value={profileName} class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+                </div>
+                <div class="space-y-2">
+                  <label for="agent-profile-email" class="text-sm text-stone-400">Email Address</label>
+                  <input id="agent-profile-email" type="email" value={$myProfile?.email ?? ''} disabled title="Contact support to change your sign-in email" class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-stone-500 cursor-not-allowed" />
+                </div>
+                <div class="space-y-2">
+                  <label for="agent-profile-phone" class="text-sm text-stone-400">Phone</label>
+                  <input id="agent-profile-phone" type="tel" inputmode="tel" bind:value={profilePhone} class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+                </div>
               </div>
-            </div>
+            {/if}
+            {#if profileError}
+              <p class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300">{profileError}</p>
+            {/if}
+            {#if profileSaved}
+              <p class="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-300">Profile updated.</p>
+            {/if}
             <div class="pt-4">
-              <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-lg font-medium">Save Changes</button>
+              <button type="submit" disabled={savingProfile} class="flex min-h-[44px] items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-lg font-medium disabled:opacity-60">
+                {#if savingProfile}<Loader2 class="h-4 w-4 animate-spin" />{/if} Save Changes
+              </button>
             </div>
-          </div>
+          </form>
         </div>
       {/if}
       </div>

@@ -2,12 +2,50 @@
   import {
     LayoutDashboard, Home, Users, Briefcase, DollarSign,
     FileText, BarChart2, Settings, LogOut, Bell, ChevronDown,
-    Search, Plus, Filter, Download, AlertTriangle, Wrench, Clock, CheckCircle2, Menu, X
+    Search, Plus, Filter, Download, AlertTriangle, Wrench, Clock, CheckCircle2, Menu, X, Loader2
   } from 'lucide-svelte';
   import { fly } from 'svelte/transition';
+  import { useQuery, runMutation } from '$lib/convex/queries';
+  import { api } from '$lib/convex/_generated/api';
 
   import StatCard from '$lib/components/dashboard/StatCard.svelte';
   import ActivityFeed from '$lib/components/dashboard/ActivityFeed.svelte';
+
+  // ── Real data where it exists. There's no property-to-manager
+  // assignment in the schema yet, so "Total Properties" shows the real
+  // platform-wide active count rather than a per-manager figure; occupancy/
+  // revenue/pending-tasks need tenant-lease and financial-ledger concepts
+  // that don't exist at all yet, so those show "coming soon" instead of a
+  // fabricated number. Facility management (work orders, vendors, tenants)
+  // below is unchanged mock data — it's a genuinely separate subsystem.
+  const allActiveProperties = useQuery(api.properties.listProperties, { activeOnly: true, limit: 500 });
+  $: totalPropertiesCount = $allActiveProperties?.length;
+  const myProfile = useQuery(api.users.getMyProfile, {});
+  let profileName = '';
+  let profilePhone = '';
+  let profileLoaded = false;
+  $: if ($myProfile && !profileLoaded) {
+    profileName = $myProfile.name ?? '';
+    profilePhone = $myProfile.phone ?? '';
+    profileLoaded = true;
+  }
+  let savingProfile = false;
+  let profileSaved = false;
+  let profileError = '';
+  async function saveProfile(e: Event) {
+    e.preventDefault();
+    savingProfile = true;
+    profileSaved = false;
+    profileError = '';
+    try {
+      await runMutation(api.users.updateMyProfile, { name: profileName.trim(), phone: profilePhone.trim() } as any);
+      profileSaved = true;
+    } catch (err) {
+      profileError = (err as Error).message ?? 'Could not save changes.';
+    } finally {
+      savingProfile = false;
+    }
+  }
   import PropertyTable from '$lib/components/dashboard/PropertyTable.svelte';
   import RevenueChart from '$lib/components/dashboard/RevenueChart.svelte';
   import AgentCard from '$lib/components/agent/AgentCard.svelte';
@@ -134,10 +172,10 @@
     </nav>
     
     <div class="p-4 border-t border-white/5">
-      <button class="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors">
+      <a href="/login?signout=1" class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors">
         <LogOut class="h-5 w-5" />
         Sign Out
-      </button>
+      </a>
     </div>
   </aside>
 
@@ -169,10 +207,10 @@
           {/each}
         </nav>
         <div class="p-4 border-t border-white/5">
-          <button class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors">
+          <a href="/login?signout=1" class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors">
             <LogOut class="h-5 w-5" />
             Sign Out
-          </button>
+          </a>
         </div>
       </aside>
     </div>
@@ -209,10 +247,10 @@
       {#if currentTab === 'overview'}
         <!-- KPI Row -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard title="Total Properties" value="47" change="+3 this month" changeType="up" icon={Home} />
-          <StatCard title="Occupancy Rate" value="89%" change="+2% vs last month" changeType="up" icon={Users} iconBg="bg-blue-500/20" />
-          <StatCard title="Monthly Revenue" value="14.2" prefix="₦" suffix="M" change="+₦1.1M" changeType="up" icon={DollarSign} iconBg="bg-emerald-500/20" />
-          <StatCard title="Pending Tasks" value="8" change="3 urgent" changeType="down" icon={AlertTriangle} iconBg="bg-amber-500/20" />
+          <StatCard title="Total Properties" value={totalPropertiesCount ?? '—'} change="Platform-wide active listings" changeType="up" icon={Home} />
+          <StatCard title="Occupancy Rate" value="—" change="Tenant/lease tracking coming soon" changeType="up" icon={Users} iconBg="bg-blue-500/20" />
+          <StatCard title="Monthly Revenue" value="—" change="Financial ledger coming soon" changeType="up" icon={DollarSign} iconBg="bg-emerald-500/20" />
+          <StatCard title="Pending Tasks" value="—" change="Work-order tracking coming soon" changeType="down" icon={AlertTriangle} iconBg="bg-amber-500/20" />
         </div>
 
         <!-- Chart Row -->
@@ -430,24 +468,43 @@
 
       {:else}
         <div class="max-w-2xl">
-          <div class="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-6">
+          <form class="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-6" on:submit={saveProfile}>
             <h3 class="text-lg font-medium text-white border-b border-white/10 pb-4">Profile Settings</h3>
-            
-            <div class="grid grid-cols-2 gap-4">
-              <div class="space-y-2">
-                <label for="manager-name" class="text-sm text-stone-400">Full Name</label>
-                <input id="manager-name" type="text" value="Chief Manager" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+
+            {#if $myProfile === undefined}
+              <div class="grid grid-cols-2 gap-4">
+                {#each Array(2) as _}<div class="skeleton h-11 rounded-lg"></div>{/each}
               </div>
-              <div class="space-y-2">
-                <label for="manager-email" class="text-sm text-stone-400">Email Address</label>
-                <input id="manager-email" type="email" value="manager@adk.com" class="w-full bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+            {:else}
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                  <label for="manager-name" class="text-sm text-stone-400">Full Name</label>
+                  <input id="manager-name" type="text" bind:value={profileName} class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+                </div>
+                <div class="space-y-2">
+                  <label for="manager-email" class="text-sm text-stone-400">Email Address</label>
+                  <input id="manager-email" type="email" value={$myProfile?.email ?? ''} disabled title="Contact support to change your sign-in email" class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-stone-500 cursor-not-allowed" />
+                </div>
+                <div class="space-y-2">
+                  <label for="manager-phone" class="text-sm text-stone-400">Phone</label>
+                  <input id="manager-phone" type="tel" inputmode="tel" bind:value={profilePhone} class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white" />
+                </div>
               </div>
-            </div>
-            
+            {/if}
+
+            {#if profileError}
+              <p class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300">{profileError}</p>
+            {/if}
+            {#if profileSaved}
+              <p class="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-300">Profile updated.</p>
+            {/if}
+
             <div class="pt-4">
-              <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-lg font-medium">Save Changes</button>
+              <button type="submit" disabled={savingProfile} class="flex min-h-[44px] items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-lg font-medium disabled:opacity-60">
+                {#if savingProfile}<Loader2 class="h-4 w-4 animate-spin" />{/if} Save Changes
+              </button>
             </div>
-          </div>
+          </form>
         </div>
       {/if}
       </div>
