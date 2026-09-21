@@ -1,9 +1,13 @@
 <script lang="ts">
   import {
     LayoutDashboard, Home, Users, DollarSign, Calendar,
-    MessageSquare, Settings, LogOut, Bell, Plus, Phone, Mail, Gift, Send, CheckCircle2, Clock
+    MessageSquare, Settings, LogOut, Bell, Plus, Phone, Mail, Gift, Send, CheckCircle2, Clock, Menu, X
   } from 'lucide-svelte';
   import { fly } from 'svelte/transition';
+
+  // Mobile drawer — desktop sidebar below is hidden md:flex; on mobile the
+  // same navItems render inside this slide-in drawer.
+  let isMobileNavOpen = false;
 
   import StatCard from '$lib/components/dashboard/StatCard.svelte';
   import RevenueChart from '$lib/components/dashboard/RevenueChart.svelte';
@@ -75,7 +79,7 @@
 </script>
 
 <div class="flex h-screen w-full bg-[#050A0E] text-stone-300 font-sans overflow-hidden">
-  <!-- Sidebar -->
+  <!-- Sidebar (desktop) -->
   <aside class="w-64 flex-shrink-0 border-r border-white/5 bg-white/[0.02] flex flex-col hidden md:flex">
     <div class="p-6">
       <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
@@ -84,7 +88,7 @@
         </div>
         Agent Portal
       </h1>
-      
+
       <div class="mt-8 flex items-center gap-3 rounded-xl bg-white/5 p-3 border border-white/5">
         <img src="https://picsum.photos/seed/agent/100/100" alt="Agent" class="h-10 w-10 rounded-full object-cover" />
         <div>
@@ -93,10 +97,10 @@
         </div>
       </div>
     </div>
-    
+
     <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1 hide-scrollbar">
       {#each navItems as item}
-        <button 
+        <button
           on:click={() => currentTab = item.id}
           class="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all {currentTab === item.id ? 'bg-emerald-500/10 text-emerald-400 border-l-2 border-emerald-500' : 'text-stone-400 hover:bg-white/5 hover:text-white'}"
         >
@@ -107,10 +111,46 @@
     </nav>
   </aside>
 
+  <!-- Mobile drawer -->
+  {#if isMobileNavOpen}
+    <div class="fixed inset-0 z-50 md:hidden">
+      <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" role="presentation" on:click={() => (isMobileNavOpen = false)}></div>
+      <aside class="absolute inset-y-0 left-0 w-[85%] max-w-xs bg-[#0A0F14] border-r border-white/5 flex flex-col overflow-y-auto">
+        <div class="flex items-center justify-between p-6 border-b border-white/5">
+          <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center">
+              <span class="text-white font-bold">A</span>
+            </div>
+            Agent Portal
+          </h1>
+          <button class="flex items-center justify-center w-11 h-11 rounded-xl text-stone-400 active:bg-white/10" aria-label="Close menu" on:click={() => (isMobileNavOpen = false)}>
+            <X class="w-5 h-5" />
+          </button>
+        </div>
+        <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+          {#each navItems as item}
+            <button
+              on:click={() => { currentTab = item.id; isMobileNavOpen = false; }}
+              class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium transition-all {currentTab === item.id ? 'bg-emerald-500/10 text-emerald-400 border-l-2 border-emerald-500' : 'text-stone-400 hover:bg-white/5 hover:text-white'}"
+            >
+              <svelte:component this={item.icon} class="h-5 w-5" />
+              {item.label}
+            </button>
+          {/each}
+        </nav>
+      </aside>
+    </div>
+  {/if}
+
   <main class="flex-1 flex flex-col h-screen overflow-hidden">
-    <header class="h-20 flex-shrink-0 border-b border-white/5 bg-[#050A0E]/80 backdrop-blur-md flex items-center justify-between px-8 z-10">
-      <h2 class="text-2xl font-semibold text-white capitalize">{currentTab.replace('-', ' ')}</h2>
-      <button class="relative rounded-full p-2 text-stone-400 hover:bg-white/10">
+    <header class="h-20 flex-shrink-0 border-b border-white/5 bg-[#050A0E]/80 backdrop-blur-md flex items-center justify-between px-4 md:px-8 z-10 gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <button class="md:hidden flex items-center justify-center w-11 h-11 -ml-2 flex-shrink-0 rounded-full text-stone-300 active:bg-white/10" aria-label="Open menu" on:click={() => (isMobileNavOpen = true)}>
+          <Menu class="h-6 w-6" />
+        </button>
+        <h2 class="text-lg md:text-2xl font-semibold text-white capitalize truncate">{currentTab.replace('-', ' ')}</h2>
+      </div>
+      <button class="relative rounded-full p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-400 hover:bg-white/10">
         <Bell class="h-5 w-5" />
       </button>
     </header>
@@ -187,6 +227,7 @@
         </div>
 
         <div class="rounded-xl border border-white/5 bg-[#050A0E]/80 shadow-xl overflow-hidden">
+          <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="bg-white/5 text-stone-400">
               <tr>
@@ -214,6 +255,7 @@
               {/each}
             </tbody>
           </table>
+          </div>
         </div>
 
       {:else if currentTab === 'commissions'}

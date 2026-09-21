@@ -91,16 +91,18 @@
 
     <!-- Overlays (Arrows, Counters, Actions) -->
     {#if images.length > 1}
-      <button 
-        class="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60 z-10"
+      <button
+        class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-black/40 text-white backdrop-blur-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-black/60 z-10"
         on:click|stopPropagation={prev}
+        aria-label="Previous image"
       >
         <ChevronLeft size={24} />
       </button>
-      
-      <button 
-        class="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60 z-10"
+
+      <button
+        class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-black/40 text-white backdrop-blur-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-black/60 z-10"
         on:click|stopPropagation={next}
+        aria-label="Next image"
       >
         <ChevronRight size={24} />
       </button>
@@ -110,9 +112,10 @@
       </div>
     {/if}
 
-    <button 
-      class="absolute top-4 right-4 p-2 rounded-full bg-black/40 text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60 z-10"
+    <button
+      class="absolute top-4 right-4 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-black/40 text-white backdrop-blur-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-black/60 z-10"
       on:click|stopPropagation={toggleFullscreen}
+      aria-label={isFullscreen ? 'Exit fullscreen' : 'View fullscreen'}
     >
       {#if isFullscreen}
         <Minimize2 size={20} />

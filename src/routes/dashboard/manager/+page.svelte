@@ -2,17 +2,20 @@
   import {
     LayoutDashboard, Home, Users, Briefcase, DollarSign,
     FileText, BarChart2, Settings, LogOut, Bell, ChevronDown,
-    Search, Plus, Filter, Download, AlertTriangle, Wrench, Clock, CheckCircle2
+    Search, Plus, Filter, Download, AlertTriangle, Wrench, Clock, CheckCircle2, Menu, X
   } from 'lucide-svelte';
   import { fly } from 'svelte/transition';
-  
+
   import StatCard from '$lib/components/dashboard/StatCard.svelte';
   import ActivityFeed from '$lib/components/dashboard/ActivityFeed.svelte';
   import PropertyTable from '$lib/components/dashboard/PropertyTable.svelte';
   import RevenueChart from '$lib/components/dashboard/RevenueChart.svelte';
   import AgentCard from '$lib/components/agent/AgentCard.svelte';
-  
+
   let currentTab = 'overview';
+  // Mobile drawer — desktop sidebar below is hidden md:flex; on mobile the
+  // same navItems render inside this slide-in drawer.
+  let isMobileNavOpen = false;
   
   const MOCK_AGENTS = [
     { id: 'a1', name: 'Adaeze Okonkwo', photo: 'https://picsum.photos/seed/agent1/100/100', agency: 'ADK Premium Estates', listings: 32, revenue: 2_400_000_000, rating: 4.9, status: 'active', joinDate: '2022-03-15', clients: 127 },
@@ -138,19 +141,61 @@
     </div>
   </aside>
 
+  <!-- Mobile drawer -->
+  {#if isMobileNavOpen}
+    <div class="fixed inset-0 z-50 md:hidden">
+      <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" role="presentation" on:click={() => (isMobileNavOpen = false)}></div>
+      <aside class="absolute inset-y-0 left-0 w-[85%] max-w-xs bg-[#0A0F14] border-r border-white/5 flex flex-col overflow-y-auto">
+        <div class="flex items-center justify-between p-6 border-b border-white/5">
+          <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center">
+              <span class="text-white font-bold">A</span>
+            </div>
+            ADK Manager
+          </h1>
+          <button class="flex items-center justify-center w-11 h-11 rounded-xl text-stone-400 active:bg-white/10" aria-label="Close menu" on:click={() => (isMobileNavOpen = false)}>
+            <X class="w-5 h-5" />
+          </button>
+        </div>
+        <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+          {#each navItems as item}
+            <button
+              on:click={() => { currentTab = item.id; isMobileNavOpen = false; }}
+              class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium transition-all {currentTab === item.id ? 'bg-emerald-500/10 text-emerald-400 border-l-2 border-emerald-500' : 'text-stone-400 hover:bg-white/5 hover:text-white'}"
+            >
+              <svelte:component this={item.icon} class="h-5 w-5" />
+              {item.label}
+            </button>
+          {/each}
+        </nav>
+        <div class="p-4 border-t border-white/5">
+          <button class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors">
+            <LogOut class="h-5 w-5" />
+            Sign Out
+          </button>
+        </div>
+      </aside>
+    </div>
+  {/if}
+
   <!-- Main Content -->
   <main class="flex-1 flex flex-col h-screen overflow-hidden">
     <!-- Header -->
-    <header class="h-20 flex-shrink-0 border-b border-white/5 bg-[#050A0E]/80 backdrop-blur-md flex items-center justify-between px-8 z-10">
-      <h2 class="text-2xl font-semibold text-white capitalize">{currentTab.replace('-', ' ')}</h2>
-      
-      <div class="flex items-center gap-6">
+    <header class="h-20 flex-shrink-0 border-b border-white/5 bg-[#050A0E]/80 backdrop-blur-md flex items-center justify-between px-4 md:px-8 z-10 gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <button class="md:hidden flex items-center justify-center w-11 h-11 -ml-2 flex-shrink-0 rounded-full text-stone-300 active:bg-white/10" aria-label="Open menu" on:click={() => (isMobileNavOpen = true)}>
+          <Menu class="h-6 w-6" />
+        </button>
+        <h2 class="text-lg md:text-2xl font-semibold text-white capitalize truncate">{currentTab.replace('-', ' ')}</h2>
+      </div>
+
+      <div class="flex items-center gap-3 md:gap-6">
         <div class="relative hidden sm:block">
           <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
           <input type="text" placeholder="Search..." class="w-64 rounded-full border border-white/10 bg-white/5 py-2 pl-10 pr-4 text-sm focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50" />
         </div>
-        
-        <button class="relative rounded-full p-2 text-stone-400 hover:bg-white/10 transition-colors">
+
+        <button class="relative rounded-full p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-400 hover:bg-white/10 transition-colors">
           <Bell class="h-5 w-5" />
           <span class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-[#050A0E]"></span>
         </button>
@@ -211,6 +256,7 @@
               <Filter class="w-4 h-4" /> Filter
             </button>
           </div>
+          <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="bg-white/5 text-stone-400">
               <tr>
@@ -244,6 +290,7 @@
               {/each}
             </tbody>
           </table>
+          </div>
         </div>
         
       {:else if currentTab === 'facility'}
@@ -262,6 +309,7 @@
                 <Plus class="w-4 h-4" /> New Work Order
               </button>
             </div>
+            <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
               <thead class="bg-white/5 text-stone-400">
                 <tr>
@@ -289,6 +337,7 @@
                 {/each}
               </tbody>
             </table>
+            </div>
           </div>
 
           <div class="lg:col-span-1 rounded-xl border border-white/5 bg-white/[0.02] p-6">

@@ -185,36 +185,36 @@
 
               <div>
                 <label for="agent-fullname" class="block text-sm text-gray-400 mb-1">Full Name *</label>
-                <input id="agent-fullname" type="text" bind:value={formData.fullName} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="John Doe" />
+                <input id="agent-fullname" type="text" bind:value={formData.fullName} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="John Doe" />
               </div>
 
               <div>
                 <label for="agent-dob" class="block text-sm text-gray-400 mb-1">Date of Birth</label>
-                <input id="agent-dob" type="date" bind:value={formData.dob} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500" />
+                <input id="agent-dob" type="date" bind:value={formData.dob} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500" />
               </div>
 
               <div>
                 <label for="agent-gender" class="block text-sm text-gray-400 mb-1">Gender</label>
-                <select id="agent-gender" bind:value={formData.gender} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                <select id="agent-gender" bind:value={formData.gender} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
                   <option>Male</option><option>Female</option><option>Prefer not to say</option>
                 </select>
               </div>
 
               <div>
                 <label for="agent-nationality" class="block text-sm text-gray-400 mb-1">Nationality</label>
-                <select id="agent-nationality" bind:value={formData.nationality} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                <select id="agent-nationality" bind:value={formData.nationality} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
                   <option>Nigeria</option><option>Other</option>
                 </select>
               </div>
 
               <div>
                 <label for="agent-nin" class="block text-sm text-gray-400 mb-1">NIN (Optional, 11 digits)</label>
-                <input id="agent-nin" type="text" bind:value={formData.nin} maxlength="11" class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="12345678901" />
+                <input id="agent-nin" type="text" bind:value={formData.nin} maxlength="11" class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="12345678901" />
               </div>
 
               <div>
                 <label for="agent-state-origin" class="block text-sm text-gray-400 mb-1">State of Origin</label>
-                <select id="agent-state-origin" bind:value={formData.stateOfOrigin} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                <select id="agent-state-origin" bind:value={formData.stateOfOrigin} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
                   <option value="">Select State</option>
                   {#each NIGERIAN_STATES as state}
                     <option value={state}>{state}</option>
@@ -232,11 +232,11 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label for="agent-agency-name" class="block text-sm text-gray-400 mb-1">Agency/Company Name</label>
-                  <input id="agent-agency-name" type="text" bind:value={formData.agencyName} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500" placeholder="e.g. Apex Properties" />
+                  <input id="agent-agency-name" type="text" bind:value={formData.agencyName} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500" placeholder="e.g. Apex Properties" />
                 </div>
                 <div>
                   <label for="agent-type" class="block text-sm text-gray-400 mb-1">Agent Type</label>
-                  <select id="agent-type" bind:value={formData.type} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500">
+                  <select id="agent-type" bind:value={formData.type} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500">
                     <option>Independent Agent</option><option>Agency Staff</option><option>Developer's Agent</option>
                   </select>
                 </div>
@@ -245,11 +245,11 @@
                     <span>REAN Membership Number</span>
                     <span class="text-stone-500 text-xs" title="Real Estate Agents Network — membership optional">Optional</span>
                   </label>
-                  <input id="agent-rean" type="text" bind:value={formData.reanNumber} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500" placeholder="Optional" />
+                  <input id="agent-rean" type="text" bind:value={formData.reanNumber} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500" placeholder="Optional" />
                 </div>
                 <div>
                   <label for="agent-experience" class="block text-sm text-gray-400 mb-1">Years of Experience</label>
-                  <select id="agent-experience" bind:value={formData.experience} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500">
+                  <select id="agent-experience" bind:value={formData.experience} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500">
                     <option>Less than 1</option><option>1-3</option><option>3-5</option><option>5-10</option><option>10+</option>
                   </select>
                 </div>
@@ -272,7 +272,7 @@
                   <span>About You / Bio</span>
                   <span>{formData.bio.length}/500</span>
                 </label>
-                <textarea id="agent-bio" bind:value={formData.bio} maxlength="500" rows="4" class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500" placeholder="Tell clients about your experience and approach..."></textarea>
+                <textarea id="agent-bio" bind:value={formData.bio} maxlength="500" rows="4" class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500" placeholder="Tell clients about your experience and approach..."></textarea>
               </div>
             </div>
           </div>
@@ -287,7 +287,7 @@
                   <label for="agent-phone" class="block text-sm text-gray-400 mb-1">Phone Number *</label>
                   <div class="flex">
                     <span class="inline-flex items-center px-3 bg-black/60 border border-r-0 border-white/10 rounded-l-lg text-gray-400">+234</span>
-                    <input id="agent-phone" type="tel" bind:value={formData.phone} class="w-full bg-black/40 border border-white/10 rounded-r-lg px-4 py-2 text-white focus:border-amber-500" placeholder="801 234 5678" />
+                    <input id="agent-phone" type="tel" bind:value={formData.phone} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-r-lg px-4 py-2 text-white focus:border-amber-500" placeholder="801 234 5678" />
                   </div>
                 </div>
                 <div>
@@ -299,22 +299,22 @@
                   </div>
                   <div class="flex">
                     <span class="inline-flex items-center px-3 bg-black/60 border border-r-0 border-white/10 rounded-l-lg text-gray-400">+234</span>
-                    <input id="agent-whatsapp" type="tel" disabled={formData.whatsappSame} bind:value={formData.whatsapp} class="w-full bg-black/40 border border-white/10 rounded-r-lg px-4 py-2 text-white focus:border-amber-500 disabled:opacity-50" placeholder="801 234 5678" />
+                    <input id="agent-whatsapp" type="tel" disabled={formData.whatsappSame} bind:value={formData.whatsapp} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-r-lg px-4 py-2 text-white focus:border-amber-500 disabled:opacity-50" placeholder="801 234 5678" />
                   </div>
                 </div>
                 <div>
                   <label for="agent-email" class="block text-sm text-gray-400 mb-1">Business Email *</label>
-                  <input id="agent-email" type="email" bind:value={formData.email} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500" placeholder="agent@example.com" />
+                  <input id="agent-email" type="email" bind:value={formData.email} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500" placeholder="agent@example.com" />
                 </div>
                 <div>
                   <label for="agent-expected-listings" class="block text-sm text-gray-400 mb-1">Expected Monthly Listings</label>
-                  <select id="agent-expected-listings" bind:value={formData.expectedListings} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500">
+                  <select id="agent-expected-listings" bind:value={formData.expectedListings} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500">
                     <option>1-5</option><option>5-10</option><option>10-20</option><option>20+</option>
                   </select>
                 </div>
                 <div class="md:col-span-2">
                   <label for="agent-address" class="block text-sm text-gray-400 mb-1">Office Address</label>
-                  <textarea id="agent-address" bind:value={formData.address} rows="2" class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500" placeholder="123 Agent Street..."></textarea>
+                  <textarea id="agent-address" bind:value={formData.address} rows="2" class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500" placeholder="123 Agent Street..."></textarea>
                 </div>
               </div>
 
@@ -331,7 +331,7 @@
 
               <div>
                 <label for="agent-lgas" class="block text-sm text-gray-400 mb-1">Primary LGAs (Comma separated)</label>
-                <input id="agent-lgas" type="text" bind:value={formData.lgas} class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500" placeholder="Ikeja, Lekki, Abuja Municipal" />
+                <input id="agent-lgas" type="text" bind:value={formData.lgas} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500" placeholder="Ikeja, Lekki, Abuja Municipal" />
               </div>
             </div>
           </div>
@@ -412,7 +412,7 @@
         <!-- Navigation Buttons -->
         <div class="flex justify-between items-center mt-10 pt-6 border-t border-white/10">
           <button
-            class="flex items-center gap-2 px-6 py-2.5 rounded-lg border border-white/20 text-gray-300 hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="flex items-center gap-2 min-h-[44px] px-6 py-2.5 rounded-lg border border-white/20 text-gray-300 hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             on:click={prevStep}
             disabled={currentStep === 1}
           >
@@ -421,14 +421,14 @@
 
           {#if currentStep < totalSteps}
             <button
-              class="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-medium transition-colors shadow-[0_0_15px_rgba(245,158,11,0.3)]"
+              class="flex items-center gap-2 min-h-[44px] px-6 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-medium transition-colors shadow-[0_0_15px_rgba(245,158,11,0.3)]"
               on:click={nextStep}
             >
               Continue <ArrowRight class="w-4 h-4" />
             </button>
           {:else}
             <button
-              class="flex items-center gap-2 px-8 py-3 rounded-lg bg-gradient-to-r from-amber-600 to-amber-400 hover:from-amber-500 hover:to-amber-300 text-white font-medium transition-transform hover:scale-105 shadow-[0_0_20px_rgba(245,158,11,0.4)] disabled:opacity-50"
+              class="flex items-center gap-2 min-h-[44px] px-8 py-3 rounded-lg bg-gradient-to-r from-amber-600 to-amber-400 hover:from-amber-500 hover:to-amber-300 text-white font-medium transition-transform hover:scale-105 shadow-[0_0_20px_rgba(245,158,11,0.4)] disabled:opacity-50"
               disabled={!formData.termsAccepted || submitting}
               on:click={submitForm}
             >

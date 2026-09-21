@@ -10,7 +10,7 @@
   target="_blank"
   rel="noopener noreferrer"
   aria-label="Chat with us on WhatsApp"
-  class="group fixed bottom-6 right-6 z-40 flex items-center gap-3 rounded-full bg-[#25D366] px-4 py-4 text-white shadow-[0_8px_30px_rgba(37,211,102,0.4)] transition-all hover:scale-105 hover:pr-5"
+  class="group fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 flex items-center gap-3 rounded-full bg-[#25D366] px-4 py-4 text-white shadow-[0_8px_30px_rgba(37,211,102,0.4)] transition-all hover:scale-105 hover:pr-5"
 >
   <span class="absolute inset-0 rounded-full bg-[#25D366] opacity-40 motion-safe:animate-ping"></span>
   <MessageCircle size={26} class="relative" />

@@ -80,7 +80,7 @@
         <input
           type="text"
           bind:value={requesterName}
-          class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
+          class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
           placeholder="e.g. Adaeze Okonkwo"
         />
       </label>
@@ -89,7 +89,7 @@
         <input
           type="email"
           bind:value={email}
-          class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
+          class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
           placeholder="you@example.com"
         />
       </label>
@@ -100,7 +100,7 @@
           <input
             type="tel"
             bind:value={phone}
-            class="w-full rounded-r-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
+            class="w-full min-h-[44px] rounded-r-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
             placeholder="801 234 5678"
           />
         </div>
@@ -110,7 +110,7 @@
         <input
           type="text"
           bind:value={company}
-          class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
+          class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
           placeholder="Company / Organisation"
         />
       </label>
@@ -119,7 +119,7 @@
         <input
           type="text"
           bind:value={location}
-          class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
+          class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
           placeholder="e.g. Lekki Phase 1, Lagos"
         />
       </label>
@@ -132,13 +132,13 @@
           bind:value={projectBrief}
           maxlength="1500"
           rows="5"
-          class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
+          class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
           placeholder="Describe your project: scope, rooms/area, preferred styles or material specs, expected start date..."
         ></textarea>
       </label>
       <label class="block">
         <span class="mb-1 block text-sm text-stone-400">Budget Range</span>
-        <select bind:value={budgetIdx} class="w-full rounded-lg border border-white/10 bg-[#0A1628] px-4 py-2.5 text-white outline-none focus:border-emerald-500">
+        <select bind:value={budgetIdx} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-[#0A1628] px-4 py-2.5 text-white outline-none focus:border-emerald-500">
           <option value={-1}>Prefer not to say</option>
           {#each BUDGETS as b, i}
             <option value={i}>{b.label}</option>
@@ -147,7 +147,7 @@
       </label>
       <label class="block">
         <span class="mb-1 block text-sm text-stone-400">Expected Timeline</span>
-        <select bind:value={timeline} class="w-full rounded-lg border border-white/10 bg-[#0A1628] px-4 py-2.5 text-white outline-none focus:border-emerald-500">
+        <select bind:value={timeline} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-[#0A1628] px-4 py-2.5 text-white outline-none focus:border-emerald-500">
           {#each TIMELINES as t}
             <option value={t}>{t}</option>
           {/each}

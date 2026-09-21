@@ -74,6 +74,7 @@
     {:else if filtered.length === 0}
       <p class="py-16 text-center text-sm text-stone-600">{$managers.length === 0 ? "No enrolments yet. Manager submissions appear here instantly." : "No enrolments match your search."}</p>
     {:else}
+      <div class="overflow-x-auto">
       <table class="w-full text-left text-sm">
         <thead class="bg-white/5 text-stone-400">
           <tr>
@@ -135,6 +136,7 @@
           {/each}
         </tbody>
       </table>
+      </div>
     {/if}
   </div>
 </div>

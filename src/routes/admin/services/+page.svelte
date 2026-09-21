@@ -91,6 +91,7 @@
   {/if}
 
   <div class="overflow-hidden rounded-2xl" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)">
+    <div class="overflow-x-auto">
     <table class="w-full text-left text-sm">
       <thead class="bg-white/5 text-stone-400">
         <tr>
@@ -130,6 +131,7 @@
         {/each}
       </tbody>
     </table>
+    </div>
   </div>
 
   {#if $catalog && $catalog.length > 0}

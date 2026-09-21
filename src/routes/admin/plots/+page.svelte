@@ -86,6 +86,7 @@
         <p class="text-sm text-stone-500">{onlyUnverified ? 'All plots are verified. 🎉' : 'No plots found.'}</p>
       </div>
     {:else}
+      <div class="overflow-x-auto">
       <table class="w-full text-left text-sm">
         <thead class="bg-white/5 text-stone-400">
           <tr>
@@ -129,6 +130,7 @@
           {/each}
         </tbody>
       </table>
+      </div>
     {/if}
   </div>
 </div>

@@ -54,8 +54,8 @@
           <h1 class="text-xl font-bold text-white">Client Portal</h1>
         </div>
         <div class="flex items-center gap-4">
-          <button class="w-8 h-8 rounded-full bg-white/10 overflow-hidden border border-white/20">
-            <img src="https://picsum.photos/seed/client/100/100" alt="Client" class="w-full h-full object-cover" />
+          <button class="flex items-center justify-center w-11 h-11 rounded-full bg-white/10 border border-white/20" aria-label="Account">
+            <img src="https://picsum.photos/seed/client/100/100" alt="Client" class="w-8 h-8 rounded-full object-cover" />
           </button>
         </div>
       </div>

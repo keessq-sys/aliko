@@ -548,7 +548,7 @@
             type="date"
             bind:value={viewingDate}
             min={new Date().toISOString().split('T')[0]}
-            class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-emerald-500"
+            class="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-emerald-500"
           />
         </div>
         <div>
@@ -556,7 +556,7 @@
           <select
             id="viewing-time"
             bind:value={viewingTime}
-            class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-emerald-500"
+            class="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-emerald-500"
           >
             <option value="09:00" class="bg-[#0A1628]">09:00 AM</option>
             <option value="11:00" class="bg-[#0A1628]">11:00 AM</option>
@@ -569,13 +569,13 @@
       <div class="flex items-center justify-end gap-3">
         <button
           on:click={() => isViewingModalOpen = false}
-          class="px-4 py-2 rounded-xl text-xs font-medium text-stone-400 hover:text-white"
+          class="min-h-[44px] px-4 py-2 rounded-xl text-xs font-medium text-stone-400 hover:text-white"
         >
           Cancel
         </button>
         <button
           on:click={scheduleViewing}
-          class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg"
+          class="min-h-[44px] px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg"
         >
           Confirm Request
         </button>

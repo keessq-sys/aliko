@@ -11,6 +11,7 @@
   import Header from "$lib/components/layout/Header.svelte";
   import Footer from "$lib/components/layout/Footer.svelte";
   import Toast from "$lib/components/ui/Toast.svelte";
+  import MobileBottomNav from "$lib/components/layout/MobileBottomNav.svelte";
   import { page } from "$app/stores";
 
   export let data: { session?: { user?: { name?: string | null; email?: string | null; role?: string; id?: string | null } } | null };
@@ -24,6 +25,9 @@
   $: isAuthRoute = $page.url.pathname.startsWith("/auth") || $page.url.pathname.startsWith("/register");
   $: hideHeader = isDashboardRoute || isAdminRoute;
   $: hideFooter = isDashboardRoute || isAdminRoute;
+  // Dashboard/admin routes already have their own drawer-based mobile nav;
+  // the bottom tab bar is only for the public marketing/browsing site.
+  $: showMobileBottomNav = !isDashboardRoute && !isAdminRoute && !isAuthRoute;
 </script>
 
 <svelte:head>
@@ -41,12 +45,16 @@
   <Header session={data.session} />
 {/if}
 
-<main class="{hideHeader ? '' : 'pt-20'} min-h-screen bg-[#050A0E]">
+<main class="{hideHeader ? '' : 'pt-20'} {showMobileBottomNav ? 'pb-16 md:pb-0' : ''} min-h-screen bg-[#050A0E]">
   <slot />
 </main>
 
 {#if !hideFooter}
   <Footer />
+{/if}
+
+{#if showMobileBottomNav}
+  <MobileBottomNav />
 {/if}
 
 <!-- Global Toast Notifications -->

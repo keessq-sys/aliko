@@ -70,6 +70,7 @@
         {$users.length === 0 ? "No users yet — accounts appear here as soon as they sign up." : "No users match this filter."}
       </p>
     {:else}
+      <div class="overflow-x-auto">
       <table class="w-full text-left text-sm">
         <thead class="bg-white/5 text-stone-400">
           <tr>
@@ -103,6 +104,7 @@
           {/each}
         </tbody>
       </table>
+      </div>
     {/if}
   </div>
 </div>

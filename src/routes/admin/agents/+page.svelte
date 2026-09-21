@@ -74,6 +74,7 @@
     {:else if filtered.length === 0}
       <p class="py-16 text-center text-sm text-stone-600">{$applications.length === 0 ? "No agent applications yet. New wizard submissions appear here instantly." : "No applications match your search."}</p>
     {:else}
+      <div class="overflow-x-auto">
       <table class="w-full text-left text-sm">
         <thead class="bg-white/5 text-stone-400">
           <tr>
@@ -128,6 +129,7 @@
           {/each}
         </tbody>
       </table>
+      </div>
     {/if}
   </div>
 </div>

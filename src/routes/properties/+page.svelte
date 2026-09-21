@@ -300,7 +300,7 @@
     <div class="absolute inset-y-0 right-0 w-full max-w-sm bg-[#050A0E] border-l border-white/10 shadow-2xl flex flex-col p-4">
       <div class="flex items-center justify-between pb-4 border-b border-white/10">
         <h3 class="text-lg font-serif font-bold text-white">Filter Properties</h3>
-        <button on:click={() => isMobileFilterOpen = false} class="p-2 text-stone-400 hover:text-white">
+        <button on:click={() => isMobileFilterOpen = false} aria-label="Close filters" class="flex items-center justify-center min-h-[44px] min-w-[44px] -mr-2 text-stone-400 hover:text-white">
           <X size={20} />
         </button>
       </div>

@@ -162,7 +162,7 @@
             <h3 class="text-lg font-bold text-white">Reserve {selectedPlot.beaconNumber}</h3>
             <p class="text-xs text-stone-500">{selectedPlot.project?.name} &middot; {formatSqm(selectedPlot.sizeSqm)}</p>
           </div>
-          <button on:click={closeModal} class="rounded-full p-1.5 text-stone-500 hover:bg-white/10 hover:text-white"><X size={16} /></button>
+          <button on:click={closeModal} aria-label="Close" class="flex items-center justify-center min-h-[44px] min-w-[44px] -mr-2 -mt-2 rounded-full text-stone-500 hover:bg-white/10 hover:text-white"><X size={16} /></button>
         </div>
         <p class="mb-4 text-2xl font-bold text-amber-400">{formatNaira(selectedPlot.price)}</p>
 

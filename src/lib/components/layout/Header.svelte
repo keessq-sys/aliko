@@ -191,7 +191,12 @@
 
   <!-- Mobile Menu Drawer -->
   {#if isMobileMenuOpen}
-    <div class="md:hidden absolute top-20 left-0 w-full glass-l3 border-b border-white/10 shadow-2xl" transition:slide={{duration: 300}}>
+    <div
+      class="md:hidden fixed inset-x-0 bottom-0 top-20 z-30 bg-black/60"
+      role="presentation"
+      on:click={() => (isMobileMenuOpen = false)}
+    ></div>
+    <div class="md:hidden absolute top-20 left-0 w-full z-30 glass-l3 border-b border-white/10 shadow-2xl" transition:slide={{duration: 300}}>
       <div class="flex flex-col p-4 gap-2 max-h-[70vh] overflow-y-auto">
         {#each navLinks as link}
           <a
