@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npx convex dev\" \"vite dev\"",
     "dev:frontend": "vite dev",
-    "build": "vite build",
+    "build": "svelte-kit sync && vite build",
     "preview": "vite preview",
     "convex:push": "npx convex deploy",
     "deploy": "npm run build && npx wrangler pages deploy .svelte-kit/cloudflare",
@@ -17,11 +17,11 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e:report": "playwright show-report",
+    "dev:preview": "vite dev --host 127.0.0.1 --port 5188 --strictPort"
   },
   "devDependencies": {
     "@playwright/test": "^1.48.0",
-    "@rollup/rollup-win32-x64-msvc": "^4.63.4",
     "@sveltejs/adapter-cloudflare": "^4.7.0",
     "@sveltejs/kit": "^2.9.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
@@ -55,6 +55,7 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.63.4",
-    "@rollup/rollup-linux-x64-musl": "^4.63.4"
+    "@rollup/rollup-linux-x64-musl": "^4.63.4",
+    "@rollup/rollup-win32-x64-msvc": "^4.63.4"
   }
 }

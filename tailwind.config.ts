@@ -45,6 +45,11 @@ const config: Config = {
       backdropBlur: {
         "xs": "4px",
       },
+      // ── Non-standard durations used in buttons, tabs, wizard, sidebar ──
+      transitionDuration: {
+        "250": "250ms",
+        "450": "450ms",
+      },
       animation: {
         "float":     "float 6s ease-in-out infinite",
         "float-r":   "float 8s ease-in-out infinite reverse",
@@ -72,6 +77,12 @@ const config: Config = {
     },
   },
   plugins: [],
+  // Safelist ensures Tailwind never purges dynamic color classes
+  // used in HowItWorks step cards (emerald, amber, blue variants)
+  safelist: [
+    { pattern: /^(bg|text|border)-(emerald|amber|blue|sky)-(400|500)\/?(10|20)?$/ },
+    { pattern: /^bg-(emerald|amber|blue|sky)-500\/20$/, variants: ["group-hover"] },
+  ],
 };
 
 export default config;

@@ -26,7 +26,7 @@ tests/.auth/
 
 # Temporary / Shell Artifacts
 .freebuff/
-"{convex,src"*/
+"[{]convex,src"*/
 
 # OS & Editor
 .DS_Store

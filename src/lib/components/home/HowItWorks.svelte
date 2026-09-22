@@ -2,37 +2,31 @@
   import { Search, CalendarDays, ShieldCheck, Key } from 'lucide-svelte';
   import { reveal, revealStagger } from '$lib/actions/reveal';
 
-  // Tailwind's JIT compiler only generates classes that appear as complete,
-  // static strings in source — `border-{step.color}-500` never matches
-  // anything, so the classes were silently dropped from the CSS output.
-  // This lookup gives each step's color a complete, statically-scannable
-  // class string per property.
-  const COLOR_CLASSES = {
+  // Static color class maps — Tailwind JIT cannot detect interpolated class names
+  // like `bg-{color}-500`, so all classes must be complete strings here.
+  const colorMap: Record<string, { badge: string; icon: string; iconBg: string; iconBorder: string; iconHover: string }> = {
     emerald: {
-      border: 'border-emerald-500',
-      text: 'text-emerald-500',
-      textLight: 'text-emerald-400',
-      bg: 'bg-emerald-500/10',
-      bgHover: 'group-hover:bg-emerald-500/20',
-      borderSubtle: 'border-emerald-500/20'
+      badge:      'border-emerald-500 text-emerald-500 shadow-[0_0_15px_rgba(5,150,105,0.3)]',
+      icon:       'text-emerald-400',
+      iconBg:     'bg-emerald-500/10',
+      iconBorder: 'border-emerald-500/20',
+      iconHover:  'group-hover:bg-emerald-500/20',
     },
     amber: {
-      border: 'border-amber-500',
-      text: 'text-amber-500',
-      textLight: 'text-amber-400',
-      bg: 'bg-amber-500/10',
-      bgHover: 'group-hover:bg-amber-500/20',
-      borderSubtle: 'border-amber-500/20'
+      badge:      'border-amber-500 text-amber-500 shadow-[0_0_15px_rgba(217,119,6,0.3)]',
+      icon:       'text-amber-400',
+      iconBg:     'bg-amber-500/10',
+      iconBorder: 'border-amber-500/20',
+      iconHover:  'group-hover:bg-amber-500/20',
     },
     blue: {
-      border: 'border-blue-500',
-      text: 'text-blue-500',
-      textLight: 'text-blue-400',
-      bg: 'bg-blue-500/10',
-      bgHover: 'group-hover:bg-blue-500/20',
-      borderSubtle: 'border-blue-500/20'
-    }
-  } as const;
+      badge:      'border-blue-500 text-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.3)]',
+      icon:       'text-blue-400',
+      iconBg:     'bg-blue-500/10',
+      iconBorder: 'border-blue-500/20',
+      iconHover:  'group-hover:bg-blue-500/20',
+    },
+  };
 
   const steps = [
     {
@@ -40,28 +34,28 @@
       icon: Search,
       title: "Search & Discover",
       desc: "Browse 1,200+ verified listings with advanced filters tailored to your needs.",
-      color: COLOR_CLASSES.emerald
+      color: "emerald"
     },
     {
       id: 2,
       icon: CalendarDays,
       title: "Schedule a Viewing",
       desc: "Book direct physical or virtual tours with agents in just 2 clicks.",
-      color: COLOR_CLASSES.amber
+      color: "amber"
     },
     {
       id: 3,
       icon: ShieldCheck,
       title: "Verify & Secure",
       desc: "Every property comes with government-backed title verification.",
-      color: COLOR_CLASSES.blue
+      color: "blue"
     },
     {
       id: 4,
       icon: Key,
       title: "Own Your Property",
       desc: "Sign digitally and get your auto-generated deed in 24 hours.",
-      color: COLOR_CLASSES.emerald
+      color: "emerald"
     }
   ];
 </script>
@@ -111,13 +105,13 @@
           <div class="step-card rounded-2xl p-6 relative flex flex-row lg:flex-col items-start lg:items-center text-left lg:text-center gap-6 lg:gap-4 group">
             
             <!-- Number Badge -->
-            <div class="absolute -top-3 -right-3 lg:-top-4 lg:right-auto lg:left-1/2 lg:-translate-x-1/2 w-8 h-8 rounded-full bg-[#050A0E] border-2 {step.color.border} {step.color.text} flex items-center justify-center font-bold text-sm shadow-[0_0_15px_rgba(5,150,105,0.3)] group-hover:scale-110 transition-transform">
+            <div class="absolute -top-3 -right-3 lg:-top-4 lg:right-auto lg:left-1/2 lg:-translate-x-1/2 w-8 h-8 rounded-full bg-[#050A0E] border-2 {colorMap[step.color].badge} flex items-center justify-center font-bold text-sm group-hover:scale-110 transition-transform">
               {step.id}
             </div>
 
             <!-- Icon -->
-            <div class="w-16 h-16 rounded-2xl {step.color.bg} {step.color.borderSubtle} border flex items-center justify-center shrink-0 {step.color.bgHover} transition-colors">
-              <svelte:component this={step.icon} size={32} class={step.color.textLight} />
+            <div class="w-16 h-16 rounded-2xl {colorMap[step.color].iconBg} border {colorMap[step.color].iconBorder} flex items-center justify-center shrink-0 {colorMap[step.color].iconHover} transition-colors">
+              <svelte:component this={step.icon} size={32} class={colorMap[step.color].icon} />
             </div>
 
             <!-- Text -->
