@@ -65,6 +65,10 @@ const config: Config = {
       transitionTimingFunction: {
         "luxury": "cubic-bezier(0.16, 1, 0.3, 1)",
       },
+      transitionDuration: {
+        "250": "250ms",
+        "450": "450ms",
+      },
     },
   },
   plugins: [],

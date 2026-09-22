@@ -33,9 +33,12 @@ const config = {
       $utils: "src/lib/utils",
       $types: "src/lib/types",
     },
-    csrf: {
-      checkOrigin: true,
-    },
+    // No explicit csrf block: `checkOrigin` defaulted to `true` (its own
+    // default value), so this was a no-op restating the default — and
+    // `checkOrigin` is deprecated in favor of `trustedOrigins`, which is a
+    // different mechanism (an allowlist of extra trusted origins, not a
+    // boolean toggle) with its own default of `[]`. Omitting the block
+    // keeps the exact same CSRF-protected behavior with no deprecation warning.
   },
 };
 
