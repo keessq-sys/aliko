@@ -46,7 +46,7 @@
     "convex": "^1.17.1",
     "convex-svelte": "^0.14.0",
     "date-fns": "^4.1.0",
-    "lucide-svelte": "^0.466.0",
+    "lucide-svelte": "^1.0.1",
     "pdf-lib": "^1.17.1",
     "qrcode": "^1.5.4",
     "tailwind-merge": "^2.5.4",
