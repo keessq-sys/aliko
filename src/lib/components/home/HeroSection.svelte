@@ -172,7 +172,7 @@
     </div>
 
     <!-- Right 3D Stack -->
-    <div class="w-full lg:w-1/2 relative h-[600px] hidden lg:block perspective-1000">
+    <div class="w-full lg:w-1/2 relative h-[600px] hidden lg:block [perspective:1000px]">
       {#if mounted}
         <div transition:fade={{duration: 1000, delay: 300}} 
              class="absolute inset-0 flex items-center justify-center transition-transform duration-200 ease-out"
