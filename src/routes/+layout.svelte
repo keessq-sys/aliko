@@ -2,6 +2,7 @@
   import "../app.css";
   import { setupConvex } from "convex-svelte";
   import { env as publicEnv } from "$env/dynamic/public";
+  import { browser } from "$app/environment";
   // Falls back to a placeholder when no deployment is configured: setupConvex
   // requires a non-empty URL, and ConvexClient is constructed disabled during
   // SSR, so nothing connects unless a real PUBLIC_CONVEX_URL is provided in .env.
@@ -24,7 +25,9 @@
   };
 
   // Initialize Convex real-time client (falls back gracefully when unset)
-  setupConvex(convexUrl);
+  setupConvex(convexUrl, {
+    disabled: !browser || !PUBLIC_CONVEX_URL || convexUrl.includes("preview-placeholder"),
+  });
 
   // Hide header/footer on dashboard and auth routes
   $: isDashboardRoute = $page.url.pathname.startsWith("/dashboard");
@@ -56,7 +59,7 @@
   <Header session={data.session} />
 {/if}
 
-<main class="{hideHeader ? '' : 'pt-20'} {showMobileBottomNav ? 'pb-16 md:pb-0' : ''} min-h-screen bg-[#050A0E]">
+<main class="{showMobileBottomNav ? 'pb-16 md:pb-0' : ''} min-h-screen bg-[#050A0E]">
   <slot />
 </main>
 
