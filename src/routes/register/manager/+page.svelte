@@ -100,19 +100,19 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <label class="block">
             <span class="mb-1 block text-sm text-gray-400">Company Name *</span>
-            <input type="text" bind:value={companyName} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-blue-500" placeholder="ADK Estates Ltd" />
+            <input type="text" autocomplete="organization" bind:value={companyName} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-blue-500" placeholder="ADK Estates Ltd" />
           </label>
           <label class="block">
             <span class="mb-1 block text-sm text-gray-400">Contact Person *</span>
-            <input type="text" bind:value={contactName} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-blue-500" placeholder="Chidi Nwosu" />
+            <input type="text" autocomplete="name" bind:value={contactName} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-blue-500" placeholder="Chidi Nwosu" />
           </label>
           <label class="block">
             <span class="mb-1 block text-sm text-gray-400">Corporate Email *</span>
-            <input type="email" bind:value={email} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-blue-500" placeholder="manager@company.com" />
+            <input type="email" inputmode="email" autocomplete="email" bind:value={email} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-blue-500" placeholder="manager@company.com" />
           </label>
           <label class="block">
             <span class="mb-1 block text-sm text-gray-400">Phone Number *</span>
-            <input type="tel" bind:value={phone} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-blue-500" placeholder="801 234 5678" />
+            <input type="tel" inputmode="tel" autocomplete="tel-national" bind:value={phone} class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-blue-500" placeholder="801 234 5678" />
           </label>
           <label class="block">
             <span class="mb-1 block text-sm text-gray-400">CAC / RC Number</span>

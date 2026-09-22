@@ -73,14 +73,14 @@
             <td class="px-6 py-4 font-medium text-white">₦{property.price.toLocaleString()}</td>
             <td class="px-6 py-4 text-stone-400">{property.agent}</td>
             <td class="px-6 py-4 text-right">
-              <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button class="rounded p-1.5 text-stone-400 hover:bg-white/10 hover:text-white" title="Edit">
+              <div class="flex items-center justify-end gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                <button class="rounded min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-400 hover:bg-white/10 hover:text-white" title="Edit" aria-label="Edit property">
                   <Edit class="h-4 w-4" />
                 </button>
-                <button class="rounded p-1.5 text-stone-400 hover:bg-amber-500/20 hover:text-amber-400" title="Deactivate">
+                <button class="rounded min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-400 hover:bg-amber-500/20 hover:text-amber-400" title="Deactivate" aria-label="Deactivate property">
                   <EyeOff class="h-4 w-4" />
                 </button>
-                <button class="rounded p-1.5 text-stone-400 hover:bg-rose-500/20 hover:text-rose-400" title="Delete">
+                <button class="rounded min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-400 hover:bg-rose-500/20 hover:text-rose-400" title="Delete" aria-label="Delete property">
                   <Trash2 class="h-4 w-4" />
                 </button>
               </div>

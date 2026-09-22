@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Menu, X, Bell, User, LogOut, Settings, LayoutDashboard, Map as MapIcon, ChevronDown, ChevronRight, Lamp, Building, HardHat, Cpu, Grid3x3, Sofa, Sparkles, FileSignature, Hammer, DraftingCompass, LayoutGrid, Building2, Landmark } from 'lucide-svelte';
+  import { Menu, X, Bell, User, Users, Home, LogOut, Settings, LayoutDashboard, Map as MapIcon, ChevronDown, ChevronRight, Lamp, Building, HardHat, Cpu, Grid3x3, Sofa, Sparkles, FileSignature, Hammer, DraftingCompass, LayoutGrid, Building2, Landmark } from 'lucide-svelte';
   import { slide } from 'svelte/transition';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -79,7 +79,7 @@
       </a>
 
       <!-- Desktop Nav -->
-      <nav class="hidden md:flex items-center gap-8">
+      <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
         {#each navLinks as link}
           <a
             href={link.href}
@@ -130,19 +130,27 @@
       </nav>
 
       <!-- Desktop Actions -->
-      <div class="hidden md:flex items-center gap-4">
+      <div class="hidden lg:flex items-center gap-4">
         {#if isLoggedIn}
-          <button class="relative p-2 rounded-full text-stone-300 hover:text-white hover:bg-white/10 transition-colors">
+          <button
+            class="relative flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full text-stone-300 hover:text-white hover:bg-white/10 transition-colors"
+            aria-label="Notifications"
+          >
             <Bell size={20} />
             {#if unreadNotifications > 0}
-              <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full shadow-[0_0_8px_rgba(225,29,72,0.8)] animate-pulse"></span>
+              <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-rose-500 rounded-full shadow-[0_0_8px_rgba(225,29,72,0.8)] animate-pulse"></span>
             {/if}
           </button>
 
           <div class="relative">
-            <button class="flex items-center gap-2 p-1 pl-3 pr-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors" on:click={toggleProfileMenu}>
+            <button
+              class="flex items-center gap-2 min-h-[44px] pl-3 pr-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+              aria-label="Account menu"
+              aria-expanded={isProfileMenuOpen}
+              on:click={toggleProfileMenu}
+            >
               <span class="text-sm font-medium text-stone-300">{displayName}</span>
-              <span class="flex h-8 w-8 items-center justify-center rounded-full border border-emerald-500/50 bg-emerald-900/40 text-xs font-bold text-emerald-300">
+              <span class="flex h-9 w-9 items-center justify-center rounded-full border border-emerald-500/50 bg-emerald-900/40 text-xs font-bold text-emerald-300">
                 {displayName[0]?.toUpperCase() ?? 'A'}
               </span>
             </button>
@@ -178,7 +186,12 @@
       </div>
 
       <!-- Mobile Menu Button -->
-      <button class="md:hidden p-2 text-stone-300 hover:text-white" on:click={toggleMobileMenu}>
+      <button
+        class="lg:hidden flex items-center justify-center min-h-[44px] min-w-[44px] text-stone-300 hover:text-white"
+        aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+        aria-expanded={isMobileMenuOpen}
+        on:click={toggleMobileMenu}
+      >
         {#if isMobileMenuOpen}
           <X size={24} />
         {:else}
@@ -192,11 +205,11 @@
   <!-- Mobile Menu Drawer -->
   {#if isMobileMenuOpen}
     <div
-      class="md:hidden fixed inset-x-0 bottom-0 top-20 z-30 bg-black/60"
+      class="lg:hidden fixed inset-x-0 bottom-0 top-20 z-30 bg-black/60"
       role="presentation"
       on:click={() => (isMobileMenuOpen = false)}
     ></div>
-    <div class="md:hidden absolute top-20 left-0 w-full z-30 glass-l3 border-b border-white/10 shadow-2xl" transition:slide={{duration: 300}}>
+    <div class="lg:hidden absolute top-20 left-0 w-full z-30 glass-l3 border-b border-white/10 shadow-2xl" transition:slide={{duration: 300}}>
       <div class="flex flex-col p-4 gap-2 max-h-[70vh] overflow-y-auto">
         {#each navLinks as link}
           <a
@@ -223,9 +236,15 @@
         <div class="h-px bg-white/10 my-4"></div>
 
         <div class="px-2 py-1 text-xs uppercase font-mono text-stone-500 tracking-wider">Dashboards</div>
-        <a href="/dashboard/manager" class="px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5" on:click={() => isMobileMenuOpen = false}>🏢 Estate Manager</a>
-        <a href="/dashboard/agent" class="px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5" on:click={() => isMobileMenuOpen = false}>🤝 Agent Dashboard</a>
-        <a href="/dashboard/client" class="px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5" on:click={() => isMobileMenuOpen = false}>🏠 Client Portal</a>
+        <a href="/dashboard/manager" class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5" on:click={() => isMobileMenuOpen = false}>
+          <Building2 size={15} class="text-emerald-400/80" /> Estate Manager
+        </a>
+        <a href="/dashboard/agent" class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5" on:click={() => isMobileMenuOpen = false}>
+          <Users size={15} class="text-emerald-400/80" /> Agent Dashboard
+        </a>
+        <a href="/dashboard/client" class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5" on:click={() => isMobileMenuOpen = false}>
+          <Home size={15} class="text-emerald-400/80" /> Client Portal
+        </a>
 
         <div class="h-px bg-white/10 my-2"></div>
 

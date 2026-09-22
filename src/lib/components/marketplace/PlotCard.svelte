@@ -95,10 +95,11 @@
 
       <!-- Like -->
       <button
-        class="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
+        class="absolute top-3 right-3 min-h-[44px] min-w-[44px] rounded-full flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200"
         style="background:rgba(0,0,0,0.45)"
         on:click|preventDefault={() => (liked = !liked)}
         aria-label="Save plot"
+        aria-pressed={liked}
       >
         <Heart class="w-4 h-4 transition-colors {liked ? 'fill-rose-500 text-rose-500' : 'text-white/70'}" />
       </button>

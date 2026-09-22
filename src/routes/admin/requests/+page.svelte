@@ -185,7 +185,7 @@
             </label>
             <label class="mb-4 block sm:w-64">
               <span class="mb-1 block text-xs text-stone-500">Quote amount (₦, optional)</span>
-              <input type="number" bind:value={quoteAmount} min="0" class="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" placeholder="12400000" />
+              <input type="number" inputmode="numeric" bind:value={quoteAmount} min="0" class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" placeholder="12400000" />
             </label>
 
             <div class="flex flex-wrap gap-2">

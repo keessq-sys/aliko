@@ -95,7 +95,12 @@
       </div>
 
       <div class="flex items-center gap-3 w-full md:w-auto">
-        <button on:click={toggleSave} class="p-2 rounded-lg bg-black/30 border border-white/10 hover:bg-white/5 transition-colors">
+        <button
+          on:click={toggleSave}
+          class="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg bg-black/30 border border-white/10 hover:bg-white/5 transition-colors"
+          aria-label={isSaved ? 'Remove from saved properties' : 'Save property'}
+          aria-pressed={isSaved}
+        >
           <Heart size={18} class={isSaved ? "fill-rose-500 text-rose-500" : "text-white"} />
         </button>
         <button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30 transition-colors text-sm font-medium">

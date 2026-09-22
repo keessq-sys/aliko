@@ -64,6 +64,7 @@
       </div>
       <input
         type="text"
+        autocomplete="name"
         bind:value={fullName}
         class="block w-full rounded-lg border {errors.fullName ? 'border-red-500' : 'border-white/10 focus:ring-emerald-500'} bg-black/20 min-h-[44px] py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:ring-1"
         placeholder="Amara Eze"
@@ -80,6 +81,8 @@
       </div>
       <input
         type="email"
+        inputmode="email"
+        autocomplete="email"
         bind:value={email}
         class="block w-full rounded-lg border {errors.email ? 'border-red-500' : 'border-white/10 focus:ring-emerald-500'} bg-black/20 min-h-[44px] py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:ring-1"
         placeholder="you@example.com"
@@ -97,6 +100,7 @@
         </div>
         <input
           type="password"
+          autocomplete="new-password"
           bind:value={password}
           class="block w-full rounded-lg border {errors.password ? 'border-red-500' : 'border-white/10'} bg-black/20 min-h-[44px] py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all"
           placeholder="••••••••"
@@ -108,6 +112,7 @@
       <span class="mb-1 block text-sm font-medium text-gray-300">Confirm</span>
       <input
         type="password"
+        autocomplete="new-password"
         bind:value={confirmPassword}
         class="block w-full rounded-lg border {errors.confirmPassword ? 'border-red-500' : 'border-white/10'} bg-black/20 min-h-[44px] px-3 py-2.5 text-white placeholder-gray-400 backdrop-blur-sm transition-all"
         placeholder="••••••••"

@@ -174,3 +174,18 @@
   50% { transform: translateY(-12px); }
   100% { transform: translateY(0px); }
 }
+
+/* Global reduced-motion kill switch: neutralizes every CSS animation and
+   transition app-wide (Tailwind animate-* utilities, the keyframes above,
+   and any component's own <style> animations) for users who've asked the
+   OS for reduced motion. Content still appears/updates, just without the
+   motion. JS-driven effects (scroll reveal, 3D scenes) opt out separately
+   in their own code, since this can't reach canvas/WebGL rendering. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

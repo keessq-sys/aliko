@@ -484,28 +484,33 @@
               <div>
                 <input
                   type="text"
+                  autocomplete="name"
                   bind:value={inquiryName}
                   placeholder="Your Full Name"
                   required
-                  class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500"
+                  class="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
               <div>
                 <input
                   type="email"
+                  inputmode="email"
+                  autocomplete="email"
                   bind:value={inquiryEmail}
                   placeholder="Email Address"
                   required
-                  class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500"
+                  class="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
               <div>
                 <input
                   type="tel"
+                  inputmode="tel"
+                  autocomplete="tel"
                   bind:value={inquiryPhone}
                   placeholder="Phone Number (+234)"
                   required
-                  class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500"
+                  class="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
               <div>
@@ -550,7 +555,7 @@
 
 <!-- Schedule Inspection Modal -->
 {#if isViewingModalOpen}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
     <!-- Backdrop -->
     <div
       on:click={() => isViewingModalOpen = false}
@@ -559,7 +564,7 @@
     ></div>
 
     <!-- Modal Box -->
-    <div class="relative w-full max-w-md bg-[#0A1118] border border-emerald-900/50 rounded-2xl p-6 shadow-2xl z-10">
+    <div class="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-[#0A1118] border border-emerald-900/50 rounded-t-2xl sm:rounded-2xl p-6 shadow-2xl z-10">
       <h3 class="text-xl font-serif font-bold text-white mb-2">Schedule Property Inspection</h3>
       <p class="text-xs text-stone-400 mb-6">
         Select your preferred date and time. Our verified agent will meet you on site or provide a virtual guided tour.

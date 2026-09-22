@@ -100,14 +100,14 @@
               </td>
               <td class="px-6 py-4 font-medium text-stone-300">{formatCurrency(lead.value)}</td>
               <td class="px-6 py-4 text-right">
-                <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button class="rounded p-1.5 text-stone-400 hover:bg-emerald-500/20 hover:text-emerald-400" title="Call">
+                <div class="flex items-center justify-end gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                  <button class="rounded min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-400 hover:bg-emerald-500/20 hover:text-emerald-400" title="Call" aria-label="Call lead">
                     <Phone class="h-4 w-4" />
                   </button>
-                  <button class="rounded p-1.5 text-stone-400 hover:bg-blue-500/20 hover:text-blue-400" title="Email">
+                  <button class="rounded min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-400 hover:bg-blue-500/20 hover:text-blue-400" title="Email" aria-label="Email lead">
                     <Mail class="h-4 w-4" />
                   </button>
-                  <button class="rounded p-1.5 text-stone-400 hover:bg-white/10 hover:text-white" title="More">
+                  <button class="rounded min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-400 hover:bg-white/10 hover:text-white" title="More" aria-label="More actions">
                     <MoreVertical class="h-4 w-4" />
                   </button>
                 </div>

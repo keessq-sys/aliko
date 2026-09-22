@@ -34,9 +34,11 @@
           <ShieldCheck size={16} />
         </div>
       {/if}
-      <button 
+      <button
         on:click={toggleSave}
-        class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 hover:bg-emerald-500/20 transition-colors"
+        aria-label={isSaved ? 'Remove from saved' : 'Save property'}
+        aria-pressed={isSaved}
+        class="relative p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 hover:bg-emerald-500/20 transition-colors before:content-[''] before:absolute before:inset-[-8px]"
       >
         <Heart size={16} class={isSaved ? "fill-rose-500 text-rose-500" : "text-white"} />
       </button>

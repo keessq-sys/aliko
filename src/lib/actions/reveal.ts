@@ -7,6 +7,7 @@ export function reveal(node: HTMLElement, options: { delay?: number; y?: number;
   const { delay = 0, y = 28, threshold = 0.15 } = options;
 
   if (typeof IntersectionObserver === 'undefined') return {};
+  if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return {};
 
   node.style.opacity = '0';
   node.style.transform = `translateY(${y}px)`;
@@ -39,6 +40,7 @@ export function revealStagger(node: HTMLElement, options: { selector?: string; s
   const { selector = ':scope > *', step = 80, y = 24 } = options;
 
   if (typeof IntersectionObserver === 'undefined') return {};
+  if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return {};
 
   const children = Array.from(node.querySelectorAll<HTMLElement>(selector));
   children.forEach((child, i) => {

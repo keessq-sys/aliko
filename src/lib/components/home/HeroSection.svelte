@@ -5,6 +5,7 @@
   import { fade } from 'svelte/transition';
   import { HERO_IMAGES } from '$lib/data/imagery';
   import { whatsappHref } from '$lib/data/contact';
+  import DiamondHero from '$lib/components/three/DiamondHero.svelte';
 
   /**
    * Drop a real property walkthrough clip's URL here (mp4/webm, muted,
@@ -126,6 +127,11 @@
   <!-- Floating Orbs -->
   <div class="orb bg-emerald-600/20 w-96 h-96 top-20 left-10" style="transform: translate({mouseX * -0.02}px, {mouseY * -0.02}px);"></div>
   <div class="orb bg-amber-500/20 w-80 h-80 bottom-20 right-20" style="transform: translate({mouseX * 0.02}px, {mouseY * 0.02}px);"></div>
+
+  <!-- Decorative "Diamond Key" 3D gem — the brand's one tasteful hero moment -->
+  <div class="absolute top-2 right-2 w-16 h-16 sm:top-4 sm:right-4 sm:w-24 sm:h-24 md:top-16 md:right-8 md:w-36 md:h-36 lg:top-20 lg:right-10 lg:w-52 lg:h-52 z-[1] pointer-events-none">
+    <DiamondHero />
+  </div>
 
   <div class="container mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-12">
     

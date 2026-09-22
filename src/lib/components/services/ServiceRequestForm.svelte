@@ -79,6 +79,7 @@
         <span class="mb-1 block text-sm text-stone-400">Full Name *</span>
         <input
           type="text"
+          autocomplete="name"
           bind:value={requesterName}
           class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
           placeholder="e.g. Adaeze Okonkwo"
@@ -88,6 +89,8 @@
         <span class="mb-1 block text-sm text-stone-400">Email Address *</span>
         <input
           type="email"
+          inputmode="email"
+          autocomplete="email"
           bind:value={email}
           class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
           placeholder="you@example.com"
@@ -99,6 +102,8 @@
           <span class="inline-flex items-center rounded-l-lg border border-r-0 border-white/10 bg-black/60 px-3 text-stone-400">+234</span>
           <input
             type="tel"
+            inputmode="tel"
+            autocomplete="tel-national"
             bind:value={phone}
             class="w-full min-h-[44px] rounded-r-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
             placeholder="801 234 5678"
@@ -109,6 +114,7 @@
         <span class="mb-1 block text-sm text-stone-400">Company (optional)</span>
         <input
           type="text"
+          autocomplete="organization"
           bind:value={company}
           class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
           placeholder="Company / Organisation"

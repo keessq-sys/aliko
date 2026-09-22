@@ -435,13 +435,13 @@
                   <p class="text-xs text-stone-400">{doc.property} • {doc.size}</p>
                 </div>
               </div>
-              <button class="p-2 hover:bg-white/10 rounded-full text-stone-400">
+              <button class="min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-white/10 rounded-full text-stone-400" aria-label="Download document">
                 <Download class="w-4 h-4" />
               </button>
             </div>
           {/each}
         </div>
-        
+
       {:else if currentTab === 'reports'}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {#each [
@@ -459,7 +459,7 @@
                   <p class="text-xs text-stone-400">{report.period}</p>
                 </div>
               </div>
-              <button class="p-2 hover:bg-white/10 rounded-full text-stone-400">
+              <button class="min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-white/10 rounded-full text-stone-400" aria-label="Download report">
                 <Download class="w-4 h-4" />
               </button>
             </div>

@@ -108,6 +108,8 @@
         </div>
         <input
           type="email"
+          inputmode="email"
+          autocomplete="email"
           bind:value={email}
           placeholder="you@example.com"
           class="block w-full min-h-[44px] rounded-lg border border-white/10 bg-black/20 py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:ring-1 focus:ring-emerald-500"
@@ -133,6 +135,7 @@
         <input
           type="text"
           inputmode="numeric"
+          autocomplete="one-time-code"
           bind:value={code}
           placeholder="6-digit code"
           maxlength="6"
@@ -145,6 +148,7 @@
         </div>
         <input
           type="password"
+          autocomplete="new-password"
           bind:value={newPassword}
           placeholder="New password"
           class="block w-full min-h-[44px] rounded-lg border border-white/10 bg-black/20 py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:ring-1 focus:ring-emerald-500"
@@ -156,6 +160,7 @@
         </div>
         <input
           type="password"
+          autocomplete="new-password"
           bind:value={confirmPassword}
           placeholder="Confirm new password"
           class="block w-full min-h-[44px] rounded-lg border border-white/10 bg-black/20 py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:ring-1 focus:ring-emerald-500"

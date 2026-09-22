@@ -82,8 +82,15 @@
         <form class="mt-4 flex flex-col gap-2" on:submit|preventDefault>
           <p class="text-xs text-stone-400 mb-1">Subscribe for exclusive listings</p>
           <div class="flex gap-2">
-            <input type="email" placeholder="Email address" class="w-full bg-stone-800 border border-stone-700 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all" required />
-            <button type="submit" class="btn-primary px-3 py-2"><Mail size={16} /></button>
+            <input
+              type="email"
+              inputmode="email"
+              autocomplete="email"
+              placeholder="Email address"
+              class="w-full min-h-[44px] bg-stone-800 border border-stone-700 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all"
+              required
+            />
+            <button type="submit" aria-label="Subscribe" class="btn-primary min-h-[44px] min-w-[44px] px-3 py-2"><Mail size={16} /></button>
           </div>
         </form>
       </div>

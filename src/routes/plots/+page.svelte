@@ -173,8 +173,8 @@
 </div>
 
 {#if selectedPlot}
-  <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" role="presentation" on:click={closeModal}>
-    <div class="w-full max-w-md rounded-2xl border border-white/10 bg-[#0A1628] p-6" role="dialog" aria-modal="true" tabindex="-1" on:click|stopPropagation on:keydown|stopPropagation>
+  <div class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/80 p-0 sm:p-4 backdrop-blur-sm" role="presentation" on:click={closeModal}>
+    <div class="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl border border-white/10 bg-[#0A1628] p-6" role="dialog" aria-modal="true" tabindex="-1" on:click|stopPropagation on:keydown|stopPropagation>
       {#if bookingResult}
         <div class="text-center">
           <CheckCircle2 size={40} class="mx-auto mb-3 text-emerald-400" />
@@ -217,6 +217,8 @@
             <span class="mb-1.5 block text-xs text-stone-500">Email for payment receipt</span>
             <input
               type="email"
+              inputmode="email"
+              autocomplete="email"
               bind:value={payEmail}
               placeholder="you@example.com"
               class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-500"

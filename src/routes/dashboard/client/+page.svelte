@@ -286,7 +286,10 @@
           <div class="rounded-xl border border-white/5 bg-[#050A0E]/80 overflow-hidden shadow-xl group">
             <div class="relative h-48 w-full overflow-hidden">
               <img src={prop.image} alt={prop.title} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-              <button class="absolute top-3 right-3 p-2 rounded-full bg-black/50 text-emerald-400 hover:bg-rose-500/80 hover:text-white transition-colors backdrop-blur-md">
+              <button
+                class="absolute top-3 right-3 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-black/50 text-emerald-400 hover:bg-rose-500/80 hover:text-white transition-colors backdrop-blur-md"
+                aria-label="Remove from saved properties"
+              >
                 <Heart class="w-4 h-4 fill-current" />
               </button>
               <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-xs text-white">
@@ -364,7 +367,7 @@
                 <span>{doc.size}</span>
               </div>
             </div>
-            <button class="p-2 hover:bg-white/10 rounded-full text-stone-400 hover:text-white">
+            <button class="min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-white/10 rounded-full text-stone-400 hover:text-white" aria-label="Download document">
               <Download class="w-4 h-4" />
             </button>
           </div>

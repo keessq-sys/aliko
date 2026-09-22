@@ -1,0 +1,24 @@
+{
+  "name": "Aliko Diamond Key",
+  "short_name": "Diamond Key",
+  "description": "Nigeria's government-verified real estate, land and property-services marketplace.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#050A0E",
+  "theme_color": "#050A0E",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

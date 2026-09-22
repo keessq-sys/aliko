@@ -233,7 +233,7 @@
           </label>
           <label class="block">
             <span class="mb-1 block text-xs text-stone-400">Price (NGN) *</span>
-            <input type="number" bind:value={form.price} placeholder="150000000" class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" />
+            <input type="number" inputmode="numeric" bind:value={form.price} placeholder="150000000" class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" />
           </label>
         </div>
         <div class="grid grid-cols-2 gap-3">
@@ -249,19 +249,19 @@
         <div class="grid grid-cols-4 gap-3">
           <label class="block">
             <span class="mb-1 block text-xs text-stone-400">Beds</span>
-            <input type="number" bind:value={form.bedrooms} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
+            <input type="number" inputmode="numeric" bind:value={form.bedrooms} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
           </label>
           <label class="block">
             <span class="mb-1 block text-xs text-stone-400">Baths</span>
-            <input type="number" bind:value={form.bathrooms} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
+            <input type="number" inputmode="numeric" bind:value={form.bathrooms} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
           </label>
           <label class="block">
             <span class="mb-1 block text-xs text-stone-400">Parking</span>
-            <input type="number" bind:value={form.parkingSpots} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
+            <input type="number" inputmode="numeric" bind:value={form.parkingSpots} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
           </label>
           <label class="block">
             <span class="mb-1 block text-xs text-stone-400">Sqm</span>
-            <input type="number" bind:value={form.sizeSqm} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
+            <input type="number" inputmode="numeric" bind:value={form.sizeSqm} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
           </label>
         </div>
         <label class="block">

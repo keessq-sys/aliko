@@ -27,6 +27,8 @@
   let resizeObs: ResizeObserver | undefined;
 
   onMount(async () => {
+    const reducedMotion =
+      typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const THREE = await import("three");
 
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
@@ -155,13 +157,15 @@
     let t = 0;
     function animate() {
       animFrame = requestAnimationFrame(animate);
-      t += 0.006;
-      camera.position.x = Math.cos(t * 0.12) * 16;
-      camera.position.z = Math.sin(t * 0.12) * 16;
-      camera.lookAt(0, 0, 0);
-      meshData.forEach(({ mesh, base, phase, status }) => {
-        if (status === "AVAILABLE") mesh.position.y = base + Math.sin(t * 1.4 + phase) * 0.06;
-      });
+      if (!reducedMotion) {
+        t += 0.006;
+        camera.position.x = Math.cos(t * 0.12) * 16;
+        camera.position.z = Math.sin(t * 0.12) * 16;
+        camera.lookAt(0, 0, 0);
+        meshData.forEach(({ mesh, base, phase, status }) => {
+          if (status === "AVAILABLE") mesh.position.y = base + Math.sin(t * 1.4 + phase) * 0.06;
+        });
+      }
       renderer.render(scene, camera);
     }
     animate();
