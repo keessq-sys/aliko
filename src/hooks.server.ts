@@ -7,6 +7,10 @@
 // (2) baseline security/cache headers. Nothing here touches auth, routing or
 // Convex — it only decorates the outgoing Response.
 import type { Handle } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
+import { ConvexHttpClient } from 'convex/browser';
+import { makeFunctionReference } from 'convex/server';
+import { env } from '$env/dynamic/public';
 
 /** Route prefixes that must never be indexed or cited, even if a crawler
  *  ignores robots.txt or a private URL gets linked from somewhere external. */
@@ -54,9 +58,31 @@ export const handle: Handle = async ({ event, resolve }) => {
     event.locals.aiBot = aiBot;
   }
 
-  const response = await resolve(event);
-
   const pathname = event.url.pathname;
+  if (pathname.startsWith('/admin') || pathname.startsWith('/dashboard/')) {
+    const token = event.cookies.get('__convexAuthJWT');
+    if (!token || !env.PUBLIC_CONVEX_URL) {
+      throw redirect(303, `/auth?tab=signin&redirect=${encodeURIComponent(pathname)}`);
+    }
+    try {
+      const client = new ConvexHttpClient(env.PUBLIC_CONVEX_URL);
+      client.setAuth(token);
+      const profile = await client.query(makeFunctionReference<'query'>('users:getMyProfile'), {});
+      if (!profile) throw new Error('No authenticated profile');
+      event.locals.user = profile as App.Locals['user'];
+      const requiredRole = pathname.startsWith('/admin') ? 'ADMIN'
+        : pathname.startsWith('/dashboard/agent') ? 'AGENT'
+        : pathname.startsWith('/dashboard/manager') ? 'ESTATE_MANAGER'
+        : null;
+      if (requiredRole && profile.role !== requiredRole) throw redirect(303, '/unauthorized');
+    } catch (error) {
+      if ((error as { status?: number }).status === 303) throw error;
+      event.cookies.delete('__convexAuthJWT', { path: '/' });
+      throw redirect(303, `/auth?tab=signin&redirect=${encodeURIComponent(pathname)}`);
+    }
+  }
+
+  const response = await resolve(event);
 
   if (isPrivateRoute(pathname)) {
     // Authoritative "do not index" — wins over any inherited/default indexing

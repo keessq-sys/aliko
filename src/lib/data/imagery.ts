@@ -20,20 +20,23 @@ export const HERO_IMAGES = {
 };
 
 export const SIGNATURE_DEVELOPMENTS = [
-  { name: 'Maitama Hills Estate', location: 'Maitama, Abuja', image: picsum('adk-dev-maitama', 1200, 1500) },
-  { name: 'Lekki Waterfront Towers', location: 'Lekki, Lagos', image: picsum('adk-dev-lekki', 1200, 900) },
-  { name: 'Diamond Key Gardens', location: 'Guzape, Abuja', image: picsum('adk-dev-guzape', 1200, 900) },
-  { name: 'Asokoro Court Residences', location: 'Asokoro, Abuja', image: picsum('adk-dev-asokoro', 1200, 1500) },
-  { name: 'Port Harcourt Marina City', location: 'GRA, Port Harcourt', image: picsum('adk-dev-ph', 1200, 900) }
+  { name: 'Maitama Hills Estate', location: 'Maitama, Abuja', image: '/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0228.jpg' },
+  { name: 'Lekki Waterfront Towers', location: 'Lekki, Lagos', image: '/images/locations/lagos/victoria-island-aerial.jpg' },
+  { name: 'Diamond Key Gardens', location: 'Guzape, Abuja', image: '/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0129.jpg' },
+  { name: 'Asokoro Court Residences', location: 'Asokoro, Abuja', image: '/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0190.jpg' },
+  { name: 'Port Harcourt Marina City', location: 'GRA, Port Harcourt', image: '/images/locations/port-harcourt/tower.jpg' },
+  { name: 'Mapo Heritage Quarter', location: 'Ibadan, Oyo', image: '/images/locations/ibadan/mapo-hall.jpg' },
+  { name: 'Coal City Residences', location: 'Enugu, Enugu', image: '/images/locations/enugu/panorama.jpg' },
+  { name: 'Kano Commerce District', location: 'Kano, Kano', image: '/images/locations/kano/aerial.jpg' }
 ];
 
 export const EXPLORE_LOCATIONS = [
-  { city: 'Lagos', state: 'Lagos State', listings: 412, image: picsum('adk-city-lagos', 900, 1100) },
-  { city: 'Abuja', state: 'FCT', listings: 356, image: picsum('adk-city-abuja', 900, 1100) },
-  { city: 'Port Harcourt', state: 'Rivers State', listings: 128, image: picsum('adk-city-ph', 900, 1100) },
-  { city: 'Enugu', state: 'Enugu State', listings: 94, image: picsum('adk-city-enugu', 900, 1100) },
-  { city: 'Ibadan', state: 'Oyo State', listings: 87, image: picsum('adk-city-ibadan', 900, 1100) },
-  { city: 'Kano', state: 'Kano State', listings: 61, image: picsum('adk-city-kano', 900, 1100) }
+  { city: 'Lagos', state: 'Lagos State', listings: 412, images: ['/images/locations/lagos/skyline.jpg','/images/locations/lagos/ikoyi.jpg','/images/locations/lagos/victoria-island-aerial.jpg'] },
+  { city: 'Abuja', state: 'FCT', listings: 356, images: ['/images/locations/abuja/national-mosque.jpg','/images/locations/abuja/aerial.jpg','/images/locations/abuja/satellite.jpg'] },
+  { city: 'Port Harcourt', state: 'Rivers State', listings: 128, images: ['/images/locations/port-harcourt/tower.jpg','/images/locations/port-harcourt/nddc.jpg','/images/locations/port-harcourt/aerial.jpg'] },
+  { city: 'Enugu', state: 'Enugu State', listings: 94, images: ['/images/locations/enugu/city.jpg','/images/locations/enugu/unity-park.jpg','/images/locations/enugu/panorama.jpg'] },
+  { city: 'Ibadan', state: 'Oyo State', listings: 87, images: ['/images/locations/ibadan/mapo-hall.jpg','/images/locations/ibadan/bowen-tower.jpg','/images/locations/ibadan/aerial.jpg'] },
+  { city: 'Kano', state: 'Kano State', listings: 61, images: ['/images/locations/kano/aerial.jpg','/images/locations/kano/historic-aerial.png','/images/locations/kano/satellite.jpg'] }
 ];
 
 export const VISION_BANNER_IMAGE = picsum('adk-vision-banner', 1920, 1280);

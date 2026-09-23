@@ -1,8 +1,8 @@
 import { v } from "convex/values";
 import { query, mutation, action, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { internal } from "./_generated/api";
-import { Id } from "./_generated/dataModel";
+import { api, internal } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 
 // ── Queries ────────────────────────────────────────────────────────────────
 
@@ -87,11 +87,11 @@ export const generateDeedOfAssignment = action({
   handler: async (ctx, args) => {
     // Fetch data needed for the deed
     const [client, plot, booking] = await Promise.all([
-      ctx.runQuery(internal.legalDocuments.getClientInternal, { userId: args.clientId }),
-      ctx.runQuery(internal.legalDocuments.getPlotWithProject, { plotId: args.plotId }),
-      ctx.runQuery(internal.bookings.getBookingInternal, { bookingId: args.bookingId }),
+      ctx.runQuery(api.legalDocuments.getClientInternal, { userId: args.clientId }),
+      ctx.runQuery(api.legalDocuments.getPlotWithProject, { plotId: args.plotId }),
+      ctx.runQuery(api.bookings.getBookingInternal, { bookingId: args.bookingId }),
     ]);
-    if (!client || !plot || !booking) throw new Error("Missing data for document generation");
+    if (!client || !plot || !plot.project || !booking) throw new Error("Missing data for document generation");
 
     const { PDFDocument, rgb, StandardFonts } = await import("pdf-lib");
     const QRCode = await import("qrcode");
@@ -167,7 +167,7 @@ export const generateDeedOfAssignment = action({
     page.drawText("Verify at alikodiamondkey.com/legal/track", { x: margin, y: 44, font: helvetica, size: 7, color: rgb(0.63, 0.61, 0.6) });
 
     const pdfBytes = await pdfDoc.save();
-    const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+    const pdfBlob = new Blob([pdfBytes.buffer.slice(pdfBytes.byteOffset, pdfBytes.byteOffset + pdfBytes.byteLength) as ArrayBuffer], { type: "application/pdf" });
 
     // Upload to Convex storage
     const storageId = await ctx.storage.store(pdfBlob);

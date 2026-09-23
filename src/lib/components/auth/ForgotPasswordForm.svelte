@@ -7,7 +7,7 @@
   // so this can't be used to enumerate registered emails.
   import { Mail, Lock, KeyRound, Loader2, CheckCircle2, ArrowLeft } from 'lucide-svelte';
   import { api } from '$lib/convex/_generated/api';
-  import { runMutation } from '$lib/convex/queries';
+  import { runAction } from '$lib/convex/queries';
   import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher<{ backToSignIn: void }>();
@@ -20,7 +20,7 @@
   let loading = false;
   let errorMessage = '';
 
-  const signIn = async (args: any) => runMutation(api.auth.signIn, args);
+  const signIn = async (args: any) => runAction(api.auth.signIn, args);
 
   async function requestCode(e: Event) {
     e.preventDefault();

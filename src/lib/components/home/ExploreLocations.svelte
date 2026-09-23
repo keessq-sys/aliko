@@ -23,12 +23,12 @@
           use:tilt={{ max: 6 }}
           class="group relative aspect-[3/4] overflow-hidden rounded-2xl border border-white/5"
         >
-          <img
-            src={loc.image}
-            alt={loc.city}
-            class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-            loading="lazy"
-          />
+          <img src={loc.images[0]} alt={`${loc.city} landmark and city view`} class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+          <div class="absolute right-2 top-2 flex gap-1">
+            {#each loc.images.slice(1) as image, i}
+              <img src={image} alt={`${loc.city} ${i === 0 ? 'residential' : 'aerial'} view`} class="h-12 w-12 rounded-lg border-2 border-white/70 object-cover shadow-lg" loading="lazy" />
+            {/each}
+          </div>
           <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
           <div class="absolute inset-x-0 bottom-0 p-4">
             <p class="flex items-center gap-1 text-[11px] text-emerald-300">

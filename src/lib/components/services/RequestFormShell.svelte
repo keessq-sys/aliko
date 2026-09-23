@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { CheckCircle2 } from 'lucide-svelte';
+  import { CheckCircle2, MessageCircle } from 'lucide-svelte';
   import { fade } from 'svelte/transition';
+  import { whatsappHref } from '$lib/data/contact';
 
   export let submitted = false;
   export let reference = '';
@@ -44,6 +45,7 @@
     </div>
 
     <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <a href={whatsappHref(`Hello Aliko Diamond Key Support, I just submitted ${serviceLabel} request ${reference}. Please help me with the next steps.`)} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-lg bg-[#25D366] px-6 py-3 font-semibold text-black transition-colors hover:bg-[#36e477]"><MessageCircle size={18} /> Chat with Support</a>
       <a href={homeHref} class="rounded-lg bg-white/10 px-6 py-3 transition-colors hover:bg-white/20">Return Home</a>
       <a href="/dashboard/client" class="btn-primary px-6 py-3">Track in Client Portal</a>
       <button type="button" on:click={onReset} class="rounded-lg border border-white/10 px-6 py-3 text-stone-300 transition-colors hover:bg-white/10">Submit Another Request</button>

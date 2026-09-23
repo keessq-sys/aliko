@@ -32,7 +32,7 @@
   } from 'lucide-svelte';
 
   $: propertyId = $page.params.id;
-  $: liveProperty = useQuery(api.properties.getProperty, { slug: propertyId });
+  $: liveProperty = useQuery(api.properties.getProperty, { slug: propertyId ?? '' });
   $: property = $liveProperty ? toDisplayProperty($liveProperty) : $liveProperty === null ? null : undefined;
   $: liveCatalog = useQuery(api.properties.listProperties, { activeOnly: true, limit: 200 });
   $: similarProperties = ($liveCatalog ?? [])

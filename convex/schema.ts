@@ -484,6 +484,16 @@ export default defineSchema({
     .index("by_requester", ["requesterId"])
     .index("by_date", ["createdAt"]),
 
+  serviceRequestMessages: defineTable({
+    requestId: v.id("serviceRequests"),
+    senderId: v.id("users"),
+    senderRole: v.union(v.literal("ADMIN"), v.literal("CLIENT")),
+    body: v.string(),
+    createdAt: v.number(),
+  })
+    .index("by_request_date", ["requestId", "createdAt"])
+    .index("by_sender", ["senderId"]),
+
   // ── Estate Manager Profiles ──────────────────────────────────────────────
   estateManagers: defineTable({
     userId: v.optional(v.id("users")),

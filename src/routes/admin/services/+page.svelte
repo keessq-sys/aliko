@@ -63,7 +63,7 @@
           name: s.name,
           tagline: s.tagline,
           description: s.tagline,
-          category: s.category,
+          category: s.category as any,
           heroImage: s.image,
           features: s.features,
           startingPrice: s.startingPrice,

@@ -1,7 +1,20 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
-import { internal } from "./_generated/api";
-import { createHmac, timingSafeEqual } from "crypto";
+import { api, internal } from "./_generated/api";
+
+async function hmacHex(algorithm: "SHA-256" | "SHA-512", secret: string, body: string) {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: algorithm }, false, ["sign"]);
+  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
+  return [...new Uint8Array(signature)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function constantTimeEqual(left: string, right: string) {
+  if (left.length !== right.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < left.length; i++) mismatch |= left.charCodeAt(i) ^ right.charCodeAt(i);
+  return mismatch === 0;
+}
 
 const http = httpRouter();
 
@@ -12,11 +25,11 @@ http.route({
   handler: httpAction(async (ctx, req) => {
     const rawBody = await req.text();
     const signature = req.headers.get("x-paystack-signature");
-    const expected = createHmac("sha512", process.env.PAYSTACK_SECRET_KEY!)
-      .update(rawBody)
-      .digest("hex");
+    const secret = process.env.PAYSTACK_SECRET_KEY;
+    if (!secret) return new Response("Webhook not configured", { status: 503 });
+    const expected = await hmacHex("SHA-512", secret, rawBody);
 
-    if (!signature || !timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) {
+    if (!signature || !constantTimeEqual(signature, expected)) {
       return new Response("Invalid signature", { status: 401 });
     }
 
@@ -39,7 +52,7 @@ http.route({
       if (result?.isFullyPaid) {
         // Auto-generate deed of assignment
         const booking = result.booking;
-        await ctx.runAction(internal.legalDocuments.generateDeedOfAssignment, {
+        await ctx.runAction(api.legalDocuments.generateDeedOfAssignment, {
           clientId: booking.clientId,
           plotId: booking.plotId,
           bookingId: booking._id,
@@ -47,11 +60,6 @@ http.route({
           considerationAmount: booking.totalAmount,
         });
 
-        // WhatsApp confirmation
-        await ctx.runAction(internal.notifications.sendWhatsAppTemplate, {
-          bookingId: booking._id,
-          templateName: "booking_confirmation",
-        });
       }
     }
 
@@ -66,11 +74,11 @@ http.route({
   handler: httpAction(async (ctx, req) => {
     const rawBody = await req.text();
     const signature = req.headers.get("x-hellosign-signature");
-    const expected = createHmac("sha256", process.env.DROPBOX_SIGN_API_KEY!)
-      .update(rawBody)
-      .digest("hex");
+    const secret = process.env.DROPBOX_SIGN_API_KEY;
+    if (!secret) return new Response("Webhook not configured", { status: 503 });
+    const expected = await hmacHex("SHA-256", secret, rawBody);
 
-    if (!signature || signature !== expected) {
+    if (!signature || !constantTimeEqual(signature, expected)) {
       return new Response("Invalid signature", { status: 401 });
     }
 

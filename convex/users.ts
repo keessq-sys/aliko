@@ -1,7 +1,14 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { Id } from "./_generated/dataModel";
+import type { Id } from "./_generated/dataModel";
+
+async function requireAdmin(ctx: any) {
+  const userId = await getAuthUserId(ctx);
+  if (!userId) throw new Error("Unauthorized");
+  const user = await ctx.db.get(userId as Id<"users">);
+  if (user?.role !== "ADMIN") throw new Error("Forbidden — ADMIN only");
+}
 
 // ── Self-service: the signed-in user's own profile ──────────────────────
 export const getMyProfile = query({
@@ -46,6 +53,7 @@ export const listUsers = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     let rows = args.role
       ? await ctx.db.query("users").withIndex("by_role", (q) => q.eq("role", args.role!)).collect()
       : await ctx.db.query("users").collect();
@@ -59,6 +67,7 @@ export const listUsers = query({
 export const getRoleCounts = query({
   args: {},
   handler: async (ctx) => {
+    await requireAdmin(ctx);
     const rows = await ctx.db.query("users").collect();
     const counts: Record<string, number> = {
       ADMIN: 0, AGENT: 0, CLIENT: 0, ESTATE_MANAGER: 0, DIASPORA_CLIENT: 0, TENANT: 0,

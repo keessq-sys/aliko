@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { Id } from "./_generated/dataModel";
+import type { Id } from "./_generated/dataModel";
 
 // ── Self-service: how many listings are assigned to the signed-in agent ──
 // Note: nothing in the admin UI currently assigns an agentId to a property

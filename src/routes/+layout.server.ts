@@ -8,7 +8,7 @@ import { buildPageGraph } from "$lib/schema/graph";
 // rather than being rebuilt by every route.
 const globalSchema = [buildOrganizationSchema(), buildWebSiteSchema()];
 
-export const load: LayoutServerLoad = async ({ cookies }) => {
+export const load: LayoutServerLoad = async ({ cookies, locals }) => {
   // Convex auth stores a session token in a cookie named "__convexAuthJWT"
   // We read the token here to pass basic session info to the layout for
   // server-rendered pages (auth state is fully hydrated client-side via
@@ -19,6 +19,13 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
 
   if (!token) {
     return { session: null, ...seoBase };
+  }
+
+  if (locals.user) {
+    return {
+      session: { user: { name: locals.user.name ?? null, email: locals.user.email ?? null, role: locals.user.role ?? 'CLIENT', id: locals.user._id ?? null } },
+      ...seoBase,
+    };
   }
 
   try {

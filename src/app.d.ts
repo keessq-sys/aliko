@@ -2,14 +2,13 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 declare global {
-	namespace App {
+  namespace App {
+    interface Locals {
+      /** Identified crawler, when the request came from a known answer engine. */
+      aiBot?: string | null;
+      user?: { _id?: string; name?: string; email?: string; role?: string; phone?: string };
+    }
 		// interface Error {}
-		interface Locals {
-			/** Set by hooks.server.ts when the request's User-Agent matches a
-			 *  known AI crawler/answer-engine — used only for server-side
-			 *  observability (see AEO/GEO bot logging in hooks.server.ts). */
-			aiBot?: string | null;
-		}
 		// interface PageData {}
 		// interface PageState {}
 		// interface Platform {}

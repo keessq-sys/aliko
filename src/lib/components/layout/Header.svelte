@@ -5,7 +5,7 @@
   import { goto } from '$app/navigation';
   import DiamondMark from '$lib/components/ui/DiamondMark.svelte';
   import { api } from '$lib/convex/_generated/api';
-  import { runMutation } from '$lib/convex/queries';
+  import { runAction } from '$lib/convex/queries';
 
   export let session: { user?: { name?: string | null; email?: string | null; role?: string; id?: string | null } } | null = null;
 
@@ -20,7 +20,7 @@
 
   async function signOut() {
     try {
-      await runMutation(api.auth.signOut, {});
+      await runAction(api.auth.signOut, {});
     } catch {
       /* no active session server-side — still clear the client UI */
     }
@@ -209,7 +209,7 @@
       role="presentation"
       on:click={() => (isMobileMenuOpen = false)}
     ></div>
-    <div class="lg:hidden absolute top-20 left-0 w-full z-30 glass-l3 border-b border-white/10 shadow-2xl" transition:slide={{duration: 300}}>
+    <div class="lg:hidden absolute top-20 left-0 w-full z-30 bg-[#071018] border-b border-white/15 shadow-2xl" transition:slide={{duration: 300}}>
       <div class="flex flex-col p-4 gap-2 max-h-[70vh] overflow-y-auto">
         {#each navLinks as link}
           <a

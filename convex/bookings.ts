@@ -1,8 +1,8 @@
 import { v } from "convex/values";
 import { query, mutation, internalMutation, action } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { internal } from "./_generated/api";
-import { Id } from "./_generated/dataModel";
+import { api, internal } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 
 // ── Queries ────────────────────────────────────────────────────────────────
 
@@ -200,7 +200,7 @@ export const initializePaystackPayment = action({
     callbackUrl: v.string(),
   },
   handler: async (ctx, args) => {
-    const booking = await ctx.runQuery(internal.bookings.getBookingInternal, { bookingId: args.bookingId });
+    const booking = await ctx.runQuery(api.bookings.getBookingInternal, { bookingId: args.bookingId });
     if (!booking) throw new Error("Booking not found");
 
     const res = await fetch("https://api.paystack.co/transaction/initialize", {

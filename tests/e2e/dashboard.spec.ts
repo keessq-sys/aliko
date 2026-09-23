@@ -3,26 +3,27 @@ import { test, expect } from '@playwright/test';
 test.describe('Dashboard Pages (Protected)', () => {
   test('should redirect to login when accessing agent dashboard', async ({ page }) => {
     await page.goto('/dashboard/agent');
-    await expect(page).toHaveURL(/.*login/);
+    await expect(page).toHaveURL(/.*auth.*signin/);
   });
 
   test('should redirect to login when accessing client dashboard', async ({ page }) => {
     await page.goto('/dashboard/client');
-    await expect(page).toHaveURL(/.*login/);
+    await expect(page).toHaveURL(/.*auth.*signin/);
   });
 
   test('should redirect to login when accessing manager dashboard', async ({ page }) => {
     await page.goto('/dashboard/manager');
-    await expect(page).toHaveURL(/.*login/);
+    await expect(page).toHaveURL(/.*auth.*signin/);
   });
 
   test('should redirect to login when accessing admin dashboard', async ({ page }) => {
     await page.goto('/admin');
-    await expect(page).toHaveURL(/.*login/);
+    await expect(page).toHaveURL(/.*auth.*signin/);
   });
 });
 
 test.describe('Admin Dashboard (After Login)', () => {
+  test.skip(!process.env.ADMIN_E2E_AUTH, 'Set ADMIN_E2E_AUTH and provide tests/.auth/admin.json to run authenticated admin tests.');
   test.use({ storageState: 'tests/.auth/admin.json' });
 
   test.beforeEach(async ({ page }) => {

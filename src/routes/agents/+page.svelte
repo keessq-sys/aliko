@@ -4,6 +4,7 @@
   import { useQuery } from '$lib/convex/queries';
   import { api } from '$lib/convex/_generated/api';
   import { whatsappHref } from '$lib/data/contact';
+  import { FALLBACK_AGENTS } from '$lib/data/fallbackCatalog';
 
   const heroImage = SERVICE_GALLERIES['property-development'][1];
 
@@ -13,10 +14,11 @@
   let specializationFilter = 'All Specializations';
   let stateFilter = 'All Locations';
 
-  $: specializationOptions = ['All Specializations', ...new Set(($agents ?? []).flatMap((a: any) => a.specializations))];
-  $: stateOptions = ['All Locations', ...new Set(($agents ?? []).flatMap((a: any) => a.statesOfOperation))];
+  $: visibleAgents = ($agents?.length ? $agents : FALLBACK_AGENTS) as any[];
+  $: specializationOptions = ['All Specializations', ...new Set(visibleAgents.flatMap((a: any) => a.specializations))];
+  $: stateOptions = ['All Locations', ...new Set(visibleAgents.flatMap((a: any) => a.statesOfOperation))];
 
-  $: filteredAgents = ($agents ?? []).filter((a: any) => {
+  $: filteredAgents = visibleAgents.filter((a: any) => {
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       const match =
@@ -57,7 +59,7 @@
         <p class="text-gray-400 text-lg max-w-2xl">Connect with top-rated real estate professionals across Nigeria. Every verified agent on our platform has undergone strict background and licensing checks.</p>
       </div>
       <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl backdrop-blur-sm">
-        <span class="text-2xl font-bold text-emerald-400">{$agents === undefined ? '—' : $agents.length}</span>
+        <span class="text-2xl font-bold text-emerald-400">{$agents === undefined ? '—' : visibleAgents.length}</span>
         <span class="text-sm text-gray-400 leading-tight">Verified<br>Agents</span>
       </div>
     </div>
@@ -97,7 +99,7 @@
       </div>
     {:else if filteredAgents.length === 0}
       <div class="rounded-2xl border border-dashed border-white/10 py-20 text-center">
-        <p class="text-sm text-stone-500">{$agents.length === 0 ? 'No verified agents yet — check back soon.' : 'No agents match your search.'}</p>
+        <p class="text-sm text-stone-500">No agents match your search.</p>
       </div>
     {:else}
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

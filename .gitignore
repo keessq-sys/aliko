@@ -11,8 +11,8 @@ build/
 dist/
 .wrangler/
 
-# Convex
-convex/_generated/
+# Convex generated API bindings are committed so production builds use the
+# exact functions produced by `convex codegen`.
 
 # Environment Variables & Secrets
 .env

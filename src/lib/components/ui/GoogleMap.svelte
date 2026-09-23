@@ -161,8 +161,9 @@
   {#if !apiKey()}
     <!-- Graceful fallback: still shows pins over a branded map motif -->
     <div class="absolute inset-0 z-10 flex items-center justify-center bg-[#0b1219]">
+      <img src="/images/maps/nigeria-political.svg" alt="Political map of Nigeria showing states, cities and transport routes" class="absolute inset-0 h-full w-full object-contain p-8 opacity-55" />
       <div
-        class="absolute inset-0 opacity-15"
+        class="absolute inset-0 opacity-10"
         style="background-image: linear-gradient(#10b981 1px, transparent 1px), linear-gradient(90deg, #10b981 1px, transparent 1px); background-size: 44px 44px;"
       ></div>
       {#each markers as m, i}
@@ -182,7 +183,7 @@
       {/each}
       <div class="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full border border-amber-500/30 bg-black/70 px-4 py-2 text-xs text-amber-300 backdrop-blur-md">
         <KeyRound size={14} />
-        Set PUBLIC_GOOGLE_MAPS_API_KEY to enable live Google Maps — showing stylized preview
+        Nigeria property coverage — select a pin to view a listing
       </div>
       {#if markers.length === 0}
         <div class="relative z-10 flex flex-col items-center text-stone-500">

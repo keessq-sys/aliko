@@ -1,8 +1,8 @@
 import { v } from "convex/values";
 import { action, internalAction, internalMutation, query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { internal } from "./_generated/api";
-import { Id } from "./_generated/dataModel";
+import { api, internal } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 
 const WA_BASE = `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
 
@@ -41,7 +41,7 @@ export async function sendTemplate(to: string, templateName: string, params: str
 export const handleIncoming = internalAction({
   args: { phone: v.string(), text: v.string() },
   handler: async (ctx, { phone, text }) => {
-    const session = await ctx.runQuery(internal.whatsapp.getSession, { phone });
+    const session = await ctx.runQuery(api.whatsapp.getSession, { phone });
     const msg = text.trim().toLowerCase();
 
     if (msg === "agent" || msg === "human") {
@@ -51,7 +51,7 @@ export const handleIncoming = internalAction({
     }
 
     if (session?.state === "AWAITING_REFERENCE") {
-      const doc = await ctx.runQuery(internal.whatsapp.getDocByRef, { ref: text.trim().toUpperCase() });
+      const doc = await ctx.runQuery(api.whatsapp.getDocByRef, { ref: text.trim().toUpperCase() });
       if (doc) {
         await sendText(phone, `📄 *${doc.type.replace(/_/g, " ")}*\nStatus: *${doc.status.replace(/_/g, " ")}*\nReference: ${doc.referenceCode}\n\nView full details:\n${process.env.APP_URL}/legal/track?ref=${doc.referenceCode}`);
       } else {

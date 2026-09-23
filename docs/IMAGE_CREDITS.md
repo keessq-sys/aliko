@@ -1,19 +1,13 @@
-# Service image credits
+# Image credits
 
-Aliko Diamond Key project photography is stored under `static/Frontend UI Images` and is used with the owner's permission.
+City and map images are stored locally so the site remains fast and does not depend on third-party hotlinks. They are sourced from Wikimedia Commons under the licence shown on each linked file page.
 
-The following supplementary photographs were downloaded from Unsplash and are used under the [Unsplash License](https://unsplash.com/license):
+- Nigeria political map: [United Nations Cartographic Section](https://commons.wikimedia.org/wiki/File:Political_map_of_Nigeria.svg), public domain UN map.
+- Lagos: [Lagos skyline](https://commons.wikimedia.org/wiki/File:Lagos_skyline.jpg), [Ikoyi](https://commons.wikimedia.org/wiki/File:Ikoyi,_Lagos,_Nigeria.jpg), [Victoria Island aerial](https://commons.wikimedia.org/wiki/File:Aerial_view_of_victoria_island_in_Lagos,_Nigeria_with_habours_for_yatches.jpg).
+- Abuja: [Abuja aerial](https://commons.wikimedia.org/wiki/File:Aerial_view_of_Abuja,_Nigeria.jpg), [ASTER satellite view](https://commons.wikimedia.org/wiki/File:Abuja,_Nigeria_(ASTER).jpg), [Abuja Central Mosque](https://commons.wikimedia.org/wiki/File:Abuja_Central_mosque.jpg).
+- Port Harcourt: [helicopter aerial](https://commons.wikimedia.org/wiki/File:Dintorni_Port_harcourt_-_Vista_da_elicottero_2.jpg), [Port Harcourt Tower](https://commons.wikimedia.org/wiki/File:The_Port_Harcourt_Tower.jpg), [NDDC building](https://commons.wikimedia.org/wiki/File:NDDC_building_Port_Harcourt.jpg).
+- Enugu: [city view](https://commons.wikimedia.org/wiki/File:Enugu_Nigeria.jpg), [panorama](https://commons.wikimedia.org/wiki/File:Enugu_panorama1.jpg), [Unity Park lion](https://commons.wikimedia.org/wiki/File:Gigantic_Lion_Statue_in_Enugu_Unity_Park.jpg).
+- Ibadan: [city aerial](https://commons.wikimedia.org/wiki/File:Aerial_view_of_Ibadan_City.jpg), [Mapo Hall aerial](https://commons.wikimedia.org/wiki/File:Aerial_view_of_Mapo_Hall_in_ibadan_city.jpg), [Bowen Tower view](https://commons.wikimedia.org/wiki/File:Aerial_view_of_ibadan_from_the_Bowen_Tower.jpg).
+- Kano: [city aerial](https://commons.wikimedia.org/wiki/File:Kano_City_Aerial.jpg), [satellite view](https://commons.wikimedia.org/wiki/File:Kano,_Kano_State,_Nigeria.jpg), [historic aerial](https://commons.wikimedia.org/wiki/File:Aerial_view_of_Kano,_Nigeria.png).
 
-| Local file | Photographer | Source |
-| --- | --- | --- |
-| `architectural-blueprints.jpg` | Jonathan Borba | [Architectural blueprints and a laptop](https://unsplash.com/photos/architectural-blueprints-and-a-laptop-on-a-marble-desk-rn00OVh0gEI) |
-| `blueprint-review.jpg` | Pedro Miranda | [People reviewing architectural blueprints](https://unsplash.com/photos/people-reviewing-architectural-blueprints-on-desk-3QzMBrvCeyQ) |
-| `smart-thermostat.jpg` | HUUM | [Modern black thermostat](https://unsplash.com/photos/a-modern-black-thermostat-mounted-on-a-wall-j5UKEK7w8DQ) |
-| `architectural-model.jpg` | Morton / GN Group | [Architect working on a model](https://unsplash.com/photos/man-working-on-architectural-model-at-desk-WUY0W2RSiBw) |
-| `modern-office.jpg` | Brooke Balentine | [Modern office interior](https://unsplash.com/photos/modern-office-interior-with-plants-and-filing-cabinets-PB5-pTZE9H4) |
-| `office-workstations.jpg` | Hemant Kanojiya | [Office with computer workstations](https://unsplash.com/photos/an-empty-office-with-computers-Ww5jTiOCcug) |
-| `open-office.jpg` | Musemind UX Agency | [Large open office](https://unsplash.com/photos/a-large-open-office-space-with-desks-and-computers-aToaXLqCudk) |
-| `smart-lock-phone.jpg` | Sebastian Scholz / Nuki | [Smart lock controlled by phone](https://unsplash.com/photos/gold-apple-iphone-smartphone-held-at-the-door-IJkSskfEqrM) |
-| `smart-home-devices.jpg` | Sebastian Scholz / Nuki | [Smart speaker and access devices](https://unsplash.com/photos/white-and-gray-google-smart-speaker-and-two-black-speakers-Fh3Dtg6QX4Q) |
-| `real-estate-key.jpg` | Jakub Żerdzicki | [House key and calculator](https://unsplash.com/photos/house-key-and-calculator-for-real-estate-RVk8EwpRwNs) |
-| `site-planning-team.jpg` | Fiqih Alfarish | [Team reviewing plans on site](https://unsplash.com/photos/people-gathered-around-blueprints-outdoors-098sYCTeyCc) |
+Property, construction, interior, and materials galleries use photography supplied by Aliko Diamond Key in `static/Frontend UI Images`.

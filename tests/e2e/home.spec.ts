@@ -25,17 +25,17 @@ test.describe('Home Page', () => {
   });
 
   test('should navigate to properties page', async ({ page }) => {
-    await page.click('a[href="/properties"]');
+    await page.locator('a[href="/properties"]:visible').first().click();
     await expect(page).toHaveURL(/.*properties/);
   });
 
   test('should navigate to services page', async ({ page }) => {
-    await page.click('a[href="/services"]');
+    await page.locator('a[href="/services"]:visible').first().click();
     await expect(page).toHaveURL(/.*services/);
   });
 
   test('should navigate to agents page', async ({ page }) => {
-    await page.click('a[href="/agents"]');
+    await page.locator('a[href="/agents"]:visible').first().click();
     await expect(page).toHaveURL(/.*agents/);
   });
 });

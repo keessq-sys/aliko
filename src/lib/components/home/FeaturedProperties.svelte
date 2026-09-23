@@ -4,8 +4,10 @@
   import { useQuery } from '$lib/convex/queries';
   import { api } from '$lib/convex/_generated/api';
   import { formatNaira } from '$lib/utils/format';
+  import { FALLBACK_PROPERTIES } from '$lib/data/fallbackCatalog';
 
   const featured = useQuery(api.properties.listProperties, { isFeatured: true, limit: 6 });
+  $: visibleProperties = $featured?.length ? $featured : FALLBACK_PROPERTIES.filter((p) => p.isFeatured);
 </script>
 
 <style>
@@ -42,15 +44,18 @@
           <div class="prop-card rounded-2xl h-[420px] animate-pulse bg-white/[0.02]"></div>
         {/each}
       </div>
-    {:else if $featured.length === 0}
-      <p class="text-center text-sm text-stone-500 py-12">Featured listings are being curated — check back shortly.</p>
     {:else}
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {#each $featured as prop (prop._id)}
+        {#each visibleProperties as prop (prop._id)}
           <a href={`/properties/${prop.slug}`} class="prop-card rounded-2xl overflow-hidden group cursor-pointer flex flex-col h-full">
             <!-- Image Header -->
             <div class="relative h-64 overflow-hidden">
               <img src={prop.images?.[0]} alt={prop.title} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              <div class="absolute bottom-3 right-3 flex -space-x-2">
+                {#each (prop.images ?? []).slice(1, 4) as image, i}
+                  <img src={image} alt={`${prop.title} gallery ${i + 2}`} class="h-10 w-10 rounded-lg border-2 border-[#050A0E] object-cover shadow-lg" loading="lazy" />
+                {/each}
+              </div>
               <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-transparent to-transparent opacity-80"></div>
 
               <div class="absolute top-4 left-4">

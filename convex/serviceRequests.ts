@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { query, mutation, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { Id } from "./_generated/dataModel";
+import type { Id } from "./_generated/dataModel";
 
 async function requireAdmin(ctx: any) {
   const userId = await getAuthUserId(ctx);
@@ -89,10 +89,16 @@ export const submitServiceRequest = mutation({
 export const getByReference = query({
   args: { reference: v.string() },
   handler: async (ctx, { reference }) => {
-    return await ctx.db
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Unauthorized");
+    const request = await ctx.db
       .query("serviceRequests")
       .withIndex("by_reference", (q) => q.eq("reference", reference))
       .unique();
+    if (!request) return null;
+    const user = await ctx.db.get(userId as Id<"users">);
+    if (user?.role !== "ADMIN" && request.requesterId !== userId) throw new Error("Forbidden");
+    return request;
   },
 });
 
@@ -112,6 +118,7 @@ export const listRequests = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     let rows;
     if (args.status) {
       rows = await ctx.db
@@ -136,6 +143,7 @@ export const listRequests = query({
 export const getStatusCounts = query({
   args: {},
   handler: async (ctx) => {
+    await requireAdmin(ctx);
     const rows = await ctx.db.query("serviceRequests").collect();
     const counts: Record<string, number> = {
       NEW: 0, REVIEWING: 0, QUOTED: 0, ACCEPTED: 0, REJECTED: 0, IN_PROGRESS: 0, COMPLETED: 0,
@@ -166,7 +174,7 @@ export const reviewServiceRequest = mutation({
     quoteAmount: v.optional(v.number()),
   },
   handler: async (ctx, { id, status, adminResponse, quoteAmount }) => {
-    await requireAdmin(ctx);
+    const adminId = await requireAdmin(ctx);
     const now = Date.now();
     const patch: Record<string, unknown> = { status, updatedAt: now };
     if (adminResponse !== undefined) {
@@ -179,6 +187,15 @@ export const reviewServiceRequest = mutation({
     }
     if (status === "COMPLETED") patch.completedAt = now;
     await ctx.db.patch(id, patch);
+    if (adminResponse?.trim()) {
+      await ctx.db.insert("serviceRequestMessages", {
+        requestId: id,
+        senderId: adminId as Id<"users">,
+        senderRole: "ADMIN",
+        body: adminResponse.trim(),
+        createdAt: now,
+      });
+    }
     return id;
   },
 });
@@ -219,5 +236,43 @@ export const getMyRequests = query({
       .query("serviceRequests")
       .withIndex("by_requester", (q) => q.eq("requesterId", userId))
       .collect();
+  },
+});
+
+async function requireConversationAccess(ctx: any, requestId: Id<"serviceRequests">) {
+  const userId = await getAuthUserId(ctx);
+  if (!userId) throw new Error("Unauthorized");
+  const [user, request] = await Promise.all([
+    ctx.db.get(userId as Id<"users">),
+    ctx.db.get(requestId),
+  ]);
+  if (!request) throw new Error("Request not found");
+  if (user?.role !== "ADMIN" && request.requesterId !== userId) throw new Error("Forbidden");
+  return { userId: userId as Id<"users">, user, request };
+}
+
+export const listMessages = query({
+  args: { requestId: v.id("serviceRequests") },
+  handler: async (ctx, { requestId }) => {
+    await requireConversationAccess(ctx, requestId);
+    return ctx.db.query("serviceRequestMessages")
+      .withIndex("by_request_date", (q) => q.eq("requestId", requestId))
+      .collect();
+  },
+});
+
+export const sendMessage = mutation({
+  args: { requestId: v.id("serviceRequests"), body: v.string() },
+  handler: async (ctx, { requestId, body }) => {
+    const access = await requireConversationAccess(ctx, requestId);
+    const clean = body.trim();
+    if (!clean || clean.length > 4000) throw new Error("Message must contain 1–4000 characters");
+    const now = Date.now();
+    const senderRole = access.user?.role === "ADMIN" ? "ADMIN" : "CLIENT";
+    const id = await ctx.db.insert("serviceRequestMessages", {
+      requestId, senderId: access.userId, senderRole, body: clean, createdAt: now,
+    });
+    await ctx.db.patch(requestId, { updatedAt: now });
+    return id;
   },
 });

@@ -4,15 +4,17 @@
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import { api } from "$lib/convex/_generated/api";
-  import { runMutation } from "$lib/convex/queries";
+  import { runAction } from "$lib/convex/queries";
   import LoginForm from "$lib/components/auth/LoginForm.svelte";
+  import ForgotPasswordForm from "$lib/components/auth/ForgotPasswordForm.svelte";
 
   let signedOut = false;
+  let resetting = false;
 
   onMount(async () => {
     if ($page.url.searchParams.get("signout") === "1") {
       try {
-        await runMutation(api.auth.signOut, {});
+        await runAction(api.auth.signOut, {});
       } catch {
         /* already signed out / no active session */
       }
@@ -46,7 +48,11 @@
 
     <!-- Card -->
     <div class="rounded-2xl p-8" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)">
-      <LoginForm />
+      {#if resetting}
+        <ForgotPasswordForm on:backToSignIn={() => (resetting = false)} />
+      {:else}
+        <LoginForm on:forgotPassword={() => (resetting = true)} />
+      {/if}
     </div>
 
     <p class="text-center text-stone-700 text-xs mt-6">

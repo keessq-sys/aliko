@@ -7,11 +7,11 @@ test.describe('Authentication', () => {
 
   test('should load login page', async ({ page }) => {
     await expect(page).toHaveTitle(/Login|Aliko Diamond Key/);
-    await expect(page.locator('form')).toBeVisible();
+    await expect(page.locator('form').filter({ has: page.getByRole('textbox', { name: 'Email Address', exact: true }) })).toBeVisible();
   });
 
   test('should show email and password fields', async ({ page }) => {
-    await expect(page.locator('input[type="email"]')).toBeVisible();
+    await expect(page.getByRole('textbox', { name: 'Email Address', exact: true })).toBeVisible();
     await expect(page.locator('input[type="password"]')).toBeVisible();
   });
 
@@ -21,8 +21,8 @@ test.describe('Authentication', () => {
   });
 
   test('should navigate to forgot password', async ({ page }) => {
-    await page.click('a[href*="forgot"]');
-    await expect(page).toHaveURL(/.*forgot/);
+    await page.getByRole('button', { name: /forgot password/i }).click();
+    await expect(page.getByText('Reset your password', { exact: true })).toBeVisible();
   });
 });
 

@@ -1,6 +1,6 @@
 import { convexAuth } from "@convex-dev/auth/server";
 import { Password } from "@convex-dev/auth/providers/Password";
-import { DataModel } from "./_generated/dataModel";
+import type { DataModel } from "./_generated/dataModel";
 import { ResendOTPPasswordReset } from "./ResendOTPPasswordReset";
 
 // NOTE: this previously also registered a top-level `ResendOTP` provider
@@ -21,7 +21,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         return {
           email: params.email as string,
           name: params.name as string,
-          role: (params.role as string | undefined) ?? "CLIENT",
+          role: ((params.role as "ADMIN" | "AGENT" | "ESTATE_MANAGER" | "CLIENT" | "DIASPORA_CLIENT" | "TENANT" | undefined) ?? "CLIENT"),
           isDiaspora: false,
           kycVerified: false,
           createdAt: Date.now(),

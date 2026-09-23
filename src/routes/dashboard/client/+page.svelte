@@ -6,6 +6,7 @@
   import { REQUEST_STATUS_META } from '$lib/types/services';
   import { fly } from 'svelte/transition';
   import { page } from '$app/stores';
+  import ServiceConversation from '$lib/components/services/ServiceConversation.svelte';
 
   let currentTab = 'bookings';
 
@@ -427,11 +428,16 @@
         </div>
       </div>
 
-    {:else}
-      <div class="flex flex-col items-center justify-center py-20 text-stone-500">
-         <MessageSquare class="w-16 h-16 mb-4 opacity-20" />
-         <p>No messages yet.</p>
+    {:else if currentTab === 'messages'}
+      <div class="mx-auto max-w-3xl">
+        <h2 class="mb-2 text-xl font-semibold text-white">Messages with Support</h2>
+        <p class="mb-6 text-sm text-stone-400">Each conversation stays linked to its service request and updates in real time.</p>
+        {#if $myRequests === undefined}<div class="skeleton h-40 rounded-2xl"></div>
+        {:else if $myRequests.length === 0}<div class="rounded-2xl border border-white/10 py-16 text-center text-stone-500"><MessageSquare class="mx-auto mb-3 h-10 w-10 opacity-30" /><p>Submit a service request to start a conversation.</p></div>
+        {:else}<div class="space-y-5">{#each $myRequests as request (request._id)}<ServiceConversation {request} />{/each}</div>{/if}
       </div>
+    {:else}
+      <div class="py-20 text-center text-stone-500">This area is being prepared.</div>
     {/if}
     </div>
     {/key}

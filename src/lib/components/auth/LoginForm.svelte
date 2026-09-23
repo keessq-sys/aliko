@@ -2,7 +2,7 @@
   import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-svelte';
   import { goto } from '$app/navigation';
   import { api } from '$lib/convex/_generated/api';
-  import { runMutation } from '$lib/convex/queries';
+  import { runAction } from '$lib/convex/queries';
   import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher<{ forgotPassword: void }>();
@@ -19,7 +19,7 @@
     password: ''
   };
 
-  const signIn = async (args: any) => runMutation(api.auth.signIn, args);
+  const signIn = async (args: any) => runAction(api.auth.signIn, args);
 
   $: redirectTo = typeof window !== 'undefined' ? window.location.search.match(/[?&]redirect=([^&]+)/)?.[1] : null;
 

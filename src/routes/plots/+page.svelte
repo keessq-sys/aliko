@@ -6,6 +6,7 @@
   import { reveal, revealStagger } from '$lib/actions/reveal';
   import { tilt } from '$lib/actions/tilt';
   import { page } from '$app/stores';
+  import { FALLBACK_PROJECTS, FALLBACK_PLOTS } from '$lib/data/fallbackCatalog';
 
   let projectFilter = '';
   let statusFilter = 'AVAILABLE';
@@ -16,6 +17,8 @@
     status: statusFilter || undefined,
     limit: 60
   });
+  $: visibleProjects = $projects?.length ? $projects : FALLBACK_PROJECTS;
+  $: visiblePlots = $plots?.length ? $plots : FALLBACK_PLOTS.filter((p) => (!projectFilter || p.projectId === projectFilter) && (!statusFilter || p.status === statusFilter));
 
   let selectedPlot: any = null;
   let installmentPlan = 'OUTRIGHT';
@@ -106,7 +109,7 @@
     <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4">
       <select bind:value={projectFilter} class="rounded-xl border border-white/10 bg-black/40 px-4 py-2 text-sm text-white outline-none focus:border-emerald-500">
         <option value="">All Projects</option>
-        {#each $projects ?? [] as p}
+        {#each visibleProjects as p}
           <option value={p._id}>{p.name}</option>
         {/each}
       </select>
@@ -128,13 +131,9 @@
   <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
     {#if $plots === undefined}
       <div class="flex items-center justify-center py-24 text-stone-500"><Loader2 class="h-6 w-6 animate-spin" /></div>
-    {:else if $plots.length === 0}
-      <div class="rounded-2xl border border-dashed border-white/10 py-24 text-center">
-        <p class="text-sm text-stone-500">No plots match this view yet — plots created via the admin suite will appear here instantly.</p>
-      </div>
     {:else}
       <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" use:revealStagger={{ step: 60 }}>
-        {#each $plots as plot (plot._id)}
+        {#each visiblePlots as plot (plot._id)}
           <button
             type="button"
             on:click={() => (selectedPlot = plot)}

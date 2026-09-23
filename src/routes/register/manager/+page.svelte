@@ -57,6 +57,8 @@
   };
 </script>
 
+<svelte:head><title>Register as an Estate Manager — Aliko Diamond Key</title></svelte:head>
+
 <div class="min-h-screen bg-[#050A0E] text-white pt-24 pb-12 px-4 sm:px-6 lg:px-8 relative">
   <div class="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-blue-900/20 to-transparent pointer-events-none"></div>
 

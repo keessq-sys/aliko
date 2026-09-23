@@ -2,7 +2,7 @@
   import { Mail, Lock, User, Loader2, Building, Building2 } from 'lucide-svelte';
   import { goto } from '$app/navigation';
   import { api } from '$lib/convex/_generated/api';
-  import { runMutation } from '$lib/convex/queries';
+  import { runAction } from '$lib/convex/queries';
 
   let contactName = '';
   let companyName = '';
@@ -13,7 +13,7 @@
   let errorMessage = '';
   let errors: Record<string, string> = {};
 
-  const signUp = async (args: any) => runMutation(api.auth.signUp, args);
+  const signUp = async (args: any) => runAction(api.auth.signIn, args);
 
   const validate = () => {
     errors = {};
