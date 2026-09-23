@@ -19,4 +19,18 @@ crons.daily(
   {},
 );
 
+crons.interval(
+  "monitor failed background jobs",
+  { minutes: 15 },
+  internal.operations.monitorFailedJobs,
+  {},
+);
+
+crons.daily(
+  "purge expired stored assets",
+  { hourUTC: 2, minuteUTC: 30 },
+  internal.storage.purgeExpiredAssets,
+  {},
+);
+
 export default crons;

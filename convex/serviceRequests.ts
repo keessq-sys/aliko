@@ -2,6 +2,8 @@ import { v } from "convex/values";
 import { query, mutation, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import type { Id } from "./_generated/dataModel";
+import { contactRateKey, rateLimiter } from "./lib/rateLimits";
+import { serviceRequestAggregate } from "./aggregates";
 
 async function requireAdmin(ctx: any) {
   const userId = await getAuthUserId(ctx);
@@ -45,6 +47,10 @@ export const submitServiceRequest = mutation({
     attachments: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
+    await rateLimiter.limit(ctx, "serviceRequest", {
+      key: contactRateKey(args.requesterEmail, args.requesterPhone),
+      throws: true,
+    });
     const service = await ctx.db
       .query("services")
       .withIndex("by_slug", (q) => q.eq("slug", args.serviceSlug))
@@ -81,6 +87,9 @@ export const submitServiceRequest = mutation({
       createdAt: now,
       updatedAt: now,
     });
+    const inserted = await ctx.db.get(id);
+    if (inserted)
+      await serviceRequestAggregate.insertIfDoesNotExist(ctx, inserted);
     return { id, reference };
   },
 });
@@ -97,7 +106,8 @@ export const getByReference = query({
       .unique();
     if (!request) return null;
     const user = await ctx.db.get(userId as Id<"users">);
-    if (user?.role !== "ADMIN" && request.requesterId !== userId) throw new Error("Forbidden");
+    if (user?.role !== "ADMIN" && request.requesterId !== userId)
+      throw new Error("Forbidden");
     return request;
   },
 });
@@ -105,33 +115,40 @@ export const getByReference = query({
 // ── Admin: list requests (optionally filtered by status) ───────────────────
 export const listRequests = query({
   args: {
-    status: v.optional(v.union(
-      v.literal("NEW"),
-      v.literal("REVIEWING"),
-      v.literal("QUOTED"),
-      v.literal("ACCEPTED"),
-      v.literal("REJECTED"),
-      v.literal("IN_PROGRESS"),
-      v.literal("COMPLETED"),
-    )),
+    status: v.optional(
+      v.union(
+        v.literal("NEW"),
+        v.literal("REVIEWING"),
+        v.literal("QUOTED"),
+        v.literal("ACCEPTED"),
+        v.literal("REJECTED"),
+        v.literal("IN_PROGRESS"),
+        v.literal("COMPLETED"),
+      ),
+    ),
     serviceSlug: v.optional(v.string()),
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
+    const limit = Math.min(Math.max(args.limit ?? 100, 1), 200);
     let rows;
     if (args.status) {
       rows = await ctx.db
         .query("serviceRequests")
-        .withIndex("by_status", (q) => q.eq("status", args.status!))
-        .collect();
+        .withIndex("by_status_date", (q) => q.eq("status", args.status!))
+        .order("desc")
+        .take(limit);
     } else {
-      rows = await ctx.db.query("serviceRequests").collect();
+      rows = await ctx.db
+        .query("serviceRequests")
+        .withIndex("by_date")
+        .order("desc")
+        .take(limit);
     }
     rows = rows
       .filter((r) => !args.serviceSlug || r.serviceSlug === args.serviceSlug)
-      .sort((a, b) => b.createdAt - a.createdAt)
-      .slice(0, args.limit ?? 100);
+      .sort((a, b) => b.createdAt - a.createdAt);
     return rows.map((r) => ({
       ...r,
       adminResponse: r.adminResponse ?? null,
@@ -144,16 +161,37 @@ export const getStatusCounts = query({
   args: {},
   handler: async (ctx) => {
     await requireAdmin(ctx);
-    const rows = await ctx.db.query("serviceRequests").collect();
+    const statuses = [
+      "NEW",
+      "REVIEWING",
+      "QUOTED",
+      "ACCEPTED",
+      "REJECTED",
+      "IN_PROGRESS",
+      "COMPLETED",
+    ] as const;
     const counts: Record<string, number> = {
-      NEW: 0, REVIEWING: 0, QUOTED: 0, ACCEPTED: 0, REJECTED: 0, IN_PROGRESS: 0, COMPLETED: 0,
+      NEW: 0,
+      REVIEWING: 0,
+      QUOTED: 0,
+      ACCEPTED: 0,
+      REJECTED: 0,
+      IN_PROGRESS: 0,
+      COMPLETED: 0,
     };
-    let totalBudget = 0;
-    for (const r of rows) {
-      counts[r.status] = (counts[r.status] ?? 0) + 1;
-      if (r.quoteAmount) totalBudget += r.quoteAmount;
-    }
-    return { counts, total: rows.length, totalQuotedValue: totalBudget };
+    const values = await Promise.all(
+      statuses.map((status) =>
+        serviceRequestAggregate.count(ctx, { bounds: { prefix: [status] } }),
+      ),
+    );
+    statuses.forEach((status, index) => {
+      counts[status] = values[index];
+    });
+    return {
+      counts,
+      total: values.reduce((sum, value) => sum + value, 0),
+      totalQuotedValue: await serviceRequestAggregate.sum(ctx),
+    };
   },
 });
 
@@ -186,7 +224,12 @@ export const reviewServiceRequest = mutation({
       patch.quotedAt = now;
     }
     if (status === "COMPLETED") patch.completedAt = now;
+    const previous = await ctx.db.get(id);
+    if (!previous) throw new Error("Service request not found");
     await ctx.db.patch(id, patch);
+    const updated = await ctx.db.get(id);
+    if (updated)
+      await serviceRequestAggregate.replaceOrInsert(ctx, previous, updated);
     if (adminResponse?.trim()) {
       await ctx.db.insert("serviceRequestMessages", {
         requestId: id,
@@ -207,8 +250,8 @@ export const flagStaleRequests = internalMutation({
     const cutoff = Date.now() - 48 * 60 * 60 * 1000;
     const stale = await ctx.db
       .query("serviceRequests")
-      .withIndex("by_status", (q) => q.eq("status", "NEW"))
-      .collect();
+      .withIndex("by_status_date", (q) => q.eq("status", "NEW"))
+      .take(500);
     const overdue = stale.filter((r) => r.createdAt < cutoff);
     for (const r of overdue) {
       await ctx.db.insert("notificationLog", {
@@ -235,11 +278,15 @@ export const getMyRequests = query({
     return await ctx.db
       .query("serviceRequests")
       .withIndex("by_requester", (q) => q.eq("requesterId", userId))
-      .collect();
+      .order("desc")
+      .take(200);
   },
 });
 
-async function requireConversationAccess(ctx: any, requestId: Id<"serviceRequests">) {
+async function requireConversationAccess(
+  ctx: any,
+  requestId: Id<"serviceRequests">,
+) {
   const userId = await getAuthUserId(ctx);
   if (!userId) throw new Error("Unauthorized");
   const [user, request] = await Promise.all([
@@ -247,7 +294,8 @@ async function requireConversationAccess(ctx: any, requestId: Id<"serviceRequest
     ctx.db.get(requestId),
   ]);
   if (!request) throw new Error("Request not found");
-  if (user?.role !== "ADMIN" && request.requesterId !== userId) throw new Error("Forbidden");
+  if (user?.role !== "ADMIN" && request.requesterId !== userId)
+    throw new Error("Forbidden");
   return { userId: userId as Id<"users">, user, request };
 }
 
@@ -255,9 +303,10 @@ export const listMessages = query({
   args: { requestId: v.id("serviceRequests") },
   handler: async (ctx, { requestId }) => {
     await requireConversationAccess(ctx, requestId);
-    return ctx.db.query("serviceRequestMessages")
+    return ctx.db
+      .query("serviceRequestMessages")
       .withIndex("by_request_date", (q) => q.eq("requestId", requestId))
-      .collect();
+      .take(500);
   },
 });
 
@@ -265,12 +314,21 @@ export const sendMessage = mutation({
   args: { requestId: v.id("serviceRequests"), body: v.string() },
   handler: async (ctx, { requestId, body }) => {
     const access = await requireConversationAccess(ctx, requestId);
+    await rateLimiter.limit(ctx, "serviceMessage", {
+      key: String(access.userId),
+      throws: true,
+    });
     const clean = body.trim();
-    if (!clean || clean.length > 4000) throw new Error("Message must contain 1–4000 characters");
+    if (!clean || clean.length > 4000)
+      throw new Error("Message must contain 1–4000 characters");
     const now = Date.now();
     const senderRole = access.user?.role === "ADMIN" ? "ADMIN" : "CLIENT";
     const id = await ctx.db.insert("serviceRequestMessages", {
-      requestId, senderId: access.userId, senderRole, body: clean, createdAt: now,
+      requestId,
+      senderId: access.userId,
+      senderRole,
+      body: clean,
+      createdAt: now,
     });
     await ctx.db.patch(requestId, { updatedAt: now });
     return id;

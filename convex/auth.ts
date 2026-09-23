@@ -2,6 +2,7 @@ import { convexAuth } from "@convex-dev/auth/server";
 import { Password } from "@convex-dev/auth/providers/Password";
 import type { DataModel } from "./_generated/dataModel";
 import { ResendOTPPasswordReset } from "./ResendOTPPasswordReset";
+import { rateLimiter } from "./lib/rateLimits";
 
 // NOTE: this previously also registered a top-level `ResendOTP` provider
 // imported from "@convex-dev/auth/providers/ResendOTP" — that subpath does
@@ -13,6 +14,7 @@ import { ResendOTPPasswordReset } from "./ResendOTPPasswordReset";
 // Password's own `reset`/`reset-verification` flows (see
 // ResendOTPPasswordReset.ts), not a separate top-level provider.
 export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
+  signIn: { maxFailedAttempsPerHour: 8 },
   providers: [
     // Email + password for admin and agent accounts
     Password<DataModel>({
@@ -21,13 +23,44 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         return {
           email: params.email as string,
           name: params.name as string,
-          role: ((params.role as "ADMIN" | "AGENT" | "ESTATE_MANAGER" | "CLIENT" | "DIASPORA_CLIENT" | "TENANT" | undefined) ?? "CLIENT"),
+          role:
+            (params.role as
+              | "ADMIN"
+              | "AGENT"
+              | "ESTATE_MANAGER"
+              | "CLIENT"
+              | "DIASPORA_CLIENT"
+              | "TENANT"
+              | undefined) ?? "CLIENT",
           isDiaspora: false,
           kycVerified: false,
+          accountStatus: "ACTIVE" as const,
           createdAt: Date.now(),
           lastActiveAt: Date.now(),
         };
       },
     }),
   ],
+  callbacks: {
+    async afterUserCreatedOrUpdated(ctx, args) {
+      if (args.existingUserId === null) {
+        const key =
+          args.profile.email?.trim().toLowerCase() ?? String(args.userId);
+        await rateLimiter.limit(ctx, "registration", { key, throws: true });
+        await ctx.db.insert("adminAuditLog", {
+          actorId: args.userId,
+          actorEmail: args.profile.email,
+          action: "ACCOUNT_REGISTERED",
+          entityType: "users",
+          entityId: String(args.userId),
+          createdAt: Date.now(),
+        });
+      }
+    },
+    async beforeSessionCreation(ctx, { userId }) {
+      const user = await ctx.db.get(userId);
+      if (user?.accountStatus === "SUSPENDED")
+        throw new Error("This account is suspended. Contact support.");
+    },
+  },
 });

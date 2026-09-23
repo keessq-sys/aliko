@@ -26,19 +26,24 @@ export default defineSchema({
     avatarUrl: v.optional(v.string()),
     country: v.optional(v.string()),
     occupation: v.optional(v.string()),
+    accountStatus: v.optional(
+      v.union(v.literal("ACTIVE"), v.literal("SUSPENDED")),
+    ),
+    suspendedAt: v.optional(v.number()),
     createdAt: v.number(),
     lastActiveAt: v.optional(v.number()),
   })
     .index("by_email", ["email"])
     .index("by_authId", ["authId"])
-    .index("by_role", ["role"]),
+    .index("by_role", ["role"])
+    .index("by_role_created", ["role", "createdAt"]),
 
   // ── Projects (Estates / Developments) ────────────────────────────────────
   projects: defineTable({
     name: v.string(),
     slug: v.string(),
     location: v.string(),
-    lga: v.string(),           // Local Government Area
+    lga: v.string(), // Local Government Area
     state: v.string(),
     description: v.string(),
     fullDescription: v.optional(v.string()),
@@ -101,7 +106,7 @@ export default defineSchema({
     // Geo coordinates
     latitude: v.optional(v.number()),
     longitude: v.optional(v.number()),
-    boundaries: v.optional(v.string()),  // GeoJSON polygon
+    boundaries: v.optional(v.string()), // GeoJSON polygon
     // Flags
     isCornerPlot: v.boolean(),
     isPrimeLocation: v.boolean(),
@@ -132,7 +137,7 @@ export default defineSchema({
     ),
     totalAmount: v.number(),
     paidAmount: v.number(),
-    installmentPlan: v.optional(v.string()),  // e.g. "6-MONTHS", "12-MONTHS", "OUTRIGHT"
+    installmentPlan: v.optional(v.string()), // e.g. "6-MONTHS", "12-MONTHS", "OUTRIGHT"
     nextPaymentDate: v.optional(v.number()),
     nextPaymentAmount: v.optional(v.number()),
     notes: v.optional(v.string()),
@@ -143,17 +148,26 @@ export default defineSchema({
     .index("by_client", ["clientId"])
     .index("by_plot", ["plotId"])
     .index("by_reference", ["reference"])
-    .index("by_status", ["paymentStatus"]),
+    .index("by_status", ["paymentStatus"])
+    .index("by_status_created", ["paymentStatus", "createdAt"]),
 
   // ── Payments ──────────────────────────────────────────────────────────────
   payments: defineTable({
     bookingId: v.id("bookings"),
-    provider: v.union(v.literal("PAYSTACK"), v.literal("FLUTTERWAVE"), v.literal("BANK_TRANSFER")),
+    provider: v.union(
+      v.literal("PAYSTACK"),
+      v.literal("FLUTTERWAVE"),
+      v.literal("BANK_TRANSFER"),
+    ),
     amount: v.number(),
     reference: v.string(),
     providerReference: v.optional(v.string()),
-    status: v.union(v.literal("PENDING"), v.literal("SUCCESS"), v.literal("FAILED")),
-    channel: v.optional(v.string()),  // card, bank, ussd
+    status: v.union(
+      v.literal("PENDING"),
+      v.literal("SUCCESS"),
+      v.literal("FAILED"),
+    ),
+    channel: v.optional(v.string()), // card, bank, ussd
     currency: v.string(),
     metadata: v.optional(v.any()),
     createdAt: v.number(),
@@ -162,7 +176,8 @@ export default defineSchema({
     .index("by_booking", ["bookingId"])
     .index("by_reference", ["reference"])
     .index("by_provider_reference", ["provider", "providerReference"])
-    .index("by_status", ["status"]),
+    .index("by_status", ["status"])
+    .index("by_status_created", ["status", "createdAt"]),
 
   // ── Legal Documents ───────────────────────────────────────────────────────
   legalDocuments: defineTable({
@@ -187,7 +202,7 @@ export default defineSchema({
     plotId: v.optional(v.id("plots")),
     bookingId: v.optional(v.id("bookings")),
     pdfStorageId: v.optional(v.id("_storage")),
-    externalSignatureId: v.optional(v.string()),  // Dropbox Sign request ID
+    externalSignatureId: v.optional(v.string()), // Dropbox Sign request ID
     signedAt: v.optional(v.number()),
     verifiedAt: v.optional(v.number()),
     expiresAt: v.optional(v.number()),
@@ -263,7 +278,11 @@ export default defineSchema({
       v.literal("DRIVERS_LICENSE"),
       v.literal("CAC"),
     ),
-    status: v.union(v.literal("PENDING"), v.literal("VERIFIED"), v.literal("FAILED")),
+    status: v.union(
+      v.literal("PENDING"),
+      v.literal("VERIFIED"),
+      v.literal("FAILED"),
+    ),
     providerReference: v.optional(v.string()),
     verifiedData: v.optional(v.any()),
     failureReason: v.optional(v.string()),
@@ -291,18 +310,28 @@ export default defineSchema({
 
   // ── Notification Log ──────────────────────────────────────────────────────
   notificationLog: defineTable({
-    channel: v.union(v.literal("WHATSAPP"), v.literal("EMAIL"), v.literal("SMS"), v.literal("PUSH")),
+    channel: v.union(
+      v.literal("WHATSAPP"),
+      v.literal("EMAIL"),
+      v.literal("SMS"),
+      v.literal("PUSH"),
+    ),
     recipient: v.string(),
     subject: v.optional(v.string()),
     templateName: v.optional(v.string()),
     message: v.string(),
-    status: v.union(v.literal("SENT"), v.literal("FAILED"), v.literal("QUEUED")),
+    status: v.union(
+      v.literal("SENT"),
+      v.literal("FAILED"),
+      v.literal("QUEUED"),
+    ),
     relatedId: v.optional(v.string()),
     relatedType: v.optional(v.string()),
     createdAt: v.number(),
   })
     .index("by_recipient", ["recipient"])
     .index("by_status", ["status"])
+    .index("by_status_date", ["status", "createdAt"])
     .index("by_channel_date", ["channel", "createdAt"]),
 
   // ── Architectural Models (for cost calculator) ────────────────────────────
@@ -315,7 +344,13 @@ export default defineSchema({
     stories: v.number(),
     costPerSqm: v.number(),
     thumbnailStorageId: v.optional(v.id("_storage")),
-    category: v.union(v.literal("BUNGALOW"), v.literal("DUPLEX"), v.literal("MANSION"), v.literal("TERRACE"), v.literal("COMMERCIAL")),
+    category: v.union(
+      v.literal("BUNGALOW"),
+      v.literal("DUPLEX"),
+      v.literal("MANSION"),
+      v.literal("TERRACE"),
+      v.literal("COMMERCIAL"),
+    ),
     isActive: v.boolean(),
     createdAt: v.number(),
   })
@@ -331,7 +366,7 @@ export default defineSchema({
     email: v.string(),
     phone: v.string(),
     message: v.optional(v.string()),
-    source: v.optional(v.string()),  // website, whatsapp, referral
+    source: v.optional(v.string()), // website, whatsapp, referral
     status: v.union(
       v.literal("NEW"),
       v.literal("CONTACTED"),
@@ -345,6 +380,7 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index("by_status", ["status"])
+    .index("by_status_date", ["status", "createdAt"])
     .index("by_agent", ["assignedAgentId"])
     .index("by_date", ["createdAt"])
     .index("by_property", ["propertyId"]),
@@ -407,19 +443,19 @@ export default defineSchema({
     description: v.string(),
     longDescription: v.optional(v.string()),
     category: v.union(
-      v.literal("INTERIOR"),          // interior design, decoration, furnishing
-      v.literal("SUPPLY"),            // tiles, building materials, furnishings
-      v.literal("SMART_HOME"),        // smart-home installation
-      v.literal("CONSTRUCTION"),      // construction, general contracts, renovation
-      v.literal("ARCHITECTURE"),      // architectural design, space planning
+      v.literal("INTERIOR"), // interior design, decoration, furnishing
+      v.literal("SUPPLY"), // tiles, building materials, furnishings
+      v.literal("SMART_HOME"), // smart-home installation
+      v.literal("CONSTRUCTION"), // construction, general contracts, renovation
+      v.literal("ARCHITECTURE"), // architectural design, space planning
       v.literal("PROPERTY_SERVICES"), // development, facility management, land/real-estate brokerage
-      v.literal("CONSULTING"),        // advisory, project management
+      v.literal("CONSULTING"), // advisory, project management
     ),
     heroImage: v.optional(v.string()),
     gallery: v.optional(v.array(v.string())),
     features: v.array(v.string()),
     startingPrice: v.optional(v.number()),
-    priceUnit: v.optional(v.string()),  // e.g. "per sqm", "per project"
+    priceUnit: v.optional(v.string()), // e.g. "per sqm", "per project"
     leadTimeDays: v.optional(v.number()),
     isActive: v.boolean(),
     isFeatured: v.boolean(),
@@ -436,10 +472,10 @@ export default defineSchema({
   // Supply contracts, purchases, smart-home installs, interior design &
   // decoration briefs — submitted by clients, actioned by super admin.
   serviceRequests: defineTable({
-    reference: v.string(),                // e.g. ADK-SVC-2026-0001
+    reference: v.string(), // e.g. ADK-SVC-2026-0001
     serviceId: v.id("services"),
     serviceSlug: v.string(),
-    requesterId: v.optional(v.id("users")),  // null = guest submission
+    requesterId: v.optional(v.id("users")), // null = guest submission
     requesterName: v.string(),
     requesterEmail: v.string(),
     requesterPhone: v.string(),
@@ -461,7 +497,7 @@ export default defineSchema({
     budgetMin: v.optional(v.number()),
     budgetMax: v.optional(v.number()),
     timeline: v.optional(v.string()),
-    attachments: v.optional(v.array(v.string())),  // file URLs
+    attachments: v.optional(v.array(v.string())), // file URLs
     status: v.union(
       v.literal("NEW"),
       v.literal("REVIEWING"),
@@ -483,6 +519,7 @@ export default defineSchema({
     .index("by_reference", ["reference"])
     .index("by_service", ["serviceId"])
     .index("by_status", ["status"])
+    .index("by_status_date", ["status", "createdAt"])
     .index("by_requester", ["requesterId"])
     .index("by_date", ["createdAt"]),
 
@@ -505,7 +542,7 @@ export default defineSchema({
     phone: v.string(),
     cacRcNumber: v.optional(v.string()),
     statesOfOperation: v.array(v.string()),
-    portfolioSize: v.optional(v.string()),   // e.g. "1-10", "11-50", "50+"
+    portfolioSize: v.optional(v.string()), // e.g. "1-10", "11-50", "50+"
     plan: v.union(
       v.literal("STARTER"),
       v.literal("PROFESSIONAL"),
@@ -527,7 +564,7 @@ export default defineSchema({
 
   // ── Agent Applications (from the 5-step wizard) ──────────────────────────
   agentApplications: defineTable({
-    reference: v.string(),               // e.g. ADK-AGT-2026-0001
+    reference: v.string(), // e.g. ADK-AGT-2026-0001
     userId: v.optional(v.id("users")),
     fullName: v.string(),
     email: v.string(),
@@ -558,6 +595,88 @@ export default defineSchema({
     .index("by_status", ["status"])
     .index("by_email", ["email"]),
 
+  // ── Webhook replay protection and operational audit ────────────────────
+  webhookEvents: defineTable({
+    provider: v.union(
+      v.literal("FLUTTERWAVE"),
+      v.literal("PAYSTACK"),
+      v.literal("WHATSAPP"),
+      v.literal("DROPBOX_SIGN"),
+    ),
+    eventId: v.string(),
+    eventType: v.string(),
+    reference: v.optional(v.string()),
+    payloadDigest: v.optional(v.string()),
+    status: v.union(
+      v.literal("PROCESSING"),
+      v.literal("PROCESSED"),
+      v.literal("IGNORED"),
+      v.literal("FAILED"),
+    ),
+    attempts: v.number(),
+    lastError: v.optional(v.string()),
+    receivedAt: v.number(),
+    processedAt: v.optional(v.number()),
+    updatedAt: v.number(),
+  })
+    .index("by_provider_event", ["provider", "eventId"])
+    .index("by_status_date", ["status", "receivedAt"])
+    .index("by_reference", ["reference"]),
+
+  // ── Durable background work observability / dead-letter queue ──────────
+  backgroundJobs: defineTable({
+    jobType: v.string(),
+    relatedType: v.optional(v.string()),
+    relatedId: v.optional(v.string()),
+    workId: v.optional(v.string()),
+    status: v.union(
+      v.literal("QUEUED"),
+      v.literal("RUNNING"),
+      v.literal("SUCCEEDED"),
+      v.literal("FAILED"),
+      v.literal("DEAD_LETTER"),
+    ),
+    attempts: v.number(),
+    maxAttempts: v.number(),
+    lastError: v.optional(v.string()),
+    nextRetryAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    completedAt: v.optional(v.number()),
+  })
+    .index("by_status_date", ["status", "updatedAt"])
+    .index("by_retry", ["status", "nextRetryAt"])
+    .index("by_work", ["workId"]),
+
+  // ── Storage ownership, validation, quarantine and retention ────────────
+  storedAssets: defineTable({
+    storageId: v.id("_storage"),
+    ownerId: v.id("users"),
+    purpose: v.union(
+      v.literal("PROPERTY_IMAGE"),
+      v.literal("PROJECT_MEDIA"),
+      v.literal("SERVICE_ATTACHMENT"),
+      v.literal("KYC_DOCUMENT"),
+      v.literal("LEGAL_DOCUMENT"),
+    ),
+    fileName: v.string(),
+    mimeType: v.string(),
+    size: v.number(),
+    status: v.union(
+      v.literal("PENDING_SCAN"),
+      v.literal("ACTIVE"),
+      v.literal("QUARANTINED"),
+      v.literal("DELETED"),
+    ),
+    expiresAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_storage", ["storageId"])
+    .index("by_owner_date", ["ownerId", "createdAt"])
+    .index("by_status_date", ["status", "createdAt"])
+    .index("by_expiry", ["status", "expiresAt"]),
+
   // ── Admin Presence (for audit) ───────────────────────────────────────────
   adminAuditLog: defineTable({
     actorId: v.optional(v.id("users")),
@@ -568,5 +687,7 @@ export default defineSchema({
     detail: v.optional(v.string()),
     createdAt: v.number(),
   })
-    .index("by_date", ["createdAt"]),
+    .index("by_date", ["createdAt"])
+    .index("by_actor_date", ["actorId", "createdAt"])
+    .index("by_action_date", ["action", "createdAt"]),
 });

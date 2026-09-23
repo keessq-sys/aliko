@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import type { Id } from "./_generated/dataModel";
+import { contactRateKey, rateLimiter } from "./lib/rateLimits";
 
 async function requireAdmin(ctx: any) {
   const userId = await getAuthUserId(ctx);
@@ -12,10 +13,7 @@ async function requireAdmin(ctx: any) {
 }
 
 // ── Public: submit an enquiry from a property/plot/project page ──────────
-// No auth required — this is the lead-capture path for anonymous visitors,
-// same as a "contact us" form. Rate limiting / spam filtering is left to
-// the caller's UI (e.g. requiring a real-looking phone/email) since this
-// table has no CAPTCHA or throttling built in yet.
+// No auth required — this is the lead-capture path for anonymous visitors.
 export const submitEnquiry = mutation({
   args: {
     propertyId: v.optional(v.id("properties")),
@@ -25,20 +23,24 @@ export const submitEnquiry = mutation({
     email: v.string(),
     phone: v.string(),
     message: v.optional(v.string()),
-    source: v.optional(v.string())
+    source: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     if (!args.name.trim() || !args.email.trim() || !args.phone.trim()) {
       throw new Error("Name, email and phone are required.");
     }
+    await rateLimiter.limit(ctx, "enquiry", {
+      key: contactRateKey(args.email, args.phone),
+      throws: true,
+    });
     const now = Date.now();
     return ctx.db.insert("enquiries", {
       ...args,
       status: "NEW",
       createdAt: now,
-      updatedAt: now
+      updatedAt: now,
     });
-  }
+  },
 });
 
 // ── Admin: enquiry queue ──────────────────────────────────────────────────
@@ -46,11 +48,20 @@ export const listEnquiries = query({
   args: { status: v.optional(v.string()), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    let rows = args.status
-      ? await ctx.db.query("enquiries").withIndex("by_status", (q) => q.eq("status", args.status as any)).collect()
-      : await ctx.db.query("enquiries").collect();
-    rows.sort((a, b) => b.createdAt - a.createdAt);
-    rows = rows.slice(0, args.limit ?? 100);
+    const limit = Math.min(Math.max(args.limit ?? 100, 1), 200);
+    const rows = args.status
+      ? await ctx.db
+          .query("enquiries")
+          .withIndex("by_status_date", (q) =>
+            q.eq("status", args.status as any),
+          )
+          .order("desc")
+          .take(limit)
+      : await ctx.db
+          .query("enquiries")
+          .withIndex("by_date")
+          .order("desc")
+          .take(limit);
 
     return Promise.all(
       rows.map(async (e) => {
@@ -58,9 +69,9 @@ export const listEnquiries = query({
         const plot = e.plotId ? await ctx.db.get(e.plotId) : null;
         const project = e.projectId ? await ctx.db.get(e.projectId) : null;
         return { ...e, property, plot, project };
-      })
+      }),
     );
-  }
+  },
 });
 
 export const updateEnquiryStatus = mutation({
@@ -71,11 +82,11 @@ export const updateEnquiryStatus = mutation({
       v.literal("CONTACTED"),
       v.literal("QUALIFIED"),
       v.literal("CONVERTED"),
-      v.literal("LOST")
-    )
+      v.literal("LOST"),
+    ),
   },
   handler: async (ctx, { enquiryId, status }) => {
     await requireAdmin(ctx);
     await ctx.db.patch(enquiryId, { status, updatedAt: Date.now() });
-  }
+  },
 });

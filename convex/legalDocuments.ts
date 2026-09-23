@@ -1,8 +1,14 @@
 import { v } from "convex/values";
-import { query, mutation, internalAction, internalMutation } from "./_generated/server";
+import {
+  query,
+  mutation,
+  internalAction,
+  internalMutation,
+  internalQuery,
+} from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { api, internal } from "./_generated/api";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 
 // ── Queries ────────────────────────────────────────────────────────────────
 
@@ -11,7 +17,7 @@ export const getDocumentByReference = query({
   handler: async (ctx, { referenceCode }) => {
     const doc = await ctx.db
       .query("legalDocuments")
-      .withIndex("by_reference", q => q.eq("referenceCode", referenceCode))
+      .withIndex("by_reference", (q) => q.eq("referenceCode", referenceCode))
       .unique();
     if (!doc) return null;
     const [client, plot] = await Promise.all([
@@ -20,10 +26,12 @@ export const getDocumentByReference = query({
     ]);
     const auditLog = await ctx.db
       .query("documentAuditLog")
-      .withIndex("by_document", q => q.eq("documentId", doc._id))
+      .withIndex("by_document", (q) => q.eq("documentId", doc._id))
       .order("asc")
       .collect();
-    const pdfUrl = doc.pdfStorageId ? await ctx.storage.getUrl(doc.pdfStorageId) : null;
+    const pdfUrl = doc.pdfStorageId
+      ? await ctx.storage.getUrl(doc.pdfStorageId)
+      : null;
     return { ...doc, client, plot, auditLog, pdfUrl };
   },
 });
@@ -34,13 +42,17 @@ export const getMyDocuments = query({
     if (!userId) return [];
     const docs = await ctx.db
       .query("legalDocuments")
-      .withIndex("by_client", q => q.eq("clientId", userId as Id<"users">))
+      .withIndex("by_client", (q) => q.eq("clientId", userId as Id<"users">))
       .order("desc")
       .collect();
-    return Promise.all(docs.map(async d => {
-      const pdfUrl = d.pdfStorageId ? await ctx.storage.getUrl(d.pdfStorageId) : null;
-      return { ...d, pdfUrl };
-    }));
+    return Promise.all(
+      docs.map(async (d) => {
+        const pdfUrl = d.pdfStorageId
+          ? await ctx.storage.getUrl(d.pdfStorageId)
+          : null;
+        return { ...d, pdfUrl };
+      }),
+    );
   },
 });
 
@@ -52,25 +64,34 @@ export const getPendingDocuments = query({
     if (user?.role !== "ADMIN") throw new Error("Forbidden");
     const docs = await ctx.db
       .query("legalDocuments")
-      .withIndex("by_status", q => q.eq("status", "DRAFT"))
+      .withIndex("by_status", (q) => q.eq("status", "DRAFT"))
       .order("desc")
       .take(50);
     const signed = await ctx.db
       .query("legalDocuments")
-      .withIndex("by_status", q => q.eq("status", "SIGNED"))
+      .withIndex("by_status", (q) => q.eq("status", "SIGNED"))
       .order("desc")
       .take(50);
     const pending = await ctx.db
       .query("legalDocuments")
-      .withIndex("by_status", q => q.eq("status", "PENDING_SIGNATURE"))
+      .withIndex("by_status", (q) => q.eq("status", "PENDING_SIGNATURE"))
       .order("desc")
       .take(50);
-    const all = [...docs, ...signed, ...pending].sort((a, b) => b._creationTime - a._creationTime);
-    return Promise.all(all.map(async d => {
-      const [client, plot] = await Promise.all([ctx.db.get(d.clientId), d.plotId ? ctx.db.get(d.plotId) : null]);
-      const pdfUrl = d.pdfStorageId ? await ctx.storage.getUrl(d.pdfStorageId) : null;
-      return { ...d, client, plot, pdfUrl };
-    }));
+    const all = [...docs, ...signed, ...pending].sort(
+      (a, b) => b._creationTime - a._creationTime,
+    );
+    return Promise.all(
+      all.map(async (d) => {
+        const [client, plot] = await Promise.all([
+          ctx.db.get(d.clientId),
+          d.plotId ? ctx.db.get(d.plotId) : null,
+        ]);
+        const pdfUrl = d.pdfStorageId
+          ? await ctx.storage.getUrl(d.pdfStorageId)
+          : null;
+        return { ...d, client, plot, pdfUrl };
+      }),
+    );
   },
 });
 
@@ -84,14 +105,36 @@ export const generateDeedOfAssignment = internalAction({
     assigneeAddress: v.string(),
     considerationAmount: v.number(),
   },
-  handler: async (ctx, args) => {
+  handler: async (
+    ctx,
+    args,
+  ): Promise<{
+    referenceCode: string;
+    storageId: Id<"_storage"> | undefined;
+  }> => {
+    const existing: Doc<"legalDocuments"> | null = await ctx.runQuery(
+      internal.legalDocuments.getDocumentByBookingInternal,
+      { bookingId: args.bookingId },
+    );
+    if (existing)
+      return {
+        referenceCode: existing.referenceCode,
+        storageId: existing.pdfStorageId,
+      };
     // Fetch data needed for the deed
     const [client, plot, booking] = await Promise.all([
-      ctx.runQuery(api.legalDocuments.getClientInternal, { userId: args.clientId }),
-      ctx.runQuery(api.legalDocuments.getPlotWithProject, { plotId: args.plotId }),
-      ctx.runQuery(internal.bookings.getBookingInternal, { bookingId: args.bookingId }),
+      ctx.runQuery(api.legalDocuments.getClientInternal, {
+        userId: args.clientId,
+      }),
+      ctx.runQuery(api.legalDocuments.getPlotWithProject, {
+        plotId: args.plotId,
+      }),
+      ctx.runQuery(internal.bookings.getBookingInternal, {
+        bookingId: args.bookingId,
+      }),
     ]);
-    if (!client || !plot || !plot.project || !booking) throw new Error("Missing data for document generation");
+    if (!client || !plot || !plot.project || !booking)
+      throw new Error("Missing data for document generation");
 
     const { PDFDocument, rgb, StandardFonts } = await import("pdf-lib");
     const QRCode = await import("qrcode");
@@ -108,15 +151,38 @@ export const generateDeedOfAssignment = internalAction({
     const margin = 56;
 
     // Header
-    page.drawText("ALIKO DIAMOND KEY", { x: margin, y: height - 60, font: helveticaBold, size: 18, color: rgb(0.05, 0.04, 0.06) });
-    page.drawText("Real Estate & Property Development · Abuja, Nigeria", { x: margin, y: height - 80, font: helvetica, size: 9, color: rgb(0.47, 0.44, 0.42) });
+    page.drawText("ALIKO DIAMOND KEY", {
+      x: margin,
+      y: height - 60,
+      font: helveticaBold,
+      size: 18,
+      color: rgb(0.05, 0.04, 0.06),
+    });
+    page.drawText("Real Estate & Property Development · Abuja, Nigeria", {
+      x: margin,
+      y: height - 80,
+      font: helvetica,
+      size: 9,
+      color: rgb(0.47, 0.44, 0.42),
+    });
 
     // Title
-    page.drawText("DEED OF ASSIGNMENT", { x: 200, y: height - 120, font: helveticaBold, size: 14, color: rgb(0.05, 0.04, 0.06) });
+    page.drawText("DEED OF ASSIGNMENT", {
+      x: 200,
+      y: height - 120,
+      font: helveticaBold,
+      size: 14,
+      color: rgb(0.05, 0.04, 0.06),
+    });
 
     // Body text
-    const date = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
-    const body = `THIS DEED OF ASSIGNMENT is made this ${date} BETWEEN ALIKO DIAMOND KEY LTD ` +
+    const date = new Date().toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    const body =
+      `THIS DEED OF ASSIGNMENT is made this ${date} BETWEEN ALIKO DIAMOND KEY LTD ` +
       `(hereinafter "the Assignor") of the one part AND ${client.name} of ${args.assigneeAddress} ` +
       `(hereinafter "the Assignee") of the other part.\n\n` +
       `WHEREAS the Assignor is seized of and beneficially entitled to ALL THAT piece of land ` +
@@ -139,35 +205,93 @@ export const generateDeedOfAssignment = internalAction({
       const testWidth = helvetica.widthOfTextAtSize(testLine, 10);
       if (testWidth > maxWidth && line) {
         if (y < 200) break;
-        page.drawText(line.trim(), { x: margin, y, font: helvetica, size: 10, color: rgb(0.27, 0.25, 0.24) });
+        page.drawText(line.trim(), {
+          x: margin,
+          y,
+          font: helvetica,
+          size: 10,
+          color: rgb(0.27, 0.25, 0.24),
+        });
         y -= 16;
         line = word + " ";
       } else {
         line = testLine;
       }
     }
-    if (line.trim()) page.drawText(line.trim(), { x: margin, y, font: helvetica, size: 10, color: rgb(0.27, 0.25, 0.24) });
+    if (line.trim())
+      page.drawText(line.trim(), {
+        x: margin,
+        y,
+        font: helvetica,
+        size: 10,
+        color: rgb(0.27, 0.25, 0.24),
+      });
 
     // Signature lines
     const sigY = 160;
-    page.drawLine({ start: { x: margin, y: sigY }, end: { x: margin + 160, y: sigY }, thickness: 0.5, color: rgb(0.4, 0.4, 0.4) });
-    page.drawText("ASSIGNOR", { x: margin, y: sigY - 14, font: helvetica, size: 9, color: rgb(0.47, 0.44, 0.42) });
-    page.drawLine({ start: { x: 320, y: sigY }, end: { x: 320 + 160, y: sigY }, thickness: 0.5, color: rgb(0.4, 0.4, 0.4) });
-    page.drawText("ASSIGNEE", { x: 320, y: sigY - 14, font: helvetica, size: 9, color: rgb(0.47, 0.44, 0.42) });
+    page.drawLine({
+      start: { x: margin, y: sigY },
+      end: { x: margin + 160, y: sigY },
+      thickness: 0.5,
+      color: rgb(0.4, 0.4, 0.4),
+    });
+    page.drawText("ASSIGNOR", {
+      x: margin,
+      y: sigY - 14,
+      font: helvetica,
+      size: 9,
+      color: rgb(0.47, 0.44, 0.42),
+    });
+    page.drawLine({
+      start: { x: 320, y: sigY },
+      end: { x: 320 + 160, y: sigY },
+      thickness: 0.5,
+      color: rgb(0.4, 0.4, 0.4),
+    });
+    page.drawText("ASSIGNEE", {
+      x: 320,
+      y: sigY - 14,
+      font: helvetica,
+      size: 9,
+      color: rgb(0.47, 0.44, 0.42),
+    });
 
     // QR code
-    const qrDataUrl = await QRCode.default.toDataURL(verificationUrl, { margin: 1, width: 80 });
+    const qrDataUrl = await QRCode.default.toDataURL(verificationUrl, {
+      margin: 1,
+      width: 80,
+    });
     const qrBase64 = qrDataUrl.split(",")[1];
     const qrBytes = Buffer.from(qrBase64, "base64");
     const qrImage = await pdfDoc.embedPng(qrBytes);
     page.drawImage(qrImage, { x: width - 90, y: 60, width: 60, height: 60 });
 
     // Footer
-    page.drawText(`Reference: ${referenceCode}`, { x: margin, y: 56, font: helvetica, size: 7, color: rgb(0.63, 0.61, 0.6) });
-    page.drawText("Verify at alikodiamondkey.com/legal/track", { x: margin, y: 44, font: helvetica, size: 7, color: rgb(0.63, 0.61, 0.6) });
+    page.drawText(`Reference: ${referenceCode}`, {
+      x: margin,
+      y: 56,
+      font: helvetica,
+      size: 7,
+      color: rgb(0.63, 0.61, 0.6),
+    });
+    page.drawText("Verify at alikodiamondkey.com/legal/track", {
+      x: margin,
+      y: 44,
+      font: helvetica,
+      size: 7,
+      color: rgb(0.63, 0.61, 0.6),
+    });
 
     const pdfBytes = await pdfDoc.save();
-    const pdfBlob = new Blob([pdfBytes.buffer.slice(pdfBytes.byteOffset, pdfBytes.byteOffset + pdfBytes.byteLength) as ArrayBuffer], { type: "application/pdf" });
+    const pdfBlob = new Blob(
+      [
+        pdfBytes.buffer.slice(
+          pdfBytes.byteOffset,
+          pdfBytes.byteOffset + pdfBytes.byteLength,
+        ) as ArrayBuffer,
+      ],
+      { type: "application/pdf" },
+    );
 
     // Upload to Convex storage
     const storageId = await ctx.storage.store(pdfBlob);
@@ -186,11 +310,27 @@ export const generateDeedOfAssignment = internalAction({
   },
 });
 
+export const getDocumentByBookingInternal = internalQuery({
+  args: { bookingId: v.id("bookings") },
+  handler: async (ctx, { bookingId }) =>
+    ctx.db
+      .query("legalDocuments")
+      .withIndex("by_booking", (q) => q.eq("bookingId", bookingId))
+      .first(),
+});
+
 // ── Internal mutations ─────────────────────────────────────────────────────
 
 export const createDocumentRecord = internalMutation({
   args: {
-    type: v.union(v.literal("DEED_OF_ASSIGNMENT"), v.literal("TENANCY_AGREEMENT"), v.literal("GUARANTOR_FORM"), v.literal("OFFER_LETTER"), v.literal("PAYMENT_SCHEDULE"), v.literal("LETTER_OF_ALLOCATION")),
+    type: v.union(
+      v.literal("DEED_OF_ASSIGNMENT"),
+      v.literal("TENANCY_AGREEMENT"),
+      v.literal("GUARANTOR_FORM"),
+      v.literal("OFFER_LETTER"),
+      v.literal("PAYMENT_SCHEDULE"),
+      v.literal("LETTER_OF_ALLOCATION"),
+    ),
     referenceCode: v.string(),
     clientId: v.id("users"),
     plotId: v.optional(v.id("plots")),
@@ -218,14 +358,23 @@ export const createDocumentRecord = internalMutation({
 export const updateDocumentStatus = internalMutation({
   args: {
     referenceCode: v.string(),
-    status: v.union(v.literal("DRAFT"), v.literal("PENDING_SIGNATURE"), v.literal("SIGNED"), v.literal("VERIFIED"), v.literal("REJECTED"), v.literal("EXPIRED")),
+    status: v.union(
+      v.literal("DRAFT"),
+      v.literal("PENDING_SIGNATURE"),
+      v.literal("SIGNED"),
+      v.literal("VERIFIED"),
+      v.literal("REJECTED"),
+      v.literal("EXPIRED"),
+    ),
     actorRole: v.optional(v.string()),
     metadata: v.optional(v.any()),
   },
   handler: async (ctx, args) => {
     const doc = await ctx.db
       .query("legalDocuments")
-      .withIndex("by_reference", q => q.eq("referenceCode", args.referenceCode))
+      .withIndex("by_reference", (q) =>
+        q.eq("referenceCode", args.referenceCode),
+      )
       .unique();
     if (!doc) throw new Error(`Document ${args.referenceCode} not found`);
 

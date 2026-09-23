@@ -1,0 +1,33 @@
+name: Pull Request Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preview-${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    environment: preview
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Create isolated Convex preview and build
+        run: npx convex deploy --preview-name "pr-${{ github.event.number }}" --cmd "npm run build" --cmd-url-env-var-name PUBLIC_CONVEX_URL --message "PR ${{ github.event.number }} at ${GITHUB_SHA}"
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_PREVIEW_DEPLOY_KEY }}
+      - name: Publish Cloudflare preview
+        run: npx wrangler pages deploy .svelte-kit/cloudflare --project-name aliko --branch "pr-${{ github.event.number }}"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
