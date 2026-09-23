@@ -32,6 +32,7 @@
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
     "autoprefixer": "^10.4.20",
     "concurrently": "^9.1.0",
+    "esbuild": "0.28.1",
     "eslint": "^9.15.0",
     "eslint-plugin-svelte": "^2.46.0",
     "postcss": "^8.4.49",
@@ -41,7 +42,8 @@
     "svelte-check": "^4.1.0",
     "tailwindcss": "^3.4.14",
     "typescript": "^5.7.2",
-    "vite": "^6.0.3"
+    "vite": "^6.0.3",
+    "wrangler": "4.137.0"
   },
   "dependencies": {
     "@convex-dev/aggregate": "^0.3.1",
@@ -64,7 +66,8 @@
     "zod": "^3.23.8"
   },
   "optionalDependencies": {
-    "@cloudflare/workerd-windows-64": "^1.20260921.1",
+    "@cloudflare/workerd-linux-64": "1.20260921.1",
+    "@cloudflare/workerd-windows-64": "1.20260921.1",
     "@rollup/rollup-linux-x64-gnu": "^4.63.4",
     "@rollup/rollup-linux-x64-musl": "^4.63.4",
     "@rollup/rollup-win32-x64-msvc": "^4.63.4"
