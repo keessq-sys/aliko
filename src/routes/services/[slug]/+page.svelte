@@ -105,7 +105,7 @@
 
         <!-- Right: request form -->
         <div class="lg:col-span-1">
-          <div class="sticky top-24">
+          <div class="lg:sticky lg:top-24">
             <h2 class="mb-4 font-serif text-2xl font-bold text-white">Request This Service</h2>
             {#if service.startingPrice}
               <p class="mb-4 text-sm text-stone-400">
@@ -113,17 +113,13 @@
                 <span class="text-stone-600"> {service.priceUnit}</span>
               </p>
             {/if}
+            <ServiceRequestForm
+              serviceSlug={service.slug}
+              serviceLabel={service.requestTypeLabel}
+              requestType={service.requestType}
+            />
           </div>
         </div>
-      </div>
-
-      <!-- Full-width form below -->
-      <div class="mt-10 border-t border-white/5 pt-10">
-        <ServiceRequestForm
-          serviceSlug={service.slug}
-          serviceLabel={service.requestTypeLabel}
-          requestType={service.requestType}
-        />
       </div>
     </section>
   </div>
