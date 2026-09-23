@@ -1,11 +1,10 @@
 <script lang="ts">
-  import { useQuery, runMutation, runAction } from '$lib/convex/queries';
+  import { useQuery, runMutation } from '$lib/convex/queries';
   import { api } from '$lib/convex/_generated/api';
   import { formatNaira, formatSqm } from '$lib/utils/format';
   import { ShieldCheck, MapPin, Loader2, X, CheckCircle2, LogIn } from 'lucide-svelte';
   import { reveal, revealStagger } from '$lib/actions/reveal';
   import { tilt } from '$lib/actions/tilt';
-  import { page } from '$app/stores';
   import { FALLBACK_PROJECTS, FALLBACK_PLOTS } from '$lib/data/fallbackCatalog';
 
   let projectFilter = '';
@@ -25,25 +24,11 @@
   let booking = false;
   let bookingError = '';
   let bookingResult: { bookingId: string; reference: string } | null = null;
-  let payEmail = '';
-
-  $: sessionEmail = $page.data?.session?.user?.email ?? '';
-  $: if (sessionEmail && !payEmail) payEmail = sessionEmail;
-
-  // `initializePaystackPayment` charges the plot's full `totalAmount` — there
-  // is no per-installment amount calculation anywhere in the backend (no
-  // deposit percentage, no schedule cadence), so auto-charging a fraction of
-  // the price for a 6/12-month plan would mean guessing a number nobody
-  // configured. OUTRIGHT goes through real Paystack checkout for the full
-  // price; installment plans keep the existing "reserve now, our team
-  // follows up with the payment schedule" flow until a real installment
-  // billing design (deposit %, recurring charge cadence) exists to automate.
+  // Outright purchases continue to the dedicated Flutterwave checkout page.
+  // Installment bookings remain a manual schedule until deposit percentages
+  // and due-date rules are explicitly configured by the business.
   async function reserve() {
     if (!selectedPlot) return;
-    if (installmentPlan === 'OUTRIGHT' && !payEmail.trim()) {
-      bookingError = 'An email address is required to receive your payment receipt.';
-      return;
-    }
     booking = true;
     bookingError = '';
     try {
@@ -53,14 +38,7 @@
       });
 
       if (installmentPlan === 'OUTRIGHT') {
-        const callbackUrl = `${window.location.origin}/plots/payment-callback?reference=${encodeURIComponent(bookingResult!.reference)}`;
-        const checkout = await runAction(api.bookings.initializePaystackPayment, {
-          bookingId: bookingResult!.bookingId as any,
-          email: payEmail.trim(),
-          callbackUrl
-        });
-        window.location.href = checkout.authorization_url;
-        // Redirecting away — no further state updates needed here.
+        window.location.href = `/checkout/${encodeURIComponent(bookingResult!.reference)}`;
       }
     } catch (err: any) {
       bookingError = err?.message?.includes('Unauthorized')
@@ -211,26 +189,12 @@
           </select>
         </label>
 
-        {#if installmentPlan === 'OUTRIGHT'}
-          <label class="mb-5 block">
-            <span class="mb-1.5 block text-xs text-stone-500">Email for payment receipt</span>
-            <input
-              type="email"
-              inputmode="email"
-              autocomplete="email"
-              bind:value={payEmail}
-              placeholder="you@example.com"
-              class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-500"
-            />
-          </label>
-        {/if}
-
         <button on:click={reserve} disabled={booking} class="btn-primary flex w-full min-h-[44px] items-center justify-center gap-2 py-3 disabled:opacity-50">
           {#if booking}<Loader2 size={16} class="animate-spin" />{/if}
           {installmentPlan === 'OUTRIGHT' ? 'Reserve & Pay Now' : 'Reserve This Plot'}
         </button>
         {#if installmentPlan === 'OUTRIGHT'}
-          <p class="mt-3 text-center text-[11px] text-stone-600">You'll be redirected to Paystack to complete a secure payment for {formatNaira(selectedPlot.price)}.</p>
+          <p class="mt-3 text-center text-[11px] text-stone-600">You'll review the order before continuing to Flutterwave's secure checkout for {formatNaira(selectedPlot.price)}.</p>
         {:else}
           <p class="mt-3 text-center text-[11px] text-stone-600">This reserves the plot. Our team will contact you with the {installmentPlan} payment schedule.</p>
         {/if}

@@ -15,6 +15,7 @@
   let canvas: HTMLCanvasElement;
   let animFrame: number;
   let renderer: import("three").WebGLRenderer;
+  let staticMode = false;
 
   const STATUS_COLORS: Record<string, number> = {
     AVAILABLE:         0x059669,
@@ -29,6 +30,10 @@
   onMount(async () => {
     const reducedMotion =
       typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotion) {
+      staticMode = true;
+      return;
+    }
     const THREE = await import("three");
 
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
@@ -157,15 +162,13 @@
     let t = 0;
     function animate() {
       animFrame = requestAnimationFrame(animate);
-      if (!reducedMotion) {
-        t += 0.006;
-        camera.position.x = Math.cos(t * 0.12) * 16;
-        camera.position.z = Math.sin(t * 0.12) * 16;
-        camera.lookAt(0, 0, 0);
-        meshData.forEach(({ mesh, base, phase, status }) => {
-          if (status === "AVAILABLE") mesh.position.y = base + Math.sin(t * 1.4 + phase) * 0.06;
-        });
-      }
+      t += 0.006;
+      camera.position.x = Math.cos(t * 0.12) * 16;
+      camera.position.z = Math.sin(t * 0.12) * 16;
+      camera.lookAt(0, 0, 0);
+      meshData.forEach(({ mesh, base, phase, status }) => {
+        if (status === "AVAILABLE") mesh.position.y = base + Math.sin(t * 1.4 + phase) * 0.06;
+      });
       renderer.render(scene, camera);
     }
     animate();
@@ -191,7 +194,25 @@
 </script>
 
 <div bind:this={container} class="relative w-full h-full rounded-2xl overflow-hidden" style="background:#050A0E">
-  <canvas bind:this={canvas} class="w-full h-full block"></canvas>
+  {#if staticMode}
+    <div class="absolute inset-0 bg-[linear-gradient(rgba(5,150,105,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(5,150,105,0.12)_1px,transparent_1px)] bg-[size:42px_42px]">
+      <div class="absolute inset-[15%] rounded-[40%] border border-emerald-500/20 bg-emerald-950/20"></div>
+      {#each hotspots.slice(0, 9) as hotspot, index}
+        <a
+          href={`/properties/${hotspot.plotId}`}
+          aria-label={`View plot ${hotspot.beaconNumber}`}
+          class="absolute flex h-9 w-9 items-center justify-center rounded-lg border text-[9px] font-bold text-white"
+          class:border-emerald-400={hotspot.status === 'AVAILABLE'}
+          class:bg-emerald-600={hotspot.status === 'AVAILABLE'}
+          class:border-amber-400={hotspot.status !== 'AVAILABLE'}
+          class:bg-amber-700={hotspot.status !== 'AVAILABLE'}
+          style={`left:${18 + (index % 3) * 27}%;top:${20 + Math.floor(index / 3) * 25}%`}
+        >{hotspot.beaconNumber.slice(-3)}</a>
+      {/each}
+    </div>
+  {:else}
+    <canvas bind:this={canvas} class="w-full h-full block"></canvas>
+  {/if}
 
   <!-- Legend -->
   <div class="absolute bottom-4 left-4 flex flex-wrap gap-2">

@@ -14,7 +14,7 @@ import { env } from '$env/dynamic/public';
 
 /** Route prefixes that must never be indexed or cited, even if a crawler
  *  ignores robots.txt or a private URL gets linked from somewhere external. */
-const PRIVATE_PREFIXES = ['/admin', '/dashboard', '/auth', '/login', '/register', '/legal/track'];
+const PRIVATE_PREFIXES = ['/admin', '/dashboard', '/checkout', '/auth', '/login', '/register', '/legal/track'];
 
 /** Known AI-crawler / answer-engine user-agent substrings, used only to tag
  *  the request for server-side observability (no third-party call, no PII). */
@@ -59,7 +59,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   }
 
   const pathname = event.url.pathname;
-  if (pathname.startsWith('/admin') || pathname.startsWith('/dashboard/')) {
+  if (pathname.startsWith('/admin') || pathname.startsWith('/dashboard/') || pathname.startsWith('/checkout/')) {
     const token = event.cookies.get('__convexAuthJWT');
     if (!token || !env.PUBLIC_CONVEX_URL) {
       throw redirect(303, `/auth?tab=signin&redirect=${encodeURIComponent(pathname)}`);

@@ -1,11 +1,10 @@
 <script lang="ts">
   import { Heart, Calendar, FileText, MessageSquare, User, MapPin, Bed, Bath, Download, CalendarPlus, X, Inbox, ArrowRight, Landmark, Loader2, CreditCard, LogOut } from 'lucide-svelte';
-  import { useQuery, runAction, runMutation } from '$lib/convex/queries';
+  import { useQuery, runMutation } from '$lib/convex/queries';
   import { api } from '$lib/convex/_generated/api';
   import { formatNaira } from '$lib/utils/format';
   import { REQUEST_STATUS_META } from '$lib/types/services';
   import { fly } from 'svelte/transition';
-  import { page } from '$app/stores';
   import ServiceConversation from '$lib/components/services/ServiceConversation.svelte';
 
   let currentTab = 'bookings';
@@ -19,31 +18,6 @@
     FAILED: 'text-rose-400 bg-rose-500/10 border-rose-500/30',
     REFUNDED: 'text-stone-400 bg-stone-500/10 border-stone-500/30'
   };
-
-  let payingId: string | null = null;
-  let payError = '';
-
-  async function payNow(bookingId: string, reference: string) {
-    const email = $page.data?.session?.user?.email;
-    if (!email) {
-      payError = 'Please sign in again — your account has no email on file.';
-      return;
-    }
-    payingId = bookingId;
-    payError = '';
-    try {
-      const callbackUrl = `${window.location.origin}/plots/payment-callback?reference=${encodeURIComponent(reference)}`;
-      const checkout = await runAction(api.bookings.initializePaystackPayment, {
-        bookingId: bookingId as any,
-        email,
-        callbackUrl
-      });
-      window.location.href = checkout.authorization_url;
-    } catch (err) {
-      payError = (err as Error).message ?? 'Could not start payment. Please try again.';
-      payingId = null;
-    }
-  }
 
   // ── Profile ───────────────────────────────────────────────────────────
   const myProfile = useQuery(api.users.getMyProfile, {});
@@ -160,10 +134,6 @@
         </a>
       </div>
 
-      {#if payError}
-        <p class="mb-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300">{payError}</p>
-      {/if}
-
       {#if $myBookings === undefined}
         <div class="grid grid-cols-1 gap-4">
           {#each Array(2) as _}
@@ -197,17 +167,12 @@
                 </div>
               </div>
               {#if b.paymentStatus === 'PENDING'}
-                <!-- initializePaystackPayment always charges the full totalAmount,
-                     so a retry is only safe here (paidAmount is 0) — never for
-                     PARTIAL, where re-charging the full amount would overcharge. -->
-                <button
-                  type="button"
-                  disabled={payingId === b._id}
-                  on:click={() => payNow(b._id, b.reference)}
+                <a
+                  href={`/checkout/${encodeURIComponent(b.reference)}`}
                   class="mt-3 inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/20 disabled:opacity-50"
                 >
-                  {#if payingId === b._id}<Loader2 size={13} class="animate-spin" />{:else}<CreditCard size={13} />{/if} Pay Now
-                </button>
+                  <CreditCard size={13} /> Pay with Flutterwave
+                </a>
               {:else if b.paymentStatus === 'PARTIAL'}
                 <a
                   href={`/plots/payment-callback?reference=${b.reference}`}

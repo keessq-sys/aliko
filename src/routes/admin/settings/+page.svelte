@@ -16,7 +16,8 @@
   $: INTEGRATIONS = [
     { icon: KeyRound, name: "Google Maps API", env: "PUBLIC_GOOGLE_MAPS_API_KEY", desc: "Interactive property maps across the site", done: googleMapsConfigured },
     { icon: CreditCard, name: "Paystack Payments", env: "PAYSTACK_SECRET_KEY", desc: "Deposits, instalments & bookings", done: $status?.paystack ?? false },
-    { icon: Bot, name: "WhatsApp Business", env: "WHATSAPP_ACCESS_TOKEN", desc: "Lead bot & human review queue", done: $status?.whatsapp ?? false },
+    { icon: CreditCard, name: "Flutterwave Payments", env: "FLUTTERWAVE_SECRET_KEY + FLUTTERWAVE_SECRET_HASH", desc: "Hosted checkout, transaction verification and payment webhooks", done: $status?.flutterwave ?? false },
+    { icon: Bot, name: "WhatsApp Business", env: "WHATSAPP_ACCESS_TOKEN + WHATSAPP_APP_SECRET", desc: "Signed inbound messages, lead bot & human review queue", done: $status?.whatsapp ?? false },
     { icon: PenTool, name: "Dropbox Sign", env: "DROPBOX_SIGN_API_KEY", desc: "E-signature on legal documents", done: $status?.dropboxSign ?? false },
     { icon: MapPinned, name: "QoreID KYC", env: "QOREID_CLIENT_ID", desc: "NIN/BVN identity verification", done: $status?.qoreId ?? false },
     { icon: Mail, name: "Resend Email", env: "RESEND_API_KEY", desc: "Password-reset & notification emails", done: $status?.resend ?? false }

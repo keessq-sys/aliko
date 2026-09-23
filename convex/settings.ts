@@ -25,7 +25,8 @@ export const getIntegrationStatus = query({
     const isSet = (name: string) => Boolean(process.env[name] && process.env[name]!.trim().length > 0);
     return {
       paystack: isSet("PAYSTACK_SECRET_KEY"),
-      whatsapp: isSet("WHATSAPP_ACCESS_TOKEN") && isSet("WHATSAPP_PHONE_NUMBER_ID") && isSet("WHATSAPP_VERIFY_TOKEN"),
+      flutterwave: isSet("FLUTTERWAVE_SECRET_KEY") && isSet("FLUTTERWAVE_SECRET_HASH"),
+      whatsapp: isSet("WHATSAPP_ACCESS_TOKEN") && isSet("WHATSAPP_PHONE_NUMBER_ID") && isSet("WHATSAPP_VERIFY_TOKEN") && isSet("WHATSAPP_APP_SECRET"),
       dropboxSign: isSet("DROPBOX_SIGN_API_KEY"),
       qoreId: isSet("QOREID_CLIENT_ID"),
       resend: isSet("RESEND_API_KEY") || isSet("AUTH_RESEND_KEY")

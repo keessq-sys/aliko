@@ -115,6 +115,7 @@
               <th class="px-6 py-4">Plot</th>
               <th class="px-6 py-4">Plan</th>
               <th class="px-6 py-4">Paid / Total</th>
+              <th class="px-6 py-4">Provider</th>
               <th class="px-6 py-4">Status</th>
               <th class="px-6 py-4">Date</th>
               <th class="px-6 py-4 text-right">Actions</th>
@@ -128,6 +129,14 @@
                 <td class="px-6 py-4 text-stone-300">{b.plot?.beaconNumber ?? '—'} <span class="text-xs text-stone-600">{b.project?.name ?? ''}</span></td>
                 <td class="px-6 py-4 text-stone-400">{b.installmentPlan ?? 'OUTRIGHT'}</td>
                 <td class="px-6 py-4 text-white">{formatNaira(b.paidAmount)} <span class="text-xs text-stone-600">/ {formatNaira(b.totalAmount)}</span></td>
+                <td class="px-6 py-4">
+                  {#if b.payments?.[0]}
+                    <p class="text-xs font-semibold text-stone-300">{b.payments[0].provider}</p>
+                    <p class="mt-0.5 font-mono text-[10px] text-stone-600">{b.payments[0].providerReference ?? b.payments[0].reference}</p>
+                  {:else}
+                    <span class="text-stone-600">—</span>
+                  {/if}
+                </td>
                 <td class="px-6 py-4">
                   <span class="rounded-full border px-2.5 py-1 text-xs font-semibold {STATUS_CLASSES[b.paymentStatus] ?? 'text-stone-400 bg-stone-500/10 border-stone-500/30'}">
                     {b.paymentStatus}

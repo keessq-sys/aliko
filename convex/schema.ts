@@ -157,9 +157,11 @@ export default defineSchema({
     currency: v.string(),
     metadata: v.optional(v.any()),
     createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
   })
     .index("by_booking", ["bookingId"])
     .index("by_reference", ["reference"])
+    .index("by_provider_reference", ["provider", "providerReference"])
     .index("by_status", ["status"]),
 
   // ── Legal Documents ───────────────────────────────────────────────────────

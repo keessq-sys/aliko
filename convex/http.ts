@@ -1,6 +1,6 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
-import { api, internal } from "./_generated/api";
+import { internal } from "./_generated/api";
 
 async function hmacHex(algorithm: "SHA-256" | "SHA-512", secret: string, body: string) {
   const encoder = new TextEncoder();
@@ -17,6 +17,43 @@ function constantTimeEqual(left: string, right: string) {
 }
 
 const http = httpRouter();
+
+// ── Flutterwave Webhook ───────────────────────────────────────────────────
+// Flutterwave signs webhook deliveries with the secret hash configured in
+// Dashboard > Settings > Webhooks. A signed event is still only a signal: we
+// re-query Flutterwave's transaction API before recording any payment.
+http.route({
+  path: "/webhooks/flutterwave",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const secretHash = process.env.FLUTTERWAVE_SECRET_HASH;
+    if (!secretHash) return new Response("Webhook not configured", { status: 503 });
+    const signature = req.headers.get("verif-hash");
+    if (!signature || !constantTimeEqual(signature, secretHash)) {
+      return new Response("Invalid signature", { status: 401 });
+    }
+
+    const event = await req.json() as {
+      event?: string;
+      data?: { id?: number | string; tx_ref?: string; status?: string };
+    };
+    if (event.event !== "charge.completed" || event.data?.status !== "successful") {
+      return new Response("ok", { status: 200 });
+    }
+    if (!event.data.id || !event.data.tx_ref) return new Response("Invalid payload", { status: 400 });
+
+    try {
+      await ctx.runAction(internal.bookings.processFlutterwaveWebhook, {
+        transactionId: String(event.data.id),
+        reference: event.data.tx_ref,
+      });
+      return new Response("ok", { status: 200 });
+    } catch (error) {
+      console.error("Flutterwave webhook verification failed", error);
+      return new Response("Verification failed", { status: 400 });
+    }
+  }),
+});
 
 // ── Paystack Webhook ───────────────────────────────────────────────────────
 http.route({
@@ -49,10 +86,10 @@ http.route({
         metadata: event.data,
       });
 
-      if (result?.isFullyPaid) {
+      if (result?.isFullyPaid && result.newlyConfirmed) {
         // Auto-generate deed of assignment
         const booking = result.booking;
-        await ctx.runAction(api.legalDocuments.generateDeedOfAssignment, {
+        await ctx.runAction(internal.legalDocuments.generateDeedOfAssignment, {
           clientId: booking.clientId,
           plotId: booking.plotId,
           bookingId: booking._id,
@@ -124,7 +161,15 @@ http.route({
   path: "/webhooks/whatsapp",
   method: "POST",
   handler: httpAction(async (ctx, req) => {
-    const body = await req.json() as {
+    const rawBody = await req.text();
+    const appSecret = process.env.WHATSAPP_APP_SECRET;
+    if (!appSecret) return new Response("Webhook not configured", { status: 503 });
+    const signature = req.headers.get("x-hub-signature-256");
+    const expected = `sha256=${await hmacHex("SHA-256", appSecret, rawBody)}`;
+    if (!signature || !constantTimeEqual(signature, expected)) {
+      return new Response("Invalid signature", { status: 401 });
+    }
+    const body = JSON.parse(rawBody) as {
       entry?: { changes?: { value?: { messages?: { from: string; type: string; text?: { body: string } }[] } }[] }[];
     };
     const message = body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];

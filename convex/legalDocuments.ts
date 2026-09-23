@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, mutation, action, internalMutation } from "./_generated/server";
+import { query, mutation, internalAction, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { api, internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
@@ -76,7 +76,7 @@ export const getPendingDocuments = query({
 
 // ── Actions (PDF generation runs in Convex's Node.js environment) ──────────
 
-export const generateDeedOfAssignment = action({
+export const generateDeedOfAssignment = internalAction({
   args: {
     clientId: v.id("users"),
     plotId: v.id("plots"),
@@ -89,7 +89,7 @@ export const generateDeedOfAssignment = action({
     const [client, plot, booking] = await Promise.all([
       ctx.runQuery(api.legalDocuments.getClientInternal, { userId: args.clientId }),
       ctx.runQuery(api.legalDocuments.getPlotWithProject, { plotId: args.plotId }),
-      ctx.runQuery(api.bookings.getBookingInternal, { bookingId: args.bookingId }),
+      ctx.runQuery(internal.bookings.getBookingInternal, { bookingId: args.bookingId }),
     ]);
     if (!client || !plot || !plot.project || !booking) throw new Error("Missing data for document generation");
 

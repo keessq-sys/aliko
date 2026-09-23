@@ -7,7 +7,7 @@ Premium Real Estate & Property Development Platform for Abuja, Nigeria.
 - **Frontend**: SvelteKit 2 + TypeScript + TailwindCSS
 - **Backend**: Convex (Real-time Database + Functions + Auth)
 - **Deployment**: Cloudflare Pages (Edge Network)
-- **Payments**: Paystack (Nigeria)
+- **Payments**: Flutterwave hosted checkout with server verification; Paystack compatibility
 - **Communications**: WhatsApp Business Cloud API
 - **E-Signatures**: Dropbox Sign (HelloSign)
 - **KYC**: QoreID (Nigeria)
@@ -121,6 +121,7 @@ gh workflow run deploy-production.yml
 - [Environment Setup](docs/ENVIRONMENT_SETUP.md) - Complete variable reference
 - [Deployment Guide](docs/DEPLOYMENT.md) - CI/CD, rollback, troubleshooting
 - [Credential Rotation](docs/CREDENTIAL_ROTATION.md) - Security procedures
+- [Enterprise Integration Assessment](docs/ENTERPRISE_INTEGRATIONS.md) - Payment, WhatsApp, signing and Convex production checklist
 
 ## 🔐 Security
 

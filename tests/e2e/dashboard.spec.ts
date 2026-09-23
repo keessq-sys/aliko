@@ -20,6 +20,11 @@ test.describe('Dashboard Pages (Protected)', () => {
     await page.goto('/admin');
     await expect(page).toHaveURL(/.*auth.*signin/);
   });
+
+  test('should protect a payment checkout link', async ({ page }) => {
+    await page.goto('/checkout/ADK-TEST-BOOKING');
+    await expect(page).toHaveURL(/.*auth.*signin/);
+  });
 });
 
 test.describe('Admin Dashboard (After Login)', () => {

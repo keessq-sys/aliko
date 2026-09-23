@@ -26,9 +26,24 @@ test.describe('Webhook Endpoints', () => {
     expect([401, 503]).toContain(response.status());
   });
 
+  test('should verify Flutterwave webhook secret hash', async ({ request }) => {
+    const response = await request.post(`${actionsUrl}/webhooks/flutterwave`, {
+      headers: { 'verif-hash': 'invalid-secret-hash' },
+      data: { event: 'charge.completed', data: { id: 1, tx_ref: 'test', status: 'successful' } }
+    });
+    expect([401, 503]).toContain(response.status());
+  });
+
   test('should verify WhatsApp webhook', async ({ request }) => {
     const response = await request.get(`${actionsUrl}/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token=test&hub.challenge=123`);
     expect(response.status()).toBe(403);
+  });
+
+  test('should reject an unsigned WhatsApp event', async ({ request }) => {
+    const response = await request.post(`${actionsUrl}/webhooks/whatsapp`, {
+      data: { entry: [{ changes: [{ value: { messages: [] } }] }] }
+    });
+    expect([401, 503]).toContain(response.status());
   });
 
   test('should verify Dropbox Sign webhook', async ({ request }) => {

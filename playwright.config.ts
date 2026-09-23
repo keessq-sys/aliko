@@ -12,7 +12,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 1 : 2,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -26,8 +26,13 @@ export default defineConfig({
     /* Screenshot on failure */
     screenshot: 'only-on-failure',
 
-    /* Video on failure */
-    video: 'retain-on-failure',
+    /* Screenshots and traces are sufficient for this suite. Recording every
+       WebGL/image-heavy page made Chromium video finalization hang on Windows. */
+    video: 'off',
+    /* Keep decorative WebGL scenes on their accessible static fallback in
+       automation. Multiple software-rendered contexts can stall Chromium on
+       teardown and do not add coverage to route/content assertions. */
+    reducedMotion: 'reduce',
   },
 
   /* Configure projects for major browsers */
