@@ -3,7 +3,6 @@
   import { slide } from 'svelte/transition';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import DiamondMark from '$lib/components/ui/DiamondMark.svelte';
   import { api } from '$lib/convex/_generated/api';
   import { runAction } from '$lib/convex/queries';
 
@@ -69,13 +68,14 @@
     <div class="flex items-center justify-between h-20">
 
       <!-- Logo -->
-      <a href="/" class="flex items-center gap-3 group">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_15px_rgba(5,150,105,0.4)] group-hover:scale-105 transition-transform duration-300 text-white">
-          <DiamondMark size={22} />
-        </div>
-        <span class="text-xl font-serif font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-stone-400">
-          Aliko Diamond Key
-        </span>
+      <a href="/" class="group flex min-h-[64px] items-center" aria-label="Aliko Diamond Key Realtors Ltd home">
+        <img
+          src="/adk-logo.png"
+          alt="Aliko Diamond Key Realtors Ltd"
+          width="1351"
+          height="1164"
+          class="h-16 w-auto rounded-lg bg-white object-contain shadow-[0_0_18px_rgba(202,151,35,0.2)] transition-transform duration-300 group-hover:scale-[1.03]"
+        />
       </a>
 
       <!-- Desktop Nav -->
