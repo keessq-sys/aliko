@@ -33,7 +33,7 @@
   {@const Icon = service.icon}
   <div class="min-h-screen bg-[#050A0E] text-white">
     <!-- Hero -->
-    <section class="relative h-[46vh] min-h-[380px] overflow-hidden">
+    <section class="theme-contrast-dark relative h-[46vh] min-h-[380px] overflow-hidden">
       <img src={service.image} alt={service.name} class="absolute inset-0 h-full w-full object-cover" />
       <div class="absolute inset-0 bg-gradient-to-t from-[#050A0E] via-[#050A0E]/60 to-transparent"></div>
       <div class="absolute inset-x-0 bottom-0">

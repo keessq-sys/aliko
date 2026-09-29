@@ -148,7 +148,7 @@
 
 <div class="min-h-screen bg-[#050A0E] text-white">
   <!-- Header / Breadcrumb banner -->
-  <div class="relative overflow-hidden py-10 border-b border-white/5">
+  <div class="theme-contrast-dark relative overflow-hidden py-10 border-b border-white/5">
     <img src={bannerImage} alt="" class="absolute inset-0 h-full w-full object-cover opacity-25" loading="eager" />
     <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050A0E] via-[#050A0E]/90 to-[#050A0E]/60"></div>
     <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-emerald-950/20 via-transparent to-transparent"></div>

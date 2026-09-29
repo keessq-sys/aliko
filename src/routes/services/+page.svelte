@@ -23,7 +23,7 @@
 
 <div class="min-h-screen bg-[#050A0E] text-white">
   <!-- Hero -->
-  <section class="relative overflow-hidden border-b border-white/5 py-24">
+  <section class="theme-contrast-dark relative overflow-hidden border-b border-white/5 py-24">
     <img src={heroImage} alt="" class="absolute inset-0 h-full w-full object-cover opacity-30" loading="eager" />
     <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050A0E] via-[#050A0E]/85 to-[#050A0E]/40"></div>
     <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-emerald-950/30 via-transparent to-transparent"></div>

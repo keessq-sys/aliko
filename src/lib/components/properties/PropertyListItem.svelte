@@ -11,7 +11,7 @@
   };
 </script>
 
-<div class="group flex flex-col md:flex-row bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] hover:border-l-emerald-500 transition-all duration-300">
+<div class="theme-light-surface group flex flex-col md:flex-row bg-[#0A1118]/80 backdrop-blur-md rounded-2xl border border-emerald-900/30 overflow-hidden hover:shadow-[0_0_20px_rgba(5,150,105,0.2)] hover:border-l-emerald-500 transition-all duration-300">
   <!-- Image -->
   <a href="/properties/{property.id}" class="relative w-full md:w-[240px] h-48 md:h-auto flex-shrink-0 overflow-hidden">
     <img 

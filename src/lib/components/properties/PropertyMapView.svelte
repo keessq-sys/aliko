@@ -28,9 +28,9 @@
   }
 </script>
 
-<div class="flex h-full min-h-[600px] rounded-2xl border border-white/10 bg-[#050A0E]">
+<div class="theme-light-surface flex h-full min-h-[600px] rounded-2xl border border-white/10 bg-[#050A0E]">
   <!-- Sidebar list -->
-  <div class="z-10 flex w-full flex-col border-r border-white/10 bg-[#0A1118]/90 backdrop-blur-md md:w-1/3">
+  <div class="theme-light-surface z-10 flex w-full flex-col border-r border-white/10 bg-[#0A1118]/90 backdrop-blur-md md:w-1/3">
     <div class="border-b border-white/10 p-4">
       <h3 class="text-lg font-semibold text-white">Map View</h3>
       <p class="text-sm text-gray-400">{properties.length} properties found</p>

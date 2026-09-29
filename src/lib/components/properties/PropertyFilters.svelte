@@ -40,8 +40,8 @@
   }
 </script>
 
-<div class="bg-[#0A1118]/90 backdrop-blur-xl border border-emerald-900/30 rounded-2xl h-full flex flex-col overflow-hidden shadow-2xl">
-  <div class="p-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-[#0A1118]/95 z-10">
+<div class="theme-light-surface bg-[#0A1118]/90 backdrop-blur-xl border border-emerald-900/30 rounded-2xl h-full flex flex-col overflow-hidden shadow-2xl">
+  <div class="theme-light-surface p-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-[#0A1118]/95 z-10">
     <div class="flex items-center gap-2">
       <SlidersHorizontal size={18} class="text-emerald-500" />
       <h2 class="text-lg font-semibold text-white">Filters</h2>

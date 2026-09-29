@@ -17,7 +17,7 @@
           <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_15px_rgba(5,150,105,0.4)] text-white">
             <DiamondMark size={18} />
           </div>
-          <span class="text-xl font-serif font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-stone-400">
+          <span class="theme-brand-copy text-xl font-serif font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-stone-400">
             Aliko Diamond Key
           </span>
         </a>

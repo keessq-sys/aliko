@@ -14,7 +14,7 @@
 </script>
 
 <div class="min-h-screen bg-[#050A0E] flex relative overflow-hidden">
-  <div class="hidden lg:flex lg:w-1/2 relative bg-black items-center justify-center overflow-hidden">
+  <div class="theme-contrast-dark hidden lg:flex lg:w-1/2 relative bg-black items-center justify-center overflow-hidden">
     <div class="absolute inset-0 bg-[url('https://picsum.photos/seed/adk/1200/1600')] bg-cover bg-center opacity-40"></div>
     <div class="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent"></div>
     

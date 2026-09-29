@@ -48,7 +48,7 @@
     </a>
   </div>
 
-  <div class="relative overflow-hidden">
+  <div class="theme-contrast-dark relative overflow-hidden">
     <img src={heroImage} alt="" class="absolute inset-0 h-full w-full object-cover opacity-20" loading="eager" />
     <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#050A0E]/40 via-[#050A0E]/90 to-[#050A0E]"></div>
     <div class="relative px-4 sm:px-6 lg:px-8 py-12 max-w-7xl mx-auto">
