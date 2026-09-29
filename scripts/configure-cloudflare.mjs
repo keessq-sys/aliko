@@ -63,9 +63,9 @@ async function ensureZoneRules(zone) {
   const rateDescription = '[ADK] Rate limit authentication and uploads';
   if (!rate?.rules?.some((rule) => rule.description === rateDescription)) {
     const rule = {
-      action: 'managed_challenge', description: rateDescription, enabled: true,
+      action: 'block', description: rateDescription, enabled: true,
       expression: '(http.request.uri.path in {"/login" "/register" "/api/media/upload"}) or starts_with(http.request.uri.path, "/auth/")',
-      ratelimit: { characteristics: ['cf.colo.id', 'ip.src'], period: 60, requests_per_period: 30, mitigation_timeout: 600 },
+      ratelimit: { characteristics: ['cf.colo.id', 'ip.src'], period: 10, requests_per_period: 10, mitigation_timeout: 10 },
     };
     const endpoint = rate ? `/zones/${zone.id}/rulesets/${rate.id}/rules` : `/zones/${zone.id}/rulesets`;
     const body = rate ? rule : { name: 'Aliko Diamond Key rate limits', kind: 'zone', phase: ratePhase, rules: [rule] };
@@ -75,13 +75,25 @@ async function ensureZoneRules(zone) {
 }
 
 async function main() {
-  await cf('/user/tokens/verify');
+  // Account-owned tokens use the account-scoped verifier. New Cloudflare
+  // account tokens carry the cfat_ prefix and are rejected by /user/tokens.
+  await cf(`/accounts/${accountId}/tokens/verify`);
   console.log('Cloudflare API token verified.');
-  await ensureBucket();
-  await bindPagesProject();
-  const zones = await cf(`/zones?account.id=${accountId}&status=active&per_page=50`);
-  if (!zones.length) console.warn('No active zone was found; R2 is configured but WAF rules require a domain in this account.');
-  for (const zone of zones) await ensureZoneRules(zone);
+  const failures = [];
+  try {
+    await ensureBucket();
+    await bindPagesProject();
+  } catch (error) {
+    failures.push(`R2/Pages: ${error.message}`);
+  }
+  try {
+    const zones = await cf(`/zones?account.id=${accountId}&status=active&per_page=50`);
+    if (!zones.length) console.warn('No active zone was found; WAF rules require a domain in this account.');
+    for (const zone of zones) await ensureZoneRules(zone);
+  } catch (error) {
+    failures.push(`WAF: ${error.message}`);
+  }
+  if (failures.length) throw new Error(failures.join('\n'));
 }
 
 main().catch((error) => { console.error(error.message); process.exit(1); });
