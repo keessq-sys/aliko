@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Authentication', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
   });
 
   test('should load login page', async ({ page }) => {
@@ -28,13 +28,13 @@ test.describe('Authentication', () => {
 
 test.describe('Registration', () => {
   test('should load agent registration page', async ({ page }) => {
-    await page.goto('/register/agent');
+    await page.goto('/register/agent', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveTitle(/Register|Agent/);
     await expect(page.locator('form')).toBeVisible();
   });
 
   test('should load client registration page', async ({ page }) => {
-    await page.goto('/register/manager');
+    await page.goto('/register/manager', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveTitle(/Register|Manager/);
     await expect(page.locator('form')).toBeVisible();
   });

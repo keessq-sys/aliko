@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import {
   query,
   mutation,
+  action,
   internalAction,
   internalMutation,
   internalQuery,
@@ -391,6 +392,57 @@ export const updateDocumentStatus = internalMutation({
       metadata: args.metadata,
       createdAt: Date.now(),
     });
+  },
+});
+
+export const getDocumentForSignature = internalQuery({
+  args: { documentId: v.id("legalDocuments") },
+  handler: async (ctx, { documentId }) => {
+    const document = await ctx.db.get(documentId);
+    if (!document) throw new Error("Document not found");
+    const client = await ctx.db.get(document.clientId);
+    if (!client) throw new Error("Document client not found");
+    const pdfUrl = document.pdfStorageId ? await ctx.storage.getUrl(document.pdfStorageId) : null;
+    return { document, client, pdfUrl };
+  },
+});
+
+export const recordSignatureRequest = internalMutation({
+  args: { documentId: v.id("legalDocuments"), requestId: v.string(), actorId: v.id("users") },
+  handler: async (ctx, args) => {
+    const document = await ctx.db.get(args.documentId); if (!document) throw new Error("Document not found");
+    await ctx.db.patch(document._id, { externalSignatureId: args.requestId, status: "PENDING_SIGNATURE", updatedAt: Date.now() });
+    await ctx.db.insert("documentAuditLog", { documentId: document._id, action: "SIGNATURE_REQUEST_SENT", actorId: args.actorId, actorRole: "ADMIN", metadata: { requestId: args.requestId }, createdAt: Date.now() });
+  },
+});
+
+export const sendDropboxSignatureRequest = action({
+  args: { documentId: v.id("legalDocuments") },
+  handler: async (ctx, { documentId }): Promise<{ requestId: string }> => {
+    const userId = await getAuthUserId(ctx) as Id<"users"> | null;
+    if (!userId) throw new Error("Unauthorized");
+    const user = await ctx.runQuery(internal.paymentOperations.requireAdmin, { userId });
+    const apiKey = process.env.DROPBOX_SIGN_API_KEY;
+    if (!apiKey) throw new Error("Dropbox Sign is not configured");
+    const { document, client, pdfUrl } = await ctx.runQuery(internal.legalDocuments.getDocumentForSignature, { documentId });
+    if (!pdfUrl) throw new Error("Document PDF is unavailable");
+    if (!["DRAFT", "PENDING_SIGNATURE"].includes(document.status)) throw new Error("Document is not eligible for signature");
+    const pdfResponse = await fetch(pdfUrl); if (!pdfResponse.ok) throw new Error("Could not read document PDF");
+    const form = new FormData();
+    form.append("title", `Aliko Diamond Key document ${document.referenceCode}`);
+    form.append("subject", "Document ready for your signature");
+    form.append("message", "Please review and sign your Aliko Diamond Key document.");
+    form.append("signers[0][email_address]", client.email);
+    form.append("signers[0][name]", client.name);
+    form.append("metadata[referenceCode]", document.referenceCode);
+    form.append("files[0]", await pdfResponse.blob(), `${document.referenceCode}.pdf`);
+    const auth = btoa(`${apiKey}:`);
+    const response = await fetch("https://api.hellosign.com/v3/signature_request/send", { method: "POST", headers: { Authorization: `Basic ${auth}` }, body: form });
+    const body = await response.json() as { signature_request?: { signature_request_id?: string }; error?: { error_msg?: string } };
+    const requestId = body.signature_request?.signature_request_id;
+    if (!response.ok || !requestId) throw new Error(body.error?.error_msg ?? "Dropbox Sign rejected the signature request");
+    await ctx.runMutation(internal.legalDocuments.recordSignatureRequest, { documentId, requestId, actorId: user._id });
+    return { requestId };
   },
 });
 

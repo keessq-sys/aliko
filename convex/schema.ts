@@ -179,6 +179,43 @@ export default defineSchema({
     .index("by_status", ["status"])
     .index("by_status_created", ["status", "createdAt"]),
 
+  paymentRefunds: defineTable({
+    paymentId: v.id("payments"),
+    bookingId: v.id("bookings"),
+    provider: v.literal("FLUTTERWAVE"),
+    providerRefundId: v.optional(v.string()),
+    amount: v.number(),
+    reason: v.string(),
+    status: v.union(
+      v.literal("PENDING"),
+      v.literal("COMPLETED"),
+      v.literal("FAILED"),
+    ),
+    initiatedBy: v.id("users"),
+    lastError: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_payment", ["paymentId"])
+    .index("by_provider_refund", ["providerRefundId"])
+    .index("by_status_date", ["status", "createdAt"]),
+
+  paymentSettlements: defineTable({
+    provider: v.literal("FLUTTERWAVE"),
+    providerSettlementId: v.string(),
+    amount: v.number(),
+    currency: v.string(),
+    status: v.string(),
+    settledAt: v.optional(v.number()),
+    transactionCount: v.optional(v.number()),
+    discrepancyAmount: v.optional(v.number()),
+    importedBy: v.id("users"),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_provider_id", ["provider", "providerSettlementId"])
+    .index("by_status_date", ["status", "createdAt"]),
+
   // ── Legal Documents ───────────────────────────────────────────────────────
   legalDocuments: defineTable({
     type: v.union(
@@ -327,12 +364,15 @@ export default defineSchema({
     ),
     relatedId: v.optional(v.string()),
     relatedType: v.optional(v.string()),
+    providerMessageId: v.optional(v.string()),
     createdAt: v.number(),
   })
     .index("by_recipient", ["recipient"])
     .index("by_status", ["status"])
     .index("by_status_date", ["status", "createdAt"])
-    .index("by_channel_date", ["channel", "createdAt"]),
+    .index("by_channel_date", ["channel", "createdAt"])
+    .index("by_related", ["relatedType", "relatedId"])
+    .index("by_provider_message", ["providerMessageId"]),
 
   // ── Architectural Models (for cost calculator) ────────────────────────────
   architecturalModels: defineTable({
@@ -602,6 +642,7 @@ export default defineSchema({
       v.literal("PAYSTACK"),
       v.literal("WHATSAPP"),
       v.literal("DROPBOX_SIGN"),
+      v.literal("RESEND"),
     ),
     eventId: v.string(),
     eventType: v.string(),
@@ -676,6 +717,18 @@ export default defineSchema({
     .index("by_owner_date", ["ownerId", "createdAt"])
     .index("by_status_date", ["status", "createdAt"])
     .index("by_expiry", ["status", "expiresAt"]),
+
+  geocodeCache: defineTable({
+    addressKey: v.string(),
+    formattedAddress: v.string(),
+    latitude: v.number(),
+    longitude: v.number(),
+    placeId: v.string(),
+    expiresAt: v.number(),
+    createdAt: v.number(),
+  })
+    .index("by_address", ["addressKey"])
+    .index("by_expiry", ["expiresAt"]),
 
   // ── Admin Presence (for audit) ───────────────────────────────────────────
   adminAuditLog: defineTable({

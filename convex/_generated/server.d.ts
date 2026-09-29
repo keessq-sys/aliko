@@ -35,10 +35,13 @@ type Env = {
   readonly DROPBOX_SIGN_CLIENT_ID: string | undefined;
   readonly FLUTTERWAVE_SECRET_HASH: string | undefined;
   readonly FLUTTERWAVE_SECRET_KEY: string | undefined;
+  readonly GOOGLE_MAPS_API_KEY: string | undefined;
   readonly MALWARE_SCANNER_API_KEY: string | undefined;
   readonly MALWARE_SCANNER_URL: string | undefined;
   readonly PAYSTACK_SECRET_KEY: string | undefined;
   readonly RESEND_API_KEY: string | undefined;
+  readonly RESEND_FROM_EMAIL: string | undefined;
+  readonly RESEND_WEBHOOK_SECRET: string | undefined;
   readonly SITE_URL: string | undefined;
   readonly WHATSAPP_ACCESS_TOKEN: string | undefined;
   readonly WHATSAPP_APP_SECRET: string | undefined;

@@ -10,6 +10,7 @@ const provider = v.union(
   v.literal("PAYSTACK"),
   v.literal("WHATSAPP"),
   v.literal("DROPBOX_SIGN"),
+  v.literal("RESEND"),
 );
 
 export const integrationWorkpool = new Workpool(

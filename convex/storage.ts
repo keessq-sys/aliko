@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
+import { internalAction, internalMutation, internalQuery, mutation, query } from "./_generated/server";
+import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { rateLimiter } from "./lib/rateLimits";
 
@@ -128,7 +129,7 @@ export const registerUpload = mutation({
       "LEGAL_DOCUMENT",
     ].includes(args.purpose);
     const now = Date.now();
-    return ctx.db.insert("storedAssets", {
+    const assetId = await ctx.db.insert("storedAssets", {
       storageId: args.storageId,
       ownerId: user._id,
       purpose: args.purpose,
@@ -143,6 +144,45 @@ export const registerUpload = mutation({
       createdAt: now,
       updatedAt: now,
     });
+    if (requiresScan && process.env.MALWARE_SCANNER_URL && process.env.MALWARE_SCANNER_API_KEY) {
+      await ctx.scheduler.runAfter(0, internal.storage.scanAsset, { assetId });
+    }
+    return assetId;
+  },
+});
+
+export const getAssetForScan = internalQuery({
+  args: { assetId: v.id("storedAssets") },
+  handler: async (ctx, { assetId }) => {
+    const asset = await ctx.db.get(assetId);
+    if (!asset || asset.status !== "PENDING_SCAN") return null;
+    const url = await ctx.storage.getUrl(asset.storageId);
+    return url ? { asset, url } : null;
+  },
+});
+
+export const completeAssetScan = internalMutation({
+  args: { assetId: v.id("storedAssets"), clean: v.boolean(), detail: v.optional(v.string()) },
+  handler: async (ctx, args) => {
+    const asset = await ctx.db.get(args.assetId); if (!asset || asset.status !== "PENDING_SCAN") return;
+    await ctx.db.patch(asset._id, { status: args.clean ? "ACTIVE" : "QUARANTINED", updatedAt: Date.now() });
+    if (!args.clean) await ctx.db.insert("notificationLog", { channel: "EMAIL", recipient: "admin", subject: "Uploaded file quarantined", templateName: "malware-alert", message: (args.detail ?? "Scanner marked an upload as unsafe").slice(0, 500), status: "QUEUED", relatedId: String(asset._id), relatedType: "storedAssets", createdAt: Date.now() });
+  },
+});
+
+/** Provider-neutral scanner contract: multipart `file`; JSON `{ clean, threat? }`. */
+export const scanAsset = internalAction({
+  args: { assetId: v.id("storedAssets") },
+  handler: async (ctx, { assetId }) => {
+    const value = await ctx.runQuery(internal.storage.getAssetForScan, { assetId }); if (!value) return;
+    const endpoint = process.env.MALWARE_SCANNER_URL; const apiKey = process.env.MALWARE_SCANNER_API_KEY;
+    if (!endpoint || !apiKey) return;
+    const download = await fetch(value.url); if (!download.ok) throw new Error("Could not retrieve upload for scanning");
+    const form = new FormData(); form.append("file", await download.blob(), value.asset.fileName);
+    const response = await fetch(endpoint, { method: "POST", headers: { Authorization: `Bearer ${apiKey}` }, body: form });
+    const result = await response.json() as { clean?: boolean; threat?: string; message?: string };
+    if (!response.ok || typeof result.clean !== "boolean") throw new Error(result.message ?? "Malware scanner returned an invalid response");
+    await ctx.runMutation(internal.storage.completeAssetScan, { assetId, clean: result.clean, detail: result.threat });
   },
 });
 

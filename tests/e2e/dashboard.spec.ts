@@ -2,27 +2,27 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Dashboard Pages (Protected)', () => {
   test('should redirect to login when accessing agent dashboard', async ({ page }) => {
-    await page.goto('/dashboard/agent');
+    await page.goto('/dashboard/agent', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL(/.*auth.*signin/);
   });
 
   test('should redirect to login when accessing client dashboard', async ({ page }) => {
-    await page.goto('/dashboard/client');
+    await page.goto('/dashboard/client', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL(/.*auth.*signin/);
   });
 
   test('should redirect to login when accessing manager dashboard', async ({ page }) => {
-    await page.goto('/dashboard/manager');
+    await page.goto('/dashboard/manager', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL(/.*auth.*signin/);
   });
 
   test('should redirect to login when accessing admin dashboard', async ({ page }) => {
-    await page.goto('/admin');
+    await page.goto('/admin', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL(/.*auth.*signin/);
   });
 
   test('should protect a payment checkout link', async ({ page }) => {
-    await page.goto('/checkout/ADK-TEST-BOOKING');
+    await page.goto('/checkout/ADK-TEST-BOOKING', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL(/.*auth.*signin/);
   });
 });

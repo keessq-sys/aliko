@@ -29,7 +29,9 @@ export const getIntegrationStatus = query({
       whatsapp: isSet("WHATSAPP_ACCESS_TOKEN") && isSet("WHATSAPP_PHONE_NUMBER_ID") && isSet("WHATSAPP_VERIFY_TOKEN") && isSet("WHATSAPP_APP_SECRET"),
       dropboxSign: isSet("DROPBOX_SIGN_API_KEY"),
       qoreId: isSet("QOREID_CLIENT_ID"),
-      resend: isSet("RESEND_API_KEY") || isSet("AUTH_RESEND_KEY")
+      resend: (isSet("RESEND_API_KEY") || isSet("AUTH_RESEND_KEY")) && isSet("RESEND_FROM_EMAIL"),
+      serverGeocoding: isSet("GOOGLE_MAPS_API_KEY"),
+      malwareScanner: isSet("MALWARE_SCANNER_URL") && isSet("MALWARE_SCANNER_API_KEY"),
     };
   }
 });

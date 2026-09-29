@@ -21,6 +21,18 @@ async function hmacHex(
     .join("");
 }
 
+async function hmacBase64(secret: string, body: string) {
+  const encoder = new TextEncoder();
+  const normalizedSecret = secret.startsWith("whsec_") ? secret.slice(6) : null;
+  const keyBytes = normalizedSecret
+    ? Uint8Array.from(atob(normalizedSecret), (char) => char.charCodeAt(0))
+    : encoder.encode(secret);
+  const key = await crypto.subtle.importKey("raw", keyBytes, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
+  let binary = ""; for (const byte of new Uint8Array(signature)) binary += String.fromCharCode(byte);
+  return btoa(binary);
+}
+
 function constantTimeEqual(left: string, right: string) {
   if (left.length !== right.length) return false;
   let mismatch = 0;
@@ -203,25 +215,25 @@ http.route({
   path: "/webhooks/esign",
   method: "POST",
   handler: httpAction(async (ctx, req) => {
-    let rawBody: string;
-    try {
-      rawBody = await readWebhookBody(req);
-    } catch {
-      return new Response("Payload too large", { status: 413 });
-    }
-    const signature = req.headers.get("x-hellosign-signature");
     const secret = process.env.DROPBOX_SIGN_API_KEY;
     if (!secret) return new Response("Webhook not configured", { status: 503 });
-    const expected = await hmacHex("SHA-256", secret, rawBody);
-
+    const declared = Number(req.headers.get("content-length") ?? 0);
+    if (declared > MAX_WEBHOOK_BYTES) return new Response("Payload too large", { status: 413 });
+    let json: string;
+    try {
+      const form = await req.formData();
+      const field = form.get("json");
+      if (typeof field !== "string") throw new Error("Missing json field");
+      json = field;
+    } catch {
+      return new Response("Invalid callback payload", { status: 400 });
+    }
+    const signature = req.headers.get("content-sha256");
+    const expected = await hmacBase64(secret, json);
     if (!signature || !constantTimeEqual(signature, expected)) {
       return new Response("Invalid signature", { status: 401 });
     }
-
-    const decoded = decodeURIComponent(
-      rawBody.replace(/^json=/, "").replace(/\+/g, " "),
-    );
-    const payload = JSON.parse(decoded) as {
+    const payload = JSON.parse(json) as {
       event: { event_type: string; event_time?: string; event_hash?: string };
       signature_request: { metadata: { referenceCode: string } };
     };
@@ -231,10 +243,10 @@ http.route({
       provider: "DROPBOX_SIGN",
       eventId:
         payload.event.event_hash ??
-        `${payload.event.event_type}:${payload.event.event_time ?? (await sha256Hex(rawBody))}`,
+          `${payload.event.event_type}:${payload.event.event_time ?? (await sha256Hex(json))}`,
       eventType: payload.event.event_type,
       reference: referenceCode,
-      payloadDigest: await sha256Hex(rawBody),
+      payloadDigest: await sha256Hex(json),
     });
     if (!claim.claimed)
       return new Response("Hello API Event Received", { status: 200 });
@@ -258,6 +270,31 @@ http.route({
 
     // Dropbox Sign requires this exact response
     return new Response("Hello API Event Received", { status: 200 });
+  }),
+});
+
+// ── Resend delivery events ────────────────────────────────────────────────
+http.route({
+  path: "/webhooks/resend",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const secret = process.env.RESEND_WEBHOOK_SECRET;
+    if (!secret) return new Response("Webhook not configured", { status: 503 });
+    let raw: string;
+    try { raw = await readWebhookBody(req); } catch { return new Response("Payload too large", { status: 413 }); }
+    const id = req.headers.get("svix-id"); const timestamp = req.headers.get("svix-timestamp"); const signatures = req.headers.get("svix-signature");
+    if (!id || !timestamp || !signatures) return new Response("Missing signature", { status: 401 });
+    const unix = Number(timestamp); if (!Number.isFinite(unix) || Math.abs(Date.now() / 1000 - unix) > 300) return new Response("Expired signature", { status: 401 });
+    const expected = await hmacBase64(secret, `${id}.${timestamp}.${raw}`);
+    const valid = signatures.split(" ").some((part) => part.startsWith("v1,") && constantTimeEqual(part.slice(3), expected));
+    if (!valid) return new Response("Invalid signature", { status: 401 });
+    const payload = JSON.parse(raw) as { type?: string; data?: { email_id?: string } };
+    const claim = await ctx.runMutation(internal.operations.claimWebhookEvent, { provider: "RESEND", eventId: id, eventType: payload.type ?? "unknown", reference: payload.data?.email_id, payloadDigest: await sha256Hex(raw) });
+    if (!claim.claimed) return new Response("ok");
+    const failed = ["email.bounced", "email.complained", "email.failed", "email.suppressed"].includes(payload.type ?? "");
+    if (payload.data?.email_id) await ctx.runMutation(internal.email.updateDelivery, { providerId: payload.data.email_id, status: failed ? "FAILED" : "SENT" });
+    await ctx.runMutation(internal.operations.finishWebhookEvent, { eventId: claim.eventId, status: payload.data?.email_id ? "PROCESSED" : "IGNORED" });
+    return new Response("ok");
   }),
 });
 

@@ -4,7 +4,7 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@alikodiamondkey.com';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 
 setup('authenticate as admin', async ({ page }) => {
-  await page.goto('/login');
+  await page.goto('/login', { waitUntil: 'domcontentloaded' });
   
   await page.fill('input[type="email"]', ADMIN_EMAIL);
   await page.fill('input[type="password"]', ADMIN_PASSWORD);

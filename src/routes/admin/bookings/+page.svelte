@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { useQuery, runMutation } from "$lib/convex/queries";
+  import { useQuery, runMutation, runAction } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
-  import { DollarSign, Loader2, Search, XCircle } from "lucide-svelte";
+  import { DollarSign, Loader2, Search, XCircle, RotateCcw, Download } from "lucide-svelte";
   import { formatNaira, formatRelative } from "$lib/utils/format";
 
   const bookings = useQuery(api.bookings.getAllBookings, { limit: 200 });
@@ -36,6 +36,8 @@
   });
 
   let cancelingId: string | null = null;
+  let refundingId: string | null = null;
+  let importingSettlements = false;
 
   async function cancel(bookingId: string) {
     if (!confirm("Cancel this booking and release the plot back to AVAILABLE?")) return;
@@ -48,6 +50,42 @@
       cancelingId = null;
     }
   }
+
+  async function refund(payment: any) {
+    const rawAmount = prompt(`Refund amount in NGN (maximum ${payment.amount}):`, String(payment.amount));
+    if (rawAmount === null) return;
+    const amount = Number(rawAmount.replace(/,/g, ""));
+    if (!Number.isFinite(amount) || amount <= 0) return alert("Enter a valid positive amount.");
+    const reason = prompt("Reason for this refund (required for the audit trail):", "Customer-approved refund");
+    if (!reason) return;
+    if (!confirm(`Send a ${formatNaira(amount)} refund to the original payment method?`)) return;
+    refundingId = payment._id;
+    try {
+      const result = await runAction(api.paymentOperations.refundFlutterwavePayment, { paymentId: payment._id, amount, reason } as any);
+      alert(`Refund ${result.status.toLowerCase()}. Provider reference: ${result.refundId}`);
+    } catch (err) {
+      alert((err as Error).message ?? "Refund failed.");
+    } finally {
+      refundingId = null;
+    }
+  }
+
+  async function importSettlements() {
+    const today = new Date().toISOString().slice(0, 10);
+    const from = prompt("Import Flutterwave settlements from (YYYY-MM-DD):", today);
+    if (!from) return;
+    const to = prompt("Import through (YYYY-MM-DD):", today);
+    if (!to) return;
+    importingSettlements = true;
+    try {
+      const result = await runAction(api.paymentOperations.importFlutterwaveSettlements, { from, to });
+      alert(`Imported or updated ${result.imported} settlement records.`);
+    } catch (err) {
+      alert((err as Error).message ?? "Settlement import failed.");
+    } finally {
+      importingSettlements = false;
+    }
+  }
 </script>
 
 <svelte:head><title>Bookings — ADK Admin</title></svelte:head>
@@ -58,9 +96,14 @@
       <h1 class="flex items-center gap-2 text-xl font-bold text-white"><DollarSign class="h-5 w-5 text-emerald-400" /> Bookings</h1>
       <p class="mt-0.5 text-sm text-stone-500">Every plot reservation and its payment status.</p>
     </div>
-    <div class="relative">
-      <Search class="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-500" />
-      <input type="text" bind:value={search} placeholder="Search reference, client, plot…" class="w-64 rounded-xl border border-white/10 bg-white/5 py-2 pl-8 pr-3 text-xs text-white placeholder-stone-600 outline-none focus:border-emerald-500" />
+    <div class="flex flex-wrap items-center gap-2">
+      <button type="button" disabled={importingSettlements} on:click={importSettlements} class="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-emerald-500/30 px-3 text-xs text-emerald-300 hover:bg-emerald-500/10 disabled:opacity-50">
+        {#if importingSettlements}<Loader2 size={14} class="animate-spin" />{:else}<Download size={14} />{/if} Import settlements
+      </button>
+      <div class="relative">
+        <Search class="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-500" />
+        <input type="text" bind:value={search} placeholder="Search reference, client, plot…" class="w-64 rounded-xl border border-white/10 bg-white/5 py-2 pl-8 pr-3 text-xs text-white placeholder-stone-600 outline-none focus:border-emerald-500" />
+      </div>
     </div>
   </div>
 
@@ -144,6 +187,11 @@
                 </td>
                 <td class="px-6 py-4 text-xs text-stone-600">{formatRelative(new Date(b.createdAt))}</td>
                 <td class="px-6 py-4 text-right">
+                  {#if b.payments?.[0]?.provider === 'FLUTTERWAVE' && b.payments[0].status === 'SUCCESS'}
+                    <button type="button" disabled={refundingId === b.payments[0]._id} on:click={() => refund(b.payments[0])} class="mr-2 inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-amber-500/30 px-3 py-1.5 text-xs text-amber-300 hover:bg-amber-500/10 disabled:opacity-50">
+                      {#if refundingId === b.payments[0]._id}<Loader2 size={13} class="animate-spin" />{:else}<RotateCcw size={13} />{/if} Refund
+                    </button>
+                  {/if}
                   {#if b.paidAmount === 0 && b.paymentStatus !== 'FAILED'}
                     <button
                       type="button"

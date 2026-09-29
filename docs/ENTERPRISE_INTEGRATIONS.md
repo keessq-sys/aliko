@@ -6,20 +6,34 @@ This document separates launch requirements from optional enhancements for Aliko
 
 | Capability | Provider / Convex feature | Priority | Current application state | Production action |
 | --- | --- | --- | --- | --- |
-| Primary payments | Flutterwave | Required | Hosted checkout, server verification, signed webhook, idempotent payment records and realtime booking updates implemented | Add production secret key and webhook secret hash; register the webhook URL; run a real low-value payment and refund test |
+| Primary payments | Flutterwave | Required | Hosted checkout, server verification, signed webhook, full/partial administrator refunds, settlement import, audit records and realtime booking updates implemented | Add production credentials; register the webhook; run a real low-value checkout, partial refund and settlement import |
 | Authentication and roles | Convex Auth | Required | Email/password auth, profiles and server-side dashboard role checks implemented | Configure email delivery, password policy, MFA/enterprise SSO decision, session revocation and recovery runbook |
-| Transactional email | Resend | Required | Password-reset integration and notification foundation exist | Verify sending domain, SPF/DKIM/DMARC, production API key, templates and delivery alerts |
+| Transactional email | Resend | Required | Password reset, payment receipts, idempotent sends and signed delivery/bounce/complaint callbacks implemented | Verify sending domain, SPF/DKIM/DMARC; add API key, sender and webhook signing secret; run delivery and bounce tests |
 | Customer messaging | WhatsApp Business Cloud API | High | Outbound messages, inbound webhook route and admin human-review queue exist | Create Meta app/WABA, register webhook, subscribe to messages, add permanent token and app-secret signature validation |
 | Identity verification | QoreID or equivalent Nigerian KYC provider | High | KYC records and review flow exist | Add live NIN/BVN credentials, consent text, retention rules, webhook verification and manual-review SLA |
-| Electronic signatures | Dropbox Sign | High for remote closings; optional for browsing and enquiries | Document records, deed generation and signed-event receiver exist | Decide whether agreements must be signed in-app; if yes, add approved API app, templates, signer identity checks and embedded signing UI |
-| Maps and geocoding | Google Maps Platform | High | Map component and static Nigeria-map fallback exist | Restrict API key by production domain/API, enable billing alerts and add geocoding/address validation |
-| File and media storage | Convex Storage; Cloudflare R2 for large public media | Required | Convex attachment storage and ownership checks exist | Define malware scanning, MIME/size rules, lifecycle/retention, private download authorization and R2 CDN policy |
+| Electronic signatures | Dropbox Sign | High for remote closings; optional for browsing and enquiries | Secure multipart callback validation, outbound PDF signature requests, status synchronization and audit records implemented | Add approved API app, callback URL and signer-authentication policy; test a complete signature cycle |
+| Maps and geocoding | Google Maps Platform | High | Interactive map, static fallback and authenticated Nigeria-only server geocoding with a 30-day Convex cache implemented | Add separate browser/server keys, restrict each key to its required APIs and origins, and enable billing alerts |
+| File and media storage | Convex Storage; Cloudflare R2 for large public media | Required | Ownership, MIME/size limits, quarantine, retention and automatic provider-neutral malware scanning implemented | Connect a scanner accepting multipart `file` and returning `{ clean, threat? }`; verify clean, infected and unavailable-provider cases |
 | Error monitoring | Sentry or equivalent | Required | Not yet connected | Capture frontend, Cloudflare and Convex exceptions with release IDs and PII redaction |
 | Product analytics | PostHog, Plausible or equivalent | Recommended | Not yet connected | Track consent-aware enquiry, reservation and checkout funnels; exclude KYC/payment PII |
 | Customer support | Zendesk, Intercom, Freshdesk or CRM | Recommended | In-app service-request and conversation system exists | Integrate only if the operations team needs ticket SLAs, omnichannel history and escalation |
 | Accounting/reconciliation | Xero, QuickBooks or ERP | Recommended before volume | Convex is the operational payment ledger | Export verified payments, fees, refunds and settlement references; reconcile against Flutterwave settlements daily |
 | Search | Algolia/Typesense only if catalogue scale requires it | Later | Convex indexed queries cover the current catalogue | Add external search when typo tolerance, facets or catalogue volume exceed the native query design |
 | Observability/security | Cloudflare analytics/WAF plus a log/SIEM destination | Required | Security headers and server logs exist | Add WAF/bot rules, rate alerts, audit-log retention, incident alerts and centralized log streaming |
+
+## Activation endpoints and secrets
+
+All backend secrets belong in the matching Convex deployment. Browser keys belong in Cloudflare Pages and must be restricted by hostname.
+
+| Integration | Callback / action | Required values |
+| --- | --- | --- |
+| Flutterwave | `/webhooks/flutterwave` | `FLUTTERWAVE_SECRET_KEY`, `FLUTTERWAVE_SECRET_HASH` |
+| Resend | `/webhooks/resend` | `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_WEBHOOK_SECRET` |
+| Dropbox Sign | `/webhooks/esign` | `DROPBOX_SIGN_API_KEY`; optional `DROPBOX_SIGN_CLIENT_ID` for embedded signing |
+| Google Maps | Server action plus browser map | `GOOGLE_MAPS_API_KEY`, `PUBLIC_GOOGLE_MAPS_API_KEY` |
+| Malware scanner | Outbound private scanner endpoint | `MALWARE_SCANNER_URL`, `MALWARE_SCANNER_API_KEY` |
+
+For the current production Convex HTTP host, prefix each webhook path with `https://gallant-husky-352.eu-west-1.convex.site`. Provider dashboard changes and DNS verification remain account-owner operations.
 
 ## Flutterwave production setup
 

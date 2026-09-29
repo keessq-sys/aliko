@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Properties Page', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/properties');
+    await page.goto('/properties', { waitUntil: 'domcontentloaded' });
   });
 
   test('should load properties page', async ({ page }) => {
@@ -28,12 +28,12 @@ test.describe('Properties Page', () => {
 
 test.describe('Property Detail Page', () => {
   test('should load property detail page', async ({ page }) => {
-    await page.goto('/properties/prop-001');
+    await page.goto('/properties/prop-001', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveTitle(/Property|Aliko Diamond Key/);
   });
 
   test('should display property details', async ({ page }) => {
-    await page.goto('/properties/prop-001');
+    await page.goto('/properties/prop-001', { waitUntil: 'domcontentloaded' });
     const details = page.locator('[data-testid="property-details"], .property-details, main').first();
     await expect(details).toBeVisible({ timeout: 10000 });
   });

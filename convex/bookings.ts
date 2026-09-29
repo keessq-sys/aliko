@@ -683,8 +683,13 @@ export const verifyFlutterwavePayment = action({
 
 export const processFlutterwaveWebhook = internalAction({
   args: { transactionId: v.string(), reference: v.string() },
-  handler: async (ctx, args) =>
-    verifyFlutterwave(ctx, args.transactionId, args.reference),
+  handler: async (ctx, args) => {
+    const result = await verifyFlutterwave(ctx, args.transactionId, args.reference);
+    if (result.newlyConfirmed) {
+      await ctx.scheduler.runAfter(0, internal.email.sendPaymentReceipt, { reference: args.reference });
+    }
+    return result;
+  },
 });
 
 // ── Cron: remind clients with an installment due in the next 3 days ────────

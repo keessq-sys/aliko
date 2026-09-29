@@ -32,6 +32,11 @@ export async function clickAndWait(page: Page, selector: string, urlPattern?: Re
   }
 }
 
+/** Navigate without waiting for optional third-party fonts/images/API calls. */
+export async function gotoApp(page: Page, path: string): Promise<void> {
+  await page.goto(path, { waitUntil: 'domcontentloaded' });
+}
+
 /**
  * Wait for toast/notification to appear
  */
