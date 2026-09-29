@@ -3,6 +3,10 @@ compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".svelte-kit/cloudflare"
 
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "aliko-diamond-key-media"
+
 # Data and storage use Convex. Add Cloudflare bindings only when the
 # application uses them and real resource IDs have been provisioned.
 [vars]
@@ -13,6 +17,14 @@ NODE_ENV = "production"
 NODE_VERSION = "22"
 NODE_ENV = "production"
 
+[[env.preview.r2_buckets]]
+binding = "MEDIA"
+bucket_name = "aliko-diamond-key-media"
+
 [env.production.vars]
 NODE_VERSION = "22"
 NODE_ENV = "production"
+
+[[env.production.r2_buckets]]
+binding = "MEDIA"
+bucket_name = "aliko-diamond-key-media"

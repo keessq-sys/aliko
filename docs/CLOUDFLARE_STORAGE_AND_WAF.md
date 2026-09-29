@@ -14,7 +14,7 @@ $env:R2_BUCKET_NAME = "aliko-diamond-key-media"
 npm run cloudflare:setup
 ```
 
-The command verifies account-owned (`cfat_`) tokens against Cloudflare's account-scoped verifier, creates the R2 bucket when needed, binds it to preview and production Pages deployments as `MEDIA`, and adds idempotent WAF rules for sensitive-path probes and request bursts against authentication and upload routes. Storage and WAF setup are attempted independently, so a pending R2 activation does not prevent the WAF rules from being installed.
+The command verifies account-owned (`cfat_`) tokens against Cloudflare's account-scoped verifier, creates the R2 bucket when needed, binds it to preview and production Pages deployments as `MEDIA`, and adds idempotent WAF rules for sensitive-path probes and request bursts against authentication and upload routes. The same `MEDIA` binding is declared in `wrangler.toml`, which keeps direct Wrangler deployments from replacing the production configuration without R2. Storage and WAF setup are attempted independently, so a pending R2 activation does not prevent the WAF rules from being installed.
 
 The rate rule blocks an IP for 10 seconds after 10 matching requests in 10 seconds. These values fit the currently provisioned Cloudflare zone plan and can be tightened after reviewing real traffic in Cloudflare Security Analytics.
 
