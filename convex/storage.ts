@@ -73,7 +73,7 @@ export const generateUploadUrl = mutation({
       ["PROPERTY_IMAGE", "PROJECT_MEDIA", "LEGAL_DOCUMENT"].includes(
         args.purpose,
       ) &&
-      !["ADMIN", "AGENT"].includes(user.role)
+      !["ADMIN", "AGENT", "ESTATE_MANAGER"].includes(user.role)
     ) {
       throw new Error("Forbidden for this upload purpose");
     }
@@ -118,7 +118,7 @@ export const registerUpload = mutation({
       ["PROPERTY_IMAGE", "PROJECT_MEDIA", "LEGAL_DOCUMENT"].includes(
         args.purpose,
       ) &&
-      !["ADMIN", "AGENT"].includes(user.role)
+      !["ADMIN", "AGENT", "ESTATE_MANAGER"].includes(user.role)
     ) {
       await ctx.storage.delete(args.storageId);
       throw new Error("Forbidden for this upload purpose");

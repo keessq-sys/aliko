@@ -113,7 +113,7 @@
   }
 </style>
 
-<section class="relative min-h-screen hero-bg flex items-center pt-24 pb-12 overflow-hidden text-white">
+<section class="theme-contrast-dark relative min-h-screen hero-bg flex items-center pt-24 pb-12 overflow-hidden text-white">
   <div class="hero-media">
     {#if heroVideoUrl}
       <video src={heroVideoUrl} poster={HERO_IMAGES.posterForFutureVideo} autoplay muted loop playsinline></video>

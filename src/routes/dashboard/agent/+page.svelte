@@ -16,6 +16,16 @@
   // history), so those stat cards show "coming soon" rather than a
   // fabricated number — only listing count and profile are real here. ───
   const myListingsCount = useQuery(api.properties.getMyPropertiesCount, {});
+  const myListings = useQuery(api.properties.getManageableProperties, {});
+  $: listingRows = ($myListings ?? []).map((property) => ({
+    id: property._id,
+    title: property.title,
+    type: property.type,
+    location: property.location,
+    status: property.status,
+    price: property.price,
+    agent: $myProfile?.name ?? 'Current agent'
+  }));
   const myProfile = useQuery(api.users.getMyProfile, {});
   let profileName = '';
   let profilePhone = '';
@@ -47,6 +57,7 @@
   import RevenueChart from '$lib/components/dashboard/RevenueChart.svelte';
   import LeadsTable from '$lib/components/dashboard/LeadsTable.svelte';
   import PropertyTable from '$lib/components/dashboard/PropertyTable.svelte';
+  import MediaManager from '$lib/components/dashboard/MediaManager.svelte';
   import { SERVICE_CATEGORY_META, REQUEST_STATUS_META } from '$lib/types/services';
 
   let currentTab = 'overview';
@@ -126,8 +137,8 @@
       <div class="mt-8 flex items-center gap-3 rounded-xl bg-white/5 p-3 border border-white/5">
         <img src="https://picsum.photos/seed/agent/100/100" alt="Agent" class="h-10 w-10 rounded-full object-cover" />
         <div>
-          <p class="text-sm font-medium text-white">Adaeze Okonkwo</p>
-          <p class="text-xs text-stone-400">ADK Premium Estates</p>
+          <p class="text-sm font-medium text-white">{$myProfile?.name ?? 'Agent account'}</p>
+          <p class="text-xs text-stone-400">{$myProfile?.email ?? 'Aliko Diamond Key'}</p>
         </div>
       </div>
     </div>
@@ -252,9 +263,9 @@
       {:else if currentTab === 'listings'}
         <div class="mb-6 flex justify-between items-center">
           <h3 class="text-xl font-medium text-white">My Listings</h3>
-          <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg flex gap-2"><Plus class="w-4 h-4"/> Add Listing</button>
         </div>
-        <PropertyTable properties={MOCK_LISTINGS} />
+        <MediaManager mode="property" title="Upload images to my listings" />
+        <PropertyTable properties={listingRows} />
 
       {:else if currentTab === 'referrals'}
         <div class="mb-6 flex flex-col sm:flex-row justify-between sm:items-center gap-4">

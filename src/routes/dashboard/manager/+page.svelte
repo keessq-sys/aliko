@@ -19,7 +19,17 @@
   // fabricated number. Facility management (work orders, vendors, tenants)
   // below is unchanged mock data — it's a genuinely separate subsystem.
   const allActiveProperties = useQuery(api.properties.listProperties, { activeOnly: true, limit: 500 });
+  const manageableProperties = useQuery(api.properties.getManageableProperties, {});
   $: totalPropertiesCount = $allActiveProperties?.length;
+  $: propertyRows = ($manageableProperties ?? []).map((property) => ({
+    id: property._id,
+    title: property.title,
+    type: property.type,
+    location: property.location,
+    status: property.status,
+    price: property.price,
+    agent: property.agentId ? 'Assigned agent' : 'Unassigned'
+  }));
   const myProfile = useQuery(api.users.getMyProfile, {});
   let profileName = '';
   let profilePhone = '';
@@ -47,6 +57,7 @@
     }
   }
   import PropertyTable from '$lib/components/dashboard/PropertyTable.svelte';
+  import MediaManager from '$lib/components/dashboard/MediaManager.svelte';
   import RevenueChart from '$lib/components/dashboard/RevenueChart.svelte';
   import AgentCard from '$lib/components/agent/AgentCard.svelte';
 
@@ -284,7 +295,8 @@
         </div>
 
       {:else if currentTab === 'properties'}
-        <PropertyTable properties={MOCK_PROPERTIES} />
+        <MediaManager mode="property" title="Upload estate and property images" />
+        <PropertyTable properties={propertyRows} />
         
       {:else if currentTab === 'tenants'}
         <div class="rounded-xl border border-white/5 bg-[#050A0E]/80 shadow-xl overflow-hidden">

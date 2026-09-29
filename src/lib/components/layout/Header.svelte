@@ -5,6 +5,7 @@
   import { goto } from '$app/navigation';
   import { api } from '$lib/convex/_generated/api';
   import { runAction } from '$lib/convex/queries';
+  import ThemeToggle from '$lib/components/ui/ThemeToggle.svelte';
 
   export let session: { user?: { name?: string | null; email?: string | null; role?: string; id?: string | null } } | null = null;
 
@@ -131,6 +132,7 @@
 
       <!-- Desktop Actions -->
       <div class="hidden lg:flex items-center gap-4">
+        <ThemeToggle />
         {#if isLoggedIn}
           <button
             class="relative flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full text-stone-300 hover:text-white hover:bg-white/10 transition-colors"
@@ -247,6 +249,10 @@
         </a>
 
         <div class="h-px bg-white/10 my-2"></div>
+
+        <div class="flex items-center justify-between rounded-lg px-4 py-2 text-sm text-stone-300">
+          <span>Appearance</span><ThemeToggle />
+        </div>
 
         {#if isLoggedIn}
           <button class="px-4 py-3 rounded-lg text-base font-medium text-rose-400 hover:bg-rose-500/10 text-left w-full" on:click={signOut}>Sign out</button>

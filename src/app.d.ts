@@ -8,6 +8,15 @@ declare global {
       aiBot?: string | null;
       user?: { _id?: string; name?: string; email?: string; role?: string; phone?: string };
     }
+		interface Platform {
+			env?: {
+				MEDIA?: {
+					put(key: string, value: ArrayBuffer | ReadableStream, options?: { httpMetadata?: { contentType?: string; cacheControl?: string }; customMetadata?: Record<string, string> }): Promise<unknown>;
+					get(key: string): Promise<{ body: ReadableStream; httpMetadata?: { contentType?: string; cacheControl?: string }; writeHttpMetadata(headers: Headers): void } | null>;
+					delete(key: string): Promise<void>;
+				};
+			};
+		}
 		// interface Error {}
 		// interface PageData {}
 		// interface PageState {}

@@ -35,18 +35,38 @@ export const listServices = query({
     } else {
       rows = await ctx.db.query("services").collect();
     }
-    return rows
+    const sorted = rows
       .filter((s) => (args.activeOnly === false ? true : s.isActive))
       .sort((a, b) => a.sortOrder - b.sortOrder);
+    return Promise.all(sorted.map(async (service) => {
+      const stored = await Promise.all((service.galleryStorageIds ?? []).map((id) => ctx.storage.getUrl(id)));
+      return { ...service, gallery: [...stored.filter((url): url is string => Boolean(url)), ...(service.gallery ?? [])] };
+    }));
   },
 });
 
 export const getService = query({
   args: { slug: v.string() },
   handler: async (ctx, { slug }) => {
-    return (
-      (await ctx.db.query("services").withIndex("by_slug", (q) => q.eq("slug", slug)).unique()) ?? null
-    );
+    const service = await ctx.db.query("services").withIndex("by_slug", (q) => q.eq("slug", slug)).unique();
+    if (!service) return null;
+    const stored = await Promise.all((service.galleryStorageIds ?? []).map((id) => ctx.storage.getUrl(id)));
+    return { ...service, gallery: [...stored.filter((url): url is string => Boolean(url)), ...(service.gallery ?? [])] };
+  },
+});
+
+export const addServiceMedia = mutation({
+  args: { id: v.id("services"), storageIds: v.array(v.id("_storage")), urls: v.optional(v.array(v.string())) },
+  handler: async (ctx, args) => {
+    const userId = await requireAdmin(ctx);
+    const service = await ctx.db.get(args.id); if (!service) throw new Error("Service not found");
+    for (const storageId of args.storageIds) {
+      const asset = await ctx.db.query("storedAssets").withIndex("by_storage", (q) => q.eq("storageId", storageId)).unique();
+      if (!asset || asset.status !== "ACTIVE" || asset.purpose !== "PROPERTY_IMAGE") throw new Error("An uploaded image is not ready");
+    }
+    const urls = (args.urls ?? []).filter((url) => url.startsWith("/api/media/") || url.startsWith("https://"));
+    await ctx.db.patch(service._id, { galleryStorageIds: [...(service.galleryStorageIds ?? []), ...args.storageIds].slice(0, 40), gallery: [...(service.gallery ?? []), ...urls].slice(0, 40), updatedAt: Date.now() });
+    await ctx.db.insert("adminAuditLog", { actorId: userId, action: "SERVICE_MEDIA_ADDED", entityType: "services", entityId: String(service._id), detail: `${args.storageIds.length + urls.length} image(s)`, createdAt: Date.now() });
   },
 });
 

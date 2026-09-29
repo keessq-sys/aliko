@@ -3,6 +3,7 @@
   import { api } from "$lib/convex/_generated/api";
   import { Building2, Loader2, MapPin, Plus, Search, X, DatabaseZap, Power, PowerOff } from "lucide-svelte";
   import { formatNaira } from "$lib/utils/format";
+  import MediaManager from "$lib/components/dashboard/MediaManager.svelte";
 
   const properties = useQuery(api.properties.listProperties, { activeOnly: false, limit: 200 });
   let search = "";
@@ -158,6 +159,8 @@
   {#if seedDone}
     <p class="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-300">Catalog seeded.</p>
   {/if}
+
+  <MediaManager mode="property" title="Publish property gallery images" />
 
   {#if $properties === undefined}
     <div class="flex items-center justify-center rounded-2xl py-16" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)">

@@ -59,7 +59,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   }
 
   const pathname = event.url.pathname;
-  if (pathname.startsWith('/admin') || pathname.startsWith('/dashboard/') || pathname.startsWith('/checkout/')) {
+  if (pathname.startsWith('/admin') || pathname.startsWith('/dashboard/') || pathname.startsWith('/checkout/') || pathname === '/api/media/upload') {
     const token = event.cookies.get('__convexAuthJWT');
     if (!token || !env.PUBLIC_CONVEX_URL) {
       throw redirect(303, `/auth?tab=signin&redirect=${encodeURIComponent(pathname)}`);
@@ -75,6 +75,9 @@ export const handle: Handle = async ({ event, resolve }) => {
         : pathname.startsWith('/dashboard/manager') ? 'ESTATE_MANAGER'
         : null;
       if (requiredRole && profile.role !== requiredRole) throw redirect(303, '/unauthorized');
+      if (pathname === '/api/media/upload' && !['ADMIN', 'AGENT', 'ESTATE_MANAGER'].includes(profile.role)) {
+        return new Response('Forbidden', { status: 403 });
+      }
     } catch (error) {
       if ((error as { status?: number }).status === 303) throw error;
       event.cookies.delete('__convexAuthJWT', { path: '/' });

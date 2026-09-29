@@ -454,6 +454,7 @@ export default defineSchema({
     yearBuilt: v.optional(v.number()),
     amenities: v.array(v.string()),
     images: v.array(v.string()),
+    imageStorageIds: v.optional(v.array(v.id("_storage"))),
     status: v.union(
       v.literal("AVAILABLE"),
       v.literal("RESERVED"),
@@ -493,6 +494,7 @@ export default defineSchema({
     ),
     heroImage: v.optional(v.string()),
     gallery: v.optional(v.array(v.string())),
+    galleryStorageIds: v.optional(v.array(v.id("_storage"))),
     features: v.array(v.string()),
     startingPrice: v.optional(v.number()),
     priceUnit: v.optional(v.string()), // e.g. "per sqm", "per project"

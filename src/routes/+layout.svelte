@@ -14,6 +14,7 @@
   import Toast from "$lib/components/ui/Toast.svelte";
   import MobileBottomNav from "$lib/components/layout/MobileBottomNav.svelte";
   import { page } from "$app/stores";
+  import ThemeToggle from "$lib/components/ui/ThemeToggle.svelte";
 
   export let data: {
     session?: { user?: { name?: string | null; email?: string | null; role?: string; id?: string | null } } | null;
@@ -57,9 +58,11 @@
 
 {#if !hideHeader}
   <Header session={data.session} />
+{:else}
+  <div class="fixed right-4 top-4 z-[70]"><ThemeToggle /></div>
 {/if}
 
-<main class="{showMobileBottomNav ? 'pb-16 md:pb-0' : ''} min-h-screen bg-[#050A0E]">
+<main class="app-shell {showMobileBottomNav ? 'pb-16 md:pb-0' : ''} min-h-screen bg-[#050A0E]">
   <slot />
 </main>
 

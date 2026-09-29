@@ -4,6 +4,7 @@
   import { Layers, Power, PowerOff, DatabaseZap, Loader2 } from "lucide-svelte";
   import { formatNaira } from "$lib/utils/format";
   import { SERVICES, SERVICE_CATEGORY_META } from "$lib/types/services";
+  import MediaManager from "$lib/components/dashboard/MediaManager.svelte";
 
   const catalog = useQuery(api.services.listServices, { activeOnly: false });
 
@@ -107,6 +108,10 @@
   {/if}
   {#if seedDone}
     <p class="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-300">Catalog seeded — reload to see live database entries.</p>
+  {/if}
+
+  {#if $catalog && $catalog.length > 0}
+    <MediaManager mode="service" title="Publish service gallery images" />
   {/if}
 
   {#if $catalog === undefined}
