@@ -74,6 +74,25 @@ export const listEnquiries = query({
   },
 });
 
+export const listMyAssignedEnquiries = query({
+  args: { limit: v.optional(v.number()) },
+  handler: async (ctx, { limit }) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Unauthorized");
+    const user = await ctx.db.get(userId as Id<"users">);
+    if (user?.role !== "AGENT") throw new Error("Forbidden — AGENT only");
+    const rows = await ctx.db.query("enquiries")
+      .withIndex("by_agent", (q) => q.eq("assignedAgentId", user._id))
+      .order("desc").take(Math.min(Math.max(limit ?? 100, 1), 200));
+    return Promise.all(rows.map(async (entry) => ({
+      ...entry,
+      property: entry.propertyId ? await ctx.db.get(entry.propertyId) : null,
+      plot: entry.plotId ? await ctx.db.get(entry.plotId) : null,
+      project: entry.projectId ? await ctx.db.get(entry.projectId) : null,
+    })));
+  },
+});
+
 export const updateEnquiryStatus = mutation({
   args: {
     enquiryId: v.id("enquiries"),

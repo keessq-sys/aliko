@@ -11,13 +11,9 @@
   import StatCard from '$lib/components/dashboard/StatCard.svelte';
   import ActivityFeed from '$lib/components/dashboard/ActivityFeed.svelte';
 
-  // ── Real data where it exists. There's no property-to-manager
-  // assignment in the schema yet, so "Total Properties" shows the real
-  // platform-wide active count rather than a per-manager figure; occupancy/
-  // revenue/pending-tasks need tenant-lease and financial-ledger concepts
-  // that don't exist at all yet, so those show "coming soon" instead of a
-  // fabricated number. Facility management (work orders, vendors, tenants)
-  // below is unchanged mock data — it's a genuinely separate subsystem.
+  // Real records are shown where the backend domain exists. Unimplemented
+  // lease, vendor and work-order domains stay empty rather than presenting
+  // demonstration customers or financial values as production data.
   const allActiveProperties = useQuery(api.properties.listProperties, { activeOnly: true, limit: 500 });
   const manageableProperties = useQuery(api.properties.getManageableProperties, {});
   $: totalPropertiesCount = $allActiveProperties?.length;
@@ -66,63 +62,21 @@
   // same navItems render inside this slide-in drawer.
   let isMobileNavOpen = false;
   
-  const MOCK_AGENTS = [
-    { id: 'a1', name: 'Adaeze Okonkwo', photo: 'https://picsum.photos/seed/agent1/100/100', agency: 'ADK Premium Estates', listings: 32, revenue: 2_400_000_000, rating: 4.9, status: 'active', joinDate: '2022-03-15', clients: 127 },
-    { id: 'a2', name: 'Emeka Chukwu', photo: 'https://picsum.photos/seed/agent2/100/100', agency: 'Chukwu Properties', listings: 18, revenue: 980_000_000, rating: 4.7, status: 'active', joinDate: '2023-01-20', clients: 63 },
-    { id: 'a3', name: 'Fatima Musa', photo: 'https://picsum.photos/seed/agent3/100/100', agency: 'Musa Real Estate', listings: 24, revenue: 1_650_000_000, rating: 5.0, status: 'active', joinDate: '2021-07-08', clients: 91 },
-    { id: 'a4', name: 'Chidi Nwosu', photo: 'https://picsum.photos/seed/agent4/100/100', agency: 'Independent', listings: 9, revenue: 420_000_000, rating: 4.5, status: 'pending', joinDate: '2024-02-01', clients: 28 },
-  ];
+  const MOCK_AGENTS: any[] = [];
 
-  const REVENUE_DATA = [
-    { month: 'Jan', revenue: 8_400_000, expenses: 2_100_000 },
-    { month: 'Feb', revenue: 9_200_000, expenses: 2_400_000 },
-    { month: 'Mar', revenue: 11_800_000, expenses: 2_800_000 },
-    { month: 'Apr', revenue: 10_500_000, expenses: 2_200_000 },
-    { month: 'May', revenue: 13_200_000, expenses: 3_100_000 },
-    { month: 'Jun', revenue: 12_700_000, expenses: 2_900_000 },
-    { month: 'Jul', revenue: 15_400_000, expenses: 3_500_000 },
-    { month: 'Aug', revenue: 14_800_000, expenses: 3_200_000 },
-    { month: 'Sep', revenue: 16_100_000, expenses: 3_800_000 },
-    { month: 'Oct', revenue: 17_500_000, expenses: 4_100_000 },
-    { month: 'Nov', revenue: 16_800_000, expenses: 3_900_000 },
-    { month: 'Dec', revenue: 19_200_000, expenses: 4_500_000 },
-  ];
+  const REVENUE_DATA: { month: string; revenue: number; expenses: number }[] = [];
 
-  const MOCK_PROPERTIES = [
-    { id: 'p1', title: 'Maitama Luxury Villa', type: 'Residential', location: 'Maitama, Abuja', status: 'Available', price: 850000000, agent: 'Adaeze Okonkwo' },
-    { id: 'p2', title: 'Victoria Island Office Space', type: 'Commercial', location: 'VI, Lagos', status: 'Rented', price: 15000000, agent: 'Emeka Chukwu' },
-    { id: 'p3', title: 'Lekki Phase 1 Duplex', type: 'Residential', location: 'Lekki, Lagos', status: 'Sold', price: 320000000, agent: 'Fatima Musa' },
-    { id: 'p4', title: 'Asokoro Penthouse', type: 'Residential', location: 'Asokoro, Abuja', status: 'Available', price: 550000000, agent: 'Adaeze Okonkwo' },
-  ];
+  $: MOCK_PROPERTIES = propertyRows;
 
-  const MOCK_ACTIVITIES = [
-    { id: '1', user: 'Adaeze Okonkwo', description: 'listed a new property: Asokoro Penthouse', timestamp: '2 hours ago', color: '#059669', icon: Home },
-    { id: '2', user: 'System', description: 'processed rent payment for VI Office Space', timestamp: '5 hours ago', color: '#3b82f6', icon: DollarSign },
-    { id: '3', user: 'Fatima Musa', description: 'closed sale for Lekki Phase 1 Duplex', timestamp: 'Yesterday', color: '#f59e0b', icon: Briefcase },
-  ];
+  const MOCK_ACTIVITIES: any[] = [];
   
-  const MOCK_TENANTS = [
-    { name: 'Oluwaseun Adeyemi', email: 'olu@example.com', phone: '+2348012345678', property: 'VI Office Space', status: 'Active', rent: '₦15,000,000/yr', end: 'Oct 2025' }
-  ];
+  const MOCK_TENANTS: any[] = [];
 
-  const MOCK_DOCS = [
-    { name: 'Maitama_C_of_O.pdf', type: 'PDF', property: 'Maitama Luxury Villa', date: '2024-09-10', size: '2.4 MB' },
-    { name: 'Lekki_Deed_of_Assignment.pdf', type: 'PDF', property: 'Lekki Phase 1 Duplex', date: '2024-09-15', size: '1.1 MB' },
-  ];
+  const MOCK_DOCS: any[] = [];
 
-  const MOCK_WORK_ORDERS = [
-    { id: 'wo1', property: 'VI Office Space', issue: 'HVAC servicing — 4th floor units', vendor: 'CoolAir Facilities Ltd', priority: 'High', status: 'In Progress', raised: '2 days ago' },
-    { id: 'wo2', property: 'Maitama Luxury Villa', issue: 'Generator scheduled maintenance', vendor: 'PowerTech Nigeria', priority: 'Medium', status: 'Scheduled', raised: '5 days ago' },
-    { id: 'wo3', property: 'Lekki Phase 1 Duplex', issue: 'Perimeter fence repair', vendor: 'Fortress Construction', priority: 'Low', status: 'Open', raised: '1 week ago' },
-    { id: 'wo4', property: 'Asokoro Penthouse', issue: 'Plumbing leak — guest bathroom', vendor: 'AquaFix Plumbers', priority: 'High', status: 'Resolved', raised: '3 weeks ago' },
-  ];
+  const MOCK_WORK_ORDERS: any[] = [];
 
-  const MOCK_VENDORS = [
-    { name: 'CoolAir Facilities Ltd', category: 'HVAC & Climate', activeOrders: 2, rating: 4.8 },
-    { name: 'PowerTech Nigeria', category: 'Power & Generators', activeOrders: 1, rating: 4.9 },
-    { name: 'Fortress Construction', category: 'Structural & Renovation', activeOrders: 1, rating: 4.6 },
-    { name: 'AquaFix Plumbers', category: 'Plumbing', activeOrders: 0, rating: 4.7 },
-  ];
+  const MOCK_VENDORS: any[] = [];
 
   const PRIORITY_CLASSES: Record<string, string> = {
     High: 'bg-rose-500/15 text-rose-300 border-rose-500/30',

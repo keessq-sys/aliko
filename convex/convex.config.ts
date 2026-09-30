@@ -28,6 +28,12 @@ const app = defineApp({
     GOOGLE_MAPS_API_KEY: v.optional(v.string()),
     MALWARE_SCANNER_URL: v.optional(v.string()),
     MALWARE_SCANNER_API_KEY: v.optional(v.string()),
+    QOREID_CLIENT_ID: v.optional(v.string()),
+    QOREID_CLIENT_SECRET: v.optional(v.string()),
+    QOREID_WEBHOOK_SECRET: v.optional(v.string()),
+    QOREID_WORKFLOW_ID: v.optional(v.string()),
+    SENTRY_DSN: v.optional(v.string()),
+    SENTRY_RELEASE: v.optional(v.string()),
   },
 });
 

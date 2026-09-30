@@ -10,6 +10,9 @@
   let currentTab = 'bookings';
 
   const myBookings = useQuery(api.bookings.getMyBookings, {});
+  const savedProperties = useQuery(api.clientPortal.listSavedProperties, {});
+  const mySiteVisits = useQuery(api.clientPortal.getMySiteVisits, {});
+  const myDocuments = useQuery(api.legalDocuments.getMyDocuments, {});
 
   const BOOKING_STATUS_META: Record<string, string> = {
     PENDING: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
@@ -53,19 +56,13 @@
     }
   }
 
-  const SAVED_PROPERTIES = [
-    { id: 'p1', title: 'Maitama Luxury Villa', price: 850000000, beds: 5, baths: 6, location: 'Maitama, Abuja', image: 'https://picsum.photos/seed/prop1/400/300', date: '2 days ago' },
-    { id: 'p2', title: 'Asokoro Penthouse', price: 550000000, beds: 4, baths: 4, location: 'Asokoro, Abuja', image: 'https://picsum.photos/seed/prop4/400/300', date: '1 week ago' },
-  ];
+  async function removeSaved(propertyId: string) {
+    await runMutation(api.clientPortal.toggleSavedProperty, { propertyId } as any);
+  }
 
-  const VIEWINGS = [
-    { id: 'v1', property: 'Maitama Luxury Villa', date: 'Oct 24, 2024', time: '10:00 AM', agent: 'Adaeze Okonkwo', status: 'Confirmed', phone: '+2348011111111', image: 'https://picsum.photos/seed/prop1/100/100' },
-  ];
-
-  const DOCUMENTS = [
-    { id: 'd1', name: 'Offer_Letter_Maitama.pdf', type: 'Agreement', property: 'Maitama Luxury Villa', date: '2024-09-18', size: '1.2 MB' },
-    { id: 'd2', name: 'Payment_Receipt_001.pdf', type: 'Receipt', property: 'Maitama Luxury Villa', date: '2024-09-19', size: '0.5 MB' },
-  ];
+  async function cancelVisit(visitId: string) {
+    await runMutation(api.clientPortal.cancelMySiteVisit, { visitId } as any);
+  }
 
   const tabs = [
     { id: 'bookings', label: 'My Bookings', icon: Landmark },
@@ -77,14 +74,9 @@
     { id: 'profile', label: 'Profile', icon: User },
   ];
 
-  // Live service requests submitted by this client (falls back to demo rows when signed out)
+  // Live service requests submitted by this client.
   const myRequests = useQuery(api.serviceRequests.getMyRequests, {});
-
-  const DEMO_REQUESTS = [
-    { _id: 'demo-1', reference: 'ADK-SVC-2026-4821', serviceSlug: 'turkish-tiles-supply', requestType: 'SUPPLY_CONTRACT', status: 'QUOTED', quoteAmount: 4_200_000, adminResponse: 'Quote attached: 480sqm Turkish porcelain incl. delivery to Lekki. Valid 14 days.', createdAt: Date.now() - 6 * 86400_000 },
-    { _id: 'demo-2', reference: 'ADK-SVC-2026-5107', serviceSlug: 'interior-design', requestType: 'INTERIOR_DESIGN', status: 'REVIEWING', adminResponse: undefined, createdAt: Date.now() - 2 * 86400_000 },
-  ];
-  $: requests = $myRequests === undefined ? undefined : $myRequests.length > 0 ? $myRequests : DEMO_REQUESTS;
+  $: requests = $myRequests;
 </script>
 
 <div class="min-h-screen bg-[#050A0E] text-stone-300 font-sans">
@@ -244,22 +236,27 @@
 
     {:else if currentTab === 'saved'}
       <div class="mb-6 flex justify-between items-center">
-        <h2 class="text-xl font-semibold text-white">Your Wishlist ({SAVED_PROPERTIES.length} properties)</h2>
+        <h2 class="text-xl font-semibold text-white">Your Wishlist ({$savedProperties?.length ?? 0} properties)</h2>
       </div>
-      
+      {#if $savedProperties === undefined}<div class="skeleton h-48 rounded-xl"></div>
+      {:else if $savedProperties.length === 0}
+        <div class="rounded-2xl border border-white/5 py-16 text-center"><Heart class="mx-auto mb-3 h-10 w-10 text-stone-700" /><p class="text-white">No saved properties</p><a href="/properties" class="mt-4 inline-block text-emerald-400">Browse verified listings</a></div>
+      {:else}
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {#each SAVED_PROPERTIES as prop}
+        {#each $savedProperties as saved (saved._id)}
+          {@const prop = saved.property}
           <div class="rounded-xl border border-white/5 bg-[#050A0E]/80 overflow-hidden shadow-xl group">
             <div class="relative h-48 w-full overflow-hidden">
-              <img src={prop.image} alt={prop.title} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <img src={prop.images?.[0] ?? '/logo.png'} alt={prop.title} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
               <button
+                on:click={() => removeSaved(prop._id)}
                 class="absolute top-3 right-3 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-black/50 text-emerald-400 hover:bg-rose-500/80 hover:text-white transition-colors backdrop-blur-md"
                 aria-label="Remove from saved properties"
               >
                 <Heart class="w-4 h-4 fill-current" />
               </button>
               <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-xs text-white">
-                Saved {prop.date}
+                Saved {new Date(saved.createdAt).toLocaleDateString()}
               </div>
             </div>
             <div class="p-5">
@@ -267,20 +264,19 @@
               <p class="text-emerald-400 font-bold mt-1">₦{(prop.price/1000000).toFixed(1)}M</p>
               
               <div class="flex items-center gap-4 mt-3 text-sm text-stone-400">
-                <span class="flex items-center gap-1"><Bed class="w-4 h-4" /> {prop.beds} Beds</span>
-                <span class="flex items-center gap-1"><Bath class="w-4 h-4" /> {prop.baths} Baths</span>
+                <span class="flex items-center gap-1"><Bed class="w-4 h-4" /> {prop.bedrooms ?? '—'} Beds</span>
+                <span class="flex items-center gap-1"><Bath class="w-4 h-4" /> {prop.bathrooms ?? '—'} Baths</span>
               </div>
               <p class="flex items-center gap-1 mt-2 text-sm text-stone-500 truncate">
                 <MapPin class="w-4 h-4" /> {prop.location}
               </p>
               
-              <button class="w-full mt-4 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-500/20 py-2 rounded-lg font-medium transition-colors">
-                Schedule Viewing
-              </button>
+              <a href={`/properties/${prop.slug}`} class="block w-full mt-4 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-500/20 py-2 rounded-lg font-medium text-center transition-colors">View property</a>
             </div>
           </div>
         {/each}
       </div>
+      {/if}
 
     {:else if currentTab === 'viewings'}
       <div class="mb-6 flex justify-between items-center">
@@ -290,55 +286,59 @@
         </button>
       </div>
       
-      <div class="space-y-4">
-        {#each VIEWINGS as view}
+      {#if $mySiteVisits === undefined}<div class="skeleton h-32 rounded-xl"></div>
+      {:else if $mySiteVisits.length === 0}<div class="rounded-2xl border border-white/5 py-16 text-center text-stone-400">No site visits have been scheduled.</div>
+      {:else}<div class="space-y-4">
+        {#each $mySiteVisits as view (view._id)}
           <div class="flex flex-col sm:flex-row gap-4 p-4 rounded-xl border border-white/5 bg-white/[0.02]">
-            <img src={view.image} alt="Property" class="w-24 h-24 rounded-lg object-cover" />
+            <img src={view.property?.images?.[0] ?? '/logo.png'} alt="Property" class="w-24 h-24 rounded-lg object-cover" />
             <div class="flex-1">
               <div class="flex justify-between items-start">
                 <div>
-                  <h3 class="text-lg font-medium text-white">{view.property}</h3>
-                  <p class="text-emerald-400 font-medium mt-1">{view.date} at {view.time}</p>
+                  <h3 class="text-lg font-medium text-white">{view.property?.title ?? view.project?.name ?? 'Site visit'}</h3>
+                  <p class="text-emerald-400 font-medium mt-1">{new Date(view.requestedAt).toLocaleDateString()} at {view.preferredTime}</p>
                 </div>
                 <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                  {view.status}
+                  {view.status.replace(/_/g, ' ')}
                 </span>
               </div>
               <div class="mt-4 flex flex-wrap gap-4 text-sm">
-                <span class="flex items-center gap-1 text-stone-400"><User class="w-4 h-4" /> Agent: {view.agent}</span>
-                <span class="flex items-center gap-1 text-stone-400"><MapPin class="w-4 h-4" /> {view.phone}</span>
+                <span class="flex items-center gap-1 text-stone-400"><User class="w-4 h-4" /> Agent: {view.agent?.name ?? 'To be assigned'}</span>
+                <span class="flex items-center gap-1 text-stone-400"><MapPin class="w-4 h-4" /> {view.property?.location ?? view.project?.location ?? 'Location pending'}</span>
               </div>
             </div>
             <div class="flex sm:flex-col gap-2 justify-end sm:border-l border-white/5 sm:pl-4">
-              <button class="flex-1 sm:flex-none px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-white">Reschedule</button>
-              <button class="flex-1 sm:flex-none px-4 py-2 border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 rounded-lg text-sm">Cancel</button>
+              {#if view.status !== 'COMPLETED' && view.status !== 'CANCELLED'}<button on:click={() => cancelVisit(view._id)} class="flex-1 sm:flex-none px-4 py-2 border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 rounded-lg text-sm">Cancel</button>{/if}
             </div>
           </div>
         {/each}
-      </div>
+      </div>{/if}
       
     {:else if currentTab === 'documents'}
       <h2 class="text-xl font-semibold text-white mb-6">My Documents</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {#each DOCUMENTS as doc}
+      {#if $myDocuments === undefined}<div class="skeleton h-32 rounded-xl"></div>
+      {:else if $myDocuments.length === 0}<div class="rounded-2xl border border-white/5 py-16 text-center text-stone-400">No legal documents are available yet.</div>
+      {:else}<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {#each $myDocuments as doc (doc._id)}
           <div class="p-4 rounded-xl border border-white/5 bg-white/[0.02] flex items-start gap-4">
             <div class="p-3 bg-blue-500/10 text-blue-400 rounded-lg">
               <FileText class="w-6 h-6" />
             </div>
             <div class="flex-1">
-              <h4 class="text-sm font-medium text-white mb-1">{doc.name}</h4>
-              <p class="text-xs text-stone-400">{doc.property}</p>
+              <h4 class="text-sm font-medium text-white mb-1">{doc.type.replace(/_/g, ' ')}</h4>
+              <p class="text-xs text-stone-400">{doc.referenceCode}</p>
               <div class="mt-2 flex justify-between items-center text-xs text-stone-500">
-                <span>{doc.date}</span>
-                <span>{doc.size}</span>
+                <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
+                <span>{doc.status}</span>
               </div>
             </div>
-            <button class="min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-white/10 rounded-full text-stone-400 hover:text-white" aria-label="Download document">
+            <a href={doc.pdfUrl ?? `/legal/track?reference=${encodeURIComponent(doc.referenceCode)}`} class="min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-white/10 rounded-full text-stone-400 hover:text-white" aria-label="Open document">
               <Download class="w-4 h-4" />
-            </button>
+            </a>
           </div>
         {/each}
       </div>
+      {/if}
       
     {:else if currentTab === 'profile'}
       <div class="max-w-2xl mx-auto">

@@ -103,6 +103,9 @@
         &copy; {new Date().getFullYear()} Aliko Diamond Key. All rights reserved.
       </p>
       <div class="flex items-center gap-4 text-xs text-stone-500">
+        <a href="/legal/terms" class="hover:text-white transition-colors">Terms</a>
+        <a href="/legal/privacy" class="hover:text-white transition-colors">Privacy</a>
+        <a href="/legal/payments-refunds" class="hover:text-white transition-colors">Payments & Refunds</a>
         <a href="/legal/track" class="hover:text-white transition-colors">Track a Document</a>
         <a href="/services/general-contracts" class="hover:text-white transition-colors">Contract Proposals</a>
       </div>

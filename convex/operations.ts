@@ -11,6 +11,7 @@ const provider = v.union(
   v.literal("WHATSAPP"),
   v.literal("DROPBOX_SIGN"),
   v.literal("RESEND"),
+  v.literal("QOREID"),
 );
 
 export const integrationWorkpool = new Workpool(

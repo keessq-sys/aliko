@@ -39,9 +39,15 @@ type Env = {
   readonly MALWARE_SCANNER_API_KEY: string | undefined;
   readonly MALWARE_SCANNER_URL: string | undefined;
   readonly PAYSTACK_SECRET_KEY: string | undefined;
+  readonly QOREID_CLIENT_ID: string | undefined;
+  readonly QOREID_CLIENT_SECRET: string | undefined;
+  readonly QOREID_WEBHOOK_SECRET: string | undefined;
+  readonly QOREID_WORKFLOW_ID: string | undefined;
   readonly RESEND_API_KEY: string | undefined;
   readonly RESEND_FROM_EMAIL: string | undefined;
   readonly RESEND_WEBHOOK_SECRET: string | undefined;
+  readonly SENTRY_DSN: string | undefined;
+  readonly SENTRY_RELEASE: string | undefined;
   readonly SITE_URL: string | undefined;
   readonly WHATSAPP_ACCESS_TOKEN: string | undefined;
   readonly WHATSAPP_APP_SECRET: string | undefined;

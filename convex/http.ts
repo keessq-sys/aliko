@@ -374,4 +374,60 @@ http.route({
   }),
 });
 
+// ── QoreID identity verification webhook ──────────────────────────────────
+// QoreID signs the exact raw JSON with HMAC-SHA512 in x-verifyme-signature.
+// Store only the workflow reference and normalized outcome; identity payloads
+// can contain NIN/BVN and must not be copied into application logs or tables.
+http.route({
+  path: "/webhooks/qoreid",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const secret = process.env.QOREID_WEBHOOK_SECRET;
+    if (!secret) return new Response("Webhook not configured", { status: 503 });
+    let raw = "";
+    try { raw = await readWebhookBody(req); }
+    catch { return new Response("Payload too large", { status: 413 }); }
+    const signature = req.headers.get("x-verifyme-signature");
+    const expected = await hmacHex("SHA-512", secret, raw);
+    if (!signature || !constantTimeEqual(signature.toLowerCase(), expected))
+      return new Response("Invalid signature", { status: 401 });
+
+    let payload: {
+      id?: string; reference?: string; status?: string; state?: string;
+      data?: { id?: string; reference?: string; status?: string; state?: string };
+    };
+    try { payload = JSON.parse(raw); }
+    catch { return new Response("Invalid JSON", { status: 400 }); }
+    const reference = String(payload.reference ?? payload.id ?? payload.data?.reference ?? payload.data?.id ?? "");
+    const providerStatus = String(payload.status ?? payload.state ?? payload.data?.status ?? payload.data?.state ?? "unknown").toLowerCase();
+    if (!reference || reference.length > 160)
+      return new Response("Missing verification reference", { status: 400 });
+    const eventId = `${reference}:${providerStatus}:${await sha256Hex(raw)}`;
+    const claim = await ctx.runMutation(internal.operations.claimWebhookEvent, {
+      provider: "QOREID", eventId, eventType: providerStatus,
+      reference, payloadDigest: await sha256Hex(raw),
+    });
+    if (!claim.claimed) return new Response("ok");
+    const verified = ["verified", "successful", "success", "complete", "completed"].includes(providerStatus);
+    const pending = ["pending", "in_progress", "processing"].includes(providerStatus);
+    try {
+      const result = await ctx.runMutation(internal.kyc.applyQoreIdResult, {
+        providerReference: reference,
+        providerStatus,
+        status: verified ? "VERIFIED" : pending ? "PENDING" : "FAILED",
+        failureReason: verified || pending ? undefined : "Identity provider could not verify the submitted record",
+      });
+      await ctx.runMutation(internal.operations.finishWebhookEvent, {
+        eventId: claim.eventId, status: result.matched ? "PROCESSED" : "IGNORED",
+      });
+      return new Response("ok");
+    } catch (error) {
+      await ctx.runMutation(internal.operations.finishWebhookEvent, {
+        eventId: claim.eventId, status: "FAILED", error: errorMessage(error),
+      });
+      return new Response("Processing failed", { status: 500 });
+    }
+  }),
+});
+
 export default http;

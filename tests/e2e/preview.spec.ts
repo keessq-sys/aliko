@@ -23,3 +23,20 @@ test('mobile preview fits the screen and retains navigation', async ({ page }) =
   }));
   expect(width.content).toBeLessThanOrEqual(width.viewport);
 });
+
+test('published legal and consent notices are reachable', async ({ page }) => {
+  const routes = [
+    ['terms', 'Terms of Service'],
+    ['privacy', 'Privacy Policy'],
+    ['kyc-consent', 'KYC Consent'],
+    ['payments-refunds', 'Payment and Refund Policy'],
+    ['data-retention', 'Data Retention Policy'],
+    ['e-signature', 'Electronic Signature Disclosure'],
+    ['cookies', 'Cookie and Analytics Notice'],
+  ] as const;
+  for (const [slug, title] of routes) {
+    await page.goto(`/legal/${slug}`, { waitUntil: 'domcontentloaded' });
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(title);
+    await expect(page).toHaveTitle(new RegExp(title));
+  }
+});

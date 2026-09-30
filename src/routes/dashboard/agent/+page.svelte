@@ -17,6 +17,8 @@
   // fabricated number — only listing count and profile are real here. ───
   const myListingsCount = useQuery(api.properties.getMyPropertiesCount, {});
   const myListings = useQuery(api.properties.getManageableProperties, {});
+  const myAssignedEnquiries = useQuery(api.enquiries.listMyAssignedEnquiries, { limit: 100 });
+  const myAssignedVisits = useQuery(api.clientPortal.getMyAssignedSiteVisits, {});
   $: listingRows = ($myListings ?? []).map((property) => ({
     id: property._id,
     title: property.title,
@@ -62,52 +64,28 @@
 
   let currentTab = 'overview';
   
-  const MOCK_LEADS = [
-    { id: 'l1', name: 'Amara Eze', email: 'amara@gmail.com', phone: '+2348011111111', propertyInterest: 'Maitama Duplex', source: 'Website', status: 'new', date: '2024-09-18', value: 185_000_000 },
-    { id: 'l2', name: 'Biodun Akinwale', email: 'biodun@yahoo.com', phone: '+2348022222222', propertyInterest: 'Wuse 2 Apartment', source: 'WhatsApp', status: 'contacted', date: '2024-09-17', value: 75_000_000 },
-    { id: 'l3', name: 'Chisom Obiora', email: 'chisom@hotmail.com', phone: '+2348033333333', propertyInterest: 'Lekki Land Plot', source: 'Referral', status: 'viewing', date: '2024-09-15', value: 35_000_000 },
-    { id: 'l4', name: 'David Okafor', email: 'david@outlook.com', phone: '+2348044444444', propertyInterest: 'VI Commercial Space', source: 'Social', status: 'negotiating', date: '2024-09-10', value: 950_000_000 },
-    { id: 'l5', name: 'Esther Bello', email: 'esther@gmail.com', phone: '+2348055555555', propertyInterest: 'Asokoro Penthouse', source: 'Walk-in', status: 'closed', date: '2024-09-05', value: 320_000_000 },
-  ];
+  $: MOCK_LEADS = ($myAssignedEnquiries ?? []).map((lead) => ({
+    id: lead._id, name: lead.name, email: lead.email, phone: lead.phone,
+    propertyInterest: lead.property?.title ?? lead.project?.name ?? lead.plot?.beaconNumber ?? 'General property enquiry',
+    source: lead.source ?? 'Website', status: lead.status.toLowerCase(),
+    date: new Date(lead.createdAt).toLocaleDateString(), value: lead.property?.price ?? lead.plot?.price ?? 0
+  }));
 
-  const COMMISSION_DATA = [
-    { month: 'Jan', revenue: 1_200_000, expenses: 0 },
-    { month: 'Feb', revenue: 800_000, expenses: 0 },
-    { month: 'Mar', revenue: 2_400_000, expenses: 0 },
-    { month: 'Apr', revenue: 1_500_000, expenses: 0 },
-    { month: 'May', revenue: 3_200_000, expenses: 0 },
-    { month: 'Jun', revenue: 1_800_000, expenses: 0 },
-  ];
+  const COMMISSION_DATA: { month: string; revenue: number; expenses: number }[] = [];
 
-  const VIEWINGS = [
-    { client: 'Amara Eze', property: 'Maitama Duplex', time: 'Today, 10:00 AM', status: 'Confirmed' },
-    { client: 'Chisom Obiora', property: 'Lekki Land Plot', time: 'Today, 2:30 PM', status: 'Pending' },
-    { client: 'Biodun Akinwale', property: 'Wuse 2 Apartment', time: 'Tomorrow, 11:00 AM', status: 'Confirmed' },
-    { client: 'Esther Bello', property: 'Asokoro Penthouse', time: 'Fri, 9:00 AM', status: 'Confirmed' },
-  ];
-
-  const MOCK_LISTINGS = [
-    { id: 'p1', title: 'Maitama Luxury Villa', type: 'Residential', location: 'Maitama, Abuja', status: 'Available', price: 850000000, agent: 'Adaeze Okonkwo' },
-    { id: 'p2', title: 'Wuse 2 Apartment', type: 'Apartment', location: 'Wuse 2, Abuja', status: 'Reserved', price: 75000000, agent: 'Adaeze Okonkwo' },
-    { id: 'p3', title: 'Lekki Land Plot', type: 'Land', location: 'Lekki, Lagos', status: 'Available', price: 35000000, agent: 'Adaeze Okonkwo' },
-    { id: 'p4', title: 'Asokoro Penthouse', type: 'Residential', location: 'Asokoro, Abuja', status: 'Sold', price: 320000000, agent: 'Adaeze Okonkwo' },
-  ];
+  $: VIEWINGS = ($myAssignedVisits ?? []).map((visit) => ({
+    client: visit.client?.name ?? 'Client',
+    property: visit.property?.title ?? visit.project?.name ?? 'Site visit',
+    time: `${new Date(visit.requestedAt).toLocaleDateString()} · ${visit.preferredTime}`,
+    status: visit.status[0] + visit.status.slice(1).toLowerCase()
+  }));
 
   // Service referrals: when an agent closes a sale, they refer the client
   // into ADK's own services catalog (interior design, renovation, smart
   // home, etc.) and earn a referral commission on the resulting request.
-  const MOCK_REFERRALS = [
-    { id: 'r1', client: 'Amara Eze', service: 'Interior Design', category: 'INTERIOR', status: 'IN_PROGRESS', value: 1_800_000, date: '3 days ago' },
-    { id: 'r2', client: 'Esther Bello', service: 'Smart Home Installation', category: 'SMART_HOME', status: 'QUOTED', value: 4_200_000, date: '1 week ago' },
-    { id: 'r3', client: 'David Okafor', service: 'Renovation & Refurbishing', category: 'CONSTRUCTION', status: 'NEW', value: 0, date: '2 days ago' },
-    { id: 'r4', client: 'Biodun Akinwale', service: 'Furnishing', category: 'INTERIOR', status: 'COMPLETED', value: 2_600_000, date: '1 month ago' },
-  ];
+  const MOCK_REFERRALS: { id: string; client: string; service: string; category: string; status: string; value: number; date: string }[] = [];
 
-  const MOCK_MESSAGES = [
-    { id: 'm1', from: 'Amara Eze', preview: 'Is the Maitama duplex still available for viewing this weekend?', time: '10 min ago', unread: true },
-    { id: 'm2', from: 'ADK Admin', preview: 'Your service referral for Esther Bello has been quoted — ₦4.2M.', time: '2 hours ago', unread: true },
-    { id: 'm3', from: 'Chisom Obiora', preview: 'Thanks for the tour today, sending an offer soon.', time: 'Yesterday', unread: false },
-  ];
+  const MOCK_MESSAGES: { id: string; from: string; preview: string; time: string; unread: boolean }[] = [];
 
   const REFERRAL_COMMISSION_RATE = 0.05; // 5% of completed service value
 

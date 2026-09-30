@@ -1,14 +1,14 @@
 # Enterprise readiness report
 
-**Assessment date:** 29 September 2026  
-**Production application:** `https://alikodiamondkey.com`  
-**Reviewed revision:** `6d1e336`
+**Assessment date:** 30 September 2026
+**Production application:** `https://alikodiamondkey.com`
+**Reviewed revision:** working tree after `82c245b`
 
 ## Executive assessment
 
 Aliko Diamond Key has a strong enterprise-oriented application foundation, but it is not yet ready for unrestricted production payments or regulated identity processing. The code contains the required security boundaries and durable backend components for many enterprise workflows. Most external providers, operational controls, and recovery processes are not activated in the production accounts yet, and several user-facing dashboards still contain demonstration data.
 
-- **Engineering foundation:** approximately 75–80% complete.
+- **Engineering foundation:** approximately 85% complete.
 - **Verified production operational readiness:** approximately 45–50% complete.
 - **Recommended release stage:** controlled internal or invited-user beta without live payment/KYC promises until the launch blockers below are closed.
 
@@ -59,6 +59,11 @@ The percentages distinguish code that exists from controls that have been config
 - WhatsApp webhook verification, signed inbound events, outbound messages, bot state, workpool processing, and human escalation queues are implemented.
 - Convex private storage enforces ownership, purpose, MIME and size rules, quarantine states, retention, and optional malware scanning.
 - R2 public property-media uploads require an authenticated administrator, agent, or estate manager and accept only JPG, PNG, WebP, or AVIF files up to 15 MB.
+- R2 uploads now verify JPG/PNG/WebP/AVIF file signatures, create Convex ownership records, and support owner or administrator deletion with an immutable administrator audit event.
+- QoreID webhook handling verifies the raw request with HMAC-SHA512, rejects replayed events, records explicit versioned KYC consent, and stores provider references/results without raw NIN or BVN values.
+- Sentry's official SvelteKit SDK is integrated for browser and Cloudflare exceptions with release/environment tags and request-data redaction. It remains disabled until a production DSN is configured.
+- Dedicated public pages now publish Terms, Privacy, KYC consent, payments/refunds, retention, electronic-signature and cookie notices. Nigerian counsel still needs to approve the final wording.
+- Client saved properties, site visits, service requests and legal documents now use live Convex queries. Agent leads and assigned visits are live; unimplemented manager, referral, commission and vendor domains render without fabricated customer or financial records.
 
 ## Production configuration audit
 
@@ -80,7 +85,7 @@ Consequently, the following implemented integrations are **not active in product
 - Google Maps server geocoding
 - Malware scanning
 
-QoreID is less complete: the application has KYC records and administrator review, but a production QoreID API/webhook connector is still required.
+QoreID consent records and signed callback processing are implemented. Provider workflow initiation still requires a QoreID account, workflow ID and production credentials.
 
 No repository-level GitHub Actions secrets, GitHub deployment environments, or repository variables were returned by the current repository audit. The staging, preview, and production workflow files exist, but their required secrets and protected environments are not configured, so those workflows cannot be treated as an operational release pipeline yet.
 
@@ -94,20 +99,20 @@ These items should be completed before accepting unrestricted customer payments 
 2. **Activate provider credentials and callbacks.** Configure Flutterwave, Resend, WhatsApp, Dropbox Sign, Google Maps, and the selected malware scanner in separate staging and production accounts.
 3. **Exercise real sandbox journeys.** Test registration, password recovery, enquiry, reservation, payment success/failure/cancellation, duplicate and delayed webhooks, refund, settlement reconciliation, email bounce, WhatsApp escalation, signature completion, and infected upload handling.
 4. **Configure protected delivery environments.** Create GitHub `preview`, `staging`, and `production` environments, add the required secrets, require approval for production, protect `main`, and require the CI check before merge.
-5. **Enable observability.** Connect Sentry or an equivalent exception service for the browser, Cloudflare, and Convex; configure centralized log streaming, release identifiers, alert routing, and PII redaction.
+5. **Activate observability.** Supply the Sentry DSNs and release values for the implemented browser/Cloudflare connector; add Convex log streaming, alert routing and a named operator.
 6. **Enable backups and rehearse restore.** Turn on automatic Convex database and file backups, document R2 recovery/versioning expectations, and restore the latest backup into staging with recorded recovery time and integrity checks.
 7. **Set budgets and alerts.** Configure Cloudflare and Convex usage/spend alerts plus provider-specific payment, email, maps, and messaging limits.
-8. **Replace remaining demonstration data.** Agent leads/referrals/messages, most manager dashboard subsystems, some client saved-property/site-visit rows, the landing-page agent/testimonial/map-preview data, and public empty-database fallbacks still contain demo content.
-9. **Publish legal policies.** Add approved Terms of Service, Privacy Policy, KYC consent, cookie/analytics consent where required, refund/payment policy, retention policy, and electronic-signature disclosures. Current registration forms refer to policies that do not have dedicated public pages.
-10. **Complete identity controls.** Select the live KYC provider, add explicit consent and retention rules, implement verified webhook processing, define a manual-review SLA, and decide on MFA/SSO and administrator recovery.
+8. **Replace remaining public fallback content.** The landing-page agent/testimonial/three-dimensional preview records and public empty-database catalogue fallbacks remain. Seed authoritative production records and disable fallbacks for production.
+9. **Approve the published legal policies.** The required pages exist and are linked. Nigerian legal/privacy counsel must approve the wording, company contact details, retention periods and dispute terms before unrestricted onboarding.
+10. **Complete identity controls.** Configure the QoreID account and workflow credentials, connect workflow initiation, define a manual-review SLA, and decide on MFA/SSO and administrator recovery.
 
 ## Important hardening work
 
 | Area | Remaining control |
 | --- | --- |
-| R2 media lifecycle | Add orphan cleanup, deletion/audit operations, lifecycle rules, and an image decoding or content-scanning step. MIME declarations alone do not prove file contents. |
+| R2 media lifecycle | File signatures and audited deletion are implemented. Add provider malware scanning, scheduled orphan cleanup, EXIF removal, Cloudflare lifecycle rules and storage usage alerts. |
 | Cloudflare security | Evaluate managed WAF rules, bot controls, stricter endpoint-specific limits, security-event alerts, and authenticated-origin controls after observing normal traffic. |
-| Monitoring | Add Sentry/Datadog/PostHog or equivalent with secret/PII scrubbing and named on-call recipients. |
+| Monitoring | Sentry browser/Cloudflare code and PII redaction exist. Add DSNs, Convex log streaming and named on-call recipients. |
 | Authentication | Add MFA or an external identity provider for administrators, recovery codes/runbooks, quarterly access reviews, and privileged-action step-up authentication. |
 | Payments | Complete sandbox and low-value live certification, daily settlement reconciliation, accounting export, chargeback handling, and an operator-approved refund runbook. |
 | Testing | Add backend integration tests against isolated Convex preview deployments, provider contract fixtures, authenticated role/ownership tests, R2 upload authorization tests, and restore/migration tests. CI currently runs only the public preview smoke specification. |

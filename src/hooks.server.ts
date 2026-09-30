@@ -11,6 +11,9 @@ import { redirect } from '@sveltejs/kit';
 import { ConvexHttpClient } from 'convex/browser';
 import { makeFunctionReference } from 'convex/server';
 import { env } from '$env/dynamic/public';
+import { env as privateEnv } from '$env/dynamic/private';
+import { sequence } from '@sveltejs/kit/hooks';
+import { handleErrorWithSentry, initCloudflareSentryHandle, sentryHandle } from '@sentry/sveltekit';
 
 /** Route prefixes that must never be indexed or cited, even if a crawler
  *  ignores robots.txt or a private URL gets linked from somewhere external. */
@@ -48,7 +51,7 @@ function isPrivateRoute(pathname: string): boolean {
   return PRIVATE_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 
-export const handle: Handle = async ({ event, resolve }) => {
+const applicationHandle: Handle = async ({ event, resolve }) => {
   const aiBot = detectAiBot(event.request.headers.get('user-agent'));
   if (aiBot) {
     // Cloudflare Pages captures stdout in the Functions log; this is the
@@ -101,3 +104,26 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   return response;
 };
+
+const sentryInit: Handle | null = privateEnv.SENTRY_DSN ? initCloudflareSentryHandle({
+  dsn: privateEnv.SENTRY_DSN,
+  enabled: Boolean(privateEnv.SENTRY_DSN),
+  environment: privateEnv.SENTRY_ENVIRONMENT ?? 'production',
+  release: privateEnv.SENTRY_RELEASE,
+  tracesSampleRate: 0.1,
+  beforeSend(event) {
+    if (event.request) {
+      delete event.request.cookies;
+      delete event.request.headers;
+      delete event.request.query_string;
+      delete event.request.data;
+    }
+    if (event.user) event.user = { id: event.user.id };
+    return event;
+  }
+}) : null;
+
+export const handle = privateEnv.SENTRY_DSN
+  ? sequence(sentryInit!, sentryHandle(), applicationHandle)
+  : applicationHandle;
+export const handleError = handleErrorWithSentry(({ message }) => ({ message }));

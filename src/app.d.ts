@@ -12,9 +12,12 @@ declare global {
 			env?: {
 				MEDIA?: {
 					put(key: string, value: ArrayBuffer | ReadableStream, options?: { httpMetadata?: { contentType?: string; cacheControl?: string }; customMetadata?: Record<string, string> }): Promise<unknown>;
-					get(key: string): Promise<{ body: ReadableStream; httpMetadata?: { contentType?: string; cacheControl?: string }; writeHttpMetadata(headers: Headers): void } | null>;
+					get(key: string): Promise<{ body: ReadableStream; httpMetadata?: { contentType?: string; cacheControl?: string }; customMetadata?: Record<string, string>; writeHttpMetadata(headers: Headers): void } | null>;
 					delete(key: string): Promise<void>;
 				};
+				SENTRY_DSN?: string;
+				SENTRY_ENVIRONMENT?: string;
+				SENTRY_RELEASE?: string;
 			};
 		}
 		// interface Error {}

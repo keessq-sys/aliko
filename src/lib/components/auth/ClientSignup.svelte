@@ -128,7 +128,7 @@
 
   <label class="flex items-start gap-2 text-sm text-gray-300">
     <input type="checkbox" bind:checked={terms} class="mt-0.5 h-4 w-4 rounded border-gray-600 bg-black/20 text-emerald-500 focus:ring-emerald-500" />
-    <span>I agree to the Terms of Service and Privacy Policy</span>
+    <span>I agree to the <a href="/legal/terms" class="underline hover:text-white">Terms of Service</a> and <a href="/legal/privacy" class="underline hover:text-white">Privacy Policy</a></span>
   </label>
   {#if errors.terms}<p class="text-sm text-red-400">{errors.terms}</p>{/if}
 

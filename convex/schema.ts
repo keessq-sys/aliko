@@ -284,7 +284,8 @@ export default defineSchema({
   // ── Site Visit Requests ───────────────────────────────────────────────────
   siteVisitRequests: defineTable({
     clientId: v.id("users"),
-    projectId: v.id("projects"),
+    projectId: v.optional(v.id("projects")),
+    propertyId: v.optional(v.id("properties")),
     plotId: v.optional(v.id("plots")),
     requestedAt: v.number(),
     preferredTime: v.string(),
@@ -302,8 +303,17 @@ export default defineSchema({
   })
     .index("by_client", ["clientId"])
     .index("by_project", ["projectId"])
+    .index("by_property", ["propertyId"])
     .index("by_status", ["status"])
     .index("by_date", ["requestedAt"]),
+
+  savedProperties: defineTable({
+    userId: v.id("users"),
+    propertyId: v.id("properties"),
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_property", ["userId", "propertyId"]),
 
   // ── KYC Verifications ─────────────────────────────────────────────────────
   kycVerifications: defineTable({
@@ -323,13 +333,19 @@ export default defineSchema({
     providerReference: v.optional(v.string()),
     verifiedData: v.optional(v.any()),
     failureReason: v.optional(v.string()),
+    consentVersion: v.optional(v.string()),
+    consentedAt: v.optional(v.number()),
+    subjectHash: v.optional(v.string()),
+    providerStatus: v.optional(v.string()),
+    reviewedAt: v.optional(v.number()),
     expiresAt: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
     .index("by_user_type", ["userId", "type"])
-    .index("by_status", ["status"]),
+    .index("by_status", ["status"])
+    .index("by_provider_reference", ["providerReference"]),
 
   // ── WhatsApp Bot Sessions ─────────────────────────────────────────────────
   whatsAppSessions: defineTable({
@@ -645,6 +661,7 @@ export default defineSchema({
       v.literal("WHATSAPP"),
       v.literal("DROPBOX_SIGN"),
       v.literal("RESEND"),
+      v.literal("QOREID"),
     ),
     eventId: v.string(),
     eventType: v.string(),
@@ -719,6 +736,44 @@ export default defineSchema({
     .index("by_owner_date", ["ownerId", "createdAt"])
     .index("by_status_date", ["status", "createdAt"])
     .index("by_expiry", ["status", "expiresAt"]),
+
+  // R2 objects are served by the Cloudflare worker rather than Convex
+  // Storage. Keep a matching ownership and audit record here so deletion,
+  // retention and orphan cleanup do not rely on untrusted object keys.
+  r2Assets: defineTable({
+    key: v.string(),
+    ownerId: v.id("users"),
+    collection: v.string(),
+    fileName: v.string(),
+    mimeType: v.string(),
+    size: v.number(),
+    status: v.union(
+      v.literal("ACTIVE"),
+      v.literal("QUARANTINED"),
+      v.literal("DELETED"),
+    ),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    deletedAt: v.optional(v.number()),
+  })
+    .index("by_key", ["key"])
+    .index("by_owner_date", ["ownerId", "createdAt"])
+    .index("by_status_date", ["status", "createdAt"]),
+
+  policyAcceptances: defineTable({
+    userId: v.id("users"),
+    policy: v.union(
+      v.literal("TERMS"),
+      v.literal("PRIVACY"),
+      v.literal("KYC_CONSENT"),
+      v.literal("E_SIGNATURE"),
+      v.literal("COOKIES"),
+    ),
+    version: v.string(),
+    acceptedAt: v.number(),
+  })
+    .index("by_user_policy", ["userId", "policy"])
+    .index("by_policy_date", ["policy", "acceptedAt"]),
 
   geocodeCache: defineTable({
     addressKey: v.string(),
