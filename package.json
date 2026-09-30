@@ -65,7 +65,7 @@
     "qrcode": "^1.5.4",
     "tailwind-merge": "^2.5.4",
     "three": "^0.166.0",
-    "zod": "^3.23.8"
+    "zod": "^4.6.5"
   },
   "optionalDependencies": {
     "@cloudflare/workerd-linux-64": "1.20260921.1",
