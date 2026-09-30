@@ -9,7 +9,6 @@
   import AgentShowcase from '$lib/components/home/AgentShowcase.svelte';
   import MapPreview from '$lib/components/home/MapPreview.svelte';
   import VisionBanner from '$lib/components/home/VisionBanner.svelte';
-  import TestimonialsSection from '$lib/components/home/TestimonialsSection.svelte';
   import ServicesSection from '$lib/components/home/ServicesSection.svelte';
   import TrustBanner from '$lib/components/home/TrustBanner.svelte';
   import ROICalculator from '$lib/components/home/ROICalculator.svelte';
@@ -44,7 +43,6 @@
   <AgentShowcase />
   <MapPreview />
   <VisionBanner />
-  <TestimonialsSection />
   <ServicesSection />
   <TrustBanner />
   <ROICalculator />

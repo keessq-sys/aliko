@@ -5,9 +5,10 @@
   import PropertyMapView from '$lib/components/properties/PropertyMapView.svelte';
   import { ChevronRight, ArrowLeft } from 'lucide-svelte';
   import { FALLBACK_PROPERTIES } from '$lib/data/fallbackCatalog';
+  import { demoFallbacksEnabled } from '$lib/config/demo';
 
   const liveProperties = useQuery(api.properties.listProperties, { activeOnly: true, limit: 200 });
-  $: mapProperties = ($liveProperties?.length ? $liveProperties : FALLBACK_PROPERTIES).map(toDisplayProperty);
+  $: mapProperties = ($liveProperties?.length ? $liveProperties : demoFallbacksEnabled ? FALLBACK_PROPERTIES : []).map(toDisplayProperty);
 
   let selectedId: string | null = null;
 </script>

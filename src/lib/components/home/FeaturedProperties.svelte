@@ -5,9 +5,10 @@
   import { api } from '$lib/convex/_generated/api';
   import { formatNaira } from '$lib/utils/format';
   import { FALLBACK_PROPERTIES } from '$lib/data/fallbackCatalog';
+  import { demoFallbacksEnabled } from '$lib/config/demo';
 
   const featured = useQuery(api.properties.listProperties, { isFeatured: true, limit: 6 });
-  $: visibleProperties = $featured?.length ? $featured : FALLBACK_PROPERTIES.filter((p) => p.isFeatured);
+  $: visibleProperties = $featured?.length ? $featured : demoFallbacksEnabled ? FALLBACK_PROPERTIES.filter((p) => p.isFeatured) : [];
 </script>
 
 <style>

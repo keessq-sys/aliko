@@ -61,3 +61,33 @@ export const markDeleted = mutation({
   },
 });
 
+export const findRegisteredKeys = query({
+  args: { keys: v.array(v.string()) },
+  handler: async (ctx, { keys }) => {
+    const actor = await user(ctx);
+    if (actor.role !== "ADMIN") throw new Error("Forbidden");
+    if (keys.length > 100) throw new Error("At most 100 keys may be checked");
+    const matches = await Promise.all(keys.map((key) => ctx.db.query("r2Assets")
+      .withIndex("by_key", (q: any) => q.eq("key", key)).unique()));
+    return matches.filter((asset) => asset && asset.status !== "DELETED").map((asset) => asset!.key);
+  },
+});
+
+export const recordOrphanCleanup = mutation({
+  args: { keys: v.array(v.string()) },
+  handler: async (ctx, { keys }) => {
+    const actor = await user(ctx);
+    if (actor.role !== "ADMIN") throw new Error("Forbidden");
+    if (keys.length > 100) throw new Error("At most 100 keys may be recorded");
+    await ctx.db.insert("adminAuditLog", {
+      actorId: actor._id,
+      actorEmail: actor.email,
+      action: "R2_ORPHAN_CLEANUP",
+      entityType: "r2Assets",
+      detail: JSON.stringify({ count: keys.length, keys: keys.map((key) => key.slice(0, 220)) }).slice(0, 8_000),
+      createdAt: Date.now(),
+    });
+    return { recorded: keys.length };
+  },
+});
+

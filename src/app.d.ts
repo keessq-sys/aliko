@@ -14,6 +14,11 @@ declare global {
 					put(key: string, value: ArrayBuffer | ReadableStream, options?: { httpMetadata?: { contentType?: string; cacheControl?: string }; customMetadata?: Record<string, string> }): Promise<unknown>;
 					get(key: string): Promise<{ body: ReadableStream; httpMetadata?: { contentType?: string; cacheControl?: string }; customMetadata?: Record<string, string>; writeHttpMetadata(headers: Headers): void } | null>;
 					delete(key: string): Promise<void>;
+					list(options?: { cursor?: string; limit?: number; prefix?: string }): Promise<{
+						objects: Array<{ key: string; uploaded: Date; size: number }>;
+						truncated: boolean;
+						cursor?: string;
+					}>;
 				};
 				SENTRY_DSN?: string;
 				SENTRY_ENVIRONMENT?: string;

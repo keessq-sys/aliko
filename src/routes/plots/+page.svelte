@@ -6,6 +6,7 @@
   import { reveal, revealStagger } from '$lib/actions/reveal';
   import { tilt } from '$lib/actions/tilt';
   import { FALLBACK_PROJECTS, FALLBACK_PLOTS } from '$lib/data/fallbackCatalog';
+  import { demoFallbacksEnabled } from '$lib/config/demo';
 
   let projectFilter = '';
   let statusFilter = 'AVAILABLE';
@@ -16,8 +17,8 @@
     status: statusFilter || undefined,
     limit: 60
   });
-  $: visibleProjects = $projects?.length ? $projects : FALLBACK_PROJECTS;
-  $: visiblePlots = $plots?.length ? $plots : FALLBACK_PLOTS.filter((p) => (!projectFilter || p.projectId === projectFilter) && (!statusFilter || p.status === statusFilter));
+  $: visibleProjects = $projects?.length ? $projects : demoFallbacksEnabled ? FALLBACK_PROJECTS : [];
+  $: visiblePlots = $plots?.length ? $plots : demoFallbacksEnabled ? FALLBACK_PLOTS.filter((p) => (!projectFilter || p.projectId === projectFilter) && (!statusFilter || p.status === statusFilter)) : [];
 
   let selectedPlot: any = null;
   let installmentPlan = 'OUTRIGHT';

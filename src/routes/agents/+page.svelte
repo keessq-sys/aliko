@@ -5,6 +5,7 @@
   import { api } from '$lib/convex/_generated/api';
   import { whatsappHref } from '$lib/data/contact';
   import { FALLBACK_AGENTS } from '$lib/data/fallbackCatalog';
+  import { demoFallbacksEnabled } from '$lib/config/demo';
 
   const heroImage = SERVICE_GALLERIES['property-development'][1];
 
@@ -14,7 +15,7 @@
   let specializationFilter = 'All Specializations';
   let stateFilter = 'All Locations';
 
-  $: visibleAgents = ($agents?.length ? $agents : FALLBACK_AGENTS) as any[];
+  $: visibleAgents = ($agents?.length ? $agents : demoFallbacksEnabled ? FALLBACK_AGENTS : []) as any[];
   $: specializationOptions = ['All Specializations', ...new Set(visibleAgents.flatMap((a: any) => a.specializations))];
   $: stateOptions = ['All Locations', ...new Set(visibleAgents.flatMap((a: any) => a.statesOfOperation))];
 

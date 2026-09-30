@@ -11,6 +11,7 @@
   import { page } from '$app/stores';
   import { SIGNATURE_DEVELOPMENTS } from '$lib/data/imagery';
   import { FALLBACK_PROPERTIES } from '$lib/data/fallbackCatalog';
+  import { demoFallbacksEnabled } from '$lib/config/demo';
 
   const bannerImage = SIGNATURE_DEVELOPMENTS[1].image;
 
@@ -19,7 +20,7 @@
   // PropertyMapView already expect (see $lib/utils/propertyAdapter.ts) —
   // this file previously read from a hardcoded 12-item mock store.
   const liveProperties = useQuery(api.properties.listProperties, { activeOnly: true, limit: 200 });
-  $: allProperties = ($liveProperties?.length ? $liveProperties : FALLBACK_PROPERTIES).map(toDisplayProperty);
+  $: allProperties = ($liveProperties?.length ? $liveProperties : demoFallbacksEnabled ? FALLBACK_PROPERTIES : []).map(toDisplayProperty);
 
   // View state
   let currentView: 'grid' | 'list' | 'map' = 'grid';

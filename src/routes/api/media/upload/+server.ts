@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import { ConvexHttpClient } from 'convex/browser';
 import { makeFunctionReference } from 'convex/server';
 import { env } from '$env/dynamic/public';
+import { sanitizeImage } from '$lib/server/imageSanitizer';
 
 const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
 const MAX_BYTES = 15_000_000;
@@ -28,14 +29,20 @@ export const POST: RequestHandler = async ({ request, platform, locals, cookies 
   if (!ALLOWED.has(file.type) || file.size < 1 || file.size > MAX_BYTES) {
     return json({ error: 'Use a JPG, PNG, WebP or AVIF image no larger than 15 MB' }, { status: 400 });
   }
-  const data = await file.arrayBuffer();
-  const actualType = detectedImageType(new Uint8Array(data).slice(0, 32));
+  const data = new Uint8Array(await file.arrayBuffer());
+  const actualType = detectedImageType(data.slice(0, 32));
   if (!actualType || actualType !== file.type.toLowerCase()) {
     return json({ error: 'The file contents do not match the declared image type' }, { status: 400 });
   }
+  let sanitized: Uint8Array;
+  try {
+    sanitized = sanitizeImage(data, actualType);
+  } catch (error) {
+    return json({ error: error instanceof Error ? error.message : 'The image could not be sanitized' }, { status: 400 });
+  }
   const extension = actualType === 'image/jpeg' ? 'jpg' : actualType.split('/')[1];
   const key = `${collection}/${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}.${extension}`;
-  await bucket.put(key, data, {
+  await bucket.put(key, sanitized.buffer as ArrayBuffer, {
     httpMetadata: { contentType: actualType, cacheControl: 'public, max-age=31536000, immutable' },
     customMetadata: { ownerId: locals.user._id, uploadedByRole: locals.user.role ?? 'UNKNOWN', originalName: file.name.slice(0, 180) }
   });
@@ -45,7 +52,7 @@ export const POST: RequestHandler = async ({ request, platform, locals, cookies 
     const client = new ConvexHttpClient(env.PUBLIC_CONVEX_URL);
     client.setAuth(token);
     await client.mutation(makeFunctionReference<'mutation'>('r2Assets:register'), {
-      key, collection, fileName: file.name.slice(0, 180), mimeType: actualType, size: file.size
+      key, collection, fileName: file.name.slice(0, 180), mimeType: actualType, size: sanitized.byteLength
     });
   } catch (error) {
     await bucket.delete(key);

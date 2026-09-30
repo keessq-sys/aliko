@@ -28,6 +28,29 @@ async function ensureBucket() {
   console.log(`Created R2 bucket ${bucketName}.`);
 }
 
+async function ensureLifecyclePolicy() {
+  const path = `/accounts/${accountId}/r2/buckets/${encodeURIComponent(bucketName)}/lifecycle`;
+  const current = await cf(path).catch(() => ({ rules: [] }));
+  const managed = new Map([
+    ['adk-temporary-uploads', {
+      id: 'adk-temporary-uploads', enabled: true, conditions: { prefix: 'temp/' },
+      deleteObjectsTransition: { condition: { type: 'Age', maxAge: 86400 } },
+    }],
+    ['adk-quarantine-retention', {
+      id: 'adk-quarantine-retention', enabled: true, conditions: { prefix: 'quarantine/' },
+      deleteObjectsTransition: { condition: { type: 'Age', maxAge: 2592000 } },
+    }],
+    ['adk-abandoned-multipart', {
+      id: 'adk-abandoned-multipart', enabled: true, conditions: { prefix: '' },
+      abortMultipartUploadsTransition: { condition: { type: 'Age', maxAge: 86400 } },
+    }],
+  ]);
+  const rules = (current?.rules || []).filter((rule) => !managed.has(rule.id));
+  rules.push(...managed.values());
+  await cf(path, { method: 'PUT', body: JSON.stringify({ rules }) });
+  console.log(`Configured R2 lifecycle rules for ${bucketName}.`);
+}
+
 async function bindPagesProject() {
   const projects = await cf(`/accounts/${accountId}/pages/projects`);
   const project = projects.find((entry) => entry.name === requestedProject) || projects.find((entry) => entry.name.includes('aliko'));
@@ -82,6 +105,7 @@ async function main() {
   const failures = [];
   try {
     await ensureBucket();
+    await ensureLifecyclePolicy();
     await bindPagesProject();
   } catch (error) {
     failures.push(`R2/Pages: ${error.message}`);
