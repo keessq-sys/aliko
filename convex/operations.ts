@@ -40,8 +40,27 @@ export const claimWebhookEvent = internalMutation({
         q.eq("provider", args.provider).eq("eventId", args.eventId),
       )
       .unique();
-    if (existing)
+    if (existing) {
+      if (existing.payloadDigest !== args.payloadDigest)
+        throw new Error("Webhook event payload changed");
+      const retryable =
+        existing.status === "FAILED" ||
+        (existing.status === "PROCESSING" &&
+          existing.updatedAt < Date.now() - 5 * 60000);
+      if (retryable && existing.attempts < 5) {
+        await ctx.db.patch(existing._id, {
+          status: "PROCESSING",
+          attempts: existing.attempts + 1,
+          updatedAt: Date.now(),
+        });
+        return {
+          claimed: true,
+          eventId: existing._id,
+          status: "PROCESSING" as const,
+        };
+      }
       return { claimed: false, eventId: existing._id, status: existing.status };
+    }
     const now = Date.now();
     const eventId = await ctx.db.insert("webhookEvents", {
       ...args,

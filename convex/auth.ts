@@ -31,6 +31,15 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         const key =
           args.profile.email?.trim().toLowerCase() ?? String(args.userId);
         await rateLimiter.limit(ctx, "registration", { key, throws: true });
+        const user = await ctx.db.get(args.userId);
+        if (user?.registrationPolicyVersion)
+          for (const policy of ["TERMS", "PRIVACY"] as const)
+            await ctx.db.insert("policyAcceptances", {
+              userId: args.userId,
+              policy,
+              version: user.registrationPolicyVersion,
+              acceptedAt: Date.now(),
+            });
         await ctx.db.insert("adminAuditLog", {
           actorId: args.userId,
           actorEmail: args.profile.email,

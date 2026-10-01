@@ -5,6 +5,15 @@ import { components } from "./_generated/api";
 import type { DataModel, Id } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 
+export const managementAggregate = new TableAggregate<{
+  Key: [string, string, string, number];
+  DataModel: DataModel;
+  TableName: "managementRecords";
+}>(components.managementAggregate, {
+  sortKey: (doc) => [String(doc.ownerId), doc.kind, doc.status, doc.createdAt],
+  sumValue: (doc) => doc.amount ?? 0,
+});
+
 export const paymentAggregate = new TableAggregate<{
   Key: [string, number];
   DataModel: DataModel;
@@ -63,4 +72,29 @@ export const getFinancialTotals = query({
       quotedServiceValue,
     };
   },
+});
+
+export const estateAggregate = new TableAggregate<{
+  Key: [string, string, string, string, number];
+  DataModel: DataModel;
+  TableName: "leases" | "ledgerEntries";
+}>(components.estateAggregate, {
+  sortKey: (doc) =>
+    "direction" in doc
+      ? [
+          String(doc.ownerId),
+          "LEDGER",
+          new Date(doc.createdAt).toISOString().slice(0, 7),
+          doc.direction,
+          doc.createdAt,
+        ]
+      : [
+          String(doc.ownerId),
+          "LEASE",
+          doc.status,
+          doc.startDate,
+          doc.createdAt,
+        ],
+  sumValue: (doc) =>
+    "direction" in doc ? doc.amountMinor : Math.round(doc.rent * 100),
 });

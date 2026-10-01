@@ -1,3 +1,5 @@
+> This is the original audit snapshot. Findings are not a statement of the latest source revision. See [Audit remediation and production handoff](AUDIT_REMEDIATION_2026-10-01.md) for implementation closure, current evidence and unresolved release prerequisites.
+
 # Aliko Diamond Key application and production audit
 
 Audit date: 1 October 2026. Source revision: `e2e07272656be5019d547d397a7415aa46ecf914` on `main`, repository `keessq-sys/aliko`.

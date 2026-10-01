@@ -59,6 +59,11 @@
     price: property.price,
     agent: property.agentId ? "Assigned agent" : "Unassigned",
   }));
+  const estateSummary = useQuery(api.estateOperations.summary, {});
+  let agentCursor: string | null = null;
+  $: assignedAgents = useQuery(api.estateOperations.assignedAgents, {
+    paginationOpts: { cursor: agentCursor, numItems: 20 },
+  });
   const finances = useQuery(api.management.myFinancialSummary, {});
   const myProfile = useQuery(api.users.getMyProfile, {});
   let profileName = "";
@@ -94,6 +99,25 @@
   import RevenueChart from "$lib/components/dashboard/RevenueChart.svelte";
   import AgentCard from "$lib/components/agent/AgentCard.svelte";
 
+  function downloadReport() {
+    if (!$estateSummary) return;
+    const csv =
+      "Month,Income NGN,Expenses NGN,Net NGN\r\n" +
+      $estateSummary.months
+        .map(
+          (row) =>
+            `${row.month},${row.revenue},${row.expenses},${row.revenue - row.expenses}`,
+        )
+        .join("\r\n");
+    const url = URL.createObjectURL(
+      new Blob([csv], { type: "text/csv;charset=utf-8" }),
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "adk-estate-monthly-ledger.csv";
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
   let currentTab = "overview";
   // Mobile drawer — desktop sidebar below is hidden md:flex; on mobile the
   // same navItems render inside this slide-in drawer.
@@ -101,12 +125,15 @@
 
   const MOCK_AGENTS: any[] = [];
 
-  const REVENUE_DATA: { month: string; revenue: number; expenses: number }[] =
-    [];
+  $: REVENUE_DATA = $estateSummary?.months ?? [];
 
   $: MOCK_PROPERTIES = propertyRows;
 
-  const MOCK_ACTIVITIES: any[] = [];
+  $: MOCK_ACTIVITIES = ($estateSummary?.recent ?? []).map((row) => ({
+    ...row,
+    user: $myProfile?.name ?? "Your account",
+    color: "#34d399",
+  }));
 
   const MOCK_TENANTS: any[] = [];
 
@@ -163,18 +190,26 @@
       <div
         class="mt-8 flex items-center gap-3 rounded-xl bg-white/5 p-3 border border-white/5"
       >
-        <img
-          src="https://picsum.photos/seed/manager/100/100"
-          alt="Manager"
-          class="h-10 w-10 rounded-full object-cover"
-        />
+        {#if $myProfile?.avatarUrl}<img
+            src={$myProfile.avatarUrl}
+            alt="Your profile"
+            class="h-10 w-10 rounded-full object-cover"
+          />{:else}<span
+            class="h-10 w-10 rounded-full theme-surface flex items-center justify-center"
+            aria-hidden="true">{($myProfile?.name ?? "M").slice(0, 1)}</span
+          >{/if}
         <div>
-          <p class="text-sm font-medium text-white">Chief Manager</p>
-          <p class="text-xs text-emerald-500">Premium Plan</p>
+          <p class="text-sm font-medium text-white">
+            {$myProfile?.name ?? "Estate Manager"}
+          </p>
+          <p class="text-xs text-emerald-500">Estate management</p>
         </div>
       </div>
     </div>
 
+    <a href="/dashboard/operations" class="theme-text underline mx-6 py-3"
+      >Leases and financial ledger</a
+    >
     <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1 hide-scrollbar">
       {#each navItems as item}
         <button
@@ -233,6 +268,9 @@
             <X class="w-5 h-5" />
           </button>
         </div>
+        <a href="/dashboard/operations" class="theme-text underline mx-6 py-3"
+          >Leases and financial ledger</a
+        >
         <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1">
           {#each navItems as item}
             <button
@@ -327,19 +365,19 @@
                 icon={Home}
               />
               <StatCard
-                title="Tenants"
-                value={$finances?.tenants ?? "—"}
-                change="Recorded tenants"
+                title="Active leases"
+                value={$estateSummary?.activeLeases ?? "—"}
+                change="Current recorded lease status"
                 changeType="up"
                 icon={Users}
                 iconBg="bg-blue-500/20"
               />
               <StatCard
-                title="Recorded Expenses"
+                title="Ledger expenses (12 months)"
                 value={$finances
-                  ? `₦${$finances.expenses.toLocaleString()}`
+                  ? `₦${($estateSummary?.months.reduce((sum, row) => sum + row.expenses, 0) ?? 0).toLocaleString()}`
                   : "—"}
-                change="Completed expense records"
+                change="Immutable ledger entries"
                 changeType="up"
                 icon={DollarSign}
                 iconBg="bg-emerald-500/20"
@@ -578,108 +616,50 @@
               </div>
             </div>
           {:else if currentTab === "agents"}
-            <div class="mb-6 flex justify-between items-center">
-              <h3 class="text-lg font-medium text-white">Agent Roster</h3>
-              <button
-                class="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-lg hover:bg-emerald-500"
+            <h3 class="text-lg font-medium text-white mb-4">
+              Agents assigned to your managed properties
+            </h3>
+            {#if $assignedAgents === undefined}<p>
+                Loading assignments…
+              </p>{:else if !$assignedAgents.page.length}<p>
+                No approved agent assignments on this page.
+              </p>{/if}
+            {#each $assignedAgents?.page ?? [] as agent}<article
+                class="theme-surface theme-text border rounded-xl p-4 my-3"
               >
-                <Plus class="w-4 h-4" /> Invite Agent
-              </button>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-              {#each MOCK_AGENTS as agent}
-                <AgentCard {agent} />
-              {/each}
-            </div>
-          {:else if currentTab === "financials"}
-            <div class="space-y-6">
-              <div class="grid grid-cols-3 gap-6">
-                <StatCard
-                  title="Total Revenue (YTD)"
-                  value="158.4"
-                  prefix="₦"
-                  suffix="M"
-                  change="+15%"
-                  changeType="up"
-                  icon={DollarSign}
-                />
-                <StatCard
-                  title="Total Expenses (YTD)"
-                  value="37.2"
-                  prefix="₦"
-                  suffix="M"
-                  change="+5%"
-                  changeType="down"
-                  icon={BarChart2}
-                  iconBg="bg-rose-500/20"
-                />
-                <StatCard
-                  title="Net Profit (YTD)"
-                  value="121.2"
-                  prefix="₦"
-                  suffix="M"
-                  change="+18%"
-                  changeType="up"
-                  icon={Briefcase}
-                  iconBg="bg-blue-500/20"
-                />
-              </div>
-              <div class="p-6 rounded-xl border border-white/5 bg-white/[0.02]">
-                <RevenueChart data={REVENUE_DATA} type="bar" />
-              </div>
-            </div>
-          {:else if currentTab === "documents"}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {#each MOCK_DOCS as doc}
-                <div
-                  class="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/5"
-                >
-                  <div class="flex items-center gap-4">
-                    <div class="p-3 bg-red-500/20 text-red-400 rounded-lg">
-                      <FileText class="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h4 class="text-sm font-medium text-white">{doc.name}</h4>
-                      <p class="text-xs text-stone-400">
-                        {doc.property} • {doc.size}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    class="min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-white/10 rounded-full text-stone-400"
-                    aria-label="Download document"
-                  >
-                    <Download class="w-4 h-4" />
-                  </button>
-                </div>
-              {/each}
-            </div>
+                <p>{agent?.name}</p>
+                <p>{agent?.property}</p>
+              </article>{/each}
+            <button
+              class="min-h-[44px] border rounded px-3"
+              disabled={!$assignedAgents || $assignedAgents.isDone}
+              on:click={() =>
+                (agentCursor = $assignedAgents?.continueCursor ?? null)}
+              >More assignments</button
+            >
           {:else if currentTab === "reports"}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {#each [{ name: "Monthly Portfolio Summary", period: "September 2026" }, { name: "Facility Maintenance Log", period: "Q3 2026" }, { name: "Occupancy & Revenue Report", period: "September 2026" }] as report}
-                <div
-                  class="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/5"
-                >
-                  <div class="flex items-center gap-4">
-                    <div class="p-3 bg-blue-500/20 text-blue-400 rounded-lg">
-                      <BarChart2 class="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h4 class="text-sm font-medium text-white">
-                        {report.name}
-                      </h4>
-                      <p class="text-xs text-stone-400">{report.period}</p>
-                    </div>
-                  </div>
-                  <button
-                    class="min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-white/10 rounded-full text-stone-400"
-                    aria-label="Download report"
-                  >
-                    <Download class="w-4 h-4" />
-                  </button>
-                </div>
-              {/each}
-            </div>
+            <section
+              class="theme-surface theme-text border rounded-xl p-5 space-y-4"
+            >
+              <h3 class="text-xl font-semibold">
+                Recorded estate finance report
+              </h3>
+              <p>
+                Monthly income and expenses come from your immutable NGN ledger.
+                These are recorded transactions; bank settlement and statutory
+                accounting require finance review.
+              </p>
+              <button
+                disabled={!$estateSummary}
+                on:click={downloadReport}
+                class="border rounded px-4 min-h-[44px]"
+                >Download monthly CSV</button
+              >
+              <RevenueChart data={REVENUE_DATA} type="bar" />
+              <a href="/dashboard/operations" class="underline"
+                >Review leases and ledger entries</a
+              >
+            </section>
           {:else}
             <div class="max-w-2xl">
               <form

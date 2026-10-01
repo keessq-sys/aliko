@@ -150,7 +150,9 @@
 
         <div>
           <div class="flex justify-between mb-2">
-            <label class="font-semibold text-gray-300 flex items-center gap-1"
+            <label
+              for="roi-growth"
+              class="font-semibold text-gray-300 flex items-center gap-1"
               >Expected Growth Rate <Info
                 size={14}
                 class="text-gray-500"
@@ -160,6 +162,7 @@
           </div>
           <input
             type="range"
+            id="roi-growth"
             min="5"
             max="30"
             step="1"

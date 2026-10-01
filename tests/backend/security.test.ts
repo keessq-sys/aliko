@@ -12,6 +12,8 @@ function setup() {
   const t = convexTest(schema, modules);
   rateLimiter.register(t);
   aggregate.register(t, "bookingAggregate");
+  aggregate.register(t, "managementAggregate");
+  aggregate.register(t, "estateAggregate");
   return t;
 }
 
@@ -405,4 +407,161 @@ describe("administrator MFA", () => {
       vi.unstubAllEnvs();
     }
   });
+});
+
+describe("signature and pending refund safeguards", () => {
+  it("blocks allocation while a provider refund is unresolved", async () => {
+    const t = setup(),
+      f = await paidBooking(t),
+      admin = await user(t, "ADMIN");
+    await t.run(async (ctx) => {
+      await ctx.db.patch(f.documentId, { status: "SIGNED" });
+      await ctx.db.insert("paymentRefunds", {
+        paymentId: f.paymentId,
+        bookingId: f.bookingId,
+        provider: "FLUTTERWAVE",
+        amount: 10000,
+        reason: "Uncertain provider outcome",
+        status: "PENDING",
+        initiatedBy: admin.id,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+    });
+    await expect(
+      t.mutation(internal.fulfillment.allocateSignedBooking, {
+        bookingId: f.bookingId,
+        documentId: f.documentId,
+      }),
+    ).rejects.toThrow("pending");
+    expect((await t.run((ctx) => ctx.db.get(f.plotId)))?.status).toBe(
+      "RESERVED",
+    );
+  });
+  it("binds signature outcomes to the request and preserves terminal documents", async () => {
+    const t = setup(),
+      f = await paidBooking(t);
+    await expect(
+      t.mutation(internal.legalDocuments.updateDocumentStatus, {
+        referenceCode: "TEST-DEED",
+        status: "SIGNED",
+        providerRequestId: "wrong-request",
+      }),
+    ).rejects.toThrow("registered request");
+    await expect(
+      t.mutation(internal.legalDocuments.updateDocumentStatus, {
+        referenceCode: "TEST-DEED",
+        status: "SIGNED",
+        providerRequestId: "test-provider-request",
+        testMode: true,
+      }),
+    ).rejects.toThrow("registered request");
+    await t.mutation(internal.legalDocuments.updateDocumentStatus, {
+      referenceCode: "TEST-DEED",
+      status: "SIGNED",
+      providerRequestId: "test-provider-request",
+      testMode: false,
+    });
+    await t.mutation(internal.legalDocuments.recordSignatureRequest, {
+      documentId: f.documentId,
+      requestId: "test-provider-request",
+    });
+    expect((await t.run((ctx) => ctx.db.get(f.documentId)))?.status).toBe(
+      "SIGNED",
+    );
+    await expect(
+      t.mutation(internal.legalDocuments.updateDocumentStatus, {
+        referenceCode: "TEST-DEED",
+        status: "EXPIRED",
+      }),
+    ).rejects.toThrow("Terminal");
+  });
+  it("generates a complete NGN deed PDF and reuses it on retry", async () => {
+    const t = setup(),
+      f = await paidBooking(t);
+    await t.run((ctx) => ctx.db.delete(f.documentId));
+    const args = {
+      clientId: f.clientId,
+      plotId: f.plotId,
+      bookingId: f.bookingId,
+      assigneeAddress: "10 Test Street, Abuja, Nigeria",
+      considerationAmount: 100000,
+    };
+    const first = await t.action(
+      internal.legalDocuments.generateDeedOfAssignment,
+      args,
+    );
+    const second = await t.action(
+      internal.legalDocuments.generateDeedOfAssignment,
+      args,
+    );
+    expect(second).toEqual(first);
+    const bytes = await t.run(async (ctx) =>
+      (await ctx.storage.get(first.storageId!))!.arrayBuffer(),
+    );
+    expect(new TextDecoder().decode(bytes).startsWith("%PDF")).toBe(true);
+    expect(
+      await t.run((ctx) => ctx.db.query("legalDocuments").collect()),
+    ).toHaveLength(1);
+  }, 30000);
+});
+
+it("requires completed settlement disbursement and exact fees before reconciliation", async () => {
+  const t = setup(),
+    f = await paidBooking(t),
+    a = await user(t, "ADMIN");
+  const settlementId = await t.run((ctx) =>
+    ctx.db.insert("paymentSettlements", {
+      provider: "FLUTTERWAVE",
+      providerSettlementId: "456",
+      amount: 99900,
+      currency: "NGN",
+      status: "pending",
+      importedBy: a.id,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    }),
+  );
+  const data = {
+    id: 456,
+    status: "pending",
+    currency: "NGN",
+    net_amount: 99900,
+    transaction_count: 1,
+    transactions: [
+      {
+        id: "test-provider-payment",
+        tx_ref: "TEST-PAYMENT",
+        charged_amount: 100000,
+        app_fee: 100,
+        merchant_fee: 0,
+        stampduty_charge: 0,
+        refund: 0,
+        settlement_amount: 99900,
+        currency: "NGN",
+      },
+    ],
+  };
+  const result = await t.mutation(internal.reconciliation.importDetail, {
+    settlementId,
+    data,
+  });
+  expect(result).toEqual({ matched: 1, unmatched: 0, discrepancyMinor: 0 });
+  expect((await t.run((ctx) => ctx.db.get(settlementId)))?.status).toBe(
+    "REVIEW",
+  );
+  await t.mutation(internal.reconciliation.importDetail, {
+    settlementId,
+    data: { ...data, status: "completed" },
+  });
+  expect((await t.run((ctx) => ctx.db.get(settlementId)))?.status).toBe(
+    "RECONCILED",
+  );
+  await t.mutation(internal.reconciliation.importDetail, {
+    settlementId,
+    data: { ...data, status: "completed", net_amount: 100000 },
+  });
+  expect((await t.run((ctx) => ctx.db.get(settlementId)))?.status).toBe(
+    "REVIEW",
+  );
 });

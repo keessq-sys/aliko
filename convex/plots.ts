@@ -18,33 +18,44 @@ export const listPlots = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    let plots = args.projectId
-      ? await ctx.db
+    const actorId = await getAuthUserId(ctx);
+    const actor = actorId ? await ctx.db.get(actorId) : null;
+    const admin = actor?.role === "ADMIN";
+    if (admin) await requireAdmin(ctx);
+    let source = args.projectId
+      ? ctx.db
           .query("plots")
           .withIndex("by_project", (q) => q.eq("projectId", args.projectId!))
-          .collect()
       : args.status
-        ? await ctx.db
+        ? ctx.db
             .query("plots")
             .withIndex("by_status", (q) =>
               q.eq("status", args.status as Doc<"plots">["status"]),
             )
-            .collect()
-        : await ctx.db.query("plots").collect();
-
-    if (args.status) plots = plots.filter((p) => p.status === args.status);
-    if (args.sizeSqm) plots = plots.filter((p) => p.sizeSqm === args.sizeSqm);
-    if (args.maxPrice != null)
-      plots = plots.filter((p) => p.price <= args.maxPrice!);
-    if (args.minPrice != null)
-      plots = plots.filter((p) => p.price >= args.minPrice!);
-    if (args.isFeatured != null)
-      plots = plots.filter((p) => p.isFeatured === args.isFeatured);
+        : ctx.db.query("plots");
+    if (!admin)
+      source = source.filter((q) => q.eq(q.field("titleVerified"), true));
+    if (args.status)
+      source = source.filter((q) => q.eq(q.field("status"), args.status));
+    if (args.sizeSqm !== undefined)
+      source = source.filter((q) => q.eq(q.field("sizeSqm"), args.sizeSqm));
+    if (args.maxPrice !== undefined)
+      source = source.filter((q) => q.lte(q.field("price"), args.maxPrice!));
+    if (args.minPrice !== undefined)
+      source = source.filter((q) => q.gte(q.field("price"), args.minPrice!));
+    if (args.isFeatured !== undefined)
+      source = source.filter((q) =>
+        q.eq(q.field("isFeatured"), args.isFeatured),
+      );
+    const plots = await source.take(
+      Math.max(1, Math.min(200, Math.floor(args.limit ?? 50))),
+    );
 
     // Attach project info and signed image URLs
     const result = await Promise.all(
       plots.slice(0, args.limit ?? 50).map(async (plot) => {
         const project = await ctx.db.get(plot.projectId);
+        if (!admin && !project?.isActive) return null;
         const heroUrl = project?.heroImageStorageId
           ? await ctx.storage.getUrl(project.heroImageStorageId)
           : null;
@@ -52,7 +63,7 @@ export const listPlots = query({
       }),
     );
 
-    return result;
+    return result.filter((row): row is NonNullable<typeof row> => row !== null);
   },
 });
 
@@ -62,6 +73,11 @@ export const getPlot = query({
     const plot = await ctx.db.get(plotId);
     if (!plot) return null;
     const project = await ctx.db.get(plot.projectId);
+    const actorId = await getAuthUserId(ctx),
+      actor = actorId ? await ctx.db.get(actorId) : null;
+    if (actor?.role === "ADMIN") await requireAdmin(ctx);
+    else if (!plot.titleVerified || !project?.isActive) return null;
+
     const milestones = await ctx.db
       .query("milestones")
       .withIndex("by_project_date", (q) => q.eq("projectId", plot.projectId))

@@ -34,6 +34,13 @@ const app = defineApp({
     GOOGLE_MAPS_API_KEY: v.optional(v.string()),
     MALWARE_SCANNER_URL: v.optional(v.string()),
     MALWARE_SCANNER_API_KEY: v.optional(v.string()),
+    MALWARE_SCANNER_PROVIDER: v.optional(v.string()),
+    MEDIA_PROCESSOR_URL: v.optional(v.string()),
+    MEDIA_PROCESSOR_KEY: v.optional(v.string()),
+    DROPBOX_SIGN_TEST_MODE: v.optional(v.string()),
+    DEPLOYMENT_ENVIRONMENT: v.optional(v.string()),
+    LIVE_TRANSACTIONS_ENABLED: v.optional(v.string()),
+    LIVE_TRANSACTION_APPROVAL_REFERENCE: v.optional(v.string()),
     QOREID_CLIENT_ID: v.optional(v.string()),
     QOREID_CLIENT_SECRET: v.optional(v.string()),
     QOREID_WEBHOOK_SECRET: v.optional(v.string()),
@@ -50,5 +57,7 @@ app.use(migrations);
 app.use(aggregate, { name: "paymentAggregate" });
 app.use(aggregate, { name: "bookingAggregate" });
 app.use(aggregate, { name: "serviceRequestAggregate" });
+app.use(aggregate, { name: "managementAggregate" });
+app.use(aggregate, { name: "estateAggregate" });
 
 export default app;

@@ -50,6 +50,8 @@ export const register = mutation({
     return ctx.db.insert("r2Assets", {
       ...metadata,
       ownerId: actor._id,
+      securityVersion: "2026-10-01-decode-scan-v1",
+      scannedAt: now,
       status: "ACTIVE",
       createdAt: now,
       updatedAt: now,

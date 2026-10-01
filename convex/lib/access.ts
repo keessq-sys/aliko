@@ -42,6 +42,13 @@ export async function requireAdmin(ctx: any, maxAgeMs = 30 * 60000) {
 }
 
 export function publicSignupProfile(params: Record<string, unknown>) {
+  if (
+    params.flow === "signUp" &&
+    (params.acceptPolicies !== true || params.policyVersion !== "2026-10-01")
+  )
+    throw new Error(
+      "Accept the current Terms and Privacy Policy before registration",
+    );
   const email = String(params.email ?? "")
     .trim()
     .toLowerCase();
@@ -54,6 +61,8 @@ export function publicSignupProfile(params: Record<string, unknown>) {
     throw new Error("Provide a valid name and email");
   return {
     email,
+    registrationPolicyVersion:
+      params.flow === "signUp" ? "2026-10-01" : undefined,
     name,
     role: "CLIENT" as const,
     isDiaspora: false,

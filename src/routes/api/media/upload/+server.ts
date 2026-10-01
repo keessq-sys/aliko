@@ -3,6 +3,7 @@ import type { RequestHandler } from "./$types";
 import { ConvexHttpClient } from "convex/browser";
 import { makeFunctionReference } from "convex/server";
 import { env } from "$env/dynamic/public";
+import { scanFile, decodeImage } from "../../../../../convex/lib/mediaSecurity";
 import { sanitizeImage } from "$lib/server/imageSanitizer";
 
 const ALLOWED = new Set([
@@ -98,11 +99,14 @@ export const POST: RequestHandler = async ({
       { status: 400 },
     );
   }
-  const extension =
-    actualType === "image/jpeg" ? "jpg" : actualType.split("/")[1];
+  const extension = "webp";
   const scannerUrl = platform?.env?.MALWARE_SCANNER_URL,
     scannerKey = platform?.env?.MALWARE_SCANNER_API_KEY;
-  if (!scannerUrl || !scannerKey)
+  if (
+    (!scannerUrl &&
+      platform?.env?.MALWARE_SCANNER_PROVIDER !== "CLOUDMERSIVE") ||
+    !scannerKey
+  )
     return json(
       {
         error:
@@ -111,23 +115,33 @@ export const POST: RequestHandler = async ({
       { status: 503 },
     );
   try {
-    if (new URL(scannerUrl).protocol !== "https:")
-      throw new Error("Scanner requires HTTPS");
-    const scan = new FormData();
-    scan.append(
-      "file",
-      new Blob([new Uint8Array(sanitized).buffer], { type: actualType }),
+    const originalScan = await scanFile(
+      new Blob([new Uint8Array(data).buffer], { type: actualType }),
       file.name,
+      {
+        provider: platform?.env?.MALWARE_SCANNER_PROVIDER,
+        url: scannerUrl,
+        key: scannerKey,
+      },
     );
-    const response = await fetch(scannerUrl, {
-      method: "POST",
-      signal: AbortSignal.timeout(20000),
-      headers: { Authorization: `Bearer ${scannerKey}` },
-      body: scan,
+    if (!originalScan.clean)
+      return json(
+        { error: "This image did not pass the security scan." },
+        { status: 422 },
+      );
+    const decoded = await decodeImage(
+      new Blob([new Uint8Array(sanitized).buffer], { type: actualType }),
+      {
+        url: platform?.env?.MEDIA_PROCESSOR_URL,
+        key: platform?.env?.MEDIA_PROCESSOR_KEY,
+      },
+    );
+    sanitized = new Uint8Array(await decoded.arrayBuffer());
+    const result = await scanFile(decoded, file.name, {
+      provider: platform?.env?.MALWARE_SCANNER_PROVIDER,
+      url: scannerUrl,
+      key: scannerKey,
     });
-    const result = (await response.json()) as { clean?: boolean };
-    if (!response.ok || typeof result.clean !== "boolean")
-      throw new Error("Invalid scanner response");
     if (!result.clean)
       return json(
         { error: "This image did not pass the security scan." },
@@ -145,7 +159,7 @@ export const POST: RequestHandler = async ({
   const key = `${collection}/${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}.${extension}`;
   await bucket.put(key, sanitized.buffer as ArrayBuffer, {
     httpMetadata: {
-      contentType: actualType,
+      contentType: "image/webp",
       cacheControl: "private, no-store",
     },
     customMetadata: {
@@ -166,7 +180,7 @@ export const POST: RequestHandler = async ({
         key,
         collection,
         fileName: file.name.slice(0, 180),
-        mimeType: actualType,
+        mimeType: "image/webp",
         size: sanitized.byteLength,
         secret: platform?.env?.MEDIA_MAINTENANCE_SECRET,
       },

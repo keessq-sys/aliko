@@ -116,6 +116,11 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
           : pathname.startsWith("/dashboard/manager")
             ? "ESTATE_MANAGER"
             : null;
+      if (
+        pathname.startsWith("/dashboard/operations") &&
+        !["ADMIN", "ESTATE_MANAGER"].includes(profile.role)
+      )
+        throw redirect(303, "/unauthorized");
       if (requiredRole && profile.role !== requiredRole)
         throw redirect(303, "/unauthorized");
       if (pathname.startsWith("/admin")) {

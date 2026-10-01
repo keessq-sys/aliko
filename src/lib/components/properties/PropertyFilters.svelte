@@ -108,7 +108,7 @@
             <span>₦{(filters.minPrice/1000000).toFixed(0)}M</span>
             <span>₦{(filters.maxPrice/1000000).toFixed(0)}M+</span>
           </div>
-          <input type="range" min="0" max="1000000000" step="10000000" bind:value={filters.maxPrice} class="w-full accent-emerald-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer" />
+          <input aria-label="Maximum property price in naira" type="range" min="0" max="1000000000" step="10000000" bind:value={filters.maxPrice} class="w-full accent-emerald-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer" />
         </div>
       {/if}
     </div>

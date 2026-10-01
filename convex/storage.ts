@@ -11,6 +11,20 @@ import {
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { rateLimiter } from "./lib/rateLimits";
+import { scanFile, decodeImage } from "./lib/mediaSecurity";
+import { paginationOptsValidator } from "convex/server";
+
+export const myAssets = query({
+  args: { paginationOpts: paginationOptsValidator },
+  handler: async (ctx, args) => {
+    const user = await requireUser(ctx);
+    return ctx.db
+      .query("storedAssets")
+      .withIndex("by_owner_date", (q) => q.eq("ownerId", user._id))
+      .order("desc")
+      .paginate(args.paginationOpts);
+  },
+});
 
 const purpose = v.union(
   v.literal("AVATAR_IMAGE"),
@@ -151,7 +165,8 @@ export const registerUpload = mutation({
       await ctx.db.patch(user._id, { avatarStorageId: args.storageId });
     if (
       requiresScan &&
-      process.env.MALWARE_SCANNER_URL &&
+      (process.env.MALWARE_SCANNER_URL ||
+        process.env.MALWARE_SCANNER_PROVIDER === "CLOUDMERSIVE") &&
       process.env.MALWARE_SCANNER_API_KEY
     ) {
       await ctx.scheduler.runAfter(0, internal.storage.scanAsset, { assetId });
@@ -181,6 +196,8 @@ export const completeAssetScan = internalMutation({
     if (!asset || asset.status !== "PENDING_SCAN") return;
     await ctx.db.patch(asset._id, {
       status: args.clean ? "ACTIVE" : "QUARANTINED",
+      securityVersion: args.clean ? "2026-10-01-decode-scan-v1" : undefined,
+      scannedAt: Date.now(),
       updatedAt: Date.now(),
     });
     if (args.clean && asset.purpose === "AVATAR_IMAGE") {
@@ -193,7 +210,7 @@ export const completeAssetScan = internalMutation({
     if (!args.clean)
       await ctx.db.insert("notificationLog", {
         channel: "EMAIL",
-        recipient: "admin",
+        recipient: process.env.ADMIN_ALERT_EMAIL ?? "unconfigured-operator",
         subject: "Uploaded file quarantined",
         templateName: "malware-alert",
         message: (args.detail ?? "Scanner marked an upload as unsafe").slice(
@@ -218,28 +235,40 @@ export const scanAsset = internalAction({
     if (!value) return;
     const endpoint = process.env.MALWARE_SCANNER_URL;
     const apiKey = process.env.MALWARE_SCANNER_API_KEY;
-    if (!endpoint || !apiKey) return;
+    if (
+      (!endpoint && process.env.MALWARE_SCANNER_PROVIDER !== "CLOUDMERSIVE") ||
+      !apiKey
+    )
+      return;
     try {
       const download = await fetch(value.url);
       if (!download.ok)
         throw new Error("Could not retrieve upload for scanning");
-      const form = new FormData();
-      form.append("file", await download.blob(), value.asset.fileName);
-      const response = await fetch(endpoint, {
-        signal: AbortSignal.timeout(20000),
-        method: "POST",
-        headers: { Authorization: `Bearer ${apiKey}` },
-        body: form,
+      let file = await download.blob();
+      const result = await scanFile(file, value.asset.fileName, {
+        provider: process.env.MALWARE_SCANNER_PROVIDER,
+        url: endpoint,
+        key: apiKey,
       });
-      const result = (await response.json()) as {
-        clean?: boolean;
-        threat?: string;
-        message?: string;
-      };
-      if (!response.ok || typeof result.clean !== "boolean")
-        throw new Error(
-          result.message ?? "Malware scanner returned an invalid response",
-        );
+      if (result.clean && value.asset.mimeType.startsWith("image/")) {
+        file = await decodeImage(file, {
+          url: process.env.MEDIA_PROCESSOR_URL,
+          key: process.env.MEDIA_PROCESSOR_KEY,
+        });
+        const decodedScan = await scanFile(file, value.asset.fileName, {
+          provider: process.env.MALWARE_SCANNER_PROVIDER,
+          url: endpoint,
+          key: apiKey,
+        });
+        if (!decodedScan.clean)
+          throw new Error("Decoded image failed security inspection");
+        const storageId = await ctx.storage.store(file);
+        await ctx.runMutation(internal.storage.replaceDecodedAsset, {
+          assetId,
+          storageId,
+          size: file.size,
+        });
+      }
       await ctx.runMutation(internal.storage.completeAssetScan, {
         assetId,
         clean: result.clean,
@@ -343,7 +372,8 @@ export const retryPendingScans = internalMutation({
   args: {},
   handler: async (ctx) => {
     if (
-      !process.env.MALWARE_SCANNER_URL ||
+      (!process.env.MALWARE_SCANNER_URL &&
+        process.env.MALWARE_SCANNER_PROVIDER !== "CLOUDMERSIVE") ||
       !process.env.MALWARE_SCANNER_API_KEY
     )
       return;
@@ -372,5 +402,33 @@ export const retryAssetScan = mutation({
     if (!asset || asset.status !== "PENDING_SCAN")
       throw new Error("No pending scan to retry");
     await ctx.db.patch(asset._id, { scanAttempts: 0, nextScanAt: 0 });
+  },
+});
+
+export const replaceDecodedAsset = internalMutation({
+  args: {
+    assetId: v.id("storedAssets"),
+    storageId: v.id("_storage"),
+    size: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const asset = await ctx.db.get(args.assetId);
+    if (!asset || asset.status !== "PENDING_SCAN") {
+      await ctx.storage.delete(args.storageId);
+      return;
+    }
+    const previous = asset.storageId;
+    await ctx.db.patch(asset._id, {
+      storageId: args.storageId,
+      size: args.size,
+      mimeType: "image/webp",
+      updatedAt: Date.now(),
+    });
+    if (asset.purpose === "AVATAR_IMAGE") {
+      const user = await ctx.db.get(asset.ownerId);
+      if (user?.avatarStorageId === previous)
+        await ctx.db.patch(user._id, { avatarStorageId: args.storageId });
+    }
+    await ctx.storage.delete(previous);
   },
 });

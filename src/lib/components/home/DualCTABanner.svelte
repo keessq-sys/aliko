@@ -29,7 +29,7 @@
 
         <ul class="space-y-3 mb-10 text-sm font-medium text-gray-300">
           <li class="flex items-center gap-3">
-            <CheckCircle2 size={18} class="text-emerald-500" /> Government-verified
+            <CheckCircle2 size={18} class="text-emerald-500" /> Reviewed listings
             titles
           </li>
           <li class="flex items-center gap-3">
@@ -109,7 +109,7 @@
         )}
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex flex-shrink-0 items-center gap-2 rounded-xl bg-[#25D366] px-5 py-2.5 text-sm font-bold text-white transition-transform hover:scale-105"
+        class="inline-flex flex-shrink-0 items-center gap-2 rounded-xl bg-[#25D366] px-5 py-2.5 text-sm font-bold text-black transition-transform hover:scale-105"
       >
         <MessageCircle size={16} /> Chat on WhatsApp
       </a>

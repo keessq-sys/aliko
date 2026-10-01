@@ -3,6 +3,95 @@ import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  testimonials: defineTable({
+    author: v.string(),
+    quote: v.string(),
+    location: v.string(),
+    consentReference: v.string(),
+    approved: v.boolean(),
+    reviewedBy: v.id("users"),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_approved", ["approved", "updatedAt"]),
+  conversations: defineTable({
+    ownerId: v.id("users"),
+    subject: v.string(),
+    status: v.union(v.literal("OPEN"), v.literal("CLOSED")),
+    assignedTo: v.optional(v.id("users")),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_owner", ["ownerId", "updatedAt"])
+    .index("by_updated", ["updatedAt"]),
+  conversationMessages: defineTable({
+    conversationId: v.id("conversations"),
+    authorId: v.id("users"),
+    authorRole: v.string(),
+    body: v.string(),
+    attachmentIds: v.array(v.id("storedAssets")),
+    createdAt: v.number(),
+    clientReference: v.string(),
+  })
+    .index("by_conversation", ["conversationId", "createdAt"])
+    .index("by_reference", ["conversationId", "authorId", "clientReference"]),
+  emailChanges: defineTable({
+    userId: v.id("users"),
+    email: v.string(),
+    codeHash: v.string(),
+    expiresAt: v.number(),
+    attempts: v.number(),
+    verifiedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  }).index("by_user", ["userId", "createdAt"]),
+  leases: defineTable({
+    ownerId: v.id("users"),
+    propertyId: v.id("properties"),
+    tenantId: v.id("users"),
+    unit: v.string(),
+    startDate: v.string(),
+    endDate: v.string(),
+    rent: v.number(),
+    deposit: v.number(),
+    status: v.union(
+      v.literal("DRAFT"),
+      v.literal("ACTIVE"),
+      v.literal("ENDED"),
+    ),
+    attachmentIds: v.array(v.id("storedAssets")),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_owner", ["ownerId", "createdAt"])
+    .index("by_property_unit", ["propertyId", "unit"]),
+  ledgerEntries: defineTable({
+    ownerId: v.id("users"),
+    leaseId: v.optional(v.id("leases")),
+    recordId: v.optional(v.id("managementRecords")),
+    direction: v.union(v.literal("INCOME"), v.literal("EXPENSE")),
+    amountMinor: v.number(),
+    currency: v.literal("NGN"),
+    reference: v.string(),
+    description: v.string(),
+    createdAt: v.number(),
+    createdBy: v.id("users"),
+  })
+    .index("by_owner", ["ownerId", "createdAt"])
+    .index("by_owner_reference", ["ownerId", "reference"]),
+  settlementTransactions: defineTable({
+    settlementId: v.id("paymentSettlements"),
+    providerTransactionId: v.string(),
+    paymentId: v.optional(v.id("payments")),
+    currency: v.string(),
+    grossMinor: v.number(),
+    feeMinor: v.number(),
+    refundMinor: v.number(),
+    netMinor: v.number(),
+    matched: v.boolean(),
+    reason: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index("by_settlement", ["settlementId"])
+    .index("by_provider_transaction", ["providerTransactionId"]),
   adminMfa: defineTable({
     userId: v.id("users"),
     cipher: v.string(),
@@ -37,6 +126,9 @@ export default defineSchema({
     contact: v.optional(v.string()),
     dueDate: v.optional(v.string()),
     paymentId: v.optional(v.id("payments")),
+    propertyId: v.optional(v.id("properties")),
+    vendorId: v.optional(v.id("managementRecords")),
+    attachmentIds: v.optional(v.array(v.id("storedAssets"))),
     status: v.union(
       v.literal("OPEN"),
       v.literal("IN_PROGRESS"),
@@ -55,6 +147,8 @@ export default defineSchema({
   users: defineTable({
     name: v.string(),
     email: v.string(),
+    emailVerificationTime: v.optional(v.number()),
+    registrationPolicyVersion: v.optional(v.string()),
     phone: v.optional(v.string()),
     role: v.union(
       v.literal("ADMIN"),
@@ -173,6 +267,8 @@ export default defineSchema({
   // ── Bookings ──────────────────────────────────────────────────────────────
   bookings: defineTable({
     fulfillmentWorkflowId: v.optional(v.string()),
+    fulfillmentStatus: v.optional(v.string()),
+    fulfillmentError: v.optional(v.string()),
     allocatedAt: v.optional(v.number()),
     clientId: v.id("users"),
     plotId: v.id("plots"),
@@ -198,7 +294,8 @@ export default defineSchema({
     .index("by_plot", ["plotId"])
     .index("by_reference", ["reference"])
     .index("by_status", ["paymentStatus"])
-    .index("by_status_created", ["paymentStatus", "createdAt"]),
+    .index("by_status_created", ["paymentStatus", "createdAt"])
+    .index("by_fulfillment", ["fulfillmentStatus", "updatedAt"]),
 
   // ── Payments ──────────────────────────────────────────────────────────────
   payments: defineTable({
@@ -233,6 +330,7 @@ export default defineSchema({
     bookingId: v.id("bookings"),
     provider: v.literal("FLUTTERWAVE"),
     providerRefundId: v.optional(v.string()),
+    checkedAt: v.optional(v.number()),
     amount: v.number(),
     reason: v.string(),
     status: v.union(
@@ -247,6 +345,8 @@ export default defineSchema({
   })
     .index("by_payment", ["paymentId"])
     .index("by_provider_refund", ["providerRefundId"])
+    .index("by_check", ["status", "checkedAt"])
+    .index("by_booking", ["bookingId"])
     .index("by_status_date", ["status", "createdAt"]),
 
   paymentSettlements: defineTable({
@@ -289,6 +389,10 @@ export default defineSchema({
     bookingId: v.optional(v.id("bookings")),
     pdfStorageId: v.optional(v.id("_storage")),
     externalSignatureId: v.optional(v.string()), // Dropbox Sign request ID
+    signatureDispatchState: v.optional(
+      v.union(v.literal("SENDING"), v.literal("SENT"), v.literal("REVIEW")),
+    ),
+    signatureTestMode: v.optional(v.boolean()),
     signedAt: v.optional(v.number()),
     verifiedAt: v.optional(v.number()),
     expiresAt: v.optional(v.number()),
@@ -778,6 +882,8 @@ export default defineSchema({
 
   // ── Storage ownership, validation, quarantine and retention ────────────
   storedAssets: defineTable({
+    securityVersion: v.optional(v.string()),
+    scannedAt: v.optional(v.number()),
     scanAttempts: v.optional(v.number()),
     nextScanAt: v.optional(v.number()),
     scanError: v.optional(v.string()),
@@ -813,6 +919,8 @@ export default defineSchema({
   // Storage. Keep a matching ownership and audit record here so deletion,
   // retention and orphan cleanup do not rely on untrusted object keys.
   r2Assets: defineTable({
+    securityVersion: v.optional(v.string()),
+    scannedAt: v.optional(v.number()),
     key: v.string(),
     ownerId: v.id("users"),
     collection: v.string(),

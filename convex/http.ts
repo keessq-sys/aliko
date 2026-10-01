@@ -246,7 +246,11 @@ http.route({
     }
     const payload = JSON.parse(json) as {
       event: { event_type: string; event_time?: string; event_hash?: string };
-      signature_request: { metadata: { referenceCode: string } };
+      signature_request: {
+        signature_request_id: string;
+        test_mode?: boolean;
+        metadata: { referenceCode: string };
+      };
     };
 
     const referenceCode = payload.signature_request?.metadata?.referenceCode;
@@ -262,27 +266,39 @@ http.route({
     if (!claim.claimed)
       return new Response("Hello API Event Received", { status: 200 });
 
-    const signatureOutcome: Record<string, "SIGNED" | "REJECTED" | "EXPIRED"> =
-      {
+    try {
+      const signatureOutcome: Record<
+        string,
+        "SIGNED" | "REJECTED" | "EXPIRED"
+      > = {
         signature_request_all_signed: "SIGNED",
         signature_request_declined: "REJECTED",
         signature_request_expired: "EXPIRED",
       };
-    if (signatureOutcome[payload.event.event_type]) {
-      if (referenceCode) {
+      const outcome = signatureOutcome[payload.event.event_type];
+      if (outcome) {
+        if (!referenceCode || !payload.signature_request?.signature_request_id)
+          throw new Error("Missing registered signature request");
         await ctx.runMutation(internal.legalDocuments.updateDocumentStatus, {
           referenceCode,
-          status: signatureOutcome[payload.event.event_type],
+          status: outcome,
           actorRole: "CLIENT",
+          providerRequestId: payload.signature_request.signature_request_id,
+          testMode: Boolean(payload.signature_request.test_mode),
         });
       }
+      await ctx.runMutation(internal.operations.finishWebhookEvent, {
+        eventId: claim.eventId,
+        status: outcome ? "PROCESSED" : "IGNORED",
+      });
+    } catch (error) {
+      await ctx.runMutation(internal.operations.finishWebhookEvent, {
+        eventId: claim.eventId,
+        status: "FAILED",
+        error: errorMessage(error),
+      });
+      return new Response("Processing failed", { status: 500 });
     }
-    await ctx.runMutation(internal.operations.finishWebhookEvent, {
-      eventId: claim.eventId,
-      status: Boolean(signatureOutcome[payload.event.event_type])
-        ? "PROCESSED"
-        : "IGNORED",
-    });
 
     // Dropbox Sign requires this exact response
     return new Response("Hello API Event Received", { status: 200 });

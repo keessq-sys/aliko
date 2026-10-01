@@ -18,32 +18,43 @@
   let staticMode = false;
 
   const STATUS_COLORS: Record<string, number> = {
-    AVAILABLE:         0x059669,
-    RESERVED:          0xd97706,
-    SOLD:              0xdc2626,
+    AVAILABLE: 0x059669,
+    RESERVED: 0xd97706,
+    SOLD: 0xdc2626,
     UNDER_DEVELOPMENT: 0x2563eb,
-    OFF_PLAN:          0x7c3aed,
+    OFF_PLAN: 0x7c3aed,
   };
 
   let resizeObs: ResizeObserver | undefined;
 
   onMount(async () => {
     const reducedMotion =
-      typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reducedMotion) {
       staticMode = true;
       return;
     }
     const THREE = await import("three");
 
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: true,
+      });
+    } catch {
+      staticMode = true;
+      return;
+    }
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     const scene = new THREE.Scene();
 
-    const W = container.clientWidth, H = container.clientHeight;
+    const W = container.clientWidth,
+      H = container.clientHeight;
     const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 200);
     camera.position.set(10, 9, 13);
     camera.lookAt(0, 0, 0);
@@ -71,39 +82,40 @@
     scene.add(new THREE.GridHelper(14, 14, 0x1a3a2a, 0x112b1a));
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(14, 14),
-      new THREE.MeshStandardMaterial({ color: 0x081a0f, roughness: 0.95 })
+      new THREE.MeshStandardMaterial({ color: 0x081a0f, roughness: 0.95 }),
     );
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // Roads
-    const roadMat = new THREE.MeshStandardMaterial({ color: 0x111a14 });
-    [-1.2, 1.2].forEach(x => {
-      const r = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.025, 14), roadMat);
-      r.position.set(x, 0.012, 0);
-      scene.add(r);
-    });
-    [-1.2, 1.2].forEach(z => {
-      const r = new THREE.Mesh(new THREE.BoxGeometry(14, 0.025, 0.2), roadMat);
-      r.position.set(0, 0.012, z);
-      scene.add(r);
-    });
-
     // Load optional GLTF model
     if (modelUrl) {
-      const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
+      const { GLTFLoader } =
+        await import("three/examples/jsm/loaders/GLTFLoader.js");
       const loader = new GLTFLoader();
-      loader.load(modelUrl, gltf => {
-        scene.add(gltf.scene);
-      }, undefined, err => console.warn("[3D] GLTF load error:", err));
+      loader.load(
+        modelUrl,
+        (gltf) => {
+          scene.add(gltf.scene);
+        },
+        undefined,
+        () => {
+          staticMode = true;
+        },
+      );
     }
 
     // Plot hotspot meshes
-    const meshData: { mesh: import("three").Mesh; base: number; phase: number; status: string }[] = [];
-    hotspots.forEach(h => {
+    const meshData: {
+      mesh: import("three").Mesh;
+      base: number;
+      phase: number;
+      status: string;
+    }[] = [];
+    hotspots.forEach((h) => {
       const color = STATUS_COLORS[h.status] ?? 0x475569;
-      const height = h.status === "AVAILABLE" ? 0.45 : h.status === "RESERVED" ? 0.7 : 0.22;
+      const height =
+        h.status === "AVAILABLE" ? 0.45 : h.status === "RESERVED" ? 0.7 : 0.22;
       const geo = new THREE.BoxGeometry(1.85, height, 1.85);
       const mat = new THREE.MeshStandardMaterial({
         color,
@@ -117,9 +129,18 @@
       mesh.position.y = height / 2;
       mesh.castShadow = true;
       mesh.receiveShadow = true;
-      mesh.userData = { plotId: h.plotId, beaconNumber: h.beaconNumber, status: h.status };
+      mesh.userData = {
+        plotId: h.plotId,
+        beaconNumber: h.beaconNumber,
+        status: h.status,
+      };
       scene.add(mesh);
-      meshData.push({ mesh, base: height / 2, phase: Math.random() * Math.PI * 2, status: h.status });
+      meshData.push({
+        mesh,
+        base: height / 2,
+        phase: Math.random() * Math.PI * 2,
+        status: h.status,
+      });
     });
 
     // Raycasting for click + hover
@@ -132,18 +153,22 @@
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       raycaster.setFromCamera(mouse, camera);
-      return raycaster.intersectObjects(meshData.map(m => m.mesh));
+      return raycaster.intersectObjects(meshData.map((m) => m.mesh));
     }
 
-    canvas.addEventListener("mousemove", e => {
+    canvas.addEventListener("mousemove", (e) => {
       const hits = getIntersects(e);
       const hit = hits[0]?.object as import("three").Mesh | undefined;
       if (hoveredMesh && hoveredMesh !== hit) {
-        (hoveredMesh.material as import("three").MeshStandardMaterial).emissiveIntensity = 0.1;
+        (
+          hoveredMesh.material as import("three").MeshStandardMaterial
+        ).emissiveIntensity = 0.1;
         canvas.style.cursor = "default";
       }
       if (hit?.userData?.plotId) {
-        (hit.material as import("three").MeshStandardMaterial).emissiveIntensity = 0.45;
+        (
+          hit.material as import("three").MeshStandardMaterial
+        ).emissiveIntensity = 0.45;
         canvas.style.cursor = "pointer";
         hoveredMesh = hit;
       } else {
@@ -151,10 +176,10 @@
       }
     });
 
-    canvas.addEventListener("click", e => {
+    canvas.addEventListener("click", (e) => {
       const hit = getIntersects(e)[0]?.object;
       if (hit?.userData?.plotId) {
-        goto(`/properties/${hit.userData.plotId}`);
+        goto(`/plots?plot=${encodeURIComponent(hit.userData.plotId)}`);
       }
     });
 
@@ -167,7 +192,8 @@
       camera.position.z = Math.sin(t * 0.12) * 16;
       camera.lookAt(0, 0, 0);
       meshData.forEach(({ mesh, base, phase, status }) => {
-        if (status === "AVAILABLE") mesh.position.y = base + Math.sin(t * 1.4 + phase) * 0.06;
+        if (status === "AVAILABLE")
+          mesh.position.y = base + Math.sin(t * 1.4 + phase) * 0.06;
       });
       renderer.render(scene, camera);
     }
@@ -175,7 +201,8 @@
 
     // Resize observer
     const ro = new ResizeObserver(() => {
-      const w = container.clientWidth, h = container.clientHeight;
+      const w = container.clientWidth,
+        h = container.clientHeight;
       renderer.setSize(w, h);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
@@ -187,28 +214,30 @@
   onDestroy(() => {
     // onDestroy fires during SSR teardown too, where onMount never ran and
     // cancelAnimationFrame doesn't exist at all — guard both.
-    if (typeof cancelAnimationFrame !== 'undefined') cancelAnimationFrame(animFrame);
+    if (typeof cancelAnimationFrame !== "undefined")
+      cancelAnimationFrame(animFrame);
     renderer?.dispose();
     resizeObs?.disconnect();
   });
 </script>
 
-<div bind:this={container} class="relative w-full h-full rounded-2xl overflow-hidden" style="background:#050A0E">
+<div
+  bind:this={container}
+  class="relative w-full h-full rounded-2xl overflow-hidden"
+  style="background:#050A0E"
+>
   {#if staticMode}
-    <div class="absolute inset-0 bg-[linear-gradient(rgba(5,150,105,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(5,150,105,0.12)_1px,transparent_1px)] bg-[size:42px_42px]">
-      <div class="absolute inset-[15%] rounded-[40%] border border-emerald-500/20 bg-emerald-950/20"></div>
-      {#each hotspots.slice(0, 9) as hotspot, index}
-        <a
-          href={`/properties/${hotspot.plotId}`}
-          aria-label={`View plot ${hotspot.beaconNumber}`}
-          class="absolute flex h-9 w-9 items-center justify-center rounded-lg border text-[9px] font-bold text-white"
-          class:border-emerald-400={hotspot.status === 'AVAILABLE'}
-          class:bg-emerald-600={hotspot.status === 'AVAILABLE'}
-          class:border-amber-400={hotspot.status !== 'AVAILABLE'}
-          class:bg-amber-700={hotspot.status !== 'AVAILABLE'}
-          style={`left:${18 + (index % 3) * 27}%;top:${20 + Math.floor(index / 3) * 25}%`}
-        >{hotspot.beaconNumber.slice(-3)}</a>
-      {/each}
+    <div class="absolute inset-0 overflow-auto px-5 pt-16 pb-16">
+      <p class="text-white mb-3">
+        Plot list — the 3D plan is unavailable or motion is reduced.
+      </p>
+      <div class="grid grid-cols-2 gap-3">
+        {#each hotspots as hotspot}<a
+            class="min-h-[44px] border border-white/30 rounded p-3 text-white"
+            href={`/plots?plot=${encodeURIComponent(hotspot.plotId)}`}
+            >{hotspot.beaconNumber} · {hotspot.status.replaceAll("_", " ")}</a
+          >{/each}
+      </div>
     </div>
   {:else}
     <canvas bind:this={canvas} class="w-full h-full block"></canvas>
@@ -216,9 +245,11 @@
 
   <!-- Legend -->
   <div class="absolute bottom-4 left-4 flex flex-wrap gap-2">
-    {#each [["#059669","Available"],["#d97706","Reserved"],["#dc2626","Sold"],["#2563eb","In Dev"]] as [color, label]}
-      <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs text-white/70 font-medium"
-           style="background:rgba(0,0,0,0.55);backdrop-filter:blur(8px)">
+    {#each [["#059669", "Available"], ["#d97706", "Reserved"], ["#dc2626", "Sold"], ["#2563eb", "In Dev"]] as [color, label]}
+      <div
+        class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs text-white/70 font-medium"
+        style="background:rgba(0,0,0,0.55);backdrop-filter:blur(8px)"
+      >
         <span class="w-2 h-2 rounded-sm" style="background:{color}"></span>
         {label}
       </div>
@@ -226,10 +257,15 @@
   </div>
 
   <!-- Live indicator -->
-  <div class="absolute top-4 right-4 flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full"
-       style="background:rgba(0,0,0,0.55);color:#F59E0B;backdrop-filter:blur(8px)">
-    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" style="animation:glowPulse 2s infinite"></span>
-    Live Plot Map
+  <div
+    class="absolute top-4 right-4 flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full"
+    style="background:rgba(0,0,0,0.55);color:#F59E0B;backdrop-filter:blur(8px)"
+  >
+    <span
+      class="w-1.5 h-1.5 rounded-full bg-emerald-400"
+      style="animation:glowPulse 2s infinite"
+    ></span>
+    Live plot status · schematic markers
   </div>
 
   <!-- Hint -->

@@ -43,6 +43,8 @@
         provider: "password",
         params: {
           flow: "signUp",
+          acceptPolicies: terms,
+          policyVersion: "2026-10-01",
           email: email.trim(),
           password,
           name: contactName.trim(),

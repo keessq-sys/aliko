@@ -10,6 +10,7 @@ import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { requireAdmin as requireVerifiedAdmin } from "./lib/access";
 import { bookingAggregate } from "./aggregates";
+import { refundState, minor } from "./lib/providerPayments";
 
 export const requireAdmin = internalQuery({
   args: { userId: v.id("users") },
@@ -30,7 +31,10 @@ export const reserveRefund = internalMutation({
     reason: v.string(),
   },
   handler: async (ctx, args) => {
-    if ((await requireVerifiedAdmin(ctx)) !== args.initiatedBy)
+    if (!Number.isFinite(args.amount) || args.amount < 100)
+      throw new Error("Refund amount must be at least NGN 100");
+    minor(args.amount);
+    if ((await requireVerifiedAdmin(ctx, 5 * 60000)) !== args.initiatedBy)
       throw new Error("Unauthorized");
     const payment = await ctx.db.get(args.paymentId);
     if (
@@ -45,8 +49,8 @@ export const reserveRefund = internalMutation({
       .collect();
     const reserved = refunds
       .filter((r) => r.status !== "FAILED")
-      .reduce((sum, r) => sum + r.amount, 0);
-    if (reserved + args.amount > payment.amount)
+      .reduce((sum, r) => sum + minor(r.amount), 0);
+    if (reserved + minor(args.amount) > minor(payment.amount))
       throw new Error("Refund exceeds the remaining refundable amount");
     const now = Date.now();
     const refundId = await ctx.db.insert("paymentRefunds", {
@@ -87,6 +91,21 @@ export const finishRefund = internalMutation({
     const refund = await ctx.db.get(args.refundId);
     if (!refund) throw new Error("Refund record not found");
     if (refund.status === "COMPLETED") return;
+    if (args.providerRefundId) {
+      if (
+        refund.providerRefundId &&
+        refund.providerRefundId !== args.providerRefundId
+      )
+        throw new Error("Refund provider ID conflict");
+      const other = await ctx.db
+        .query("paymentRefunds")
+        .withIndex("by_provider_refund", (q) =>
+          q.eq("providerRefundId", args.providerRefundId),
+        )
+        .first();
+      if (other && other._id !== refund._id)
+        throw new Error("Provider refund already linked to another operation");
+    }
     if (args.status === "COMPLETED") {
       if (!args.providerRefundId)
         throw new Error("Provider refund confirmation is required");
@@ -124,7 +143,7 @@ export const refundFlutterwavePayment = action({
     const userId = (await getAuthUserId(ctx)) as Id<"users"> | null;
     if (!userId) throw new Error("Unauthorized");
     await ctx.runQuery(internal.paymentOperations.requireAdmin, { userId });
-    if (!Number.isFinite(args.amount) || args.amount <= 0)
+    if (!Number.isFinite(args.amount) || args.amount < 100)
       throw new Error("Refund amount must be positive");
     const reason = args.reason.trim();
     if (reason.length < 5 || reason.length > 300)
@@ -146,6 +165,7 @@ export const refundFlutterwavePayment = action({
       const response = await fetch(
         `https://api.flutterwave.com/v3/transactions/${encodeURIComponent(payment.providerReference)}/refund`,
         {
+          signal: AbortSignal.timeout(20000),
           method: "POST",
           headers: {
             Authorization: `Bearer ${secret}`,
@@ -161,11 +181,11 @@ export const refundFlutterwavePayment = action({
       const body = (await response.json()) as {
         status?: string;
         message?: string;
-        data?: { id?: number | string; status?: string };
+        data?: { id?: number | string; status?: string; meta?: unknown };
       };
       if (!response.ok || body.status !== "success" || !body.data?.id)
         throw new Error(body.message ?? "Flutterwave rejected the refund");
-      const status = body.data.status === "completed" ? "COMPLETED" : "PENDING";
+      const status = refundState(body.data);
       await ctx.runMutation(internal.paymentOperations.finishRefund, {
         refundId,
         providerRefundId: String(body.data.id),
@@ -224,8 +244,11 @@ export const upsertSettlement = internalMutation({
 });
 
 export const importFlutterwaveSettlements = action({
-  args: { from: v.string(), to: v.string() },
-  handler: async (ctx, args): Promise<{ imported: number }> => {
+  args: { from: v.string(), to: v.string(), page: v.optional(v.number()) },
+  handler: async (
+    ctx,
+    args,
+  ): Promise<{ imported: number; nextPage: number | null }> => {
     const userId = (await getAuthUserId(ctx)) as Id<"users"> | null;
     if (!userId) throw new Error("Unauthorized");
     await ctx.runQuery(internal.paymentOperations.requireAdmin, { userId });
@@ -234,12 +257,22 @@ export const importFlutterwaveSettlements = action({
       !/^\d{4}-\d{2}-\d{2}$/.test(args.to)
     )
       throw new Error("Dates must use YYYY-MM-DD");
+    if (
+      !Number.isFinite(Date.parse(args.from)) ||
+      !Number.isFinite(Date.parse(args.to)) ||
+      args.from > args.to
+    )
+      throw new Error("Invalid import date range");
+    const page = args.page ?? 1;
+    if (!Number.isSafeInteger(page) || page < 1 || page > 10000)
+      throw new Error("Invalid import page");
     const secret = process.env.FLUTTERWAVE_SECRET_KEY;
     if (!secret) throw new Error("Flutterwave is not configured");
     const url = new URL("https://api.flutterwave.com/v3/settlements");
     url.searchParams.set("from", args.from);
     url.searchParams.set("to", args.to);
     url.searchParams.set("page_size", "100");
+    url.searchParams.set("page", String(page));
     const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${secret}`,
@@ -253,6 +286,8 @@ export const importFlutterwaveSettlements = action({
     };
     if (!response.ok || body.status !== "success")
       throw new Error(body.message ?? "Settlement import failed");
+    if (!Array.isArray(body.data) || body.data.length > 100)
+      throw new Error("Invalid settlement page");
     let imported = 0;
     for (const row of body.data ?? []) {
       const id = row.id ?? row.settlement_id;
@@ -260,7 +295,7 @@ export const importFlutterwaveSettlements = action({
       await ctx.runMutation(internal.paymentOperations.upsertSettlement, {
         importedBy: userId,
         providerSettlementId: String(id),
-        amount: Number(row.amount_settled ?? row.amount ?? 0),
+        amount: Number(row.net_amount ?? row.amount_settled ?? row.amount ?? 0),
         currency: String(row.currency ?? "NGN"),
         status: String(row.status ?? "unknown"),
         settledAt:
@@ -268,13 +303,13 @@ export const importFlutterwaveSettlements = action({
             ? Date.parse(row.date_settled) || undefined
             : undefined,
         transactionCount:
-          typeof row.transactions_count === "number"
-            ? row.transactions_count
+          typeof (row.transaction_count ?? row.transactions_count) === "number"
+            ? Number(row.transaction_count ?? row.transactions_count)
             : undefined,
       });
       imported++;
     }
-    return { imported };
+    return { imported, nextPage: body.data.length === 100 ? page + 1 : null };
   },
 });
 

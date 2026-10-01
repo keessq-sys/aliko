@@ -2,6 +2,10 @@ import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { requireUser, requireAdmin } from "./lib/access";
 import type { Id } from "./_generated/dataModel";
+import { paginationOptsValidator } from "convex/server";
+import { validateAttachments } from "./lib/attachments";
+import { managementAggregate } from "./aggregates";
+import { internalMutation } from "./_generated/server";
 const kind = v.union(
   v.literal("TENANT"),
   v.literal("WORK_ORDER"),
@@ -45,6 +49,9 @@ export const saveRecord = mutation({
     dueDate: v.optional(v.string()),
     ownerId: v.optional(v.id("users")),
     paymentId: v.optional(v.id("payments")),
+    propertyId: v.optional(v.id("properties")),
+    vendorId: v.optional(v.id("managementRecords")),
+    attachmentIds: v.optional(v.array(v.id("storedAssets"))),
     status: v.union(
       v.literal("OPEN"),
       v.literal("IN_PROGRESS"),
@@ -78,6 +85,26 @@ export const saveRecord = mutation({
       throw new Error("Record not found");
     if (existing && existing.kind !== args.kind)
       throw new Error("Record type cannot change");
+    await validateAttachments(ctx, actor._id, args.attachmentIds ?? []);
+    if (args.propertyId) {
+      const property = await ctx.db.get(args.propertyId);
+      if (
+        !property ||
+        (actor.role !== "ADMIN" && property.managerId !== actor._id)
+      )
+        throw new Error("Property is not assigned to you");
+    }
+    if (args.vendorId) {
+      const vendor = await ctx.db.get(args.vendorId);
+      if (
+        args.kind !== "WORK_ORDER" ||
+        !vendor ||
+        vendor.kind !== "VENDOR" ||
+        vendor.status === "CANCELLED" ||
+        (actor.role !== "ADMIN" && vendor.ownerId !== actor._id)
+      )
+        throw new Error("Choose an active vendor you manage");
+    }
     if (args.kind === "COMMISSION") {
       if (actor.role !== "ADMIN" || !args.paymentId)
         throw new Error(
@@ -112,6 +139,12 @@ export const saveRecord = mutation({
           ...values,
           createdAt: Date.now(),
         });
+    const updated = await ctx.db.get(recordId);
+    if (updated) {
+      if (existing)
+        await managementAggregate.replaceOrInsert(ctx, existing, updated);
+      else await managementAggregate.insert(ctx, updated);
+    }
     await ctx.db.insert("adminAuditLog", {
       actorId: actor._id,
       action: "MANAGEMENT_RECORD_SAVED",
@@ -123,30 +156,90 @@ export const saveRecord = mutation({
     return recordId;
   },
 });
+export const pageRecords = query({
+  args: { kind, paginationOpts: paginationOptsValidator },
+  handler: async (ctx, args) => {
+    const actor = await requireUser(ctx);
+    if (actor.role === "ADMIN") {
+      await requireAdmin(ctx);
+      return ctx.db
+        .query("managementRecords")
+        .withIndex("by_kind", (q) => q.eq("kind", args.kind))
+        .order("desc")
+        .paginate(args.paginationOpts);
+    }
+    if (!["AGENT", "ESTATE_MANAGER"].includes(actor.role))
+      throw new Error("Forbidden");
+    return ctx.db
+      .query("managementRecords")
+      .withIndex("by_owner_kind", (q) =>
+        q.eq("ownerId", actor._id).eq("kind", args.kind),
+      )
+      .order("desc")
+      .paginate(args.paginationOpts);
+  },
+});
+
+export const attachmentLinks = query({
+  args: { recordId: v.id("managementRecords") },
+  handler: async (ctx, args) => {
+    const actor = await requireUser(ctx);
+    if (actor.role === "ADMIN") await requireAdmin(ctx);
+    const row = await ctx.db.get(args.recordId);
+    if (!row || (actor.role !== "ADMIN" && row.ownerId !== actor._id))
+      throw new Error("Record not found");
+    return Promise.all(
+      (row.attachmentIds ?? []).map(async (id) => {
+        const asset = await ctx.db.get(id);
+        return asset?.status === "ACTIVE"
+          ? {
+              name: asset.fileName,
+              url: await ctx.storage.getUrl(asset.storageId),
+            }
+          : null;
+      }),
+    );
+  },
+});
 export const myFinancialSummary = query({
   args: {},
   handler: async (ctx) => {
     const actor = await requireUser(ctx);
-    const records = await ctx.db
-      .query("managementRecords")
-      .withIndex("by_owner_kind", (q) => q.eq("ownerId", actor._id))
-      .take(500);
+    const owner = String(actor._id);
+    const sum = (kind: string, status: string) =>
+      managementAggregate.sum(ctx, {
+        bounds: { prefix: [owner, kind, status] },
+      });
+    const count = (kind: string, status: string) =>
+      managementAggregate.count(ctx, {
+        bounds: { prefix: [owner, kind, status] },
+      });
     return {
-      commission: records
-        .filter((r) => r.kind === "COMMISSION" && r.status === "COMPLETED")
-        .reduce((a, r) => a + (r.amount ?? 0), 0),
-      expenses: records
-        .filter((r) => r.kind === "EXPENSE" && r.status === "COMPLETED")
-        .reduce((a, r) => a + (r.amount ?? 0), 0),
-      workOrders: records.filter(
-        (r) =>
-          r.kind === "WORK_ORDER" &&
-          r.status !== "COMPLETED" &&
-          r.status !== "CANCELLED",
-      ).length,
-      tenants: records.filter(
-        (r) => r.kind === "TENANT" && r.status !== "CANCELLED",
-      ).length,
+      commission: await sum("COMMISSION", "COMPLETED"),
+      expenses: await sum("EXPENSE", "COMPLETED"),
+      workOrders:
+        (await count("WORK_ORDER", "OPEN")) +
+        (await count("WORK_ORDER", "IN_PROGRESS")),
+      tenants:
+        (await count("TENANT", "OPEN")) +
+        (await count("TENANT", "IN_PROGRESS")) +
+        (await count("TENANT", "COMPLETED")),
+      referrals:
+        (await count("REFERRAL", "OPEN")) +
+        (await count("REFERRAL", "IN_PROGRESS")) +
+        (await count("REFERRAL", "COMPLETED")),
+      completedReferrals: await count("REFERRAL", "COMPLETED"),
     };
+  },
+});
+export const backfillAggregate = internalMutation({
+  args: { cursor: v.union(v.string(), v.null()) },
+  handler: async (ctx, args) => {
+    const rows = await ctx.db
+      .query("managementRecords")
+      .paginate({ cursor: args.cursor, numItems: 100 });
+    for (const row of rows.page)
+      await managementAggregate.insertIfDoesNotExist(ctx, row);
+    return { isDone: rows.isDone, cursor: rows.continueCursor };
   },
 });

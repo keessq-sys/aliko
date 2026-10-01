@@ -3,6 +3,12 @@ import { internal } from "./_generated/api";
 
 const crons = cronJobs();
 crons.interval(
+  "reconcile pending provider refunds",
+  { minutes: 15 },
+  internal.reconciliation.reconcileRefunds,
+  {},
+);
+crons.interval(
   "expire identity verifications",
   { hours: 1 },
   internal.kyc.expireVerifications,

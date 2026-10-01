@@ -24,7 +24,12 @@ const SITE_NAME = "Aliko Diamond Key";
 const SITE_HOSTNAME = "alikodiamondkey.com";
 
 function generateCode(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  const sample = new Uint32Array(1);
+  const ceiling = Math.floor(4294967296 / 900000) * 900000;
+  do {
+    crypto.getRandomValues(sample);
+  } while (sample[0] >= ceiling);
+  return String(100000 + (sample[0] % 900000));
 }
 
 export const ResendOTPPasswordReset = {
@@ -45,7 +50,7 @@ export const ResendOTPPasswordReset = {
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
       throw new Error(
-        "Password reset email is not configured — set RESEND_API_KEY (npx convex env set RESEND_API_KEY ...)."
+        "Password reset email is not configured — set RESEND_API_KEY (npx convex env set RESEND_API_KEY ...).",
       );
     }
     const res = await fetch("https://api.resend.com/emails", {

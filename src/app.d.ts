@@ -25,9 +25,7 @@ declare global {
               customMetadata?: Record<string, string>;
             },
           ): Promise<unknown>;
-          get(
-            key: string,
-          ): Promise<{
+          get(key: string): Promise<{
             body: ReadableStream;
             httpMetadata?: { contentType?: string; cacheControl?: string };
             customMetadata?: Record<string, string>;
@@ -50,6 +48,9 @@ declare global {
         MEDIA_MAINTENANCE_SECRET?: string;
         MALWARE_SCANNER_URL?: string;
         MALWARE_SCANNER_API_KEY?: string;
+        MALWARE_SCANNER_PROVIDER?: string;
+        MEDIA_PROCESSOR_URL?: string;
+        MEDIA_PROCESSOR_KEY?: string;
       };
     }
     // interface Error {}

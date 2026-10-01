@@ -30,6 +30,7 @@
     "test:backend": "vitest run"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@edge-runtime/vm": "^5.0.0",
     "@playwright/test": "^1.48.0",
     "@sveltejs/adapter-cloudflare": "^7.2.9",

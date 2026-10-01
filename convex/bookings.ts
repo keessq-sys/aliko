@@ -9,7 +9,8 @@ import {
   action,
 } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { internal } from "./_generated/api";
+import { api, internal } from "./_generated/api";
+import { assertCheckoutEnvironment } from "./lib/checkoutReadiness";
 import type { Id } from "./_generated/dataModel";
 import type { Doc } from "./_generated/dataModel";
 import type { ActionCtx } from "./_generated/server";
@@ -321,6 +322,16 @@ export const initializePaystackPayment = action({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized");
+    const profile = await ctx.runQuery(api.users.getMyProfile, {});
+    if (
+      !profile ||
+      !profile.kycVerified ||
+      !profile.address ||
+      profile.address.trim().length < 10
+    )
+      throw new Error(
+        "Complete current identity verification and legal address before checkout",
+      );
     await rateLimiter.limit(ctx, "checkout", {
       key: String(userId),
       throws: true,
@@ -336,6 +347,13 @@ export const initializePaystackPayment = action({
     if (!process.env.PAYSTACK_SECRET_KEY)
       throw new Error("Paystack is not configured");
 
+    assertCheckoutEnvironment("PAYSTACK", process.env.PAYSTACK_SECRET_KEY);
+    const callback = new URL(args.callbackUrl);
+    if (
+      !process.env.APP_URL ||
+      callback.origin !== new URL(process.env.APP_URL).origin
+    )
+      throw new Error("Invalid payment callback");
     const res = await fetch("https://api.paystack.co/transaction/initialize", {
       method: "POST",
       headers: {
@@ -343,7 +361,7 @@ export const initializePaystackPayment = action({
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: args.email,
+        email: profile.email,
         amount: booking.totalAmount * 100, // kobo
         reference: booking.reference,
         callback_url: args.callbackUrl,
@@ -600,6 +618,16 @@ export const initializeFlutterwavePayment = action({
   ): Promise<{ checkoutUrl: string; transactionReference: string }> => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized");
+    const profile = await ctx.runQuery(api.users.getMyProfile, {});
+    if (
+      !profile ||
+      !profile.kycVerified ||
+      !profile.address ||
+      profile.address.trim().length < 10
+    )
+      throw new Error(
+        "Complete current identity verification and legal address before checkout",
+      );
     await rateLimiter.limit(ctx, "checkout", {
       key: String(userId),
       throws: true,
@@ -615,6 +643,7 @@ export const initializeFlutterwavePayment = action({
       throw new Error("This booking is not eligible for a full payment");
     const secret = process.env.FLUTTERWAVE_SECRET_KEY;
     if (!secret) throw new Error("Flutterwave is not configured");
+    assertCheckoutEnvironment("FLUTTERWAVE", secret);
     if (!/^\S+@\S+\.\S+$/.test(args.email))
       throw new Error("A valid receipt email is required");
     const redirect = new URL(args.redirectUrl);

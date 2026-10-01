@@ -72,14 +72,34 @@
   let viewingDate = "";
   let viewingTime = "10:00";
 
-  function handleSave() {
-    isSaved = !isSaved;
-    addToast({
-      type: isSaved ? "success" : "info",
-      message: isSaved
-        ? "Property saved to your wishlist!"
-        : "Property removed from wishlist",
-    });
+  $: saved = useQuery($liveProperty ? api.clientPortal.isSaved : null, {
+    propertyId: $liveProperty?._id,
+  } as any);
+  $: isSaved = $saved ?? false;
+  async function handleSave() {
+    if (!$liveProperty?._id) {
+      addToast({
+        type: "info",
+        message: "Only published listings can be saved.",
+      });
+      return;
+    }
+    try {
+      const result = await runMutation(api.clientPortal.toggleSavedProperty, {
+        propertyId: $liveProperty._id,
+      });
+      addToast({
+        type: result.saved ? "success" : "info",
+        message: result.saved
+          ? "Property saved to your account"
+          : "Property removed from your saved list",
+      });
+    } catch {
+      addToast({
+        type: "error",
+        message: "Sign in to save properties to your account.",
+      });
+    }
   }
 
   function handleShare() {
