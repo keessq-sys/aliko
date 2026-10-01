@@ -15,7 +15,7 @@ This records the remediation against APPLICATION_AUDIT_2026-10-01.md. It does no
 - Storage checks publication/deletion status on R2 reads, records deletion before object removal, resumes orphan cleanup with saved cursors, and supports bounded scheduled scanning retries/dead-letter escalation. Convex uploads remain private pending scan. Profile photo upload now works through this scan path. R2 uploads require an HTTPS scanner and a clean result before storage/publication. A scanner outage or missing scanner configuration rejects upload safely; the scanner contract still requires a selected provider adapter and certification.
 - Cloudflare production and preview use separate MEDIA buckets. Preview backend connection is disabled with the placeholder until CONVEX_STAGING_URL is supplied. Updated WAF controls include the new authentication session endpoint and target write requests.
 - Public headline counts now use live records; removed invented financial/satisfaction totals, city counts, villa price/ROI claims and fraud-history wording in the touched sections. Mobile map is visible; fallback map does not invent precise pins. Map popup content is escaped; provider-load failure displays the reference map.
-- Restored query unsubscribe lifecycle, added visible data-load errors, implemented scenario PDF export with explicit assumptions, and made browser catalogue/detail fixtures opt-in in the isolated test server. CI now runs the full backend and Chromium suite rather than only the preview smoke test. Added dedicated Convex TypeScript configuration.
+- Restored query unsubscribe lifecycle, added visible data-load errors, implemented scenario PDF export with explicit assumptions, and made browser catalogue/detail fixtures opt-in in the isolated test server. The npm test command runs the full backend and Chromium suite. The prepared CI workflow update is saved in CI_FULL_SUITE.patch; GitHub rejected workflow modification because the available OAuth credential lacks workflow scope. The remote workflow retains preview-only coverage until an authorized operator applies the patch. Added dedicated Convex TypeScript configuration.
 
 ## Remaining application work
 
@@ -57,8 +57,9 @@ Validation results and deployed revision are appended after final checks. Tests 
 - Cloudflare Pages release succeeded at https://9ec58718.aliko-3f9.pages.dev and the production domain rendered the ADK logo and application.
 - Read-only production browser checks: no browser exceptions; investment PDF downloaded successfully; mobile map displayed the Nigeria reference image at 390 px with no horizontal overflow; anonymous maintenance returned HTTP 403.
 - Public Convex signing endpoint returned HTTP 200 with one public signing key. Anonymous partner/notification queries returned server errors; production logs contained the expected Unauthorized failures and no TypeError entries during the check. Sensitive error details are redacted publicly.
-- Live visual inspection caught remaining hero demonstration statistics and unsupported guarantees; these were removed in the final source change. A further Pages release applies that change.
+- Live visual inspection caught remaining hero demonstration statistics and unsupported guarantees; these were removed in the final source change. The final Pages release at https://8b6afa9f.aliko-3f9.pages.dev applies that change.
 - Initial frontend publish attempt was rejected for duplicate PUBLIC_CONVEX_URL bindings. Removed the duplicate TOML declaration; Pages retains its configured public URL. The successful retry is recorded above.
 - Production preview screenshots and downloaded scenario PDF are stored locally under .backups/verification and excluded from Git.
 
 - Final hero content/contrast update: production build passed and all 10 targeted home/preview browser checks passed.
+
