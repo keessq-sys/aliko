@@ -23,6 +23,7 @@ declare global {
 				SENTRY_DSN?: string;
 				SENTRY_ENVIRONMENT?: string;
 				SENTRY_RELEASE?: string;
+				MEDIA_MAINTENANCE_SECRET?: string;
 			};
 		}
 		// interface Error {}

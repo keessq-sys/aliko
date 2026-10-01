@@ -12,6 +12,11 @@ test.describe('API Endpoints', () => {
     });
     expect(response.status()).toBe(404);
   });
+
+  test('rejects unauthenticated media maintenance requests', async ({ request }) => {
+    const response = await request.post('/api/media/maintenance');
+    expect(response.status()).toBe(403);
+  });
 });
 
 test.describe('Webhook Endpoints', () => {

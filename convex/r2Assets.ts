@@ -11,6 +11,15 @@ async function user(ctx: any) {
   return value;
 }
 
+function requireMaintenanceSecret(value: string) {
+  const expected = process.env.MEDIA_MAINTENANCE_SECRET;
+  if (!expected || value.length !== expected.length) throw new Error("Forbidden");
+  let difference = 0;
+  for (let index = 0; index < value.length; index++)
+    difference |= value.charCodeAt(index) ^ expected.charCodeAt(index);
+  if (difference !== 0) throw new Error("Forbidden");
+}
+
 export const register = mutation({
   args: {
     key: v.string(), collection: v.string(), fileName: v.string(),
@@ -84,6 +93,32 @@ export const recordOrphanCleanup = mutation({
       actorEmail: actor.email,
       action: "R2_ORPHAN_CLEANUP",
       entityType: "r2Assets",
+      detail: JSON.stringify({ count: keys.length, keys: keys.map((key) => key.slice(0, 220)) }).slice(0, 8_000),
+      createdAt: Date.now(),
+    });
+    return { recorded: keys.length };
+  },
+});
+
+/** Service-authenticated variants used only by the scheduled Cloudflare worker. */
+export const findRegisteredKeysForMaintenance = query({
+  args: { keys: v.array(v.string()), secret: v.string() },
+  handler: async (ctx, { keys, secret }) => {
+    requireMaintenanceSecret(secret);
+    if (keys.length > 100) throw new Error("At most 100 keys may be checked");
+    const matches = await Promise.all(keys.map((key) => ctx.db.query("r2Assets")
+      .withIndex("by_key", (q: any) => q.eq("key", key)).unique()));
+    return matches.filter((asset) => asset && asset.status !== "DELETED").map((asset) => asset!.key);
+  },
+});
+
+export const recordScheduledOrphanCleanup = mutation({
+  args: { keys: v.array(v.string()), secret: v.string() },
+  handler: async (ctx, { keys, secret }) => {
+    requireMaintenanceSecret(secret);
+    if (keys.length > 100) throw new Error("At most 100 keys may be recorded");
+    await ctx.db.insert("adminAuditLog", {
+      action: "R2_SCHEDULED_ORPHAN_CLEANUP", entityType: "r2Assets",
       detail: JSON.stringify({ count: keys.length, keys: keys.map((key) => key.slice(0, 220)) }).slice(0, 8_000),
       createdAt: Date.now(),
     });

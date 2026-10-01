@@ -1,6 +1,6 @@
 # Enterprise readiness report
 
-**Assessment date:** 30 September 2026
+**Assessment date:** 1 October 2026
 **Production application:** `https://alikodiamondkey.com`
 **Reviewed revision:** production hardening deployment of 30 September 2026
 
@@ -65,6 +65,7 @@ The percentages distinguish code that exists from controls that have been config
 - R2 uploads now verify JPG/PNG/WebP/AVIF file signatures, create Convex ownership records, and support owner or administrator deletion with an immutable administrator audit event.
 - JPEG, PNG and WebP uploads have EXIF/XMP/IPTC metadata removed before storage. Metadata-bearing AVIF uploads are rejected until they are cleaned by a safe AVIF-aware tool.
 - Administrators can run bounded orphan cleanup; only objects older than 24 hours without a live Convex ownership record are deleted, and each run is audited.
+- A dedicated Cloudflare Worker runs orphan cleanup daily at 02:17 UTC using a separately generated service secret held in Cloudflare Pages, the Worker, and Convex. Its public HTTP surface returns 404; the scheduled trigger was exercised successfully before the public trigger was disabled.
 - QoreID webhook handling verifies the raw request with HMAC-SHA512, rejects replayed events, records explicit versioned KYC consent, and stores provider references/results without raw NIN or BVN values.
 - QoreID workflow initiation now mints short-lived, single-use SDK sessions in a Convex action and launches the official Web SDK from the client profile. It activates when the client ID, secret and numeric workflow ID are supplied.
 - Sentry's official SvelteKit SDK is integrated for browser and Cloudflare exceptions with release/environment tags and request-data redaction. It remains disabled until a production DSN is configured.
@@ -117,7 +118,7 @@ These items should be completed before accepting unrestricted customer payments 
 
 | Area | Remaining control |
 | --- | --- |
-| R2 media lifecycle | File signatures, metadata removal, lifecycle rules, audited deletion and admin orphan cleanup are implemented. Add external malware scanning, an authenticated maintenance schedule and storage usage alerts with a named recipient. |
+| R2 media lifecycle | File signatures, metadata removal, lifecycle rules, audited deletion, admin cleanup and a secret-authenticated daily cleanup schedule are implemented. Add external malware scanning and storage usage alerts with a named recipient. |
 | Cloudflare security | Evaluate managed WAF rules, bot controls, stricter endpoint-specific limits, security-event alerts, and authenticated-origin controls after observing normal traffic. |
 | Monitoring | Sentry browser/Cloudflare code and PII redaction exist. Add DSNs, Convex log streaming and named on-call recipients. |
 | Authentication | Add MFA or an external identity provider for administrators, recovery codes/runbooks, quarterly access reviews, and privileged-action step-up authentication. |
