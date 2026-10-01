@@ -2,6 +2,7 @@ import { convexAuth } from "@convex-dev/auth/server";
 import { Password } from "@convex-dev/auth/providers/Password";
 import type { DataModel } from "./_generated/dataModel";
 import { ResendOTPPasswordReset } from "./ResendOTPPasswordReset";
+import { publicSignupProfile } from "./lib/access";
 import { rateLimiter } from "./lib/rateLimits";
 
 // NOTE: this previously also registered a top-level `ResendOTP` provider
@@ -20,24 +21,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
     Password<DataModel>({
       reset: ResendOTPPasswordReset,
       profile(params) {
-        return {
-          email: params.email as string,
-          name: params.name as string,
-          role:
-            (params.role as
-              | "ADMIN"
-              | "AGENT"
-              | "ESTATE_MANAGER"
-              | "CLIENT"
-              | "DIASPORA_CLIENT"
-              | "TENANT"
-              | undefined) ?? "CLIENT",
-          isDiaspora: false,
-          kycVerified: false,
-          accountStatus: "ACTIVE" as const,
-          createdAt: Date.now(),
-          lastActiveAt: Date.now(),
-        };
+        return publicSignupProfile(params);
       },
     }),
   ],

@@ -1,0 +1,374 @@
+[
+  {
+    "slug": "interior-design",
+    "name": "Interior Design",
+    "tagline": "Bespoke residential & commercial interior concepts",
+    "description": "Bespoke residential & commercial interior concepts",
+    "category": "INTERIOR",
+    "heroImage": "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0057.jpg",
+    "gallery": [
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0057.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0058.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0060.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0063.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0100.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0101.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0175.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0229.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0087.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0090.jpg"
+    ],
+    "features": [
+      "3D concept renderings",
+      "Space planning & mood boards",
+      "Premium finishes curation",
+      "Turnkey project supervision"
+    ],
+    "isActive": true,
+    "isFeatured": true,
+    "sortOrder": 0
+  },
+  {
+    "slug": "decoration-styling",
+    "name": "Decoration & Styling",
+    "tagline": "Events, show units & model home styling",
+    "description": "Events, show units & model home styling",
+    "category": "INTERIOR",
+    "heroImage": "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0063.jpg",
+    "gallery": [
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0063.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0100.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0101.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0057.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0058.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0060.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0026.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0090.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0230.jpg"
+    ],
+    "features": [
+      "Model home staging",
+      "Seasonal & event decoration",
+      "Soft furnishing selection",
+      "Art & accessory curation"
+    ],
+    "isActive": true,
+    "isFeatured": true,
+    "sortOrder": 1
+  },
+  {
+    "slug": "furnishing",
+    "name": "Furnishing",
+    "tagline": "Complete furnishing packages for homes & offices",
+    "description": "Complete furnishing packages for homes & offices",
+    "category": "INTERIOR",
+    "heroImage": "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0058.jpg",
+    "gallery": [
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0058.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0101.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0057.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0060.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0063.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0100.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0047.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0087.jpg"
+    ],
+    "features": [
+      "Imported & local furniture",
+      "Custom upholstery",
+      "Curtains, blinds & rugs",
+      "Appliance bundling options"
+    ],
+    "isActive": true,
+    "isFeatured": true,
+    "sortOrder": 2
+  },
+  {
+    "slug": "turkish-tiles-supply",
+    "name": "Turkish & Foreign Tiles",
+    "tagline": "Direct-import porcelain, ceramic & marble tiles",
+    "description": "Direct-import porcelain, ceramic & marble tiles",
+    "category": "SUPPLY",
+    "heroImage": "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0066.jpg",
+    "gallery": [
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0066.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0202.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0203.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0212.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0231.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0087.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0090.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0230.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0026.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0037.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0055.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0215.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0221.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0050.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0080.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0082.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0047.jpg"
+    ],
+    "features": [
+      "Direct from Turkey & Spain",
+      "Porcelain, ceramic & marble",
+      "Bulk project pricing",
+      "Container tracking & logistics"
+    ],
+    "isActive": true,
+    "isFeatured": true,
+    "sortOrder": 3
+  },
+  {
+    "slug": "building-materials-supply",
+    "name": "Building Materials Supply",
+    "tagline": "Cement, roofing, iron rods & finishing materials",
+    "description": "Cement, roofing, iron rods & finishing materials",
+    "category": "SUPPLY",
+    "heroImage": "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0080.jpg",
+    "gallery": [
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0080.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0082.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0050.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0047.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0215.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0221.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0130.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0131.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0132.jpg"
+    ],
+    "features": [
+      "Dangote & BUA cement",
+      "Iron rods & roofing sheets",
+      "POP, paint & finishing supplies",
+      "Site delivery nationwide"
+    ],
+    "isActive": true,
+    "isFeatured": true,
+    "sortOrder": 4
+  },
+  {
+    "slug": "smart-home-installation",
+    "name": "Smart Home Installation",
+    "tagline": "Automation, security & energy systems",
+    "description": "Automation, security & energy systems",
+    "category": "SMART_HOME",
+    "heroImage": "/images/services/stock/smart-lock-phone.jpg",
+    "gallery": [
+      "/images/services/stock/smart-lock-phone.jpg",
+      "/images/services/stock/smart-home-devices.jpg",
+      "/images/services/stock/smart-thermostat.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0100.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0225.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0057.jpg"
+    ],
+    "features": [
+      "Lighting & blind automation",
+      "CCTV & smart access",
+      "Solar & inverter integration",
+      "Voice & app control setup"
+    ],
+    "isActive": true,
+    "isFeatured": true,
+    "sortOrder": 5
+  },
+  {
+    "slug": "construction-services",
+    "name": "Construction",
+    "tagline": "Houses, commercial & recreational centers",
+    "description": "Houses, commercial & recreational centers",
+    "category": "CONSTRUCTION",
+    "heroImage": "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0129.jpg",
+    "gallery": [
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0129.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0134.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0131.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0132.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0130.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0220.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0039.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0040.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0226.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0229.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0199.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0223.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0228.jpg"
+    ],
+    "features": [
+      "Residential & duplex builds",
+      "Commercial complexes",
+      "Recreational centers",
+      "Architectural & engineering teams"
+    ],
+    "isActive": true,
+    "isFeatured": true,
+    "sortOrder": 6
+  },
+  {
+    "slug": "general-contracts",
+    "name": "General Contracts",
+    "tagline": "Corporate, government & private contracts",
+    "description": "Corporate, government & private contracts",
+    "category": "CONSULTING",
+    "heroImage": "/images/services/stock/site-planning-team.jpg",
+    "gallery": [
+      "/images/services/stock/site-planning-team.jpg",
+      "/images/services/stock/blueprint-review.jpg",
+      "/images/services/stock/architectural-blueprints.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0129.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0134.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0130.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0131.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0226.jpg"
+    ],
+    "features": [
+      "Procurement & logistics",
+      "Facility management",
+      "Renovation & fit-out works",
+      "Project management services"
+    ],
+    "isActive": true,
+    "isFeatured": true,
+    "sortOrder": 7
+  },
+  {
+    "slug": "renovation-refurbishment",
+    "name": "Renovation & Refurbishing",
+    "tagline": "Full property renovation, upgrades & refurbishment",
+    "description": "Full property renovation, upgrades & refurbishment",
+    "category": "CONSTRUCTION",
+    "heroImage": "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0226.jpg",
+    "gallery": [
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0226.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0220.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0229.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0059.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0211.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0215.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0221.jpg",
+      "/Frontend%20UI%20Images/SUPPLY%20TILES/IMG-20260921-WA0055.jpg"
+    ],
+    "features": [
+      "Full & partial home renovation",
+      "Kitchen & bathroom refurbishment",
+      "Structural upgrades & repairs",
+      "Before/after project documentation"
+    ],
+    "isActive": true,
+    "isFeatured": false,
+    "sortOrder": 8
+  },
+  {
+    "slug": "architectural-design",
+    "name": "Architectural Design",
+    "tagline": "Concept-to-construction architectural drawings",
+    "description": "Concept-to-construction architectural drawings",
+    "category": "ARCHITECTURE",
+    "heroImage": "/images/services/stock/architectural-blueprints.jpg",
+    "gallery": [
+      "/images/services/stock/architectural-blueprints.jpg",
+      "/images/services/stock/architectural-model.jpg",
+      "/images/services/stock/blueprint-review.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0107.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0199.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0225.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0228.jpg"
+    ],
+    "features": [
+      "Concept & schematic design",
+      "Working & approval drawings",
+      "3D visualization & walkthroughs",
+      "Regulatory & planning liaison"
+    ],
+    "isActive": true,
+    "isFeatured": false,
+    "sortOrder": 9
+  },
+  {
+    "slug": "space-planning",
+    "name": "Space Planning & Management",
+    "tagline": "Layout optimization for homes & office spaces",
+    "description": "Layout optimization for homes & office spaces",
+    "category": "ARCHITECTURE",
+    "heroImage": "/images/services/stock/modern-office.jpg",
+    "gallery": [
+      "/images/services/stock/modern-office.jpg",
+      "/images/services/stock/office-workstations.jpg",
+      "/images/services/stock/open-office.jpg",
+      "/images/services/stock/architectural-blueprints.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0058.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0060.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0101.jpg"
+    ],
+    "features": [
+      "Residential & office space audits",
+      "Floor plan & workflow optimization",
+      "Space utilization reports",
+      "Ongoing facility space management"
+    ],
+    "isActive": true,
+    "isFeatured": false,
+    "sortOrder": 10
+  },
+  {
+    "slug": "property-development",
+    "name": "Property Development & Facility Management",
+    "tagline": "End-to-end development and facility oversight",
+    "description": "End-to-end development and facility oversight",
+    "category": "PROPERTY_SERVICES",
+    "heroImage": "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0129.jpg",
+    "gallery": [
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0129.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0134.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0131.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0220.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0039.jpg",
+      "/Frontend%20UI%20Images/CONSTRUCTION/IMG-20260921-WA0040.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0199.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0223.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0228.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0190.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0224.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0086.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0094.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0102.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0104.jpg"
+    ],
+    "features": [
+      "Site feasibility & development planning",
+      "Developer & consultant partnerships",
+      "Facility & estate management",
+      "Maintenance & vendor coordination"
+    ],
+    "isActive": true,
+    "isFeatured": false,
+    "sortOrder": 11
+  },
+  {
+    "slug": "land-real-estate-brokerage",
+    "name": "Land & Real Estate Brokerage",
+    "tagline": "Acquire, sell and broker land, buildings & property deals",
+    "description": "Acquire, sell and broker land, buildings & property deals",
+    "category": "PROPERTY_SERVICES",
+    "heroImage": "/images/services/stock/real-estate-key.jpg",
+    "gallery": [
+      "/images/services/stock/real-estate-key.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0199.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0223.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0228.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0176.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0107.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0225.jpg",
+      "/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0190.jpg"
+    ],
+    "features": [
+      "Land acquisition & disposal",
+      "Building & real estate sales",
+      "Landed property deal structuring",
+      "Title verification & due diligence"
+    ],
+    "isActive": true,
+    "isFeatured": false,
+    "sortOrder": 12
+  }
+]

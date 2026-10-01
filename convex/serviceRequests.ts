@@ -1,3 +1,4 @@
+import { requireAdmin } from "./lib/access";
 import { v } from "convex/values";
 import { query, mutation, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
@@ -5,17 +6,9 @@ import type { Id } from "./_generated/dataModel";
 import { contactRateKey, rateLimiter } from "./lib/rateLimits";
 import { serviceRequestAggregate } from "./aggregates";
 
-async function requireAdmin(ctx: any) {
-  const userId = await getAuthUserId(ctx);
-  if (!userId) throw new Error("Unauthorized");
-  const user = await ctx.db.get(userId as Id<"users">);
-  if (user?.role !== "ADMIN") throw new Error("Forbidden — ADMIN only");
-  return userId;
-}
-
 function makeRef(prefix: string): string {
   const year = new Date().getFullYear();
-  const rand = Math.floor(1000 + Math.random() * 9000);
+  const rand = crypto.randomUUID();
   return `ADK-${prefix}-${year}-${rand}`;
 }
 
@@ -44,7 +37,7 @@ export const submitServiceRequest = mutation({
     budgetMin: v.optional(v.number()),
     budgetMax: v.optional(v.number()),
     timeline: v.optional(v.string()),
-    attachments: v.optional(v.array(v.string())),
+    attachments: v.optional(v.array(v.id("_storage"))),
   },
   handler: async (ctx, args) => {
     await rateLimiter.limit(ctx, "serviceRequest", {
@@ -65,6 +58,30 @@ export const submitServiceRequest = mutation({
       /* guest submission */
     }
 
+    if (args.projectBrief.length > 10000 || args.requesterName.length > 120)
+      throw new Error("Request exceeds the permitted length");
+    if (args.attachments?.length) {
+      if (!userId) throw new Error("Sign in before attaching files");
+      if (args.attachments.length > 10)
+        throw new Error("Attach at most 10 files");
+      for (const value of args.attachments) {
+        const storageId = value;
+        if (!storageId) throw new Error("Use a registered attachment");
+        const asset = await ctx.db
+          .query("storedAssets")
+          .withIndex("by_storage", (q) => q.eq("storageId", storageId))
+          .unique();
+        if (
+          !asset ||
+          asset.ownerId !== userId ||
+          asset.purpose !== "SERVICE_ATTACHMENT" ||
+          asset.status !== "ACTIVE"
+        )
+          throw new Error(
+            "Attachment is not owned by you or has not passed scanning",
+          );
+      }
+    }
     const now = Date.now();
     const reference = makeRef("SVC");
     const id = await ctx.db.insert("serviceRequests", {

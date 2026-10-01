@@ -1,0 +1,65 @@
+import { getAuthUserId, getAuthSessionId } from "@convex-dev/auth/server";
+
+/** Every protected function checks current account state, not just its JWT. */
+export async function requireUser(ctx: any) {
+  const id = await getAuthUserId(ctx);
+  if (!id) throw new Error("Unauthorized");
+  const user = await ctx.db.get(id);
+  if (!user || user.accountStatus === "SUSPENDED")
+    throw new Error("Unauthorized");
+  const sessionId = await getAuthSessionId(ctx);
+  const session = sessionId ? await ctx.db.get(sessionId) : null;
+  if (!session || session.userId !== id || session.expirationTime <= Date.now())
+    throw new Error("Unauthorized");
+  return user;
+}
+
+export async function requireAdmin(ctx: any, maxAgeMs = 30 * 60000) {
+  const user = await requireUser(ctx);
+  if (user.role !== "ADMIN") throw new Error("Forbidden — ADMIN only");
+  if (process.env.ADMIN_MFA_REQUIRED === "true") {
+    const enrollment = await ctx.db
+      .query("adminMfa")
+      .withIndex("by_user", (q: any) => q.eq("userId", user._id))
+      .unique();
+    if (!enrollment?.enabled) throw new Error("ADMIN_MFA_REQUIRED");
+    const sessionId = await getAuthSessionId(ctx);
+    const proof = sessionId
+      ? await ctx.db
+          .query("mfaSessions")
+          .withIndex("by_session", (q: any) => q.eq("sessionId", sessionId))
+          .unique()
+      : null;
+    if (
+      !proof ||
+      proof.userId !== user._id ||
+      proof.expiresAt <= Date.now() ||
+      Date.now() - proof.verifiedAt > maxAgeMs
+    )
+      throw new Error("ADMIN_MFA_REQUIRED");
+  }
+  return user._id;
+}
+
+export function publicSignupProfile(params: Record<string, unknown>) {
+  const email = String(params.email ?? "")
+    .trim()
+    .toLowerCase();
+  const name = String(params.name ?? email.split("@")[0]).trim();
+  if (
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+    name.length < 1 ||
+    name.length > 120
+  )
+    throw new Error("Provide a valid name and email");
+  return {
+    email,
+    name,
+    role: "CLIENT" as const,
+    isDiaspora: false,
+    kycVerified: false,
+    accountStatus: "ACTIVE" as const,
+    createdAt: Date.now(),
+    lastActiveAt: Date.now(),
+  };
+}

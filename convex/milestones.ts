@@ -1,3 +1,4 @@
+import { requireAdmin } from "./lib/access";
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
@@ -11,7 +12,10 @@ export const listMilestones = query({
   },
   handler: async (ctx, args) => {
     let rows = args.projectId
-      ? await ctx.db.query("milestones").withIndex("by_project", (q) => q.eq("projectId", args.projectId!)).collect()
+      ? await ctx.db
+          .query("milestones")
+          .withIndex("by_project", (q) => q.eq("projectId", args.projectId!))
+          .collect()
       : await ctx.db.query("milestones").collect();
 
     rows = rows.sort((a, b) => b.publishedAt - a.publishedAt);
@@ -21,7 +25,7 @@ export const listMilestones = query({
       limited.map(async (m) => ({
         ...m,
         project: await ctx.db.get(m.projectId),
-      }))
+      })),
     );
   },
 });
@@ -39,7 +43,7 @@ export const createMilestone = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Must be signed in to publish a milestone.");
     const user = await ctx.db.get(userId as Id<"users">);
-    if (user?.role !== "ADMIN") throw new Error("Forbidden — ADMIN only");
+    await requireAdmin(ctx);
 
     return await ctx.db.insert("milestones", {
       projectId: args.projectId,

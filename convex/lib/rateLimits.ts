@@ -3,6 +3,7 @@ import { components } from "../_generated/api";
 
 /** Transactional application-level abuse controls shared by public entry points. */
 export const rateLimiter = new RateLimiter(components.rateLimiter, {
+  mfa: { kind: "fixed window", rate: 5, period: MINUTE },
   registration: { kind: "fixed window", rate: 5, period: HOUR },
   enquiry: { kind: "token bucket", rate: 6, period: HOUR, capacity: 3 },
   serviceRequest: { kind: "token bucket", rate: 5, period: HOUR, capacity: 2 },

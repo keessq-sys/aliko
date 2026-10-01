@@ -1,17 +1,50 @@
-import { existsSync } from 'node:fs';
-import { spawnSync } from 'node:child_process';
-import path from 'node:path';
+import {
+  existsSync,
+  mkdtempSync,
+  writeFileSync,
+  unlinkSync,
+  rmdirSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { validateRestoreTarget } from "./lib/restore-target.mjs";
+import { spawnSync } from "node:child_process";
+import path from "node:path";
 
 const [snapshot] = process.argv.slice(2);
-const deployment = process.env.CONVEX_RESTORE_DEPLOYMENT;
-if (!snapshot || !existsSync(snapshot)) throw new Error('Pass an existing Convex snapshot ZIP path.');
-if (!deployment) throw new Error('Set CONVEX_RESTORE_DEPLOYMENT to the dedicated staging deployment.');
-if (/^(prod|production)$/i.test(deployment)) throw new Error('Restore rehearsal refuses a production target.');
-if (process.env.CONFIRM_STAGING_RESTORE !== 'RESTORE_TO_STAGING')
-  throw new Error('Set CONFIRM_STAGING_RESTORE=RESTORE_TO_STAGING after verifying the target.');
-const cli = path.resolve(process.cwd(), 'node_modules/convex/bin/main.js');
-const result = spawnSync(process.execPath, [cli, 'import', snapshot, '--deployment', deployment, '--replace-all', '--yes'], {
-  cwd: process.cwd(), stdio: 'inherit', shell: false,
-});
-if (result.error) throw result.error;
-process.exit(result.status || 0);
+if (!snapshot || !existsSync(snapshot))
+  throw new Error("Pass an existing Convex snapshot ZIP path.");
+const { key } = validateRestoreTarget(process.env);
+const cli = path.resolve(process.cwd(), "node_modules/convex/bin/main.js");
+const temporaryDirectory = mkdtempSync(
+  path.join(tmpdir(), "adk-staging-restore-"),
+);
+const envFile = path.join(temporaryDirectory, "staging.env");
+const cleanEnvironment = { ...process.env };
+for (const name of [
+  "CONVEX_DEPLOY_KEY",
+  "CONVEX_DEPLOYMENT",
+  "CONVEX_SELF_HOSTED_ADMIN_KEY",
+  "CONVEX_SELF_HOSTED_URL",
+])
+  delete cleanEnvironment[name];
+try {
+  writeFileSync(envFile, `CONVEX_DEPLOY_KEY=${key}\n`, { mode: 0o600 });
+  const result = spawnSync(
+    process.execPath,
+    [
+      cli,
+      "import",
+      path.resolve(snapshot),
+      "--env-file",
+      envFile,
+      "--replace-all",
+      "--yes",
+    ],
+    { env: cleanEnvironment, stdio: "inherit", shell: false },
+  );
+  if (result.error) throw result.error;
+  process.exitCode = result.status ?? 1;
+} finally {
+  unlinkSync(envFile);
+  rmdirSync(temporaryDirectory);
+}

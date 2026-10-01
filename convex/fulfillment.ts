@@ -1,7 +1,21 @@
 import { WorkflowManager } from "@convex-dev/workflow";
 import { v } from "convex/values";
 import { components, internal } from "./_generated/api";
-import { internalMutation } from "./_generated/server";
+import { internalMutation, internalQuery } from "./_generated/server";
+
+export const deedContext = internalQuery({
+  args: { clientId: v.id("users") },
+  handler: async (ctx, args) => {
+    const client = await ctx.db.get(args.clientId);
+    if (!client?.address || client.address.trim().length < 10)
+      throw new Error(
+        "Client must save a complete legal address before deed generation",
+      );
+    if (!client.kycVerified || client.accountStatus === "SUSPENDED")
+      throw new Error("Current client identity verification is required");
+    return { address: client.address };
+  },
+});
 
 export const workflow = new WorkflowManager(components.workflow, {
   workpoolOptions: { maxParallelism: 8 },
@@ -18,13 +32,16 @@ export const paymentFulfillment = workflow
     },
   })
   .handler(async (step, args): Promise<void> => {
+    const context = await step.runQuery(internal.fulfillment.deedContext, {
+      clientId: args.clientId,
+    });
     await step.runAction(
       internal.legalDocuments.generateDeedOfAssignment,
       {
         clientId: args.clientId,
         plotId: args.plotId,
         bookingId: args.bookingId,
-        assigneeAddress: "To be confirmed",
+        assigneeAddress: context.address,
         considerationAmount: args.considerationAmount,
       },
       { retry: { maxAttempts: 3, initialBackoffMs: 2_000, base: 2 } },
@@ -34,7 +51,64 @@ export const paymentFulfillment = workflow
       { bookingId: args.bookingId },
       { inline: true },
     );
+    const result = await step.awaitEvent({
+      name: "signature",
+      validator: v.object({
+        documentId: v.id("legalDocuments"),
+        status: v.string(),
+      }),
+    });
+    if (result.status !== "SIGNED")
+      throw new Error(
+        `Signature process ended: ${result.status}; administrator review required`,
+      );
+    await step.runMutation(internal.fulfillment.allocateSignedBooking, {
+      bookingId: args.bookingId,
+      documentId: result.documentId,
+    });
   });
+
+export const allocateSignedBooking = internalMutation({
+  args: { bookingId: v.id("bookings"), documentId: v.id("legalDocuments") },
+  handler: async (ctx, args) => {
+    const booking = await ctx.db.get(args.bookingId),
+      document = await ctx.db.get(args.documentId);
+    if (
+      !booking ||
+      !document ||
+      document.bookingId !== booking._id ||
+      document.clientId !== booking.clientId ||
+      document.status !== "SIGNED" ||
+      !document.externalSignatureId ||
+      booking.paymentStatus !== "SUCCESS" ||
+      booking.paidAmount < booking.totalAmount
+    )
+      throw new Error("Verified payment and provider-signed deed are required");
+    const client = await ctx.db.get(booking.clientId);
+    if (!client?.kycVerified || client.accountStatus === "SUSPENDED")
+      throw new Error("Current identity verification is required");
+    if (booking.allocatedAt) return;
+    const now = Date.now();
+    await ctx.db.patch(booking._id, { allocatedAt: now, updatedAt: now });
+    await ctx.db.patch(booking.plotId, { status: "SOLD", updatedAt: now });
+    await ctx.db.insert("documentAuditLog", {
+      documentId: document._id,
+      action: "PLOT_ALLOCATED",
+      actorRole: "SYSTEM",
+      createdAt: now,
+    });
+    await ctx.db.insert("notificationLog", {
+      channel: "EMAIL",
+      recipient: client.email,
+      subject: "Your plot allocation is complete",
+      message: `Verified payment and signed deed have completed allocation for ${booking.reference}. View your documents in your dashboard.`,
+      status: "QUEUED",
+      relatedId: String(booking._id),
+      relatedType: "allocation",
+      createdAt: now,
+    });
+  },
+});
 
 export const recordAwaitingSignature = internalMutation({
   args: { bookingId: v.id("bookings") },

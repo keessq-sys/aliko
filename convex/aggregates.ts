@@ -1,3 +1,4 @@
+import { requireAdmin } from "./lib/access";
 import { TableAggregate } from "@convex-dev/aggregate";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { components } from "./_generated/api";
@@ -37,7 +38,7 @@ export const getFinancialTotals = query({
     const authId = await getAuthUserId(ctx);
     if (!authId) throw new Error("Unauthorized");
     const user = await ctx.db.get(authId as Id<"users">);
-    if (user?.role !== "ADMIN") throw new Error("Forbidden — ADMIN only");
+    await requireAdmin(ctx);
     const [
       successfulPayments,
       successfulValue,

@@ -3,6 +3,51 @@ import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  adminMfa: defineTable({
+    userId: v.id("users"),
+    cipher: v.string(),
+    enabled: v.boolean(),
+    lastCounter: v.optional(v.number()),
+    createdAt: v.number(),
+  }).index("by_user", ["userId"]),
+  mfaSessions: defineTable({
+    sessionId: v.id("authSessions"),
+    userId: v.id("users"),
+    verifiedAt: v.number(),
+    expiresAt: v.number(),
+  })
+    .index("by_session", ["sessionId"])
+    .index("by_user", ["userId"]),
+  managementRecords: defineTable({
+    ownerId: v.id("users"),
+    createdBy: v.id("users"),
+    kind: v.union(
+      v.literal("TENANT"),
+      v.literal("WORK_ORDER"),
+      v.literal("VENDOR"),
+      v.literal("DOCUMENT"),
+      v.literal("EXPENSE"),
+      v.literal("REFERRAL"),
+      v.literal("COMMISSION"),
+      v.literal("MESSAGE"),
+    ),
+    title: v.string(),
+    detail: v.string(),
+    amount: v.optional(v.number()),
+    contact: v.optional(v.string()),
+    dueDate: v.optional(v.string()),
+    paymentId: v.optional(v.id("payments")),
+    status: v.union(
+      v.literal("OPEN"),
+      v.literal("IN_PROGRESS"),
+      v.literal("COMPLETED"),
+      v.literal("CANCELLED"),
+    ),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_owner_kind", ["ownerId", "kind"])
+    .index("by_kind", ["kind"]),
   // ── Auth (managed by @convex-dev/auth) ───────────────────────────────────
   ...authTables,
 
@@ -24,8 +69,10 @@ export default defineSchema({
     // auth user id from @convex-dev/auth
     authId: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
+    avatarStorageId: v.optional(v.id("_storage")),
     country: v.optional(v.string()),
     occupation: v.optional(v.string()),
+    address: v.optional(v.string()),
     accountStatus: v.optional(
       v.union(v.literal("ACTIVE"), v.literal("SUSPENDED")),
     ),
@@ -125,6 +172,8 @@ export default defineSchema({
 
   // ── Bookings ──────────────────────────────────────────────────────────────
   bookings: defineTable({
+    fulfillmentWorkflowId: v.optional(v.string()),
+    allocatedAt: v.optional(v.number()),
     clientId: v.id("users"),
     plotId: v.id("plots"),
     reference: v.string(),
@@ -338,6 +387,7 @@ export default defineSchema({
     subjectHash: v.optional(v.string()),
     providerStatus: v.optional(v.string()),
     reviewedAt: v.optional(v.number()),
+    sessionExpiresAt: v.optional(v.number()),
     expiresAt: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -345,6 +395,7 @@ export default defineSchema({
     .index("by_user", ["userId"])
     .index("by_user_type", ["userId", "type"])
     .index("by_status", ["status"])
+    .index("by_status_expiry", ["status", "expiresAt"])
     .index("by_provider_reference", ["providerReference"]),
 
   // ── WhatsApp Bot Sessions ─────────────────────────────────────────────────
@@ -363,6 +414,10 @@ export default defineSchema({
 
   // ── Notification Log ──────────────────────────────────────────────────────
   notificationLog: defineTable({
+    attempts: v.optional(v.number()),
+    nextAttemptAt: v.optional(v.number()),
+    leaseUntil: v.optional(v.number()),
+    lastError: v.optional(v.string()),
     channel: v.union(
       v.literal("WHATSAPP"),
       v.literal("EMAIL"),
@@ -478,6 +533,17 @@ export default defineSchema({
     ),
     isFeatured: v.boolean(),
     isActive: v.boolean(),
+    verificationStatus: v.optional(
+      v.union(
+        v.literal("DRAFT"),
+        v.literal("PENDING"),
+        v.literal("VERIFIED"),
+        v.literal("REJECTED"),
+      ),
+    ),
+    verificationReference: v.optional(v.string()),
+    reviewedBy: v.optional(v.id("users")),
+    managerId: v.optional(v.id("users")),
     agentId: v.optional(v.id("users")),
     latitude: v.optional(v.number()),
     longitude: v.optional(v.number()),
@@ -487,7 +553,9 @@ export default defineSchema({
     .index("by_slug", ["slug"])
     .index("by_active", ["isActive"])
     .index("by_featured", ["isFeatured"])
-    .index("by_type", ["type"]),
+    .index("by_type", ["type"])
+    .index("by_agent", ["agentId"])
+    .index("by_manager", ["managerId"]),
 
   // ── Enterprise Services Catalog ──────────────────────────────────────────
   // Interior design & decoration, furnishing, foreign/Turkish tiles supply,
@@ -710,9 +778,13 @@ export default defineSchema({
 
   // ── Storage ownership, validation, quarantine and retention ────────────
   storedAssets: defineTable({
+    scanAttempts: v.optional(v.number()),
+    nextScanAt: v.optional(v.number()),
+    scanError: v.optional(v.string()),
     storageId: v.id("_storage"),
     ownerId: v.id("users"),
     purpose: v.union(
+      v.literal("AVATAR_IMAGE"),
       v.literal("PROPERTY_IMAGE"),
       v.literal("PROJECT_MEDIA"),
       v.literal("SERVICE_ATTACHMENT"),

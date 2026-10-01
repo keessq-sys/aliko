@@ -1,6 +1,6 @@
 <script lang="ts">
   import "../app.css";
-  import { setupConvex } from "convex-svelte";
+  import { getConvexClient, setupConvex } from "convex-svelte";
   import { env as publicEnv } from "$env/dynamic/public";
   import { browser } from "$app/environment";
   // Falls back to a placeholder when no deployment is configured: setupConvex
@@ -8,16 +8,37 @@
   // SSR, so nothing connects unless a real PUBLIC_CONVEX_URL is provided in .env.
   const PUBLIC_CONVEX_URL =
     (publicEnv as Record<string, string | undefined>).PUBLIC_CONVEX_URL ?? "";
-  const convexUrl = PUBLIC_CONVEX_URL || "https://preview-placeholder.convex.cloud";
+  const convexUrl =
+    PUBLIC_CONVEX_URL || "https://preview-placeholder.convex.cloud";
   import Header from "$lib/components/layout/Header.svelte";
   import Footer from "$lib/components/layout/Footer.svelte";
   import Toast from "$lib/components/ui/Toast.svelte";
   import MobileBottomNav from "$lib/components/layout/MobileBottomNav.svelte";
   import { page } from "$app/stores";
   import ThemeToggle from "$lib/components/ui/ThemeToggle.svelte";
+  import { onMount } from "svelte";
+  import { addToast } from "$lib/stores/ui";
+  onMount(() => {
+    const showError = () =>
+      addToast({
+        type: "error",
+        message:
+          "Current data could not be loaded. Refresh the page to try again.",
+        duration: 8000,
+      });
+    window.addEventListener("adk-query-error", showError);
+    return () => window.removeEventListener("adk-query-error", showError);
+  });
 
   export let data: {
-    session?: { user?: { name?: string | null; email?: string | null; role?: string; id?: string | null } } | null;
+    session?: {
+      user?: {
+        name?: string | null;
+        email?: string | null;
+        role?: string;
+        id?: string | null;
+      };
+    } | null;
     /** Global Organization + WebSite JSON-LD, built once in +layout.server.ts.
      *  Safe to render unconditionally: unlike title/description/OG, a second
      *  <script type="application/ld+json"> block per page is valid schema.org
@@ -27,13 +48,22 @@
 
   // Initialize Convex real-time client (falls back gracefully when unset)
   setupConvex(convexUrl, {
-    disabled: !browser || !PUBLIC_CONVEX_URL || convexUrl.includes("preview-placeholder"),
+    disabled:
+      !browser ||
+      !PUBLIC_CONVEX_URL ||
+      convexUrl.includes("preview-placeholder"),
   });
 
+  if (browser && PUBLIC_CONVEX_URL)
+    getConvexClient().setAuth(
+      async () => (await (await fetch("/api/auth/session")).json()).token,
+    );
   // Hide header/footer on dashboard and auth routes
   $: isDashboardRoute = $page.url.pathname.startsWith("/dashboard");
   $: isAdminRoute = $page.url.pathname.startsWith("/admin");
-  $: isAuthRoute = $page.url.pathname.startsWith("/auth") || $page.url.pathname.startsWith("/register");
+  $: isAuthRoute =
+    $page.url.pathname.startsWith("/auth") ||
+    $page.url.pathname.startsWith("/register");
   $: hideHeader = isDashboardRoute || isAdminRoute;
   $: hideFooter = isDashboardRoute || isAdminRoute;
   // Dashboard/admin routes already have their own drawer-based mobile nav;
@@ -43,8 +73,15 @@
 
 <svelte:head>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin="anonymous"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap"
+    rel="stylesheet"
+  />
   <meta name="theme-color" content="#050A0E" />
   <!-- title/description/OG/Twitter/canonical are intentionally NOT set here.
        Rendering them at the layout level would duplicate whatever a page's
@@ -62,7 +99,11 @@
   <div class="fixed right-4 top-4 z-[70]"><ThemeToggle /></div>
 {/if}
 
-<main class="app-shell {showMobileBottomNav ? 'pb-16 md:pb-0' : ''} min-h-screen bg-[#050A0E]">
+<main
+  class="app-shell {showMobileBottomNav
+    ? 'pb-16 md:pb-0'
+    : ''} min-h-screen bg-[#050A0E]"
+>
   <slot />
 </main>
 

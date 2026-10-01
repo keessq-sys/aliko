@@ -19,7 +19,7 @@ NODE_ENV = "production"
 
 [[env.preview.r2_buckets]]
 binding = "MEDIA"
-bucket_name = "aliko-diamond-key-media"
+bucket_name = "aliko-diamond-key-media-preview"
 
 [env.production.vars]
 NODE_VERSION = "22"

@@ -11,6 +11,12 @@ const app = defineApp({
   // can build safely. Each integration checks its own required variables before
   // accepting traffic.
   env: {
+    JWT_PRIVATE_KEY: v.optional(v.string()),
+    JWKS: v.optional(v.string()),
+    MFA_ENCRYPTION_KEY: v.optional(v.string()),
+    ADMIN_MFA_REQUIRED: v.optional(v.string()),
+    ADMIN_MFA_RECOVERY_ENABLED: v.optional(v.string()),
+    ADMIN_ALERT_EMAIL: v.optional(v.string()),
     SITE_URL: v.optional(v.string()),
     APP_URL: v.optional(v.string()),
     RESEND_API_KEY: v.optional(v.string()),

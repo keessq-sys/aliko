@@ -1,6 +1,9 @@
 import type { LayoutServerLoad } from "./$types";
 import { defaultSEO } from "$lib/seo";
-import { buildOrganizationSchema, buildWebSiteSchema } from "$lib/schema/builders";
+import {
+  buildOrganizationSchema,
+  buildWebSiteSchema,
+} from "$lib/schema/builders";
 import { buildPageGraph } from "$lib/schema/graph";
 
 // Organization + WebSite are site-wide entities (not page-specific), so they
@@ -15,7 +18,10 @@ export const load: LayoutServerLoad = async ({ cookies, locals }) => {
   // Convex's real-time subscription, so this is just for SSR pre-rendering).
   const token = cookies.get("__convexAuthJWT");
 
-  const seoBase = { seo: defaultSEO, globalSchemaJson: buildPageGraph(globalSchema) };
+  const seoBase = {
+    seo: defaultSEO,
+    globalSchemaJson: buildPageGraph(globalSchema),
+  };
 
   if (!token) {
     return { session: null, ...seoBase };
@@ -23,24 +29,40 @@ export const load: LayoutServerLoad = async ({ cookies, locals }) => {
 
   if (locals.user) {
     return {
-      session: { user: { name: locals.user.name ?? null, email: locals.user.email ?? null, role: locals.user.role ?? 'CLIENT', id: locals.user._id ?? null } },
+      session: {
+        user: {
+          name: locals.user.name ?? null,
+          email: locals.user.email ?? null,
+          role: locals.user.role ?? "CLIENT",
+          id: locals.user._id ?? null,
+        },
+      },
       ...seoBase,
     };
   }
 
   try {
-    // Decode JWT payload (no verification needed here — Convex verifies it)
-    const [, payloadB64] = token.split(".");
-    const payload = JSON.parse(atob(payloadB64));
+    const { ConvexHttpClient } = await import("convex/browser");
+    const { makeFunctionReference } = await import("convex/server");
+    const { env } = await import("$env/dynamic/public");
+    if (!env.PUBLIC_CONVEX_URL) return { session: null, ...seoBase };
+    const client = new ConvexHttpClient(env.PUBLIC_CONVEX_URL);
+    client.setAuth(token);
+    const profile: any = await client.query(
+      makeFunctionReference<"query">("users:getMyProfile"),
+      {},
+    );
     return {
-      session: {
-        user: {
-          name: payload.name ?? null,
-          email: payload.email ?? null,
-          role: payload.role ?? "CLIENT",
-          id: payload.sub ?? null,
-        },
-      },
+      session: profile
+        ? {
+            user: {
+              name: profile.name,
+              email: profile.email,
+              role: profile.role,
+              id: profile._id,
+            },
+          }
+        : null,
       ...seoBase,
     };
   } catch {

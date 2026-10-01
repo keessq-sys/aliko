@@ -2,6 +2,24 @@ import { cronJobs } from "convex/server";
 import { internal } from "./_generated/api";
 
 const crons = cronJobs();
+crons.interval(
+  "expire identity verifications",
+  { hours: 1 },
+  internal.kyc.expireVerifications,
+  {},
+);
+crons.interval(
+  "retry pending security scans",
+  { minutes: 5 },
+  internal.storage.retryPendingScans,
+  {},
+);
+crons.interval(
+  "deliver queued email",
+  { minutes: 5 },
+  internal.notifications.deliverQueued,
+  {},
+);
 
 // Nudge admin on service requests that have sat unreviewed for 48h+.
 crons.interval(

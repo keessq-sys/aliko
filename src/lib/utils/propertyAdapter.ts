@@ -8,24 +8,24 @@
  * catalog can replace the mock data source without rewriting every
  * presentational component's field access.
  */
-import type { Property, Agent } from '$lib/stores/properties';
-import { SITE_URL } from '$lib/data/organization';
+import type { Property, Agent } from "$lib/stores/properties";
+import { SITE_URL } from "$lib/data/organization";
 
 const FALLBACK_AGENT: Agent = {
-  id: 'adk-house',
-  name: 'Aliko Diamond Key',
-  phone: '+2347047669943',
-  email: 'contact@adk.com',
+  id: "adk-house",
+  name: "Aliko Diamond Key",
+  phone: "+2347047669943",
+  email: "contact@adk.com",
   avatar: `${SITE_URL}/logo.png`,
-  agency: 'Aliko Diamond Key Realtors Ltd',
-  rating: 5
+  agency: "Aliko Diamond Key Realtors Ltd",
+  rating: 5,
 };
 
 export function toDisplayProperty(row: any): Property {
   return {
     id: row.slug ?? row._id,
     title: row.title,
-    type: (row.type ?? 'RESIDENTIAL').toLowerCase() as Property['type'],
+    type: (row.type ?? "RESIDENTIAL").toLowerCase() as Property["type"],
     price: row.price,
     pricePerSqm: row.sizeSqm ? Math.round(row.price / row.sizeSqm) : undefined,
     bedrooms: row.bedrooms ?? 0,
@@ -35,18 +35,18 @@ export function toDisplayProperty(row: any): Property {
     yearBuilt: row.yearBuilt ?? 0,
     location: {
       address: row.location,
-      lga: '',
+      lga: "",
       state: row.state,
       lat: row.latitude ?? 0,
-      lng: row.longitude ?? 0
+      lng: row.longitude ?? 0,
     },
-    status: (row.status ?? 'AVAILABLE').toLowerCase() as Property['status'],
+    status: (row.status ?? "AVAILABLE").toLowerCase() as Property["status"],
     isFeatured: Boolean(row.isFeatured),
     // Every property returned by listProperties/getProperty has already
     // passed admin review (isActive gate) — there is no separate
     // per-listing "verified" flag in the real schema, so a published
     // listing is treated as verified.
-    isVerified: true,
+    isVerified: row.verificationStatus === "VERIFIED",
     images: row.images?.length ? row.images : [`${SITE_URL}/og/default.png`],
     amenities: row.amenities ?? [],
     description: row.description,
@@ -58,10 +58,10 @@ export function toDisplayProperty(row: any): Property {
           email: row.agent.email ?? FALLBACK_AGENT.email,
           avatar: FALLBACK_AGENT.avatar,
           agency: FALLBACK_AGENT.agency,
-          rating: 5
+          rating: 5,
         }
       : FALLBACK_AGENT,
     tags: [],
-    createdAt: new Date(row.createdAt ?? Date.now())
+    createdAt: new Date(row.createdAt ?? Date.now()),
   };
 }

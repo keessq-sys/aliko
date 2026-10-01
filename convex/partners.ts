@@ -1,19 +1,12 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import type { Id } from "./_generated/dataModel";
-
-async function requireAdmin(ctx: any) {
-  const userId = await getAuthUserId(ctx);
-  if (!userId) throw new Error("Unauthorized");
-  const user = await ctx.db.get(userId as Id<"users">);
-  if (user?.role !== "ADMIN") throw new Error("Forbidden — ADMIN only");
-  return userId;
-}
+import { requireAdmin, requireUser } from "./lib/access";
+import { rateLimiter, contactRateKey } from "./lib/rateLimits";
 
 function makeRef(prefix: string): string {
   const year = new Date().getFullYear();
-  const rand = Math.floor(1000 + Math.random() * 9000);
+  const rand = crypto.randomUUID();
   return `ADK-${prefix}-${year}-${rand}`;
 }
 
@@ -31,17 +24,17 @@ export const submitAgentApplication = mutation({
     bio: v.optional(v.string()),
     statesOfOperation: v.optional(v.array(v.string())),
     primaryLgas: v.optional(v.string()),
-    nin: v.optional(v.string()),
     documentUrls: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    let userId: any = null;
-    try {
-      const id = await getAuthUserId(ctx);
-      if (id) userId = id;
-    } catch {
-      /* anonymous */
-    }
+    const applicant = await requireUser(ctx);
+    const userId = applicant._id;
+    if (args.email.trim().toLowerCase() !== applicant.email.toLowerCase())
+      throw new Error("Use your account email");
+    await rateLimiter.limit(ctx, "registration", {
+      key: String(userId),
+      throws: true,
+    });
     const now = Date.now();
     const reference = makeRef("AGT");
     const id = await ctx.db.insert("agentApplications", {
@@ -66,16 +59,21 @@ export const submitManagerApplication = mutation({
     cacRcNumber: v.optional(v.string()),
     statesOfOperation: v.array(v.string()),
     portfolioSize: v.optional(v.string()),
-    plan: v.union(v.literal("STARTER"), v.literal("PROFESSIONAL"), v.literal("ENTERPRISE")),
+    plan: v.union(
+      v.literal("STARTER"),
+      v.literal("PROFESSIONAL"),
+      v.literal("ENTERPRISE"),
+    ),
   },
   handler: async (ctx, args) => {
-    let userId: any = null;
-    try {
-      const id = await getAuthUserId(ctx);
-      if (id) userId = id;
-    } catch {
-      /* anonymous */
-    }
+    const applicant = await requireUser(ctx);
+    const userId = applicant._id;
+    if (args.email.trim().toLowerCase() !== applicant.email.toLowerCase())
+      throw new Error("Use your account email");
+    await rateLimiter.limit(ctx, "registration", {
+      key: String(userId),
+      throws: true,
+    });
     const now = Date.now();
     const id = await ctx.db.insert("estateManagers", {
       userId,
@@ -90,17 +88,25 @@ export const submitManagerApplication = mutation({
 
 // ── Admin: agent applications ──────────────────────────────────────────────
 export const listAgentApplications = query({
-  args: { status: v.optional(v.union(
-    v.literal("PENDING"), v.literal("UNDER_REVIEW"), v.literal("APPROVED"), v.literal("REJECTED"),
-  )) },
+  args: {
+    status: v.optional(
+      v.union(
+        v.literal("PENDING"),
+        v.literal("UNDER_REVIEW"),
+        v.literal("APPROVED"),
+        v.literal("REJECTED"),
+      ),
+    ),
+  },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     if (args.status) {
       return await ctx.db
         .query("agentApplications")
         .withIndex("by_status", (q) => q.eq("status", args.status!))
-        .collect();
+        .take(500);
     }
-    const rows = await ctx.db.query("agentApplications").collect();
+    const rows = await ctx.db.query("agentApplications").take(500);
     return rows.sort((a, b) => b.createdAt - a.createdAt);
   },
 });
@@ -115,7 +121,7 @@ export const listApprovedAgents = query({
     const rows = await ctx.db
       .query("agentApplications")
       .withIndex("by_status", (q) => q.eq("status", "APPROVED"))
-      .collect();
+      .take(500);
     rows.sort((a, b) => b.createdAt - a.createdAt);
     return rows.slice(0, args.limit ?? 100).map((r) => ({
       _id: r._id,
@@ -125,19 +131,41 @@ export const listApprovedAgents = query({
       specializations: r.specializations ?? [],
       statesOfOperation: r.statesOfOperation ?? [],
       experience: r.experience,
-      bio: r.bio
+      bio: r.bio,
     }));
-  }
+  },
 });
 
 export const reviewAgentApplication = mutation({
   args: {
     id: v.id("agentApplications"),
-    status: v.union(v.literal("PENDING"), v.literal("UNDER_REVIEW"), v.literal("APPROVED"), v.literal("REJECTED")),
+    status: v.union(
+      v.literal("PENDING"),
+      v.literal("UNDER_REVIEW"),
+      v.literal("APPROVED"),
+      v.literal("REJECTED"),
+    ),
     reviewNotes: v.optional(v.string()),
   },
   handler: async (ctx, { id, status, reviewNotes }) => {
-    await requireAdmin(ctx);
+    const reviewerId = await requireAdmin(ctx);
+    const application = await ctx.db.get(id);
+    if (!application?.userId)
+      throw new Error("Link the application to an authenticated account first");
+    const account = await ctx.db.get(application.userId);
+    if (!account || account.role === "ADMIN")
+      throw new Error("Invalid applicant account");
+    await ctx.db.patch(application.userId, {
+      role: status === "APPROVED" ? "AGENT" : "CLIENT",
+    });
+    await ctx.db.insert("adminAuditLog", {
+      actorId: reviewerId,
+      action: "AGENT_APPLICATION_REVIEWED",
+      entityType: "agentApplications",
+      entityId: String(id),
+      detail: status,
+      createdAt: Date.now(),
+    });
     const patch: Record<string, unknown> = { status, updatedAt: Date.now() };
     if (reviewNotes !== undefined) patch.reviewNotes = reviewNotes;
     await ctx.db.patch(id, patch);
@@ -146,15 +174,24 @@ export const reviewAgentApplication = mutation({
 
 // ── Admin: estate managers ─────────────────────────────────────────────────
 export const listManagers = query({
-  args: { status: v.optional(v.union(v.literal("PENDING"), v.literal("APPROVED"), v.literal("SUSPENDED"))) },
+  args: {
+    status: v.optional(
+      v.union(
+        v.literal("PENDING"),
+        v.literal("APPROVED"),
+        v.literal("SUSPENDED"),
+      ),
+    ),
+  },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     if (args.status) {
       return await ctx.db
         .query("estateManagers")
         .withIndex("by_status", (q) => q.eq("status", args.status!))
-        .collect();
+        .take(500);
     }
-    const rows = await ctx.db.query("estateManagers").collect();
+    const rows = await ctx.db.query("estateManagers").take(500);
     return rows.sort((a, b) => b.createdAt - a.createdAt);
   },
 });
@@ -162,10 +199,31 @@ export const listManagers = query({
 export const reviewManagerApplication = mutation({
   args: {
     id: v.id("estateManagers"),
-    status: v.union(v.literal("PENDING"), v.literal("APPROVED"), v.literal("SUSPENDED")),
+    status: v.union(
+      v.literal("PENDING"),
+      v.literal("APPROVED"),
+      v.literal("SUSPENDED"),
+    ),
   },
   handler: async (ctx, { id, status }) => {
-    await requireAdmin(ctx);
+    const reviewerId = await requireAdmin(ctx);
+    const application = await ctx.db.get(id);
+    if (!application?.userId)
+      throw new Error("Link the application to an authenticated account first");
+    const account = await ctx.db.get(application.userId);
+    if (!account || account.role === "ADMIN")
+      throw new Error("Invalid applicant account");
+    await ctx.db.patch(application.userId, {
+      role: status === "APPROVED" ? "ESTATE_MANAGER" : "CLIENT",
+    });
+    await ctx.db.insert("adminAuditLog", {
+      actorId: reviewerId,
+      action: "MANAGER_APPLICATION_REVIEWED",
+      entityType: "estateManagers",
+      entityId: String(id),
+      detail: status,
+      createdAt: Date.now(),
+    });
     const patch: Record<string, unknown> = { status, updatedAt: Date.now() };
     if (status === "APPROVED") patch.approvedAt = Date.now();
     await ctx.db.patch(id, patch);

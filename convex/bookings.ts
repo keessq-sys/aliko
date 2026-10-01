@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import { requireUser } from "./lib/access";
 import {
   query,
   mutation,
@@ -124,9 +125,21 @@ export const createBooking = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized — please sign in to book");
+    const client = await requireUser(ctx);
+    if (
+      !client.kycVerified ||
+      !client.address ||
+      client.address.trim().length < 10
+    )
+      throw new Error(
+        "Complete identity verification and save your legal address in your profile before reserving land",
+      );
 
     const plot = await ctx.db.get(args.plotId);
     if (!plot) throw new Error("Plot not found");
+    const project = await ctx.db.get(plot.projectId);
+    if (!plot.titleVerified || !project?.isActive)
+      throw new Error("This plot is not approved for reservation");
     if (plot.status !== "AVAILABLE")
       throw new Error(
         `This plot is ${plot.status.toLowerCase().replace("_", " ")} and cannot be booked`,
@@ -233,10 +246,10 @@ export const confirmPayment = internalMutation({
 
     if (isFullyPaid) {
       await ctx.db.patch(booking.plotId, {
-        status: "SOLD",
+        status: "RESERVED",
         updatedAt: Date.now(),
       });
-      await start(
+      const fulfillmentWorkflowId = await start(
         ctx,
         internal.fulfillment.paymentFulfillment,
         {
@@ -247,6 +260,7 @@ export const confirmPayment = internalMutation({
         },
         { startAsync: true },
       );
+      await ctx.db.patch(booking._id, { fulfillmentWorkflowId });
     }
 
     return { booking, isFullyPaid, newlyConfirmed: true };
@@ -489,8 +503,11 @@ export const settleFlutterwavePayment = internalMutation({
     if (updatedBooking)
       await bookingAggregate.replaceOrInsert(ctx, booking, updatedBooking);
     if (isFullyPaid) {
-      await ctx.db.patch(booking.plotId, { status: "SOLD", updatedAt: now });
-      await start(
+      await ctx.db.patch(booking.plotId, {
+        status: "RESERVED",
+        updatedAt: now,
+      });
+      const fulfillmentWorkflowId = await start(
         ctx,
         internal.fulfillment.paymentFulfillment,
         {
@@ -501,6 +518,7 @@ export const settleFlutterwavePayment = internalMutation({
         },
         { startAsync: true },
       );
+      await ctx.db.patch(booking._id, { fulfillmentWorkflowId });
     }
     return { booking, isFullyPaid, newlyConfirmed: true };
   },
@@ -684,9 +702,15 @@ export const verifyFlutterwavePayment = action({
 export const processFlutterwaveWebhook = internalAction({
   args: { transactionId: v.string(), reference: v.string() },
   handler: async (ctx, args) => {
-    const result = await verifyFlutterwave(ctx, args.transactionId, args.reference);
+    const result = await verifyFlutterwave(
+      ctx,
+      args.transactionId,
+      args.reference,
+    );
     if (result.newlyConfirmed) {
-      await ctx.scheduler.runAfter(0, internal.email.sendPaymentReceipt, { reference: args.reference });
+      await ctx.scheduler.runAfter(0, internal.email.sendPaymentReceipt, {
+        reference: args.reference,
+      });
     }
     return result;
   },

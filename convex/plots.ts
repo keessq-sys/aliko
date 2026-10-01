@@ -1,3 +1,4 @@
+import { requireAdmin } from "./lib/access";
 import { v } from "convex/values";
 import { query, mutation, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
@@ -164,7 +165,7 @@ export const verifyPlotTitle = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized");
     const user = await ctx.db.get(userId as Id<"users">);
-    if (user?.role !== "ADMIN") throw new Error("Forbidden — ADMIN only");
+    await requireAdmin(ctx);
 
     await ctx.db.patch(args.plotId, {
       titleVerified: true,
@@ -201,7 +202,7 @@ export const updatePlotPrice = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized");
     const user = await ctx.db.get(userId as Id<"users">);
-    if (user?.role !== "ADMIN") throw new Error("Forbidden");
+    await requireAdmin(ctx);
     await ctx.db.patch(args.plotId, {
       price: args.price,
       serviceChargeAnnual: args.serviceChargeAnnual,

@@ -1,16 +1,9 @@
+import { requireAdmin } from "./lib/access";
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import type { Id } from "./_generated/dataModel";
 import { contactRateKey, rateLimiter } from "./lib/rateLimits";
-
-async function requireAdmin(ctx: any) {
-  const userId = await getAuthUserId(ctx);
-  if (!userId) throw new Error("Unauthorized");
-  const user = await ctx.db.get(userId as Id<"users">);
-  if (user?.role !== "ADMIN") throw new Error("Forbidden — ADMIN only");
-  return userId;
-}
 
 // ── Public: submit an enquiry from a property/plot/project page ──────────
 // No auth required — this is the lead-capture path for anonymous visitors.
@@ -81,15 +74,19 @@ export const listMyAssignedEnquiries = query({
     if (!userId) throw new Error("Unauthorized");
     const user = await ctx.db.get(userId as Id<"users">);
     if (user?.role !== "AGENT") throw new Error("Forbidden — AGENT only");
-    const rows = await ctx.db.query("enquiries")
+    const rows = await ctx.db
+      .query("enquiries")
       .withIndex("by_agent", (q) => q.eq("assignedAgentId", user._id))
-      .order("desc").take(Math.min(Math.max(limit ?? 100, 1), 200));
-    return Promise.all(rows.map(async (entry) => ({
-      ...entry,
-      property: entry.propertyId ? await ctx.db.get(entry.propertyId) : null,
-      plot: entry.plotId ? await ctx.db.get(entry.plotId) : null,
-      project: entry.projectId ? await ctx.db.get(entry.projectId) : null,
-    })));
+      .order("desc")
+      .take(Math.min(Math.max(limit ?? 100, 1), 200));
+    return Promise.all(
+      rows.map(async (entry) => ({
+        ...entry,
+        property: entry.propertyId ? await ctx.db.get(entry.propertyId) : null,
+        plot: entry.plotId ? await ctx.db.get(entry.plotId) : null,
+        project: entry.projectId ? await ctx.db.get(entry.projectId) : null,
+      })),
+    );
   },
 });
 

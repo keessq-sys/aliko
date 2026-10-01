@@ -1,11 +1,19 @@
+import { requireAdmin, requireUser } from "./lib/access";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { internalAction, internalMutation, internalQuery, mutation, query } from "./_generated/server";
+import {
+  internalAction,
+  internalMutation,
+  internalQuery,
+  mutation,
+  query,
+} from "./_generated/server";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { rateLimiter } from "./lib/rateLimits";
 
 const purpose = v.union(
+  v.literal("AVATAR_IMAGE"),
   v.literal("PROPERTY_IMAGE"),
   v.literal("PROJECT_MEDIA"),
   v.literal("SERVICE_ATTACHMENT"),
@@ -23,6 +31,7 @@ const DOCUMENT_MIMES = new Set(["application/pdf", "image/jpeg", "image/png"]);
 
 function policy(
   uploadPurpose:
+    | "AVATAR_IMAGE"
     | "PROPERTY_IMAGE"
     | "PROJECT_MEDIA"
     | "SERVICE_ATTACHMENT"
@@ -30,7 +39,9 @@ function policy(
     | "LEGAL_DOCUMENT",
 ) {
   const image =
-    uploadPurpose === "PROPERTY_IMAGE" || uploadPurpose === "PROJECT_MEDIA";
+    uploadPurpose === "PROPERTY_IMAGE" ||
+    uploadPurpose === "PROJECT_MEDIA" ||
+    uploadPurpose === "AVATAR_IMAGE";
   return {
     allowed: image ? IMAGE_MIMES : DOCUMENT_MIMES,
     maxBytes: image ? 15_000_000 : 10_000_000,
@@ -38,11 +49,7 @@ function policy(
 }
 
 async function authenticatedUser(ctx: any) {
-  const authId = await getAuthUserId(ctx);
-  if (!authId) throw new Error("Unauthorized");
-  const user = await ctx.db.get(authId as Id<"users">);
-  if (!user) throw new Error("User profile not found");
-  return user;
+  return requireUser(ctx);
 }
 
 export const generateUploadUrl = mutation({
@@ -123,11 +130,7 @@ export const registerUpload = mutation({
       await ctx.storage.delete(args.storageId);
       throw new Error("Forbidden for this upload purpose");
     }
-    const requiresScan = [
-      "SERVICE_ATTACHMENT",
-      "KYC_DOCUMENT",
-      "LEGAL_DOCUMENT",
-    ].includes(args.purpose);
+    const requiresScan = true;
     const now = Date.now();
     const assetId = await ctx.db.insert("storedAssets", {
       storageId: args.storageId,
@@ -144,7 +147,13 @@ export const registerUpload = mutation({
       createdAt: now,
       updatedAt: now,
     });
-    if (requiresScan && process.env.MALWARE_SCANNER_URL && process.env.MALWARE_SCANNER_API_KEY) {
+    if (args.purpose === "AVATAR_IMAGE")
+      await ctx.db.patch(user._id, { avatarStorageId: args.storageId });
+    if (
+      requiresScan &&
+      process.env.MALWARE_SCANNER_URL &&
+      process.env.MALWARE_SCANNER_API_KEY
+    ) {
       await ctx.scheduler.runAfter(0, internal.storage.scanAsset, { assetId });
     }
     return assetId;
@@ -162,11 +171,40 @@ export const getAssetForScan = internalQuery({
 });
 
 export const completeAssetScan = internalMutation({
-  args: { assetId: v.id("storedAssets"), clean: v.boolean(), detail: v.optional(v.string()) },
+  args: {
+    assetId: v.id("storedAssets"),
+    clean: v.boolean(),
+    detail: v.optional(v.string()),
+  },
   handler: async (ctx, args) => {
-    const asset = await ctx.db.get(args.assetId); if (!asset || asset.status !== "PENDING_SCAN") return;
-    await ctx.db.patch(asset._id, { status: args.clean ? "ACTIVE" : "QUARANTINED", updatedAt: Date.now() });
-    if (!args.clean) await ctx.db.insert("notificationLog", { channel: "EMAIL", recipient: "admin", subject: "Uploaded file quarantined", templateName: "malware-alert", message: (args.detail ?? "Scanner marked an upload as unsafe").slice(0, 500), status: "QUEUED", relatedId: String(asset._id), relatedType: "storedAssets", createdAt: Date.now() });
+    const asset = await ctx.db.get(args.assetId);
+    if (!asset || asset.status !== "PENDING_SCAN") return;
+    await ctx.db.patch(asset._id, {
+      status: args.clean ? "ACTIVE" : "QUARANTINED",
+      updatedAt: Date.now(),
+    });
+    if (args.clean && asset.purpose === "AVATAR_IMAGE") {
+      const owner = await ctx.db.get(asset.ownerId);
+      if (owner?.avatarStorageId === asset.storageId)
+        await ctx.db.patch(owner._id, {
+          avatarUrl: (await ctx.storage.getUrl(asset.storageId)) ?? undefined,
+        });
+    }
+    if (!args.clean)
+      await ctx.db.insert("notificationLog", {
+        channel: "EMAIL",
+        recipient: "admin",
+        subject: "Uploaded file quarantined",
+        templateName: "malware-alert",
+        message: (args.detail ?? "Scanner marked an upload as unsafe").slice(
+          0,
+          500,
+        ),
+        status: "QUEUED",
+        relatedId: String(asset._id),
+        relatedType: "storedAssets",
+        createdAt: Date.now(),
+      });
   },
 });
 
@@ -174,15 +212,42 @@ export const completeAssetScan = internalMutation({
 export const scanAsset = internalAction({
   args: { assetId: v.id("storedAssets") },
   handler: async (ctx, { assetId }) => {
-    const value = await ctx.runQuery(internal.storage.getAssetForScan, { assetId }); if (!value) return;
-    const endpoint = process.env.MALWARE_SCANNER_URL; const apiKey = process.env.MALWARE_SCANNER_API_KEY;
+    const value = await ctx.runQuery(internal.storage.getAssetForScan, {
+      assetId,
+    });
+    if (!value) return;
+    const endpoint = process.env.MALWARE_SCANNER_URL;
+    const apiKey = process.env.MALWARE_SCANNER_API_KEY;
     if (!endpoint || !apiKey) return;
-    const download = await fetch(value.url); if (!download.ok) throw new Error("Could not retrieve upload for scanning");
-    const form = new FormData(); form.append("file", await download.blob(), value.asset.fileName);
-    const response = await fetch(endpoint, { method: "POST", headers: { Authorization: `Bearer ${apiKey}` }, body: form });
-    const result = await response.json() as { clean?: boolean; threat?: string; message?: string };
-    if (!response.ok || typeof result.clean !== "boolean") throw new Error(result.message ?? "Malware scanner returned an invalid response");
-    await ctx.runMutation(internal.storage.completeAssetScan, { assetId, clean: result.clean, detail: result.threat });
+    try {
+      const download = await fetch(value.url);
+      if (!download.ok)
+        throw new Error("Could not retrieve upload for scanning");
+      const form = new FormData();
+      form.append("file", await download.blob(), value.asset.fileName);
+      const response = await fetch(endpoint, {
+        signal: AbortSignal.timeout(20000),
+        method: "POST",
+        headers: { Authorization: `Bearer ${apiKey}` },
+        body: form,
+      });
+      const result = (await response.json()) as {
+        clean?: boolean;
+        threat?: string;
+        message?: string;
+      };
+      if (!response.ok || typeof result.clean !== "boolean")
+        throw new Error(
+          result.message ?? "Malware scanner returned an invalid response",
+        );
+      await ctx.runMutation(internal.storage.completeAssetScan, {
+        assetId,
+        clean: result.clean,
+        detail: result.threat,
+      });
+    } catch {
+      await ctx.runMutation(internal.storage.recordScanFailure, { assetId });
+    }
   },
 });
 
@@ -205,10 +270,14 @@ export const reviewAsset = mutation({
   },
   handler: async (ctx, args) => {
     const user = await authenticatedUser(ctx);
-    if (user.role !== "ADMIN") throw new Error("Forbidden — ADMIN only");
+    await requireAdmin(ctx);
     const asset = await ctx.db.get(args.assetId);
     if (!asset || asset.status === "DELETED")
       throw new Error("Asset not found");
+    if (args.status === "ACTIVE" && asset.status !== "ACTIVE")
+      throw new Error(
+        "A successful security scan is required before releasing this file",
+      );
     await ctx.db.patch(asset._id, {
       status: args.status,
       updatedAt: Date.now(),
@@ -241,5 +310,67 @@ export const purgeExpiredAssets = internalMutation({
       });
     }
     return { purged: expired.length };
+  },
+});
+
+export const recordScanFailure = internalMutation({
+  args: { assetId: v.id("storedAssets") },
+  handler: async (ctx, { assetId }) => {
+    const asset = await ctx.db.get(assetId);
+    if (!asset || asset.status !== "PENDING_SCAN") return;
+    const attempts = (asset.scanAttempts ?? 0) + 1;
+    await ctx.db.patch(assetId, {
+      scanAttempts: attempts,
+      nextScanAt: Date.now() + 60000 * 2 ** attempts,
+      scanError:
+        "Scanner unavailable or invalid response; file remains private",
+    });
+    if (attempts === 5)
+      await ctx.db.insert("backgroundJobs", {
+        jobType: "MALWARE_SCAN",
+        relatedType: "storedAssets",
+        relatedId: String(assetId),
+        status: "DEAD_LETTER",
+        attempts,
+        maxAttempts: 5,
+        lastError: "Scan retry limit reached; operator attention required",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+  },
+});
+export const retryPendingScans = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    if (
+      !process.env.MALWARE_SCANNER_URL ||
+      !process.env.MALWARE_SCANNER_API_KEY
+    )
+      return;
+    const pending = await ctx.db
+      .query("storedAssets")
+      .withIndex("by_status_date", (q) => q.eq("status", "PENDING_SCAN"))
+      .take(100);
+    for (const asset of pending
+      .filter(
+        (row) =>
+          (row.scanAttempts ?? 0) < 5 && (row.nextScanAt ?? 0) <= Date.now(),
+      )
+      .slice(0, 10)) {
+      await ctx.db.patch(asset._id, { nextScanAt: Date.now() + 120000 });
+      await ctx.scheduler.runAfter(0, internal.storage.scanAsset, {
+        assetId: asset._id,
+      });
+    }
+  },
+});
+export const retryAssetScan = mutation({
+  args: { assetId: v.id("storedAssets") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const asset = await ctx.db.get(args.assetId);
+    if (!asset || asset.status !== "PENDING_SCAN")
+      throw new Error("No pending scan to retry");
+    await ctx.db.patch(asset._id, { scanAttempts: 0, nextScanAt: 0 });
   },
 });

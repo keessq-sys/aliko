@@ -1,3 +1,4 @@
+import { requireAdmin } from "./lib/access";
 import { vOnCompleteArgs, Workpool } from "@convex-dev/workpool";
 import { v } from "convex/values";
 import { components, internal } from "./_generated/api";
@@ -177,7 +178,7 @@ export const listDeadLetters = query({
     const authId = await getAuthUserId(ctx);
     if (!authId) throw new Error("Unauthorized");
     const user = await ctx.db.get(authId as Id<"users">);
-    if (user?.role !== "ADMIN") throw new Error("Forbidden — ADMIN only");
+    await requireAdmin(ctx);
     return ctx.db
       .query("backgroundJobs")
       .withIndex("by_status_date", (q) => q.eq("status", "DEAD_LETTER"))

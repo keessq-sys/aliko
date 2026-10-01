@@ -19,17 +19,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
           cache: npm
       - run: npm ci
       - run: npm run lint
       - run: npm run build
       - name: Install browser
         run: npx playwright install --with-deps chromium
-      - name: Test public preview
-        run: npx playwright test tests/e2e/preview.spec.ts --project=chromium
+      - name: Test backend and public journeys
+        run: npm test
         env:
-          PLAYWRIGHT_BASE_URL: http://localhost:4173
+          PLAYWRIGHT_BASE_URL: http://localhost:4175
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

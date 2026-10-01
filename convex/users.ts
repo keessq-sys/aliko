@@ -1,3 +1,4 @@
+import { requireAdmin, requireUser } from "./lib/access";
 import { v } from "convex/values";
 import {
   query,
@@ -10,20 +11,17 @@ import { getAuthUserId, invalidateSessions } from "@convex-dev/auth/server";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 
-async function requireAdmin(ctx: any) {
-  const userId = await getAuthUserId(ctx);
-  if (!userId) throw new Error("Unauthorized");
-  const user = await ctx.db.get(userId as Id<"users">);
-  if (user?.role !== "ADMIN") throw new Error("Forbidden — ADMIN only");
-}
-
 // ── Self-service: the signed-in user's own profile ──────────────────────
 export const getMyProfile = query({
   args: {},
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
-    return ctx.db.get(userId as Id<"users">);
+    try {
+      return await requireUser(ctx);
+    } catch {
+      return null;
+    }
   },
 });
 
@@ -33,8 +31,16 @@ export const updateMyProfile = mutation({
     phone: v.optional(v.string()),
     country: v.optional(v.string()),
     occupation: v.optional(v.string()),
+    address: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireUser(ctx);
+    if (
+      Object.values(args).some(
+        (value) => value !== undefined && value.length > 500,
+      )
+    )
+      throw new Error("Profile field is too long");
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized");
     // Note: email is intentionally not editable here — it's the account's
@@ -154,10 +160,10 @@ export const setAccountStatus = action({
   handler: async (ctx, args) => {
     const actorId = await getAuthUserId(ctx);
     if (!actorId) throw new Error("Unauthorized");
-    const actor = await ctx.runQuery(internal.users.getUserInternal, {
+    const actor = await ctx.runQuery(internal.paymentOperations.requireAdmin, {
       userId: actorId as Id<"users">,
     });
-    if (actor?.role !== "ADMIN") throw new Error("Forbidden — ADMIN only");
+    if (!actor) throw new Error("Unauthorized");
     await ctx.runMutation(internal.users.setAccountStatusInternal, {
       ...args,
       actorId: actorId as Id<"users">,

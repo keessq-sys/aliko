@@ -9,9 +9,11 @@
  */
 
 import type * as ResendOTPPasswordReset from "../ResendOTPPasswordReset.js";
+import type * as adminSecurity from "../adminSecurity.js";
 import type * as aggregates from "../aggregates.js";
 import type * as auth from "../auth.js";
 import type * as bookings from "../bookings.js";
+import type * as catalog from "../catalog.js";
 import type * as clientPortal from "../clientPortal.js";
 import type * as crons from "../crons.js";
 import type * as email from "../email.js";
@@ -21,7 +23,10 @@ import type * as geocoding from "../geocoding.js";
 import type * as http from "../http.js";
 import type * as kyc from "../kyc.js";
 import type * as legalDocuments from "../legalDocuments.js";
+import type * as lib_access from "../lib/access.js";
 import type * as lib_rateLimits from "../lib/rateLimits.js";
+import type * as lib_totp from "../lib/totp.js";
+import type * as management from "../management.js";
 import type * as migrations from "../migrations.js";
 import type * as milestones from "../milestones.js";
 import type * as notifications from "../notifications.js";
@@ -47,9 +52,11 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   ResendOTPPasswordReset: typeof ResendOTPPasswordReset;
+  adminSecurity: typeof adminSecurity;
   aggregates: typeof aggregates;
   auth: typeof auth;
   bookings: typeof bookings;
+  catalog: typeof catalog;
   clientPortal: typeof clientPortal;
   crons: typeof crons;
   email: typeof email;
@@ -59,7 +66,10 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   kyc: typeof kyc;
   legalDocuments: typeof legalDocuments;
+  "lib/access": typeof lib_access;
   "lib/rateLimits": typeof lib_rateLimits;
+  "lib/totp": typeof lib_totp;
+  management: typeof management;
   migrations: typeof migrations;
   milestones: typeof milestones;
   notifications: typeof notifications;

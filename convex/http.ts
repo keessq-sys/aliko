@@ -1,3 +1,4 @@
+import { auth } from "./auth";
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { internal } from "./_generated/api";
@@ -27,9 +28,17 @@ async function hmacBase64(secret: string, body: string) {
   const keyBytes = normalizedSecret
     ? Uint8Array.from(atob(normalizedSecret), (char) => char.charCodeAt(0))
     : encoder.encode(secret);
-  const key = await crypto.subtle.importKey("raw", keyBytes, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const key = await crypto.subtle.importKey(
+    "raw",
+    keyBytes,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
   const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
-  let binary = ""; for (const byte of new Uint8Array(signature)) binary += String.fromCharCode(byte);
+  let binary = "";
+  for (const byte of new Uint8Array(signature))
+    binary += String.fromCharCode(byte);
   return btoa(binary);
 }
 
@@ -67,6 +76,7 @@ function errorMessage(error: unknown) {
 }
 
 const http = httpRouter();
+auth.addHttpRoutes(http);
 
 // ── Flutterwave Webhook ───────────────────────────────────────────────────
 // Flutterwave signs webhook deliveries with the secret hash configured in
@@ -218,7 +228,8 @@ http.route({
     const secret = process.env.DROPBOX_SIGN_API_KEY;
     if (!secret) return new Response("Webhook not configured", { status: 503 });
     const declared = Number(req.headers.get("content-length") ?? 0);
-    if (declared > MAX_WEBHOOK_BYTES) return new Response("Payload too large", { status: 413 });
+    if (declared > MAX_WEBHOOK_BYTES)
+      return new Response("Payload too large", { status: 413 });
     let json: string;
     try {
       const form = await req.formData();
@@ -243,7 +254,7 @@ http.route({
       provider: "DROPBOX_SIGN",
       eventId:
         payload.event.event_hash ??
-          `${payload.event.event_type}:${payload.event.event_time ?? (await sha256Hex(json))}`,
+        `${payload.event.event_type}:${payload.event.event_time ?? (await sha256Hex(json))}`,
       eventType: payload.event.event_type,
       reference: referenceCode,
       payloadDigest: await sha256Hex(json),
@@ -251,21 +262,26 @@ http.route({
     if (!claim.claimed)
       return new Response("Hello API Event Received", { status: 200 });
 
-    if (payload.event.event_type === "signature_request_all_signed") {
+    const signatureOutcome: Record<string, "SIGNED" | "REJECTED" | "EXPIRED"> =
+      {
+        signature_request_all_signed: "SIGNED",
+        signature_request_declined: "REJECTED",
+        signature_request_expired: "EXPIRED",
+      };
+    if (signatureOutcome[payload.event.event_type]) {
       if (referenceCode) {
         await ctx.runMutation(internal.legalDocuments.updateDocumentStatus, {
           referenceCode,
-          status: "SIGNED",
+          status: signatureOutcome[payload.event.event_type],
           actorRole: "CLIENT",
         });
       }
     }
     await ctx.runMutation(internal.operations.finishWebhookEvent, {
       eventId: claim.eventId,
-      status:
-        payload.event.event_type === "signature_request_all_signed"
-          ? "PROCESSED"
-          : "IGNORED",
+      status: Boolean(signatureOutcome[payload.event.event_type])
+        ? "PROCESSED"
+        : "IGNORED",
     });
 
     // Dropbox Sign requires this exact response
@@ -281,19 +297,54 @@ http.route({
     const secret = process.env.RESEND_WEBHOOK_SECRET;
     if (!secret) return new Response("Webhook not configured", { status: 503 });
     let raw: string;
-    try { raw = await readWebhookBody(req); } catch { return new Response("Payload too large", { status: 413 }); }
-    const id = req.headers.get("svix-id"); const timestamp = req.headers.get("svix-timestamp"); const signatures = req.headers.get("svix-signature");
-    if (!id || !timestamp || !signatures) return new Response("Missing signature", { status: 401 });
-    const unix = Number(timestamp); if (!Number.isFinite(unix) || Math.abs(Date.now() / 1000 - unix) > 300) return new Response("Expired signature", { status: 401 });
+    try {
+      raw = await readWebhookBody(req);
+    } catch {
+      return new Response("Payload too large", { status: 413 });
+    }
+    const id = req.headers.get("svix-id");
+    const timestamp = req.headers.get("svix-timestamp");
+    const signatures = req.headers.get("svix-signature");
+    if (!id || !timestamp || !signatures)
+      return new Response("Missing signature", { status: 401 });
+    const unix = Number(timestamp);
+    if (!Number.isFinite(unix) || Math.abs(Date.now() / 1000 - unix) > 300)
+      return new Response("Expired signature", { status: 401 });
     const expected = await hmacBase64(secret, `${id}.${timestamp}.${raw}`);
-    const valid = signatures.split(" ").some((part) => part.startsWith("v1,") && constantTimeEqual(part.slice(3), expected));
+    const valid = signatures
+      .split(" ")
+      .some(
+        (part) =>
+          part.startsWith("v1,") && constantTimeEqual(part.slice(3), expected),
+      );
     if (!valid) return new Response("Invalid signature", { status: 401 });
-    const payload = JSON.parse(raw) as { type?: string; data?: { email_id?: string } };
-    const claim = await ctx.runMutation(internal.operations.claimWebhookEvent, { provider: "RESEND", eventId: id, eventType: payload.type ?? "unknown", reference: payload.data?.email_id, payloadDigest: await sha256Hex(raw) });
+    const payload = JSON.parse(raw) as {
+      type?: string;
+      data?: { email_id?: string };
+    };
+    const claim = await ctx.runMutation(internal.operations.claimWebhookEvent, {
+      provider: "RESEND",
+      eventId: id,
+      eventType: payload.type ?? "unknown",
+      reference: payload.data?.email_id,
+      payloadDigest: await sha256Hex(raw),
+    });
     if (!claim.claimed) return new Response("ok");
-    const failed = ["email.bounced", "email.complained", "email.failed", "email.suppressed"].includes(payload.type ?? "");
-    if (payload.data?.email_id) await ctx.runMutation(internal.email.updateDelivery, { providerId: payload.data.email_id, status: failed ? "FAILED" : "SENT" });
-    await ctx.runMutation(internal.operations.finishWebhookEvent, { eventId: claim.eventId, status: payload.data?.email_id ? "PROCESSED" : "IGNORED" });
+    const failed = [
+      "email.bounced",
+      "email.complained",
+      "email.failed",
+      "email.suppressed",
+    ].includes(payload.type ?? "");
+    if (payload.data?.email_id)
+      await ctx.runMutation(internal.email.updateDelivery, {
+        providerId: payload.data.email_id,
+        status: failed ? "FAILED" : "SENT",
+      });
+    await ctx.runMutation(internal.operations.finishWebhookEvent, {
+      eventId: claim.eventId,
+      status: payload.data?.email_id ? "PROCESSED" : "IGNORED",
+    });
     return new Response("ok");
   }),
 });
@@ -385,45 +436,88 @@ http.route({
     const secret = process.env.QOREID_WEBHOOK_SECRET;
     if (!secret) return new Response("Webhook not configured", { status: 503 });
     let raw = "";
-    try { raw = await readWebhookBody(req); }
-    catch { return new Response("Payload too large", { status: 413 }); }
+    try {
+      raw = await readWebhookBody(req);
+    } catch {
+      return new Response("Payload too large", { status: 413 });
+    }
     const signature = req.headers.get("x-verifyme-signature");
     const expected = await hmacHex("SHA-512", secret, raw);
     if (!signature || !constantTimeEqual(signature.toLowerCase(), expected))
       return new Response("Invalid signature", { status: 401 });
 
     let payload: {
-      id?: string; reference?: string; status?: string; state?: string;
-      data?: { id?: string; reference?: string; status?: string; state?: string };
+      id?: string;
+      reference?: string;
+      status?: string;
+      state?: string;
+      data?: {
+        id?: string;
+        reference?: string;
+        status?: string;
+        state?: string;
+      };
     };
-    try { payload = JSON.parse(raw); }
-    catch { return new Response("Invalid JSON", { status: 400 }); }
-    const reference = String(payload.reference ?? payload.id ?? payload.data?.reference ?? payload.data?.id ?? "");
-    const providerStatus = String(payload.status ?? payload.state ?? payload.data?.status ?? payload.data?.state ?? "unknown").toLowerCase();
+    try {
+      payload = JSON.parse(raw);
+    } catch {
+      return new Response("Invalid JSON", { status: 400 });
+    }
+    const reference = String(
+      payload.reference ??
+        payload.id ??
+        payload.data?.reference ??
+        payload.data?.id ??
+        "",
+    );
+    const providerStatus = String(
+      payload.status ??
+        payload.state ??
+        payload.data?.status ??
+        payload.data?.state ??
+        "unknown",
+    ).toLowerCase();
     if (!reference || reference.length > 160)
       return new Response("Missing verification reference", { status: 400 });
     const eventId = `${reference}:${providerStatus}:${await sha256Hex(raw)}`;
     const claim = await ctx.runMutation(internal.operations.claimWebhookEvent, {
-      provider: "QOREID", eventId, eventType: providerStatus,
-      reference, payloadDigest: await sha256Hex(raw),
+      provider: "QOREID",
+      eventId,
+      eventType: providerStatus,
+      reference,
+      payloadDigest: await sha256Hex(raw),
     });
     if (!claim.claimed) return new Response("ok");
-    const verified = ["verified", "successful", "success", "complete", "completed"].includes(providerStatus);
-    const pending = ["pending", "in_progress", "processing"].includes(providerStatus);
+    const verified = [
+      "verified",
+      "successful",
+      "success",
+      "complete",
+      "completed",
+    ].includes(providerStatus);
+    const pending = ["pending", "in_progress", "processing"].includes(
+      providerStatus,
+    );
     try {
       const result = await ctx.runMutation(internal.kyc.applyQoreIdResult, {
         providerReference: reference,
         providerStatus,
         status: verified ? "VERIFIED" : pending ? "PENDING" : "FAILED",
-        failureReason: verified || pending ? undefined : "Identity provider could not verify the submitted record",
+        failureReason:
+          verified || pending
+            ? undefined
+            : "Identity provider could not verify the submitted record",
       });
       await ctx.runMutation(internal.operations.finishWebhookEvent, {
-        eventId: claim.eventId, status: result.matched ? "PROCESSED" : "IGNORED",
+        eventId: claim.eventId,
+        status: result.matched ? "PROCESSED" : "IGNORED",
       });
       return new Response("ok");
     } catch (error) {
       await ctx.runMutation(internal.operations.finishWebhookEvent, {
-        eventId: claim.eventId, status: "FAILED", error: errorMessage(error),
+        eventId: claim.eventId,
+        status: "FAILED",
+        error: errorMessage(error),
       });
       return new Response("Processing failed", { status: 500 });
     }
