@@ -3,6 +3,12 @@ import { defineConfig, devices } from "@playwright/test";
 /**
  * @see https://playwright.dev/docs/test-configuration
  */
+const baseURL = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:4175";
+const configuredURL = new URL(baseURL);
+const previewPort = ["localhost", "127.0.0.1"].includes(configuredURL.hostname)
+  ? configuredURL.port || "4175"
+  : "4175";
+
 export default defineConfig({
   testDir: "./tests/e2e",
   /* Run tests in files in parallel */
@@ -18,7 +24,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:4175",
+    baseURL,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
@@ -75,11 +81,11 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "npm run preview -- --host 127.0.0.1 --port 4175 --strictPort",
+    command: `npm run preview -- --host 127.0.0.1 --port ${previewPort} --strictPort`,
     // Deterministic browser-only catalogue. Never insert test inventory into
     // a production database; deploy environments leave this flag disabled.
     env: { PUBLIC_ENABLE_DEMO_FALLBACKS: "true" },
-    url: "http://localhost:4175",
+    url: `http://localhost:${previewPort}`,
     reuseExistingServer: false,
     timeout: 120000,
   },

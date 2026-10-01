@@ -63,3 +63,6 @@ Validation results and deployed revision are appended after final checks. Tests 
 
 - Final hero content/contrast update: production build passed and all 10 targeted home/preview browser checks passed.
 
+
+- Follow-up live inspection found a remaining Vision banner and SEO fraud guarantee; removed both. Rebuilt successfully, and all 10 home/preview checks passed again using the existing CI port (4173). Playwright now starts the isolated server on the requested local port. The full-suite workflow patch passes git apply --check.
+- Application changes pushed successfully to GitHub main; workflow scope remains unavailable. Final frontend revisions are published through Cloudflare Pages; the report retains prior release URLs for traceability.
