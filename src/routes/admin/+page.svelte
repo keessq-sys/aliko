@@ -20,10 +20,10 @@
   ];
 
   const COLOR_MAP: Record<string, { bg: string; border: string; text: string }> = {
-    emerald: { bg: "rgba(5,150,105,0.1)",  border: "rgba(5,150,105,0.2)",  text: "#34d399" },
-    gold:    { bg: "rgba(217,119,6,0.1)",  border: "rgba(217,119,6,0.2)",  text: "#f59e0b" },
-    blue:    { bg: "rgba(37,99,235,0.1)",  border: "rgba(37,99,235,0.2)",  text: "#93c5fd" },
-    purple:  { bg: "rgba(124,58,237,0.1)", border: "rgba(124,58,237,0.2)", text: "#c4b5fd" },
+    emerald: { bg: "rgba(5,150,105,0.1)",  border: "rgba(5,150,105,0.2)",  text: "var(--admin-emerald, #34d399)" },
+    gold:    { bg: "rgba(217,119,6,0.1)",  border: "rgba(217,119,6,0.2)",  text: "var(--admin-gold, #f59e0b)" },
+    blue:    { bg: "rgba(37,99,235,0.1)",  border: "rgba(37,99,235,0.2)",  text: "var(--admin-blue, #93c5fd)" },
+    purple:  { bg: "rgba(124,58,237,0.1)", border: "rgba(124,58,237,0.2)", text: "var(--admin-purple, #c4b5fd)" },
   };
 
   const STATUS_COLORS: Record<string, string> = {

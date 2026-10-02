@@ -10,7 +10,7 @@
   ];
 </script>
 
-<section class="relative isolate overflow-hidden py-28 text-white" use:reveal>
+<section class="theme-contrast-dark relative isolate overflow-hidden py-28 text-white" use:reveal>
   <img
     src={VISION_BANNER_IMAGE}
     alt=""

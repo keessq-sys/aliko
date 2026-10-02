@@ -51,7 +51,7 @@
           <div
             class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"
           ></div>
-          <div class="absolute inset-x-0 bottom-0 p-4">
+          <div class="theme-contrast-dark absolute inset-x-0 bottom-0 p-4">
             <p class="flex items-center gap-1 text-[11px] text-emerald-300">
               <MapPin size={11} /> Explore this location
             </p>

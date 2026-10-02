@@ -27,7 +27,7 @@
 </script>
 
 <section
-  class="trust-banner py-20 relative overflow-hidden text-white"
+  class="theme-contrast-dark trust-banner py-20 relative overflow-hidden text-white"
   use:reveal
 >
   <div

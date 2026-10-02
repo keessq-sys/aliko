@@ -731,6 +731,7 @@
               </div>
               <div>
                 <textarea
+                  aria-label="Message to the property team"
                   bind:value={inquiryMessage}
                   rows="3"
                   class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500 resize-none"

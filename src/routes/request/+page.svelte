@@ -8,6 +8,10 @@
   $: service = serviceBySlug(slug);
 </script>
 
+<svelte:head>
+  <title>{service ? service.requestTypeLabel : 'Request a Service'} | Aliko Diamond Key</title>
+</svelte:head>
+
 <div class="min-h-screen bg-[#050A0E] pt-28 pb-20 text-white">
   <div class="mx-auto max-w-3xl px-4">
     <a href={service ? `/services/${service.slug}` : '/services'} class="mb-6 inline-flex items-center gap-1.5 text-xs text-stone-400 transition-colors hover:text-emerald-400">

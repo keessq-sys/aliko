@@ -56,7 +56,7 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<div class="relative group {isFullscreen ? 'fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl' : 'w-full'} flex flex-col">
+<div class="relative group {isFullscreen ? 'theme-contrast-dark fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl' : 'w-full'} flex flex-col">
   
   <!-- Main Image Container -->
   <div

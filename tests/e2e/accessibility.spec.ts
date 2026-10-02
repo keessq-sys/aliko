@@ -11,6 +11,10 @@ for (const width of [390, 1280])
       "/auth",
       "/plots",
       "/agents",
+      "/properties/emerald-lekki-duplex",
+      "/request?service=interior-design",
+      "/register/agent",
+      "/register/manager",
     ]) {
       test(`${theme} accessibility and layout ${width}px ${route}`, async ({
         page,

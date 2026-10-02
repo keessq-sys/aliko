@@ -36,7 +36,7 @@
             loading="lazy"
           />
           <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent"></div>
-          <div class="absolute inset-x-0 bottom-0 p-5">
+          <div class="theme-contrast-dark absolute inset-x-0 bottom-0 p-5">
             <p class="text-xs font-medium uppercase tracking-wide text-emerald-300">{dev.location}</p>
             <h3 class="mt-1 font-serif text-lg font-bold text-white sm:text-xl">{dev.name}</h3>
           </div>
