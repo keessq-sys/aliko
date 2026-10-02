@@ -6,12 +6,13 @@
  * through Svelte `$`-prefixed auto-unwrapping, so this module bridges the
  * two: a real `writable` store fed by `ConvexClient.onUpdate`.
  *
- * - `useQuery(api.x.y, args)` → store whose `$value` is the result (or undefined)
- * - `useMutation(api.x.y)`    → async function returning the mutation result
+ * - `useQuery(api.x.y, args)` â†’ store whose `$value` is the result (or undefined)
+ * - `useMutation(api.x.y)`    â†’ async function returning the mutation result
  */
 import { writable, type Writable } from "svelte/store";
 import { getConvexClient } from "convex-svelte";
 import { getFunctionName } from "convex/server";
+import { synchronizeSession } from "./session";
 import { browser } from "$app/environment";
 import type {
   FunctionReference,
@@ -61,9 +62,18 @@ export async function runAction<Action extends FunctionReference<"action">>(
     });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error ?? "Authentication failed");
-    client.setAuth(
-      async () => (await (await fetch("/api/auth/session")).json()).token,
-    );
+    if (name === "auth:signOut") {
+      client.setAuth(async () => null);
+      localStorage.removeItem("adk-role");
+    } else if (result.signedIn) {
+      await synchronizeSession(client);
+    } else if (
+      ["signUp", "signIn", "reset-verification"].includes(
+        (args as any).params?.flow,
+      )
+    ) {
+      throw new Error("Sign in was not completed. Please try again.");
+    }
     return result;
   }
   return await client.action(action, args);

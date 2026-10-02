@@ -11,7 +11,12 @@
   const tabParam = $page.url.searchParams.get("tab");
   let activeTab: "signin" | "signup" | "reset" =
     tabParam === "signup" ? "signup" : "signin";
-  let activeRole: "client" | "agent" | "manager" = "client";
+  let activeRole: "client" | "agent" | "manager" =
+    $page.url.searchParams.get("role") === "agent"
+      ? "agent"
+      : $page.url.searchParams.get("role") === "manager"
+        ? "manager"
+        : "client";
 </script>
 
 <svelte:head><title>Sign in or register | Aliko Diamond Key</title></svelte:head

@@ -149,6 +149,15 @@ export default defineSchema({
     email: v.string(),
     emailVerificationTime: v.optional(v.number()),
     registrationPolicyVersion: v.optional(v.string()),
+    requestedAccountType: v.optional(
+      v.union(
+        v.literal("CLIENT"),
+        v.literal("AGENT"),
+        v.literal("ESTATE_MANAGER"),
+      ),
+    ),
+    agencyName: v.optional(v.string()),
+    companyName: v.optional(v.string()),
     phone: v.optional(v.string()),
     role: v.union(
       v.literal("ADMIN"),

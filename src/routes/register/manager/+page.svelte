@@ -1,39 +1,106 @@
 <script lang="ts">
-  import { Building2, CheckCircle, Shield, ArrowRight, Loader2, MapPin } from 'lucide-svelte';
-  import { fade } from 'svelte/transition';
-  import { api } from '$lib/convex/_generated/api';
-  import { runMutation } from '$lib/convex/queries';
+  import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
+  import { useQuery } from "$lib/convex/queries";
+  const account = useQuery(api.users.getMyProfile, {});
+  let seededAccount = false;
+  import {
+    Building2,
+    CheckCircle,
+    Shield,
+    ArrowRight,
+    Loader2,
+    MapPin,
+  } from "lucide-svelte";
+  import { fade } from "svelte/transition";
+  import { api } from "$lib/convex/_generated/api";
+  import { runMutation } from "$lib/convex/queries";
 
-  const NIGERIAN_STATES = ['Abia', 'Abuja', 'Lagos', 'Kano', 'Rivers', 'Oyo', 'Enugu', 'Kaduna'];
+  const NIGERIAN_STATES = [
+    "Abia",
+    "Abuja",
+    "Lagos",
+    "Kano",
+    "Rivers",
+    "Oyo",
+    "Enugu",
+    "Kaduna",
+  ];
   const PLANS = [
-    { id: 'starter', name: 'Starter', price: '₦25,000/mo', features: ['Up to 10 properties', '1 manager seat', 'Basic analytics'] },
-    { id: 'professional', name: 'Professional', price: '₦75,000/mo', features: ['Up to 100 properties', '10 seats', 'Advanced analytics', 'Agent management'], recommended: true },
-    { id: 'enterprise', name: 'Enterprise', price: 'Custom', features: ['Unlimited properties', 'Unlimited seats', 'API access', 'Dedicated success manager'] }
+    {
+      id: "starter",
+      name: "Starter",
+      price: "₦25,000/mo",
+      features: ["Up to 10 properties", "1 manager seat", "Basic analytics"],
+    },
+    {
+      id: "professional",
+      name: "Professional",
+      price: "₦75,000/mo",
+      features: [
+        "Up to 100 properties",
+        "10 seats",
+        "Advanced analytics",
+        "Agent management",
+      ],
+      recommended: true,
+    },
+    {
+      id: "enterprise",
+      name: "Enterprise",
+      price: "Custom",
+      features: [
+        "Unlimited properties",
+        "Unlimited seats",
+        "API access",
+        "Dedicated success manager",
+      ],
+    },
   ];
 
-  let selectedPlan = 'professional';
-  let companyName = '';
-  let contactName = '';
-  let email = '';
-  let phone = '';
-  let cacRcNumber = '';
-  let portfolioSize = '11-50';
+  let selectedPlan = "professional";
+  let companyName = "";
+  let contactName = "";
+  let email = "";
+  let phone = "";
+  let cacRcNumber = "";
+  let portfolioSize = "11-50";
   let states: string[] = [];
 
+  $: if ($account && !seededAccount) {
+    contactName = $account.name;
+    email = $account.email;
+    phone = $account.phone ?? "";
+    companyName =
+      $account.companyName ?? $page.url.searchParams.get("company") ?? "";
+    seededAccount = true;
+  }
   let submitting = false;
   let submitted = false;
-  let submitError = '';
+  let submitError = "";
 
-  const submitManagerApplication = async (args: any) => runMutation(api.partners.submitManagerApplication, args);
+  const submitManagerApplication = async (args: any) =>
+    runMutation(api.partners.submitManagerApplication, args);
 
   const toggleState = (s: string) => {
-    states = states.includes(s) ? states.filter((x) => x !== s) : [...states, s];
+    states = states.includes(s)
+      ? states.filter((x) => x !== s)
+      : [...states, s];
   };
 
   const submitForm = async () => {
-    submitError = '';
-    if (!companyName.trim() || !contactName.trim() || !email.trim() || !phone.trim()) {
-      submitError = 'Company, contact name, email and phone are required.';
+    submitError = "";
+    if (!$account) {
+      await goto("/auth?tab=signup&role=manager");
+      return;
+    }
+    if (
+      !companyName.trim() ||
+      !contactName.trim() ||
+      !email.trim() ||
+      !phone.trim()
+    ) {
+      submitError = "Company, contact name, email and phone are required.";
       return;
     }
     submitting = true;
@@ -46,11 +113,12 @@
         cacRcNumber: cacRcNumber.trim() || undefined,
         statesOfOperation: states,
         portfolioSize,
-        plan: (selectedPlan.toUpperCase() as 'STARTER' | 'PROFESSIONAL' | 'ENTERPRISE')
+        plan: selectedPlan.toUpperCase() as
+          "STARTER" | "PROFESSIONAL" | "ENTERPRISE",
       });
       submitted = true;
     } catch (err: any) {
-      submitError = err?.message ?? 'Submission failed. Please try again.';
+      submitError = err?.message ?? "Submission failed. Please try again.";
     } finally {
       submitting = false;
     }

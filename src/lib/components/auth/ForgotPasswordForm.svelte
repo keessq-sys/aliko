@@ -61,7 +61,7 @@
     try {
       await signIn({
         provider: 'password',
-        params: { flow: 'reset-verification', email: email.trim(), code: code.trim(), newPassword }
+        params: { flow: 'reset-verification', email: email.trim().toLowerCase(), code: code.trim(), newPassword }
       });
       step = 'done';
     } catch (err: any) {

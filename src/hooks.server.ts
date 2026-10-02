@@ -4,9 +4,10 @@
 // is the header search engines and AI crawlers trust over robots.txt alone,
 // since robots.txt only asks a *compliant* crawler not to fetch a URL, while
 // X-Robots-Tag tells any crawler that DOES fetch it not to index what it got;
-// (2) baseline security/cache headers. Nothing here touches auth, routing or
-// Convex — it only decorates the outgoing Response.
+// (2) baseline security/cache headers. Protected routes additionally verify
+// the Convex session and enforce the role and administrator MFA boundary.
 import type { Handle } from "@sveltejs/kit";
+import { sessionToken } from "$lib/server/auth-session";
 import { redirect } from "@sveltejs/kit";
 import { ConvexHttpClient } from "convex/browser";
 import { makeFunctionReference } from "convex/server";
@@ -90,7 +91,9 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
       event.request.method !== "GET" &&
       !scheduledMaintenance)
   ) {
-    const token = event.cookies.get("__convexAuthJWT");
+    const token = await sessionToken(event.cookies, event.url).catch(
+      () => null,
+    );
     if (!token || !env.PUBLIC_CONVEX_URL) {
       if (pathname.startsWith("/api/"))
         return new Response("Forbidden", { status: 403 });
@@ -138,7 +141,7 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
       }
     } catch (error) {
       if ((error as { status?: number }).status === 303) throw error;
-      event.cookies.delete("__convexAuthJWT", { path: "/" });
+
       if (pathname.startsWith("/api/"))
         return new Response("Forbidden", { status: 403 });
       throw redirect(

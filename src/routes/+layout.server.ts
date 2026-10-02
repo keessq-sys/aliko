@@ -1,3 +1,4 @@
+import { sessionToken } from "$lib/server/auth-session";
 import type { LayoutServerLoad } from "./$types";
 import { defaultSEO } from "$lib/seo";
 import {
@@ -11,12 +12,14 @@ import { buildPageGraph } from "$lib/schema/graph";
 // rather than being rebuilt by every route.
 const globalSchema = [buildOrganizationSchema(), buildWebSiteSchema()];
 
-export const load: LayoutServerLoad = async ({ cookies, locals }) => {
+export const load: LayoutServerLoad = async ({ cookies, locals, url }) => {
   // Convex auth stores a session token in a cookie named "__convexAuthJWT"
   // We read the token here to pass basic session info to the layout for
   // server-rendered pages (auth state is fully hydrated client-side via
   // Convex's real-time subscription, so this is just for SSR pre-rendering).
-  const token = cookies.get("__convexAuthJWT");
+  const token = locals.user
+    ? cookies.get("__convexAuthJWT")
+    : await sessionToken(cookies, url).catch(() => null);
 
   const seoBase = {
     seo: defaultSEO,

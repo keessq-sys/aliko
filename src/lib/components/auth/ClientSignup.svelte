@@ -41,7 +41,7 @@
           flow: "signUp",
           acceptPolicies: terms,
           policyVersion: "2026-10-01",
-          email: email.trim(),
+          email: email.trim().toLowerCase(),
           password,
           name: fullName.trim(),
           role: "CLIENT",
@@ -50,7 +50,7 @@
       } as any);
       if (typeof window !== "undefined")
         localStorage.setItem("adk-role", "CLIENT");
-      await goto("/dashboard/client");
+      await goto("/dashboard/client", { invalidateAll: true });
     } catch (err: any) {
       errorMessage = err?.message ?? "Sign-up failed. Please try again.";
     } finally {

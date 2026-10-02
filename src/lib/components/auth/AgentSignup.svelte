@@ -37,16 +37,17 @@
           flow: "signUp",
           acceptPolicies: terms,
           policyVersion: "2026-10-01",
-          email: email.trim(),
+          email: email.trim().toLowerCase(),
           password,
           name: fullName.trim(),
           role: "AGENT",
+          agencyName: agencyName.trim(),
         },
       } as any);
       if (typeof window !== "undefined")
         localStorage.setItem("adk-role", "CLIENT");
       // Newly created agents complete professional profile via the wizard
-      await goto("/register/agent");
+      await goto("/register/agent", { invalidateAll: true });
     } catch (err: any) {
       errorMessage = err?.message ?? "Sign-up failed. Please try again.";
     } finally {

@@ -45,16 +45,18 @@
           flow: "signUp",
           acceptPolicies: terms,
           policyVersion: "2026-10-01",
-          email: email.trim(),
+          email: email.trim().toLowerCase(),
           password,
           name: contactName.trim(),
           role: "ESTATE_MANAGER",
+          companyName: companyName.trim(),
         },
       } as any);
       if (typeof window !== "undefined")
         localStorage.setItem("adk-role", "CLIENT");
       await goto(
         `/register/manager?company=${encodeURIComponent(companyName.trim())}`,
+        { invalidateAll: true },
       );
     } catch (err: any) {
       errorMessage = err?.message ?? "Sign-up failed. Please try again.";

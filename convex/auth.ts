@@ -4,6 +4,35 @@ import type { DataModel } from "./_generated/dataModel";
 import { ResendOTPPasswordReset } from "./ResendOTPPasswordReset";
 import { publicSignupProfile } from "./lib/access";
 import { rateLimiter } from "./lib/rateLimits";
+import { ConvexError } from "convex/values";
+
+const passwordProvider = Password<DataModel>({
+  reset: ResendOTPPasswordReset,
+  profile: publicSignupProfile,
+});
+const authorizePassword = passwordProvider.authorize;
+passwordProvider.authorize = async (params, ctx) => {
+  if (
+    (params.flow === "reset" || params.flow === "reset-verification") &&
+    !process.env.RESEND_API_KEY
+  )
+    throw new ConvexError(
+      "Password recovery email is not configured. Please contact support.",
+    );
+  try {
+    return await authorizePassword(params, ctx);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    if (/InvalidAccountId|InvalidSecret|Invalid credentials/.test(message))
+      throw new ConvexError("Email or password is incorrect.");
+    if (/Accept the current Terms|Provide a valid name and email/.test(message))
+      throw new ConvexError(message);
+    if (/Invalid code/.test(message))
+      throw new ConvexError("The recovery code is invalid or expired.");
+    // Unexpected provider failures remain private in Convex logs.
+    throw error;
+  }
+};
 
 // NOTE: this previously also registered a top-level `ResendOTP` provider
 // imported from "@convex-dev/auth/providers/ResendOTP" — that subpath does
@@ -18,12 +47,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   signIn: { maxFailedAttempsPerHour: 8 },
   providers: [
     // Email + password for admin and agent accounts
-    Password<DataModel>({
-      reset: ResendOTPPasswordReset,
-      profile(params) {
-        return publicSignupProfile(params);
-      },
-    }),
+    passwordProvider,
   ],
   callbacks: {
     async afterUserCreatedOrUpdated(ctx, args) {
@@ -53,7 +77,17 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
     async beforeSessionCreation(ctx, { userId }) {
       const user = await ctx.db.get(userId);
       if (user?.accountStatus === "SUSPENDED")
-        throw new Error("This account is suspended. Contact support.");
+        throw new ConvexError("This account is suspended. Contact support.");
+      if (!user) throw new Error("Account profile is missing");
+      await ctx.db.patch(userId, { lastActiveAt: Date.now() });
+      await ctx.db.insert("adminAuditLog", {
+        actorId: userId,
+        actorEmail: user.email,
+        action: "ACCOUNT_SIGNED_IN",
+        entityType: "users",
+        entityId: String(userId),
+        createdAt: Date.now(),
+      });
     },
   },
 });

@@ -1,5 +1,6 @@
 <script lang="ts">
   import "../app.css";
+  import { fetchSessionToken } from "$lib/convex/session";
   import { getConvexClient, setupConvex } from "convex-svelte";
   import { env as publicEnv } from "$env/dynamic/public";
   import { browser } from "$app/environment";
@@ -55,9 +56,7 @@
   });
 
   if (browser && PUBLIC_CONVEX_URL)
-    getConvexClient().setAuth(
-      async () => (await (await fetch("/api/auth/session")).json()).token,
-    );
+    getConvexClient().setAuth(fetchSessionToken);
   // Hide header/footer on dashboard and auth routes
   $: isDashboardRoute = $page.url.pathname.startsWith("/dashboard");
   $: isAdminRoute = $page.url.pathname.startsWith("/admin");

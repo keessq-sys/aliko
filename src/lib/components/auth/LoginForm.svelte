@@ -21,11 +21,6 @@
 
   const signIn = async (args: any) => runAction(api.auth.signIn, args);
 
-  $: redirectTo =
-    typeof window !== "undefined"
-      ? window.location.search.match(/[?&]redirect=([^&]+)/)?.[1]
-      : null;
-
   function roleDashboard(role: string | undefined): string {
     switch ((role ?? "CLIENT").toUpperCase()) {
       case "ADMIN":
@@ -65,22 +60,22 @@
       // @convex-dev/auth password sign-in: response sets the auth session
       const result: any = await signIn({
         provider: "password",
-        params: { flow: "signIn", email: email.trim(), password },
+        params: { flow: "signIn", email: email.trim().toLowerCase(), password },
       } as any);
-      const target = redirectTo
-        ? decodeURIComponent(redirectTo).startsWith("/") &&
-          !decodeURIComponent(redirectTo).startsWith("//")
-          ? decodeURIComponent(redirectTo)
-          : "/dashboard/client"
-        : roleDashboard(
-            result?.role ??
-              (typeof window !== "undefined"
-                ? (localStorage.getItem("adk-role") ?? undefined)
-                : undefined),
-          );
+      const dashboard = roleDashboard(result?.role);
+      const requested = new URL(window.location.href).searchParams.get(
+        "redirect",
+      );
+      const destination = requested
+        ? new URL(requested, window.location.origin)
+        : null;
+      const target =
+        destination && destination.origin === window.location.origin
+          ? destination.pathname + destination.search + destination.hash
+          : dashboard;
       if (typeof window !== "undefined" && result?.role)
         localStorage.setItem("adk-role", result.role);
-      await goto(target);
+      await goto(target, { invalidateAll: true });
     } catch (err: any) {
       errorMessage = err?.message?.includes("InvalidAccountId")
         ? "No account found with those credentials."

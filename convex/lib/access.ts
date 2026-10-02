@@ -65,7 +65,21 @@ export function publicSignupProfile(params: Record<string, unknown>) {
       params.flow === "signUp" ? "2026-10-01" : undefined,
     name,
     role: "CLIENT" as const,
-    isDiaspora: false,
+    isDiaspora: params.isDiaspora === true,
+    requestedAccountType:
+      params.role === "AGENT"
+        ? ("AGENT" as const)
+        : params.role === "ESTATE_MANAGER"
+          ? ("ESTATE_MANAGER" as const)
+          : ("CLIENT" as const),
+    agencyName:
+      typeof params.agencyName === "string"
+        ? params.agencyName.trim().slice(0, 160)
+        : undefined,
+    companyName:
+      typeof params.companyName === "string"
+        ? params.companyName.trim().slice(0, 160)
+        : undefined,
     kycVerified: false,
     accountStatus: "ACTIVE" as const,
     createdAt: Date.now(),

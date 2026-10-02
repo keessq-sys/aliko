@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { useQuery } from "$lib/convex/queries";
+  const account = useQuery(api.users.getMyProfile, {});
+  let seededAccount = false;
   import {
     User,
     MapPin,
@@ -78,6 +82,13 @@
 
   let submitting = false;
   let submitted = false;
+  $: if ($account && !seededAccount) {
+    formData.fullName = $account.name;
+    formData.email = $account.email;
+    formData.phone = $account.phone ?? "";
+    formData.agencyName = $account.agencyName ?? "";
+    seededAccount = true;
+  }
   let reference = "";
   let submitError = "";
 
@@ -111,6 +122,10 @@
 
   const submitForm = async () => {
     submitError = "";
+    if (!$account) {
+      await goto("/auth?tab=signup&role=agent");
+      return;
+    }
     if (!formData.fullName || !formData.email || !formData.phone) {
       submitError =
         "Name, email and phone are required. Please review earlier steps.";
