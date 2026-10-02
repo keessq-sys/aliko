@@ -158,7 +158,7 @@ describe("real Convex password account lifecycle", () => {
         provider: "password",
         params: { ...credentials, flow: "signUp" },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow(/Accept the current Terms/);
     expect(await t.run((ctx) => ctx.db.query("users").collect())).toHaveLength(
       0,
     );
@@ -168,6 +168,13 @@ describe("real Convex password account lifecycle", () => {
         provider: "password",
         params: { ...credentials, password: "wrong-password", flow: "signIn" },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow(/Email or password is incorrect/);
+    vi.stubEnv("RESEND_API_KEY", "");
+    await expect(
+      t.action(api.auth.signIn, {
+        provider: "password",
+        params: { ...credentials, flow: "reset" },
+      }),
+    ).rejects.toThrow(/Password recovery email is not configured/);
   });
 });

@@ -5,13 +5,22 @@ import { ResendOTPPasswordReset } from "./ResendOTPPasswordReset";
 import { publicSignupProfile } from "./lib/access";
 import { rateLimiter } from "./lib/rateLimits";
 import { ConvexError } from "convex/values";
+import type { ConvexCredentialsUserConfig } from "@convex-dev/auth/providers/ConvexCredentials";
 
 const passwordProvider = Password<DataModel>({
   reset: ResendOTPPasswordReset,
   profile: publicSignupProfile,
 });
-const authorizePassword = passwordProvider.authorize;
-passwordProvider.authorize = async (params, ctx) => {
+// Provider options are merged over the top-level defaults by Convex Auth.
+// Wrap the actual Password callback, preserving its credential hashing and
+// account/session writes, rather than replacing the unused provider default.
+const passwordOptions = (
+  passwordProvider as unknown as {
+    options: ConvexCredentialsUserConfig<DataModel>;
+  }
+).options;
+const authorizePassword = passwordOptions.authorize;
+passwordOptions.authorize = async (params, ctx) => {
   if (
     (params.flow === "reset" || params.flow === "reset-verification") &&
     !process.env.RESEND_API_KEY
