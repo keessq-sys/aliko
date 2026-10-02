@@ -19,6 +19,10 @@ The expanded accessibility inspection also fixed the property-enquiry textarea's
 - `npm test` passed: Svelte reported 0 errors and 0 warnings; all 34 backend tests passed; 84 Chromium browser tests passed with 7 existing provider/authenticated-administrator tests skipped because their required staging configuration is unavailable.
 - All 44 route/theme/viewport accessibility checks passed. Image loading, fallback recovery, exhausted galleries, shared controls and short-screen animation regression tests passed.
 - `git diff --check` passed.
+- Published to Cloudflare Pages at `https://941fa4e1.aliko-3f9.pages.dev`; the custom domain `https://alikodiamondkey.com` was checked after release.
+- Production home, catalogue and interior-design request pages returned HTTP 200 and had no serious or critical WCAG violations in either theme once their styles loaded.
+- The production browser opened its realtime connection to `gallant-husky-352.eu-west-1.convex.cloud` without query errors; the empty approved featured collection displayed its explanatory status.
+- GitHub checks passed for the UI commit `9a467be` and deployment-configuration commit `881c26f`.
 
 ## Limits
 
