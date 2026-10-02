@@ -57,3 +57,37 @@ test("login remains on the form when the backend has not created a session", asy
   ).toBeVisible();
   await expect(page).toHaveURL(/\/login$/);
 });
+
+test("unavailable password recovery does not claim a code was sent", async ({
+  page,
+}) => {
+  await page.route("**/api/auth/session", async (route) => {
+    await route.fulfill(
+      route.request().method() === "POST"
+        ? {
+            status: 400,
+            json: {
+              error:
+                "Password recovery email is not configured. Please contact support.",
+            },
+          }
+        : { json: { token: null } },
+    );
+  });
+  await page.goto("/login");
+  await page.getByRole("button", { name: /forgot password/i }).click();
+  await page.locator('input[type="email"]').first().fill("buyer@example.com");
+  await page.getByRole("button", { name: "Send reset code" }).click();
+  await expect(
+    page.getByText(
+      "Password recovery email is not configured. Please contact support.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Enter your reset code", { exact: true }),
+  ).not.toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Continue with Google" }),
+  ).toHaveCount(0);
+});

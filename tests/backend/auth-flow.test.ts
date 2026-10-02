@@ -176,5 +176,50 @@ describe("real Convex password account lifecycle", () => {
         params: { ...credentials, flow: "reset" },
       }),
     ).rejects.toThrow(/Password recovery email is not configured/);
+    vi.stubEnv("RESEND_API_KEY", "test-configured-key");
+    const unknownReset = await t.action(api.auth.signIn, {
+      provider: "password",
+      params: { flow: "reset", email: "unknown@example.com" },
+    });
+    expect(unknownReset.tokens).toBeNull();
+  });
+  it("links manager enrollment and company details to the signed-in account", async () => {
+    const t = setup();
+    const result = await t.action(api.auth.signIn, {
+      provider: "password",
+      params: {
+        ...credentials,
+        flow: "signUp",
+        name: "Manager Applicant",
+        role: "ESTATE_MANAGER",
+        companyName: "Test Management",
+        acceptPolicies: true,
+        policyVersion: "2026-10-01",
+      },
+    });
+    const authenticated = t.withIdentity({
+      subject: decodeJwt(result.tokens!.token).sub!,
+    });
+    const profile = await authenticated.query(api.users.getMyProfile, {});
+    expect(profile).toMatchObject({
+      role: "CLIENT",
+      requestedAccountType: "ESTATE_MANAGER",
+      companyName: "Test Management",
+    });
+    const application = await authenticated.mutation(
+      api.partners.submitManagerApplication,
+      {
+        companyName: "Test Management",
+        contactName: "Manager Applicant",
+        email: credentials.email,
+        phone: "+2348000000000",
+        statesOfOperation: ["Lagos"],
+        plan: "STARTER",
+      },
+    );
+    expect(await t.run((ctx) => ctx.db.get(application.id))).toMatchObject({
+      userId: profile!._id,
+      status: "PENDING",
+    });
   });
 });

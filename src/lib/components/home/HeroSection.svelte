@@ -8,7 +8,7 @@
     MessageCircle,
   } from "lucide-svelte";
   import SearchBar from "./SearchBar.svelte";
-  import { fade } from "svelte/transition";
+  import { fade, type FadeParams } from "svelte/transition";
   import { HERO_IMAGES } from "$lib/data/imagery";
   import { whatsappHref } from "$lib/data/contact";
   import DiamondHero from "$lib/components/three/DiamondHero.svelte";
@@ -26,6 +26,13 @@
   let cardRotateY = 0;
 
   let mounted = false;
+
+  function accessibleFade(node: HTMLElement, options: FadeParams = {}) {
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    return fade(node, reduced ? { duration: 0, delay: 0 } : options);
+  }
 
   onMount(() => {
     mounted = true;
@@ -89,7 +96,7 @@
     <div class="w-full lg:w-1/2 flex flex-col gap-6 items-start">
       {#if mounted}
         <div
-          transition:fade={{ duration: 800, delay: 100 }}
+          transition:accessibleFade={{ duration: 800, delay: 100 }}
           class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel text-sm text-emerald-400 font-medium"
         >
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"
@@ -98,7 +105,7 @@
         </div>
 
         <h1
-          transition:fade={{ duration: 800, delay: 200 }}
+          transition:accessibleFade={{ duration: 800, delay: 200 }}
           class="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight"
         >
           Find Your <br />
@@ -110,7 +117,7 @@
         </h1>
 
         <p
-          transition:fade={{ duration: 800, delay: 300 }}
+          transition:accessibleFade={{ duration: 800, delay: 300 }}
           class="text-lg md:text-xl text-gray-400 max-w-xl"
         >
           Browse reviewed property listings and request land, design,
@@ -119,14 +126,14 @@
         </p>
 
         <div
-          transition:fade={{ duration: 800, delay: 400 }}
+          transition:accessibleFade={{ duration: 800, delay: 400 }}
           class="w-full mt-4"
         >
           <SearchBar />
         </div>
 
         <div
-          transition:fade={{ duration: 800, delay: 500 }}
+          transition:accessibleFade={{ duration: 800, delay: 500 }}
           class="flex flex-wrap gap-4 mt-6"
         >
           <a
@@ -154,7 +161,7 @@
         </div>
 
         <div
-          transition:fade={{ duration: 800, delay: 600 }}
+          transition:accessibleFade={{ duration: 800, delay: 600 }}
           class="flex items-center gap-6 mt-8 text-sm text-gray-400 font-medium"
         >
           <span class="flex items-center gap-1"
@@ -177,7 +184,7 @@
     >
       {#if mounted}
         <div
-          transition:fade={{ duration: 1000, delay: 300 }}
+          transition:accessibleFade={{ duration: 1000, delay: 300 }}
           class="absolute inset-0 flex items-center justify-center transition-transform duration-200 ease-out"
           style="transform: rotateX({cardRotateX}deg) rotateY({cardRotateY}deg);"
         >

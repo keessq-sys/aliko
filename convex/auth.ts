@@ -32,6 +32,8 @@ passwordOptions.authorize = async (params, ctx) => {
     return await authorizePassword(params, ctx);
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
+    if (params.flow === "reset" && /InvalidAccountId/.test(message))
+      return null;
     if (/InvalidAccountId|InvalidSecret|Invalid credentials/.test(message))
       throw new ConvexError("Email or password is incorrect.");
     if (/Accept the current Terms|Provide a valid name and email/.test(message))
