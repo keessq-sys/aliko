@@ -1,6 +1,6 @@
 # Featured photographs and light-theme remediation — 2 October 2026
 
-The featured-property preview now renders the existing local gallery photographs independently of the live query's loading state when the isolated demo catalogue is enabled. Production continues to use approved live records. The live site had no published featured cards at inspection; it now explains that new approved listings are being prepared instead of leaving a blank grid.
+The featured-property preview now renders the existing local gallery photographs independently of the live query's loading state when the isolated demo catalogue is enabled. Production continues to use approved live records. Live inspection found that Cloudflare production was missing `PUBLIC_CONVEX_URL`, leaving the browser's realtime client disabled and the featured grid loading indefinitely. The production URL is now explicitly declared in the deployment configuration; preview remains isolated behind its placeholder URL. An empty live featured collection now explains that approved listings are being prepared instead of leaving a blank grid.
 
 Image recovery checks failures that happen before hydration and tries the next photograph from the same property's gallery. Each image has a stable identity so a delayed error cannot reject a different, working photograph. Exhausted galleries display an explicit photograph-unavailable placeholder. Broken thumbnails are hidden, and thumbnails appear above the image gradient.
 
