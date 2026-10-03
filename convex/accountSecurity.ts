@@ -17,7 +17,13 @@ export const context = internalQuery({
   args: {},
   handler: async (ctx) => {
     const actor = await requireUser(ctx);
-    if (actor.role === "ADMIN") await requireAdmin(ctx, 5 * 60000);
+    if (actor.role === "ADMIN") {
+      await requireAdmin(ctx, 5 * 60000);
+      if (process.env.SUPER_ADMIN_EMAIL)
+        throw new Error(
+          "The designated administrator email can only be changed by an operator.",
+        );
+    }
     return { _id: actor._id, email: actor.email };
   },
 });

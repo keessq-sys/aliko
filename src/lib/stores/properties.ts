@@ -48,12 +48,12 @@ const A = (id: string, name: string, phone: string, email: string, agency = 'Ali
 });
 
 const AGENTS: Record<string, Agent> = {
-  adaeze: A('agent-1', 'Adaeze Okonkwo', '+2348011111101', 'adaeze@adk.com', 'ADK Premium Estates', 4.9),
-  michael: A('agent-2', 'Michael Okorie', '+2348011111102', 'michael@adk.com'),
-  sarah: A('agent-3', 'Sarah Lawson', '+2348011111103', 'sarah@adk.com', 'ADK Coastal Division', 4.9),
-  emeka: A('agent-4', 'Emeka Chukwu', '+2348011111104', 'emeka@adk.com', 'Chukwu Properties', 4.7),
-  fatima: A('agent-5', 'Fatima Musa', '+2348011111105', 'fatima@adk.com', 'Musa Real Estate', 5.0),
-  chidi: A('agent-6', 'Chidi Nwosu', '+2348011111106', 'chidi@adk.com')
+  adaeze: A('agent-1', 'Adaeze Okonkwo', '+2347047669943', 'alikodiamondkey@gmail.com', 'ADK Premium Estates', 4.9),
+  michael: A('agent-2', 'Michael Okorie', '+2347047669943', 'alikodiamondkey@gmail.com'),
+  sarah: A('agent-3', 'Sarah Lawson', '+2347047669943', 'alikodiamondkey@gmail.com', 'ADK Coastal Division', 4.9),
+  emeka: A('agent-4', 'Emeka Chukwu', '+2347047669943', 'alikodiamondkey@gmail.com', 'Chukwu Properties', 4.7),
+  fatima: A('agent-5', 'Fatima Musa', '+2347047669943', 'alikodiamondkey@gmail.com', 'Musa Real Estate', 5.0),
+  chidi: A('agent-6', 'Chidi Nwosu', '+2347047669943', 'alikodiamondkey@gmail.com')
 };
 
 export const properties = writable<Property[]>([

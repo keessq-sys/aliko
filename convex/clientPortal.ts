@@ -92,9 +92,16 @@ export const getMySiteVisits = query({
         const [property, project, agent] = await Promise.all([
           row.propertyId ? ctx.db.get(row.propertyId) : null,
           row.projectId ? ctx.db.get(row.projectId) : null,
-          row.agentId ? ctx.db.get(row.agentId) : null,
+          row.agentId ? ctx.db.get(row.agentId as Id<"users">) : null,
         ]);
-        return { ...row, property, project, agent };
+        return {
+          ...row,
+          property,
+          project,
+          agent: agent
+            ? { _id: agent._id, name: agent.name, avatarUrl: agent.avatarUrl }
+            : null,
+        };
       }),
     );
   },
@@ -127,11 +134,17 @@ export const getMyAssignedSiteVisits = query({
         .sort((a: any, b: any) => a.requestedAt - b.requestedAt)
         .map(async (row: any) => {
           const [client, property, project] = await Promise.all([
-            ctx.db.get(row.clientId),
+            ctx.db.get(row.clientId as Id<"users">),
             row.propertyId ? ctx.db.get(row.propertyId) : null,
             row.projectId ? ctx.db.get(row.projectId) : null,
           ]);
-          return { ...row, client, property, project };
+          const { notes, ...visit } = row;
+          return {
+            ...visit,
+            client: client ? { _id: client._id, name: client.name } : null,
+            property,
+            project,
+          };
         }),
     );
   },

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PasswordField from "$lib/components/auth/PasswordField.svelte";
   import { api } from "$lib/convex/_generated/api";
   import { useQuery, runMutation, runAction } from "$lib/convex/queries";
   import { goto } from "$app/navigation";
@@ -115,8 +116,8 @@
           class="theme-input block w-full border rounded p-3"
         /></label
       ><label class="block"
-        >Current password<input
-          type="password"
+        >Current password<PasswordField
+          strength={true}
           autocomplete="current-password"
           required
           bind:value={password}

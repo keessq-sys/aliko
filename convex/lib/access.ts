@@ -7,6 +7,12 @@ export async function requireUser(ctx: any) {
   const user = await ctx.db.get(id);
   if (!user || user.accountStatus === "SUSPENDED")
     throw new Error("Unauthorized");
+  if (
+    user.role === "ADMIN" &&
+    process.env.SUPER_ADMIN_EMAIL &&
+    user.email.toLowerCase() !== process.env.SUPER_ADMIN_EMAIL.toLowerCase()
+  )
+    throw new Error("Forbidden");
   const sessionId = await getAuthSessionId(ctx);
   const session = sessionId ? await ctx.db.get(sessionId) : null;
   if (!session || session.userId !== id || session.expirationTime <= Date.now())

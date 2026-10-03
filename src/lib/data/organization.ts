@@ -18,7 +18,7 @@ export const ORGANIZATION = {
   logo: `${SITE_URL}/logo.png`,
   // MANUAL STEP: confirm this is the correct public-facing support address
   // for alikodiamondkey.com (currently copied from the live footer).
-  email: 'contact@adk.com',
+  email: 'alikodiamondkey@gmail.com',
   telephone: '+2347047669943',
   address: {
     addressLocality: 'Abuja',

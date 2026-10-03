@@ -24,7 +24,7 @@
     PENDING_SIGNATURE: { label: "Awaiting Signature",  color: "#f59e0b", icon: AlertCircle,   note: "Your document has been sent for e-signature. Please check your email." },
     SIGNED:            { label: "Signed",              color: "#60a5fa", icon: CheckCircle,   note: "All parties have signed. Awaiting admin verification." },
     VERIFIED:          { label: "Verified & Complete", color: "#34d399", icon: CheckCircle,   note: "Your document is fully verified and legally binding." },
-    REJECTED:          { label: "Rejected",            color: "#f87171", icon: AlertCircle,   note: "There was an issue. Contact support@alikodiamondkey.com." },
+    REJECTED:          { label: "Rejected",            color: "#f87171", icon: AlertCircle,   note: "There was an issue. Contact alikodiamondkey@gmail.com." },
     EXPIRED:           { label: "Expired",             color: "#94a3b8", icon: AlertCircle,   note: "This document has expired. Please contact us to renew." },
   };
 
@@ -84,7 +84,7 @@
         <div class="glass rounded-2xl p-8 text-center">
           <AlertCircle class="w-10 h-10 text-rose-400 mx-auto mb-3" />
           <p class="text-white font-semibold mb-1">Reference not found</p>
-          <p class="text-stone-500 text-sm">Check the reference code and try again, or contact <a href="mailto:legal@alikodiamondkey.com" class="text-emerald-400 underline">legal@alikodiamondkey.com</a>.</p>
+          <p class="text-stone-500 text-sm">Check the reference code and try again, or contact <a href="mailto:alikodiamondkey@gmail.com" class="text-emerald-400 underline">alikodiamondkey@gmail.com</a>.</p>
         </div>
 
       {:else}

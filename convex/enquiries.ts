@@ -1,4 +1,4 @@
-import { requireAdmin } from "./lib/access";
+import { requireAdmin, requireUser } from "./lib/access";
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
@@ -72,7 +72,7 @@ export const listMyAssignedEnquiries = query({
   handler: async (ctx, { limit }) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized");
-    const user = await ctx.db.get(userId as Id<"users">);
+    const user = await requireUser(ctx);
     if (user?.role !== "AGENT") throw new Error("Forbidden — AGENT only");
     const rows = await ctx.db
       .query("enquiries")
@@ -81,7 +81,11 @@ export const listMyAssignedEnquiries = query({
       .take(Math.min(Math.max(limit ?? 100, 1), 200));
     return Promise.all(
       rows.map(async (entry) => ({
-        ...entry,
+        _id: entry._id,
+        status: entry.status,
+        createdAt: entry.createdAt,
+        updatedAt: entry.updatedAt,
+        source: entry.source,
         property: entry.propertyId ? await ctx.db.get(entry.propertyId) : null,
         plot: entry.plotId ? await ctx.db.get(entry.plotId) : null,
         project: entry.projectId ? await ctx.db.get(entry.projectId) : null,

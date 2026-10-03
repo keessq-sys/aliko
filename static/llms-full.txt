@@ -10,7 +10,7 @@ retrieval than a single-pass index scan.
 - Operating/brand name: Aliko Diamond Key
 - Domain: https://alikodiamondkey.com
 - Primary locations: Abuja FCT (registered base) and Lagos, Nigeria
-- Contact: contact@adk.com · WhatsApp +234 704 766 9943
+- Contact: alikodiamondkey@gmail.com · WhatsApp +234 704 766 9943
 - Industry: Real estate brokerage, land sales, and property services (interior
   design, supply, smart-home, construction, architecture, facility management)
 - Primary language: English (en-NG)
@@ -151,4 +151,4 @@ source page.
 
 ## Contact for AI/data-partnership inquiries
 
-contact@adk.com
+alikodiamondkey@gmail.com

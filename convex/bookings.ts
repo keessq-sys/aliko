@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { requireUser } from "./lib/access";
+import { requireAdmin, requireUser } from "./lib/access";
 import {
   query,
   mutation,
@@ -54,9 +54,7 @@ export const getAllBookings = query({
   handler: async (ctx, { limit }) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized");
-    const user = await ctx.db.get(userId as Id<"users">);
-    if (!user || !["ADMIN", "AGENT"].includes(user.role))
-      throw new Error("Forbidden");
+    await requireAdmin(ctx);
 
     const bookings = await ctx.db
       .query("bookings")
@@ -91,11 +89,9 @@ export const getBookingByReference = query({
       .withIndex("by_reference", (q) => q.eq("reference", reference))
       .unique();
     if (!booking) return null;
-    const viewer = await ctx.db.get(userId as Id<"users">);
-    if (
-      booking.clientId !== userId &&
-      !viewer?.role?.match(/^(ADMIN|AGENT)$/)
-    ) {
+    const viewer = await requireUser(ctx);
+    if (viewer.role === "ADMIN") await requireAdmin(ctx);
+    if (booking.clientId !== userId && viewer.role !== "ADMIN") {
       throw new Error("Forbidden — not your booking");
     }
     const [client, plot] = await Promise.all([

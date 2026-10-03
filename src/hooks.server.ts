@@ -99,7 +99,9 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
         return new Response("Forbidden", { status: 403 });
       throw redirect(
         303,
-        `/auth?tab=signin&redirect=${encodeURIComponent(pathname)}`,
+        pathname.startsWith("/admin")
+          ? "/auth/admin"
+          : `/auth?tab=signin&redirect=${encodeURIComponent(pathname)}`,
       );
     }
     try {
@@ -146,7 +148,9 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
         return new Response("Forbidden", { status: 403 });
       throw redirect(
         303,
-        `/auth?tab=signin&redirect=${encodeURIComponent(pathname)}`,
+        pathname.startsWith("/admin")
+          ? "/auth/admin"
+          : `/auth?tab=signin&redirect=${encodeURIComponent(pathname)}`,
       );
     }
   }

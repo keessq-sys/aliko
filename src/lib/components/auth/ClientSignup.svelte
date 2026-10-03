@@ -1,4 +1,6 @@
 <script lang="ts">
+  import PasswordField from "$lib/components/auth/PasswordField.svelte";
+  import { passwordProblem } from "../../../../convex/lib/passwordPolicy";
   import { Mail, Lock, User, Loader2, CheckCircle2 } from "lucide-svelte";
   import { goto } from "$app/navigation";
   import { api } from "$lib/convex/_generated/api";
@@ -23,7 +25,8 @@
     if (!email) errors.email = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(email)) errors.email = "Email is invalid";
     if (!password) errors.password = "Password is required";
-    else if (password.length < 8) errors.password = "Minimum 8 characters";
+    else if (passwordProblem(password))
+      errors.password = passwordProblem(password)!;
     if (password !== confirmPassword)
       errors.confirmPassword = "Passwords do not match";
     if (!terms) errors.terms = "You must accept the terms";
@@ -64,7 +67,7 @@
     <span class="mb-1 block text-sm font-medium text-gray-300">Full Name</span>
     <div class="relative">
       <div
-        class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+        class="pointer-events-none absolute top-0 h-[44px] left-0 flex items-center pl-3"
       >
         <User class="h-5 w-5 text-gray-400" />
       </div>
@@ -89,7 +92,7 @@
     >
     <div class="relative">
       <div
-        class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+        class="pointer-events-none absolute top-0 h-[44px] left-0 flex items-center pl-3"
       >
         <Mail class="h-5 w-5 text-gray-400" />
       </div>
@@ -114,12 +117,12 @@
       <span class="mb-1 block text-sm font-medium text-gray-300">Password</span>
       <div class="relative">
         <div
-          class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+          class="pointer-events-none absolute top-0 h-[44px] left-0 flex items-center pl-3"
         >
           <Lock class="h-5 w-5 text-gray-400" />
         </div>
-        <input
-          type="password"
+        <PasswordField
+          strength={true}
           autocomplete="new-password"
           bind:value={password}
           class="block w-full rounded-lg border {errors.password
@@ -134,8 +137,7 @@
     </label>
     <label class="block">
       <span class="mb-1 block text-sm font-medium text-gray-300">Confirm</span>
-      <input
-        type="password"
+      <PasswordField
         autocomplete="new-password"
         bind:value={confirmPassword}
         class="block w-full rounded-lg border {errors.confirmPassword

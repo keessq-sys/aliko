@@ -134,7 +134,7 @@
 
         <div
           transition:accessibleFade={{ duration: 800, delay: 500 }}
-          class="flex flex-wrap gap-4 mt-6"
+          class="hero-actions flex flex-wrap gap-4 mt-6"
         >
           <a
             href="/properties"

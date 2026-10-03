@@ -1,3 +1,4 @@
+import { redirect } from "@sveltejs/kit";
 import { sessionToken } from "$lib/server/auth-session";
 import type { LayoutServerLoad } from "./$types";
 import { defaultSEO } from "$lib/seo";
@@ -30,7 +31,21 @@ export const load: LayoutServerLoad = async ({ cookies, locals, url }) => {
     return { session: null, ...seoBase };
   }
 
+  const leaveSignedInForm = (role: string) => {
+    if (["/auth", "/auth/admin", "/login"].includes(url.pathname)) {
+      const target =
+        role === "ADMIN"
+          ? "/admin"
+          : role === "AGENT"
+            ? "/dashboard/agent"
+            : role === "ESTATE_MANAGER"
+              ? "/dashboard/manager"
+              : "/dashboard/client";
+      throw redirect(303, target);
+    }
+  };
   if (locals.user) {
+    leaveSignedInForm(locals.user.role ?? "CLIENT");
     return {
       session: {
         user: {
@@ -55,6 +70,7 @@ export const load: LayoutServerLoad = async ({ cookies, locals, url }) => {
       makeFunctionReference<"query">("users:getMyProfile"),
       {},
     );
+    if (profile) leaveSignedInForm(profile.role);
     return {
       session: profile
         ? {
@@ -68,7 +84,14 @@ export const load: LayoutServerLoad = async ({ cookies, locals, url }) => {
         : null,
       ...seoBase,
     };
-  } catch {
+  } catch (error) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "status" in error &&
+      error.status === 303
+    )
+      throw error;
     return { session: null, ...seoBase };
   }
 };

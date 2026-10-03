@@ -201,7 +201,7 @@
             {BUSINESS_WHATSAPP_NUMBER} (WhatsApp)
           </a>
           <span class="flex items-center gap-2"
-            ><Mail size={16} class="text-emerald-500" /> contact@adk.com</span
+            ><Mail size={16} class="text-emerald-500" /> alikodiamondkey@gmail.com</span
           >
         </div>
 

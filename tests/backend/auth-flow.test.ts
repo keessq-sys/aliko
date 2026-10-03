@@ -3,7 +3,7 @@ import { beforeAll, afterAll, describe, expect, it, vi } from "vitest";
 import { generateKeyPair, exportPKCS8, decodeJwt, jwtVerify } from "jose";
 import rateLimiter from "@convex-dev/rate-limiter/test";
 import schema from "../../convex/schema";
-import { api } from "../../convex/_generated/api";
+import { api, internal } from "../../convex/_generated/api";
 const modules = import.meta.glob("../../convex/**/*.ts");
 let verificationKey: CryptoKey;
 beforeAll(async () => {
@@ -221,5 +221,88 @@ describe("real Convex password account lifecycle", () => {
       userId: profile!._id,
       status: "PENDING",
     });
+  });
+});
+
+describe("designated administrator and account isolation", () => {
+  it("rejects weak passwords without persisting an account", async () => {
+    const t = setup();
+    await expect(
+      t.action(api.auth.signIn, {
+        provider: "password",
+        params: {
+          ...credentials,
+          password: "weak",
+          flow: "signUp",
+          acceptPolicies: true,
+          policyVersion: "2026-10-01",
+        },
+      }),
+    ).rejects.toThrow(/12|uppercase/);
+    expect(await t.run((ctx) => ctx.db.query("users").collect())).toHaveLength(
+      0,
+    );
+  });
+  it("requires sign out before an authenticated account can sign up or sign in again", async () => {
+    const t = setup();
+    const result = await signup(t);
+    const actor = t.withIdentity({
+      subject: decodeJwt(result.tokens!.token).sub!,
+    });
+    for (const flow of ["signUp", "signIn", "email-verification"]) {
+      await expect(
+        actor.action(api.auth.signIn, {
+          provider: "password",
+          params: {
+            ...credentials,
+            flow,
+            acceptPolicies: true,
+            policyVersion: "2026-10-01",
+          },
+        }),
+      ).rejects.toThrow(/Sign out/);
+    }
+  });
+  it("provisions only the operator-designated administrator and reserves public signup", async () => {
+    vi.stubEnv("SUPER_ADMIN_EMAIL", "owner@example.com");
+    vi.stubEnv("SUPER_ADMIN_PASSWORD", "Administrator-482!Pass");
+    try {
+      const t = setup();
+      await expect(
+        t.action(api.auth.signIn, {
+          provider: "password",
+          params: {
+            email: "owner@example.com",
+            password: "Administrator-482!Pass",
+            flow: "signUp",
+            acceptPolicies: true,
+            policyVersion: "2026-10-01",
+          },
+        }),
+      ).rejects.toThrow(/reserved/);
+      expect(await t.action(internal.superAdmin.provision, {})).toEqual({
+        configured: true,
+      });
+      const login = await t.action(api.auth.signIn, {
+        provider: "password",
+        params: {
+          email: "owner@example.com",
+          password: "Administrator-482!Pass",
+          flow: "signIn",
+        },
+      });
+      const actor = t.withIdentity({
+        subject: decodeJwt(login.tokens!.token).sub!,
+      });
+      expect(await actor.query(api.users.getMyProfile, {})).toMatchObject({
+        role: "ADMIN",
+        email: "owner@example.com",
+      });
+      const users = await t.run((ctx) => ctx.db.query("users").collect());
+      expect(users).toHaveLength(1);
+    } finally {
+      delete process.env.SUPER_ADMIN_EMAIL;
+      delete process.env.SUPER_ADMIN_PASSWORD;
+    }
   });
 });

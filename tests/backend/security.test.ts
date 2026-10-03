@@ -222,6 +222,10 @@ describe("production authorization", () => {
       id: result.id,
       status: "APPROVED",
     });
+    const publicAgents = await t.query(api.partners.listApprovedAgents, {});
+    expect(publicAgents).toHaveLength(1);
+    expect(publicAgents[0]).not.toHaveProperty("phone");
+    expect(publicAgents[0]).not.toHaveProperty("email");
     expect((await t.run((ctx) => ctx.db.get(applicant.id)))?.role).toBe(
       "AGENT",
     );
@@ -564,4 +568,37 @@ it("requires completed settlement disbursement and exact fees before reconciliat
   expect((await t.run((ctx) => ctx.db.get(settlementId)))?.status).toBe(
     "REVIEW",
   );
+});
+
+describe("company-only customer contact access", () => {
+  it("denies agents the full customer booking roster", async () => {
+    const t = setup();
+    const agent = await user(t, "AGENT");
+    await expect(
+      agent.session.query(api.bookings.getAllBookings, {}),
+    ).rejects.toThrow(/ADMIN|Forbidden/);
+  });
+  it("removes customer contacts and free-text messages from assigned enquiry results", async () => {
+    const t = setup();
+    const agent = await user(t, "AGENT");
+    await t.run((ctx) =>
+      ctx.db.insert("enquiries", {
+        name: "Private Customer",
+        email: "private@example.com",
+        phone: "08011111111",
+        message: "My phone number is private",
+        assignedAgentId: agent.id,
+        status: "NEW",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }),
+    );
+    const rows = await agent.session.query(
+      api.enquiries.listMyAssignedEnquiries,
+      {},
+    );
+    expect(rows).toHaveLength(1);
+    for (const key of ["name", "email", "phone", "message"])
+      expect(rows[0]).not.toHaveProperty(key);
+  });
 });

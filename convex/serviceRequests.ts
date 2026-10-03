@@ -1,4 +1,4 @@
-import { requireAdmin } from "./lib/access";
+import { requireAdmin, requireUser } from "./lib/access";
 import { v } from "convex/values";
 import { query, mutation, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
@@ -122,7 +122,8 @@ export const getByReference = query({
       .withIndex("by_reference", (q) => q.eq("reference", reference))
       .unique();
     if (!request) return null;
-    const user = await ctx.db.get(userId as Id<"users">);
+    const user = await requireUser(ctx);
+    if (user.role === "ADMIN") await requireAdmin(ctx);
     if (user?.role !== "ADMIN" && request.requesterId !== userId)
       throw new Error("Forbidden");
     return request;
@@ -307,10 +308,11 @@ async function requireConversationAccess(
   const userId = await getAuthUserId(ctx);
   if (!userId) throw new Error("Unauthorized");
   const [user, request] = await Promise.all([
-    ctx.db.get(userId as Id<"users">),
+    requireUser(ctx),
     ctx.db.get(requestId),
   ]);
   if (!request) throw new Error("Request not found");
+  if (user.role === "ADMIN") await requireAdmin(ctx);
   if (user?.role !== "ADMIN" && request.requesterId !== userId)
     throw new Error("Forbidden");
   return { userId: userId as Id<"users">, user, request };

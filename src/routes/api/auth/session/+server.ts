@@ -37,6 +37,16 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
     args.params.email = String(args.params.email ?? "")
       .trim()
       .toLowerCase();
+    if (
+      ["signUp", "signIn", "reset-verification", "email-verification"].includes(
+        args.params.flow,
+      ) &&
+      (await sessionToken(cookies, url))
+    )
+      return json(
+        { error: "Sign out before signing in or creating another account." },
+        { status: 409, headers },
+      );
     // Fresh credentials must not inherit an expired or different account JWT.
     const convex = authClient();
     const result: any = await convex.action(ref, {
@@ -50,6 +60,16 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
         {},
       );
       if (!profile) throw new Error("PROFILE_UNAVAILABLE");
+      if (args.params.adminLogin && profile.role !== "ADMIN") {
+        await convex.action(
+          makeFunctionReference<"action">("auth:signOut"),
+          {},
+        );
+        return json(
+          { error: "Administrator access is required." },
+          { status: 403, headers },
+        );
+      }
       saveSession(cookies, url, result.tokens);
       return json({ signedIn: true, role: profile.role }, { headers });
     }
@@ -75,6 +95,10 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
       "The recovery code is invalid or expired.",
       "This account is suspended. Contact support.",
       "Provide a valid name and email",
+      "Sign out before signing in or creating another account.",
+      "This account is reserved. Use administrator sign in.",
+      "Use 12–128 characters with uppercase, lowercase, a number and a symbol.",
+      "Include uppercase, lowercase, a number and a symbol.",
     ];
     return json(
       { error: knownMessages.includes(message) ? message : safeMessage },
@@ -107,19 +131,31 @@ export const GET: RequestHandler = async ({ request, cookies, url }) => {
 export const DELETE: RequestHandler = async ({ request, cookies, url }) => {
   if (request.headers.get("origin") !== url.origin)
     return json({ error: "Forbidden" }, { status: 403, headers });
-  try {
-    const token = await sessionToken(cookies, url);
-    if (token) {
-      const client = authClient();
-      client.setAuth(token);
-      await client.action(makeFunctionReference<"action">("auth:signOut"), {});
+  // Revocation is idempotent. A lost response may follow a successful revoke;
+  // verify again once before asking the user to retry.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const token = await sessionToken(cookies, url);
+      if (token) {
+        const client = authClient();
+        client.setAuth(token);
+        await client.action(
+          makeFunctionReference<"action">("auth:signOut"),
+          {},
+        );
+      }
+      clearSession(cookies);
+      return json({ signedIn: false }, { headers });
+    } catch {
+      if (attempt === 1)
+        return json(
+          { error: "Sign out could not be confirmed. Please retry." },
+          { status: 503, headers },
+        );
     }
-  } catch {
-    return json(
-      { error: "Sign out could not be confirmed. Please retry." },
-      { status: 503, headers },
-    );
   }
-  clearSession(cookies);
-  return json({ signedIn: false }, { headers });
+  return json(
+    { error: "Sign out could not be confirmed. Please retry." },
+    { status: 503, headers },
+  );
 };

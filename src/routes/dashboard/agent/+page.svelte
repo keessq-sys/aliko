@@ -101,9 +101,9 @@
 
   $: MOCK_LEADS = ($myAssignedEnquiries ?? []).map((lead) => ({
     id: lead._id,
-    name: lead.name,
-    email: lead.email,
-    phone: lead.phone,
+    name: "Company-managed enquiry",
+    email: "Contact the company desk",
+    phone: "Private",
     propertyInterest:
       lead.property?.title ??
       lead.project?.name ??

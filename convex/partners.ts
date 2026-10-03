@@ -126,7 +126,6 @@ export const listApprovedAgents = query({
     return rows.slice(0, args.limit ?? 100).map((r) => ({
       _id: r._id,
       fullName: r.fullName,
-      phone: r.phone,
       agencyName: r.agencyName,
       specializations: r.specializations ?? [],
       statesOfOperation: r.statesOfOperation ?? [],

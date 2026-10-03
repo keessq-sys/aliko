@@ -18,7 +18,7 @@ test.describe('Dashboard Pages (Protected)', () => {
 
   test('should redirect to login when accessing admin dashboard', async ({ page }) => {
     await page.goto('/admin', { waitUntil: 'domcontentloaded' });
-    await expect(page).toHaveURL(/.*auth.*signin/);
+    await expect(page).toHaveURL(/auth\/admin/);
   });
 
   test('should protect a payment checkout link', async ({ page }) => {

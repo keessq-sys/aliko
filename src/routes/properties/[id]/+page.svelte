@@ -649,10 +649,10 @@
               </div>
             </div>
 
-            <!-- Quick Agent Actions -->
+            <!-- Contact Aliko Diamond Key -->
             <div class="grid grid-cols-3 gap-2 mb-6">
               <a
-                href="tel:{property.agent.phone}"
+                href="tel:+2347047669943"
                 class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-white/5 hover:bg-emerald-900/30 border border-white/10 text-xs font-medium text-stone-300 hover:text-emerald-400 transition-colors"
               >
                 <Phone size={16} class="mb-1 text-emerald-400" />
@@ -670,8 +670,7 @@
                 <span>WhatsApp</span>
               </a>
               <a
-                href="mailto:{property.agent
-                  .email}?subject=Inquiry%20regarding%20{property.title}"
+                href={`mailto:alikodiamondkey@gmail.com?subject=${encodeURIComponent("Property enquiry: " + property.title)}`}
                 class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-white/5 hover:bg-emerald-900/30 border border-white/10 text-xs font-medium text-stone-300 hover:text-emerald-400 transition-colors"
               >
                 <Mail size={16} class="mb-1 text-emerald-400" />

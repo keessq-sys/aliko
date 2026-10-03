@@ -69,6 +69,6 @@ test("private workspaces require authentication", async ({ page }) => {
     "/admin/content",
   ]) {
     await page.goto(path, { waitUntil: "domcontentloaded" });
-    await expect(page).toHaveURL(/\/auth\?/);
+    await expect(page).toHaveURL(path.startsWith("/admin") ? /\/auth\/admin/ : /\/auth\?/);
   }
 });

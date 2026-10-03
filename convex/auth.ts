@@ -1,3 +1,4 @@
+import { internal } from "./_generated/api";
 import { convexAuth } from "@convex-dev/auth/server";
 import { Password } from "@convex-dev/auth/providers/Password";
 import type { DataModel } from "./_generated/dataModel";
@@ -7,7 +8,13 @@ import { rateLimiter } from "./lib/rateLimits";
 import { ConvexError } from "convex/values";
 import type { ConvexCredentialsUserConfig } from "@convex-dev/auth/providers/ConvexCredentials";
 
+import { passwordProblem } from "./lib/passwordPolicy";
+
 const passwordProvider = Password<DataModel>({
+  validatePasswordRequirements(password) {
+    const problem = passwordProblem(password);
+    if (problem) throw new ConvexError(problem);
+  },
   reset: ResendOTPPasswordReset,
   profile: publicSignupProfile,
 });
@@ -27,6 +34,24 @@ passwordOptions.authorize = async (params, ctx) => {
   )
     throw new ConvexError(
       "Password recovery email is not configured. Please contact support.",
+    );
+  const existing = await ctx.runQuery(internal.superAdmin.currentUser, {});
+  if (
+    existing &&
+    ["signUp", "signIn", "reset-verification", "email-verification"].includes(
+      String(params.flow),
+    )
+  )
+    throw new ConvexError(
+      "Sign out before signing in or creating another account.",
+    );
+  if (
+    params.flow === "signUp" &&
+    String(params.email).trim().toLowerCase() ===
+      process.env.SUPER_ADMIN_EMAIL?.toLowerCase()
+  )
+    throw new ConvexError(
+      "This account is reserved. Use administrator sign in.",
     );
   try {
     return await authorizePassword(params, ctx);

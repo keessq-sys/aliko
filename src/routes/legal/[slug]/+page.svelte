@@ -24,7 +24,7 @@
       {/each}
     </div>
     <div class="mt-12 border-t border-stone-200 pt-6 text-sm text-stone-700 dark:border-stone-700 dark:text-stone-300">
-      Questions or rights requests can be submitted through your account support area or sent to contact@adk.com.
+      Questions or rights requests can be submitted through your account support area or sent to alikodiamondkey@gmail.com.
     </div>
   </article>
 </main>

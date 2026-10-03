@@ -7,6 +7,7 @@
 
   const dispatch = createEventDispatcher<{ forgotPassword: void }>();
 
+  export let adminMode = false;
   let email = "";
   let password = "";
   let showPassword = false;
@@ -59,7 +60,12 @@
       // @convex-dev/auth password sign-in: response sets the auth session
       const result: any = await signIn({
         provider: "password",
-        params: { flow: "signIn", email: email.trim().toLowerCase(), password },
+        params: {
+          flow: "signIn",
+          email: email.trim().toLowerCase(),
+          password,
+          adminLogin: adminMode,
+        },
       } as any);
       const dashboard = roleDashboard(result?.role);
       const requested = new URL(window.location.href).searchParams.get(
@@ -68,8 +74,9 @@
       const destination = requested
         ? new URL(requested, window.location.origin)
         : null;
-      const target =
-        destination && destination.origin === window.location.origin
+      const target = adminMode
+        ? "/admin"
+        : destination && destination.origin === window.location.origin
           ? destination.pathname + destination.search + destination.hash
           : dashboard;
       if (typeof window !== "undefined" && result?.role)

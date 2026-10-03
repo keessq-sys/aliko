@@ -1,4 +1,6 @@
 <script lang="ts">
+  import PasswordField from "$lib/components/auth/PasswordField.svelte";
+  import { passwordProblem } from "../../../../convex/lib/passwordPolicy";
   // Two-step password reset using Convex Auth's Password provider `reset`/
   // `reset-verification` flows (see convex/auth.ts + convex/ResendOTPPasswordReset.ts).
   // Step 1 emails a 6-digit code via Resend; step 2 verifies the code and
@@ -63,8 +65,9 @@
       errorMessage = "Please enter the 6-digit code from your email.";
       return;
     }
-    if (newPassword.length < 8) {
-      errorMessage = "New password must be at least 8 characters.";
+    if (passwordProblem(newPassword)) {
+      errorMessage =
+        "Use 12 or more characters including uppercase, lowercase, a number and a symbol.";
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -186,8 +189,8 @@
         >
           <Lock class="h-5 w-5 text-gray-400" />
         </div>
-        <input
-          type="password"
+        <PasswordField
+          strength={true}
           autocomplete="new-password"
           bind:value={newPassword}
           placeholder="New password"
@@ -200,8 +203,7 @@
         >
           <Lock class="h-5 w-5 text-gray-400" />
         </div>
-        <input
-          type="password"
+        <PasswordField
           autocomplete="new-password"
           bind:value={confirmPassword}
           placeholder="Confirm new password"

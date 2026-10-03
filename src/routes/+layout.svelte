@@ -16,7 +16,8 @@
   import Toast from "$lib/components/ui/Toast.svelte";
   import MobileBottomNav from "$lib/components/layout/MobileBottomNav.svelte";
   import { page } from "$app/stores";
-  import ThemeToggle from "$lib/components/ui/ThemeToggle.svelte";
+  import WorkspaceNavigation from "$lib/components/layout/WorkspaceNavigation.svelte";
+  import { invalidateAll } from "$app/navigation";
   import { onMount } from "svelte";
   import { addToast } from "$lib/stores/ui";
   onMount(() => {
@@ -27,8 +28,18 @@
           "Current data could not be loaded. Refresh the page to try again.",
         duration: 8000,
       });
+    const sessionChanged = (event: StorageEvent) => {
+      if (event.key === "adk-session-changed") {
+        getConvexClient().setAuth(fetchSessionToken);
+        void invalidateAll();
+      }
+    };
+    window.addEventListener("storage", sessionChanged);
     window.addEventListener("adk-query-error", showError);
-    return () => window.removeEventListener("adk-query-error", showError);
+    return () => {
+      window.removeEventListener("adk-query-error", showError);
+      window.removeEventListener("storage", sessionChanged);
+    };
   });
 
   export let data: {
@@ -95,11 +106,11 @@
 {#if !hideHeader}
   <Header session={data.session} />
 {:else}
-  <div class="fixed right-4 top-4 z-[70]"><ThemeToggle /></div>
+  <WorkspaceNavigation role={data.session?.user?.role ?? "CLIENT"} />
 {/if}
 
 <main
-  class="app-shell {showMobileBottomNav
+  class="app-shell {hideHeader ? 'private-workspace' : ''} {showMobileBottomNav
     ? 'pb-16 md:pb-0'
     : ''} min-h-screen bg-[#050A0E]"
 >

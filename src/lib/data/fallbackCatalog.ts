@@ -28,7 +28,7 @@ export const FALLBACK_AGENTS = [
   ['Amaka Nwosu', 'Diamond City Partners', '+2347047669943', ['Residential Sales', 'Diaspora Clients'], ['Enugu', 'Rivers']],
   ['Tunde Adebayo', 'Coastal Property Desk', '+2347047669943', ['Commercial Property', 'Property Management'], ['Lagos', 'Oyo']]
 ].map((a, i) => ({
-  _id: `demo-agent-${i + 1}`, fullName: a[0], agencyName: a[1], phone: a[2],
+  _id: `demo-agent-${i + 1}`, fullName: a[0], agencyName: a[1], phone: "+2347047669943",
   specializations: a[3], statesOfOperation: a[4], experience: `${8 + i * 2} years`, status: 'APPROVED'
 }));
 

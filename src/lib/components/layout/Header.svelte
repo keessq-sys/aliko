@@ -1,5 +1,7 @@
 <script lang="ts">
   import {
+    ArrowLeft,
+    ArrowRight,
     Menu,
     X,
     Bell,
@@ -31,6 +33,7 @@
   import { goto } from "$app/navigation";
   import { api } from "$lib/convex/_generated/api";
   import { runAction } from "$lib/convex/queries";
+  import { addToast } from "$lib/stores/ui";
   import ThemeToggle from "$lib/components/ui/ThemeToggle.svelte";
 
   export let session: {
@@ -55,7 +58,11 @@
     try {
       await runAction(api.auth.signOut, {});
     } catch {
-      /* no active session server-side — still clear the client UI */
+      addToast({
+        type: "error",
+        message: "Sign out could not be confirmed. Please retry.",
+      });
+      return;
     }
     isProfileMenuOpen = false;
     isMobileMenuOpen = false;
@@ -167,7 +174,7 @@
       </a>
 
       <!-- Desktop Nav -->
-      <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
+      <nav class="hidden xl:flex items-center gap-4 xl:gap-6">
         {#each navLinks as link}
           <a
             href={link.href}
@@ -243,9 +250,18 @@
       </nav>
 
       <!-- Desktop Actions -->
-      <div class="hidden lg:flex items-center gap-4">
+      <div class="hidden xl:flex items-center gap-3">
         <ThemeToggle />
+        <a
+          href="/auth/admin"
+          class="text-sm font-semibold min-h-[44px] flex items-center"
+          >Admin Login</a
+        >
         {#if isLoggedIn}
+          <button
+            on:click={signOut}
+            class="min-h-[44px] px-3 text-sm font-semibold">Logout</button
+          >
           <button
             class="relative flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full text-stone-300 hover:text-white hover:bg-white/10 transition-colors"
             aria-label="Notifications"
@@ -265,7 +281,8 @@
               aria-expanded={isProfileMenuOpen}
               on:click={toggleProfileMenu}
             >
-              <span class="text-sm font-medium text-stone-300"
+              <span
+                class="max-w-[140px] truncate text-sm font-medium text-stone-300"
                 >{displayName}</span
               >
               <span
@@ -334,9 +351,24 @@
         {/if}
       </div>
 
+      <div class="hidden xl:flex items-center" aria-label="Page history">
+        <button
+          aria-label="Go back"
+          title="Go back"
+          class="min-h-[44px] min-w-[44px]"
+          on:click={() => window.history.back()}><ArrowLeft size={18} /></button
+        >
+        <button
+          aria-label="Go forward"
+          title="Go forward"
+          class="min-h-[44px] min-w-[44px]"
+          on:click={() => window.history.forward()}
+          ><ArrowRight size={18} /></button
+        >
+      </div>
       <!-- Mobile Menu Button -->
       <button
-        class="lg:hidden flex items-center justify-center min-h-[44px] min-w-[44px] text-stone-300 hover:text-white"
+        class="flex items-center justify-center min-h-[44px] min-w-[44px] text-stone-300 hover:text-white"
         aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
         aria-expanded={isMobileMenuOpen}
         on:click={toggleMobileMenu}
@@ -353,15 +385,28 @@
   <!-- Mobile Menu Drawer -->
   {#if isMobileMenuOpen}
     <div
-      class="lg:hidden fixed inset-x-0 bottom-0 top-20 z-30 bg-black/60"
+      class="fixed inset-x-0 bottom-0 top-20 z-30 bg-black/60"
       role="presentation"
       on:click={() => (isMobileMenuOpen = false)}
     ></div>
     <div
-      class="lg:hidden absolute top-20 left-0 w-full z-30 bg-[#071018] border-b border-white/15 shadow-2xl"
+      class="absolute top-20 left-0 w-full z-30 bg-[#071018] border-b border-white/15 shadow-2xl"
       transition:slide={{ duration: 300 }}
     >
       <div class="flex flex-col p-4 gap-2 max-h-[70vh] overflow-y-auto">
+        <div class="flex gap-2">
+          <button
+            aria-label="Go back"
+            class="min-h-[44px] min-w-[44px]"
+            on:click={() => window.history.back()}
+            ><ArrowLeft size={18} /></button
+          ><button
+            aria-label="Go forward"
+            class="min-h-[44px] min-w-[44px]"
+            on:click={() => window.history.forward()}
+            ><ArrowRight size={18} /></button
+          >
+        </div>
         {#each navLinks as link}
           <a
             href={link.href}
@@ -426,6 +471,9 @@
           class="flex items-center justify-between rounded-lg px-4 py-2 text-sm text-stone-300"
         >
           <span>Appearance</span><ThemeToggle />
+          <a href="/auth/admin" on:click={() => (isMobileMenuOpen = false)}
+            >Admin Login</a
+          >
         </div>
 
         {#if isLoggedIn}

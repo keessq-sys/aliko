@@ -55,26 +55,33 @@ export async function runAction<Action extends FunctionReference<"action">>(
   const client = getConvexClient();
   const name = getFunctionName(action);
   if (name === "auth:signIn" || name === "auth:signOut") {
-    const response = await fetch("/api/auth/session", {
-      method: name === "auth:signOut" ? "DELETE" : "POST",
-      headers: { "Content-Type": "application/json" },
-      body: name === "auth:signOut" ? undefined : JSON.stringify(args),
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error ?? "Authentication failed");
-    if (name === "auth:signOut") {
-      client.setAuth(async () => null);
-      localStorage.removeItem("adk-role");
-    } else if (result.signedIn) {
-      await synchronizeSession(client);
-    } else if (
-      ["signUp", "signIn", "reset-verification"].includes(
-        (args as any).params?.flow,
-      )
-    ) {
-      throw new Error("Sign in was not completed. Please try again.");
-    }
-    return result;
+    const authenticate = async () => {
+      const response = await fetch("/api/auth/session", {
+        method: name === "auth:signOut" ? "DELETE" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: name === "auth:signOut" ? undefined : JSON.stringify(args),
+      });
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(result.error ?? "Authentication failed");
+      if (name === "auth:signOut") {
+        client.setAuth(async () => null);
+        localStorage.removeItem("adk-role");
+      } else if (result.signedIn) {
+        await synchronizeSession(client);
+      } else if (
+        ["signUp", "signIn", "reset-verification"].includes(
+          (args as any).params?.flow,
+        )
+      ) {
+        throw new Error("Sign in was not completed. Please try again.");
+      }
+      localStorage.setItem("adk-session-changed", String(Date.now()));
+      return result;
+    };
+    return navigator.locks
+      ? await navigator.locks.request("adk-account-session", authenticate)
+      : await authenticate();
   }
   return await client.action(action, args);
 }

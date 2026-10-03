@@ -30,6 +30,7 @@ import type * as lib_access from "../lib/access.js";
 import type * as lib_attachments from "../lib/attachments.js";
 import type * as lib_checkoutReadiness from "../lib/checkoutReadiness.js";
 import type * as lib_mediaSecurity from "../lib/mediaSecurity.js";
+import type * as lib_passwordPolicy from "../lib/passwordPolicy.js";
 import type * as lib_providerPayments from "../lib/providerPayments.js";
 import type * as lib_rateLimits from "../lib/rateLimits.js";
 import type * as lib_totp from "../lib/totp.js";
@@ -51,6 +52,7 @@ import type * as serviceRequests from "../serviceRequests.js";
 import type * as services from "../services.js";
 import type * as settings from "../settings.js";
 import type * as storage from "../storage.js";
+import type * as superAdmin from "../superAdmin.js";
 import type * as users from "../users.js";
 import type * as whatsapp from "../whatsapp.js";
 
@@ -83,6 +85,7 @@ declare const fullApi: ApiFromModules<{
   "lib/attachments": typeof lib_attachments;
   "lib/checkoutReadiness": typeof lib_checkoutReadiness;
   "lib/mediaSecurity": typeof lib_mediaSecurity;
+  "lib/passwordPolicy": typeof lib_passwordPolicy;
   "lib/providerPayments": typeof lib_providerPayments;
   "lib/rateLimits": typeof lib_rateLimits;
   "lib/totp": typeof lib_totp;
@@ -104,6 +107,7 @@ declare const fullApi: ApiFromModules<{
   services: typeof services;
   settings: typeof settings;
   storage: typeof storage;
+  superAdmin: typeof superAdmin;
   users: typeof users;
   whatsapp: typeof whatsapp;
 }>;

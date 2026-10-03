@@ -133,12 +133,24 @@
 
 <style>
   .search-glass {
-    background: rgba(255, 255, 255, 0.05);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 16px;
+    background: #101e28;
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   }
 
+  .search-glass > div {
+    padding: 0;
+    border: 0;
+  }
+  .search-glass > button {
+    grid-column: 1/-1;
+    width: 100%;
+  }
   select {
     background: transparent;
     color: white;

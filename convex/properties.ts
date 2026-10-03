@@ -111,9 +111,7 @@ export const getProperty = query({
     const agent = property.agentId ? await ctx.db.get(property.agentId) : null;
     return {
       ...(await withResolvedImages(ctx, property)),
-      agent: agent
-        ? { name: agent.name, avatarUrl: agent.avatarUrl, phone: agent.phone }
-        : null,
+      agent: agent ? { name: agent.name, avatarUrl: agent.avatarUrl } : null,
     };
   },
 });
