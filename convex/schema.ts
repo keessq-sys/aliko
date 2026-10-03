@@ -791,7 +791,7 @@ export default defineSchema({
     reference: v.string(), // e.g. ADK-SVC-2026-0001
     serviceId: v.id("services"),
     serviceSlug: v.string(),
-    requesterId: v.optional(v.id("users")), // null = guest submission
+    requesterId: v.optional(v.id("users")), // absent for guest submissions
     paidAmount: v.optional(v.number()),
     requesterName: v.string(),
     requesterEmail: v.string(),

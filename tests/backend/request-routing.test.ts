@@ -78,6 +78,28 @@ describe("service and enquiry routing", () => {
       vi.unstubAllEnvs();
     }
   });
+  it("omits the optional requester ID for guest requests across every service", async () => {
+    const t = setup();
+    await t.mutation(internal.catalog.synchronizeServices, {});
+    for (const service of SERVICES) {
+      const result = await t.mutation(
+        api.serviceRequests.submitServiceRequest,
+        {
+          serviceSlug: service.slug,
+          requestType: service.requestType as any,
+          requesterName: "Guest verification",
+          requesterEmail: `guest-${service.slug}@example.invalid`,
+          requesterPhone: "08000000000",
+          projectBrief: "Isolated guest submission verification only.",
+        },
+      );
+      const stored = await t.run((ctx) => ctx.db.get(result.id));
+      expect(stored?.requesterId).toBeUndefined();
+      expect(stored?.status).toBe("NEW");
+      expect(stored?.serviceSlug).toBe(service.slug);
+    }
+    expect(await t.query(api.serviceRequests.getMyRequests, {})).toEqual([]);
+  });
   it("rejects inactive services and invalid contact/location input without creating requests", async () => {
     const t = setup();
     await t.mutation(internal.catalog.synchronizeServices, {});

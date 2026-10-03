@@ -70,7 +70,7 @@ export const submitServiceRequest = auditedMutation(
     if (args.state || args.lga)
       assertNigeriaLocation(args.state ?? "", args.lga);
 
-    let userId: any = null;
+    let userId: Id<"users"> | undefined;
     try {
       const id = await getAuthUserId(ctx);
       if (id) userId = id;
