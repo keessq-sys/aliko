@@ -91,9 +91,12 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
       event.request.method !== "GET" &&
       !scheduledMaintenance)
   ) {
-    const token = await sessionToken(event.cookies, event.url).catch(
-      () => null,
-    );
+    const token = await sessionToken(
+      event.cookies,
+      event.url,
+      false,
+      event.locals,
+    ).catch(() => null);
     if (!token || !env.PUBLIC_CONVEX_URL) {
       if (pathname.startsWith("/api/"))
         return new Response("Forbidden", { status: 403 });
@@ -107,10 +110,12 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
     try {
       const client = new ConvexHttpClient(env.PUBLIC_CONVEX_URL);
       client.setAuth(token);
-      const profile = await client.query(
-        makeFunctionReference<"query">("users:getMyProfile"),
-        {},
-      );
+      const profile =
+        event.locals.user ??
+        (await client.query(
+          makeFunctionReference<"query">("users:getMyProfile"),
+          {},
+        ));
       if (!profile || profile.accountStatus === "SUSPENDED")
         throw new Error("No authenticated profile");
       event.locals.user = profile as App.Locals["user"];
@@ -156,8 +161,13 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
   }
 
   const language = event.cookies.get("adk-language") === "ar" ? "ar" : "en";
-  const response = await resolve(event, { transformPageChunk: ({ html }) =>
-    html.replace('<html lang="en"', `<html lang="${language}" dir="${language === "ar" ? "rtl" : "ltr"}"`) });
+  const response = await resolve(event, {
+    transformPageChunk: ({ html }) =>
+      html.replace(
+        '<html lang="en"',
+        `<html lang="${language}" dir="${language === "ar" ? "rtl" : "ltr"}"`,
+      ),
+  });
   response.headers.append("Vary", "Cookie");
   response.headers.set("Content-Language", language);
 

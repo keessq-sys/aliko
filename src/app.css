@@ -793,3 +793,23 @@ html[dir="rtl"] .private-workspace aside.fixed { left: auto; right: 0; }
   html[dir="rtl"] .private-workspace .md\:ml-64 { margin-left:0; margin-right:16rem; }
   html[dir="rtl"] .private-workspace .md\:pl-64 { padding-left:0; padding-right:16rem; }
 }
+
+/* Keep navigation perceptible while its protected server load runs. */
+.route-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 3px;
+  z-index: 200;
+  background: #10b981;
+  pointer-events: none;
+}
+/* Avoid painting landing sections outside the viewport. */
+.home-content > section:not(:first-of-type) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
+}
+@media (hover: none) {
+  .home-content .glass-panel {
+    backdrop-filter: none;
+  }
+}

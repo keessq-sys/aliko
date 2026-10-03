@@ -19,7 +19,7 @@
   import Footer from "$lib/components/layout/Footer.svelte";
   import Toast from "$lib/components/ui/Toast.svelte";
   import MobileBottomNav from "$lib/components/layout/MobileBottomNav.svelte";
-  import { page } from "$app/stores";
+  import { page, navigating } from "$app/stores";
   import WorkspaceNavigation from "$lib/components/layout/WorkspaceNavigation.svelte";
   import { invalidateAll } from "$app/navigation";
   import { onMount } from "svelte";
@@ -63,10 +63,14 @@
     globalSchemaJson?: string;
   };
 
-  const { locale } = provideI18n(data.locale ?? "en");
+  const { locale, t: adkT } = provideI18n(data.locale ?? "en");
   $: locale.set(data.locale ?? "en");
   afterNavigate(() => {
-    if (data.session?.user?.id) void runMutation(api.activity.record, { kind: "PAGE_VIEW", path: $page.url.pathname }).catch(() => {});
+    if (data.session?.user?.id)
+      void runMutation(api.activity.record, {
+        kind: "PAGE_VIEW",
+        path: $page.url.pathname,
+      }).catch(() => {});
   });
   // Initialize Convex real-time client (falls back gracefully when unset)
   setupConvex(convexUrl, {
@@ -92,16 +96,6 @@
 </script>
 
 <svelte:head>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin="anonymous"
-  />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap"
-    rel="stylesheet"
-  />
   <meta name="theme-color" content="#050A0E" />
   <!-- title/description/OG/Twitter/canonical are intentionally NOT set here.
        Rendering them at the layout level would duplicate whatever a page's
@@ -112,6 +106,14 @@
     {@html `<script type="application/ld+json">${data.globalSchemaJson}<\/script>`}
   {/if}
 </svelte:head>
+
+{#if $navigating}
+  <div
+    role="progressbar"
+    aria-label={$adkT("Loading")}
+    class="route-progress"
+  ></div>
+{/if}
 
 {#if !hideHeader}
   <Header session={data.session} />

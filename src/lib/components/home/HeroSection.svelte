@@ -2,7 +2,6 @@
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
 
-  import { onMount } from "svelte";
   import {
     MapPin,
     CheckCircle2,
@@ -11,10 +10,8 @@
     MessageCircle,
   } from "lucide-svelte";
   import SearchBar from "./SearchBar.svelte";
-  import { fade, type FadeParams } from "svelte/transition";
   import { HERO_IMAGES } from "$lib/data/imagery";
   import { whatsappHref } from "$lib/data/contact";
-  import DiamondHero from "$lib/components/three/DiamondHero.svelte";
 
   /**
    * Drop a real property walkthrough clip's URL here (mp4/webm, muted,
@@ -22,37 +19,6 @@
    * everything else (overlay, content, layout) stays the same.
    */
   export let heroVideoUrl: string | null = null;
-
-  let mouseX = 0;
-  let mouseY = 0;
-  let cardRotateX = 0;
-  let cardRotateY = 0;
-
-  let mounted = false;
-
-  function accessibleFade(node: HTMLElement, options: FadeParams = {}) {
-    const reduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    return fade(node, reduced ? { duration: 0, delay: 0 } : options);
-  }
-
-  onMount(() => {
-    mounted = true;
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-
-      cardRotateY = ((mouseX - centerX) / window.innerWidth) * 20;
-      cardRotateX = ((mouseY - centerY) / window.innerHeight) * -20;
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  });
 </script>
 
 <section
@@ -69,27 +35,28 @@
         playsinline
       ></video>
     {:else}
-      <img src={HERO_IMAGES.home} alt={$adkT("Premium property skyline")} />
+      <img
+        fetchpriority="high"
+        decoding="async"
+        src={HERO_IMAGES.home}
+        alt={$adkT("Example residential architecture")}
+      />
     {/if}
   </div>
   <div class="hero-scrim"></div>
   <div class="grid-floor"></div>
 
   <!-- Floating Orbs -->
-  <div
-    class="orb bg-emerald-600/20 w-96 h-96 top-20 left-10"
-    style="transform: translate({mouseX * -0.02}px, {mouseY * -0.02}px);"
-  ></div>
-  <div
-    class="orb bg-amber-500/20 w-80 h-80 bottom-20 right-20"
-    style="transform: translate({mouseX * 0.02}px, {mouseY * 0.02}px);"
-  ></div>
+  <div class="orb bg-emerald-600/20 w-96 h-96 top-20 left-10"></div>
+  <div class="orb bg-amber-500/20 w-80 h-80 bottom-20 right-20"></div>
 
-  <!-- Decorative "Diamond Key" 3D gem — the brand's one tasteful hero moment -->
+  <!-- Static brand accent: no WebGL import or perpetual animation -->
   <div
     class="absolute top-2 right-2 w-16 h-16 sm:top-4 sm:right-4 sm:w-24 sm:h-24 md:top-16 md:right-8 md:w-36 md:h-36 lg:top-20 lg:right-10 lg:w-52 lg:h-52 z-[1] pointer-events-none"
   >
-    <DiamondHero />
+    <div
+      class="h-full w-full rounded-full bg-[radial-gradient(circle_at_35%_30%,rgba(52,211,153,0.35),rgba(217,119,6,0.15)_45%,transparent_70%)]"
+    ></div>
   </div>
 
   <div
@@ -97,74 +64,77 @@
   >
     <!-- Left Content -->
     <div class="w-full lg:w-1/2 flex flex-col gap-6 items-start">
-      {#if mounted}
-        <div
-          transition:accessibleFade={{ duration: 800, delay: 100 }}
-          class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel text-sm text-emerald-400 font-medium"
+      <div
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel text-sm text-emerald-400 font-medium"
+      >
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        {$adkT("Explore Nigerian property and services")}
+      </div>
+
+      <h1
+        class="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight"
+      >
+        {$adkT("Find Your")} <br />
+        <span
+          class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600"
+          >{$adkT("Diamond Key")}</span
+        > <br />
+        {$adkT("Property.")}
+      </h1>
+
+      <p class="text-lg md:text-xl text-gray-400 max-w-xl">
+        {$adkT(
+          "Browse reviewed property listings and request land, design, construction and property services. Confirm title and availability with our team before committing.",
+        )}
+      </p>
+
+      <div class="w-full mt-4">
+        <SearchBar />
+      </div>
+
+      <div class="hero-actions flex flex-wrap gap-4 mt-6">
+        <a
+          href="/properties"
+          class="px-8 py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-xl font-bold text-white shadow-[0_0_20px_rgba(5,150,105,0.4)] transition-all hover:scale-105"
         >
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"
-          ></span> {$adkT("Explore Nigerian property and services")} </div>
-
-        <h1
-          transition:accessibleFade={{ duration: 800, delay: 200 }}
-          class="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight"
-        > {$adkT("Find Your")} <br />
-          <span
-            class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600"
-            >{$adkT("Diamond Key")}</span
-          > <br /> {$adkT("Property.")} </h1>
-
-        <p
-          transition:accessibleFade={{ duration: 800, delay: 300 }}
-          class="text-lg md:text-xl text-gray-400 max-w-xl"
-        > {$adkT("Browse reviewed property listings and request land, design, construction and property services. Confirm title and availability with our team before committing.")} </p>
-
-        <div
-          transition:accessibleFade={{ duration: 800, delay: 400 }}
-          class="w-full mt-4"
+          {$adkT("Browse Properties")}
+        </a>
+        <a
+          href="/map"
+          class="px-8 py-4 glass-panel rounded-xl font-bold hover:bg-white/10 transition-all flex items-center gap-2"
         >
-          <SearchBar />
-        </div>
-
-        <div
-          transition:accessibleFade={{ duration: 800, delay: 500 }}
-          class="hero-actions flex flex-wrap gap-4 mt-6"
+          <MapPin size={20} />
+          {$adkT("View on Map")}
+        </a>
+        <a
+          href={whatsappHref(
+            "Hi, I'd like to speak with someone about a property.",
+          )}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="px-8 py-4 rounded-xl font-bold border border-[#25D366]/40 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-all flex items-center gap-2"
         >
-          <a
-            href="/properties"
-            class="px-8 py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-xl font-bold text-white shadow-[0_0_20px_rgba(5,150,105,0.4)] transition-all hover:scale-105"
-          > {$adkT("Browse Properties")} </a>
-          <a
-            href="/map"
-            class="px-8 py-4 glass-panel rounded-xl font-bold hover:bg-white/10 transition-all flex items-center gap-2"
-          >
-            <MapPin size={20} /> {$adkT("View on Map")} </a>
-          <a
-            href={whatsappHref(
-              "Hi, I'd like to speak with someone about a property.",
-            )}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="px-8 py-4 rounded-xl font-bold border border-[#25D366]/40 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-all flex items-center gap-2"
-          >
-            <MessageCircle size={20} /> {$adkT("Chat on WhatsApp")} </a>
-        </div>
+          <MessageCircle size={20} />
+          {$adkT("Chat on WhatsApp")}
+        </a>
+      </div>
 
-        <div
-          transition:accessibleFade={{ duration: 800, delay: 600 }}
-          class="flex items-center gap-6 mt-8 text-sm text-gray-400 font-medium"
+      <div
+        class="flex items-center gap-6 mt-8 text-sm text-gray-400 font-medium"
+      >
+        <span class="flex items-center gap-1"
+          ><CheckCircle2 size={16} class="text-emerald-500" />
+          {$adkT("Publication review")}</span
         >
-          <span class="flex items-center gap-1"
-            ><CheckCircle2 size={16} class="text-emerald-500" /> {$adkT("Publication review")}</span
-          >
-          <span class="flex items-center gap-1"
-            ><CheckCircle2 size={16} class="text-emerald-500" /> {$adkT("Payment references")}</span
-          >
-          <span class="flex items-center gap-1"
-            ><CheckCircle2 size={16} class="text-emerald-500" /> {$adkT("Customer support")}</span
-          >
-        </div>
-      {/if}
+        <span class="flex items-center gap-1"
+          ><CheckCircle2 size={16} class="text-emerald-500" />
+          {$adkT("Payment references")}</span
+        >
+        <span class="flex items-center gap-1"
+          ><CheckCircle2 size={16} class="text-emerald-500" />
+          {$adkT("Customer support")}</span
+        >
+      </div>
     </div>
 
     <!-- Right 3D Stack -->
@@ -172,58 +142,64 @@
       class="w-full lg:w-1/2 relative h-[600px] hidden lg:block"
       style="perspective: 1000px;"
     >
-      {#if mounted}
+      <div
+        class="absolute inset-0 flex items-center justify-center transition-transform duration-200 ease-out"
+      >
+        <!-- Background Card (offset) -->
         <div
-          transition:accessibleFade={{ duration: 1000, delay: 300 }}
-          class="absolute inset-0 flex items-center justify-center transition-transform duration-200 ease-out"
-          style="transform: rotateX({cardRotateX}deg) rotateY({cardRotateY}deg);"
-        >
-          <!-- Background Card (offset) -->
-          <div
-            class="absolute w-80 h-[450px] glass-panel rounded-3xl -right-10 -top-5 rotate-12 opacity-40"
-          ></div>
+          class="absolute w-80 h-[450px] glass-panel rounded-3xl -right-10 -top-5 rotate-12 opacity-40"
+        ></div>
 
-          <!-- Foreground Featured Card -->
-          <div
-            class="relative w-96 h-[500px] glass-panel rounded-3xl p-4 flex flex-col gap-4 floating z-10 overflow-hidden group"
-          >
-            <div class="relative h-3/5 w-full rounded-2xl overflow-hidden">
-              <img
-                src="/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0228.jpg"
-                alt={$adkT("Example residential architecture")}
-                class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700"
-              />
-              <div
-                class="absolute top-4 left-4 bg-[#050a0e] backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold border border-white/10 flex items-center gap-1"
-              >
-                <CheckCircle2 size={12} class="text-emerald-400" /> {$adkT("Architecture showcase")} </div>
+        <!-- Foreground Featured Card -->
+        <div
+          class="relative w-96 h-[500px] glass-panel rounded-3xl p-4 flex flex-col gap-4 z-10 overflow-hidden group"
+        >
+          <div class="relative h-3/5 w-full rounded-2xl overflow-hidden">
+            <img
+              src="/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0228.jpg"
+              alt={$adkT("Example residential architecture")}
+              class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700"
+            />
+            <div
+              class="absolute top-4 left-4 bg-[#050a0e] backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold border border-white/10 flex items-center gap-1"
+            >
+              <CheckCircle2 size={12} class="text-emerald-400" />
+              {$adkT("Architecture showcase")}
+            </div>
+          </div>
+
+          <div class="flex-1 flex flex-col justify-between px-2">
+            <div>
+              <h3 class="text-xl font-bold">
+                {$adkT("Discover Nigerian homes")}
+              </h3>
+              <p class="text-gray-400 text-sm flex items-center gap-1 mt-1">
+                <MapPin size={14} />
+                {$adkT("Browse the published catalogue")}
+              </p>
             </div>
 
-            <div class="flex-1 flex flex-col justify-between px-2">
+            <div class="flex justify-between items-end">
               <div>
-                <h3 class="text-xl font-bold">{$adkT("Discover Nigerian homes")}</h3>
-                <p class="text-gray-400 text-sm flex items-center gap-1 mt-1">
-                  <MapPin size={14} /> {$adkT("Browse the published catalogue")} </p>
-              </div>
-
-              <div class="flex justify-between items-end">
-                <div>
-                  <p class="text-xs text-gray-500 mb-1"> {$adkT("Listings become available after review")} </p>
-                  <p
-                    class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500"
-                  > {$adkT("Explore properties")} </p>
-                </div>
-                <div
-                  class="bg-emerald-500/20 text-emerald-400 p-2 rounded-xl border border-emerald-500/30 flex items-center gap-1"
+                <p class="text-xs text-gray-500 mb-1">
+                  {$adkT("Listings become available after review")}
+                </p>
+                <p
+                  class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500"
                 >
-                  <TrendingUp size={16} />
-                  <span class="text-xs font-bold">{$adkT("Enquire")}</span>
-                </div>
+                  {$adkT("Explore properties")}
+                </p>
+              </div>
+              <div
+                class="bg-emerald-500/20 text-emerald-400 p-2 rounded-xl border border-emerald-500/30 flex items-center gap-1"
+              >
+                <TrendingUp size={16} />
+                <span class="text-xs font-bold">{$adkT("Enquire")}</span>
               </div>
             </div>
           </div>
         </div>
-      {/if}
+      </div>
     </div>
   </div>
 </section>
@@ -244,7 +220,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    animation: kenburns 22s ease-in-out infinite alternate;
   }
 
   .hero-scrim {
@@ -260,15 +235,6 @@
         rgba(5, 10, 14, 0.55) 55%,
         rgba(5, 10, 14, 0.75) 100%
       );
-  }
-
-  @keyframes kenburns {
-    0% {
-      transform: scale(1) translate(0, 0);
-    }
-    100% {
-      transform: scale(1.12) translate(-1%, -1%);
-    }
   }
 
   .grid-floor {
@@ -296,22 +262,12 @@
   .orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(80px);
+    background: radial-gradient(
+      circle,
+      rgba(5, 150, 105, 0.14),
+      transparent 70%
+    );
     z-index: 0;
     transition: transform 0.2s ease-out;
-  }
-
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0) scale(1);
-    }
-    50% {
-      transform: translateY(-20px) scale(1.05);
-    }
-  }
-
-  .floating {
-    animation: float 6s ease-in-out infinite;
   }
 </style>

@@ -12,6 +12,7 @@ declare global {
         email?: string;
         role?: string;
         phone?: string;
+        accountStatus?: string;
       };
     }
     interface Platform {

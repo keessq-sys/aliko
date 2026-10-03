@@ -7,16 +7,14 @@
  * where necessary by locally hosted, licensed stock photography.
  */
 
-function picsum(seed: string, w: number, h: number): string {
-  return `https://picsum.photos/seed/${seed}/${w}/${h}`;
-}
+
 
 export const HERO_IMAGES = {
-  home: picsum('adk-hero-skyline', 1920, 1080),
-  homeMobile: picsum('adk-hero-skyline', 900, 1200),
+  home: '/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0228.jpg',
+  homeMobile: '/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0228.jpg',
   // Drop a real property walkthrough clip here (mp4/webm, <15s, muted, looping)
   // and set `heroVideoUrl` in HeroSection.svelte to switch the hero to video.
-  posterForFutureVideo: picsum('adk-hero-skyline', 1920, 1080)
+  posterForFutureVideo: '/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0228.jpg'
 };
 
 export const SIGNATURE_DEVELOPMENTS = [
@@ -39,7 +37,7 @@ export const EXPLORE_LOCATIONS = [
   { city: 'Kano', state: 'Kano State', listings: 61, images: ['/images/locations/kano/aerial.jpg','/images/locations/kano/historic-aerial.png','/images/locations/kano/satellite.jpg'] }
 ];
 
-export const VISION_BANNER_IMAGE = picsum('adk-vision-banner', 1920, 1280);
+export const VISION_BANNER_IMAGE = '/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0190.jpg';
 
 function projectImages(category: 'CONSTRUCTION' | 'HOUSES' | 'SUPPLY TILES', files: string[]): string[] {
   const folder = encodeURIComponent(category);

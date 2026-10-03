@@ -33,6 +33,7 @@ export async function sessionToken(
   cookies: Cookies,
   url: URL,
   force = false,
+  locals?: App.Locals,
 ): Promise<string | null> {
   const token = cookies.get("__convexAuthJWT");
   if (token && !force) {
@@ -43,7 +44,10 @@ export async function sessionToken(
         makeFunctionReference<"query">("users:getMyProfile"),
         {},
       );
-      if (profile) return token;
+      if (profile) {
+        if (locals) locals.user = profile as App.Locals["user"];
+        return token;
+      }
     } catch {
       // An expired JWT can still have a valid refresh session. Convex verifies
       // every returned token; parsing a JWT locally never grants access.
@@ -80,5 +84,6 @@ export async function sessionToken(
     return null;
   }
   saveSession(cookies, url, tokens);
+  if (locals) locals.user = profile as App.Locals["user"];
   return tokens.token;
 }

@@ -11,7 +11,29 @@ import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 const cloudflareAdapter = {
   ...adapter({
     routes: {
-      exclude: ["<all>"],
+      // Directory rules keep static assets out of the worker without exceeding
+      // Cloudflare's 100-rule limit. No application or API routes are excluded.
+      exclude: [
+        "<build>",
+        "<prerendered>",
+        "<redirects>",
+        "/fonts/*",
+        "/images/*",
+        "/icons/*",
+        "/og/*",
+        "/.well-known/*",
+        "/Frontend UI Images/*",
+        "/Frontend%20UI%20Images/*",
+        "/adk-logo.png",
+        "/apple-touch-icon.png",
+        "/favicon.svg",
+        "/logo.png",
+        "/llms.txt",
+        "/llms-full.txt",
+        "/manifest.webmanifest",
+        "/robots.txt",
+        "/sw.js",
+      ],
       include: ["/*"],
     },
   }),

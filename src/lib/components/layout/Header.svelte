@@ -205,7 +205,7 @@
     ></div>
     <div
       class="absolute top-20 left-0 w-full z-30 bg-[#071018] border-b border-white/15 shadow-2xl"
-      transition:slide={{ duration: 300 }}
+      transition:slide={{ duration: 100 }}
     >
       <div
         class="flex flex-col p-4 gap-2 max-h-[70vh] overflow-y-auto"

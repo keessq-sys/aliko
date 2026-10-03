@@ -30,7 +30,7 @@
     class="theme-contrast-dark hidden lg:flex lg:w-1/2 relative bg-black items-center justify-center overflow-hidden"
   >
     <div
-      class="absolute inset-0 bg-[url('https://picsum.photos/seed/adk/1200/1600')] bg-cover bg-center opacity-40"
+      class="absolute inset-0 bg-[url('/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0228.jpg')] bg-cover bg-center opacity-40"
     ></div>
     <div
       class="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent"
