@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InteractiveFields from "$lib/components/ui/InteractiveFields.svelte";
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
 
@@ -105,121 +106,156 @@
     on:click={() => dispatch("backToSignIn")}
     class="flex items-center gap-1.5 text-xs text-stone-400 hover:text-emerald-400"
   >
-    <ArrowLeft size={14} /> {$adkT("Back to sign in")} </button>
+    <ArrowLeft size={14} />
+    {$adkT("Back to sign in")}
+  </button>
 
   {#if step === "done"}
     <div class="text-center py-6">
       <CheckCircle2 class="mx-auto mb-3 h-10 w-10 text-emerald-400" />
       <h2 class="text-lg font-bold text-white">{$adkT("Password updated")}</h2>
-      <p class="mt-1 text-sm text-gray-400"> {$adkT("You can now sign in with your new password.")} </p>
+      <p class="mt-1 text-sm text-gray-400">
+        {$adkT("You can now sign in with your new password.")}
+      </p>
       <button
         type="button"
         on:click={() => dispatch("backToSignIn")}
         class="btn-primary mt-6 w-full min-h-[44px] py-3"
-      > {$adkT("Go to Sign In")} </button>
+      >
+        {$adkT("Go to Sign In")}
+      </button>
     </div>
   {:else if step === "request"}
     <form on:submit={requestCode} class="space-y-5">
-      <div>
-        <h2 class="text-lg font-bold text-white">{$adkT("Reset your password")}</h2>
-        <p class="mt-1 text-sm text-gray-400"> {$adkT("Enter your email and we'll send a 6-digit reset code.")} </p>
-      </div>
-      <div class="relative">
-        <div
-          class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
-        >
-          <Mail class="h-5 w-5 text-gray-400" />
-        </div>
-        <input dir="auto"
-          type="email"
-          inputmode="email"
-          autocomplete="email"
-          bind:value={email}
-          placeholder={$adkT("you@example.com")}
-          class="block w-full min-h-[44px] rounded-lg border border-white/10 bg-black/20 py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:ring-1 focus:ring-emerald-500"
-        />
-      </div>
-      {#if errorMessage}
-        <p
-          class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300"
-        >
-          {$adkT(errorMessage)}
-        </p>
-      {/if}
-      <button
-        type="submit"
-        disabled={loading}
-        class="btn-primary flex w-full min-h-[44px] items-center justify-center gap-2 py-3 disabled:opacity-60"
+      <InteractiveFields
+        spacing="space-y-5"
+        busy={loading}
+        label={$adkT("Reset password")}
       >
-        {#if loading}<Loader2 class="h-4 w-4 animate-spin" />{/if} {$adkT("Send reset code")} </button>
+        <div>
+          <h2 class="text-lg font-bold text-white">
+            {$adkT("Reset your password")}
+          </h2>
+          <p class="mt-1 text-sm text-gray-400">
+            {$adkT("Enter your email and we'll send a 6-digit reset code.")}
+          </p>
+        </div>
+        <div class="relative">
+          <div
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+          >
+            <Mail class="h-5 w-5 text-gray-400" />
+          </div>
+          <input
+            dir="auto"
+            type="email"
+            inputmode="email"
+            autocomplete="email"
+            bind:value={email}
+            placeholder={$adkT("you@example.com")}
+            class="block w-full min-h-[44px] rounded-lg border border-white/10 bg-black/20 py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:ring-1 focus:ring-emerald-500"
+          />
+        </div>
+        {#if errorMessage}
+          <p
+            class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300"
+          >
+            {$adkT(errorMessage)}
+          </p>
+        {/if}
+        <button
+          type="submit"
+          disabled={loading}
+          class="btn-primary flex w-full min-h-[44px] items-center justify-center gap-2 py-3 disabled:opacity-60"
+        >
+          {#if loading}<Loader2 class="h-4 w-4 animate-spin" />{/if}
+          {$adkT("Send reset code")}
+        </button>
+      </InteractiveFields>
     </form>
   {:else}
     <form on:submit={verifyAndReset} class="space-y-5">
-      <div>
-        <h2 class="text-lg font-bold text-white">{$adkT("Enter your reset code")}</h2>
-        <p class="mt-1 text-sm text-gray-400"> {$adkT("Check")} <span class="text-white">{email}</span> {$adkT("for a 6-digit code, then choose a new password.")} </p>
-      </div>
-      <div class="relative">
-        <div
-          class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
-        >
-          <KeyRound class="h-5 w-5 text-gray-400" />
-        </div>
-        <input dir="auto"
-          type="text"
-          inputmode="numeric"
-          autocomplete="one-time-code"
-          bind:value={code}
-          placeholder={$adkT("6-digit code")}
-          maxlength="6"
-          class="block w-full min-h-[44px] rounded-lg border border-white/10 bg-black/20 py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:ring-1 focus:ring-emerald-500"
-        />
-      </div>
-      <div class="relative">
-        <div
-          class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
-        >
-          <Lock class="h-5 w-5 text-gray-400" />
-        </div>
-        <PasswordField
-          strength={true}
-          autocomplete="new-password"
-          bind:value={newPassword}
-          placeholder={$adkT("New password")}
-          class="block w-full min-h-[44px] rounded-lg border border-white/10 bg-black/20 py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:ring-1 focus:ring-emerald-500"
-        />
-      </div>
-      <div class="relative">
-        <div
-          class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
-        >
-          <Lock class="h-5 w-5 text-gray-400" />
-        </div>
-        <PasswordField
-          autocomplete="new-password"
-          bind:value={confirmPassword}
-          placeholder={$adkT("Confirm new password")}
-          class="block w-full min-h-[44px] rounded-lg border border-white/10 bg-black/20 py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:ring-1 focus:ring-emerald-500"
-        />
-      </div>
-      {#if errorMessage}
-        <p
-          class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300"
-        >
-          {$adkT(errorMessage)}
-        </p>
-      {/if}
-      <button
-        type="submit"
-        disabled={loading}
-        class="btn-primary flex w-full min-h-[44px] items-center justify-center gap-2 py-3 disabled:opacity-60"
+      <InteractiveFields
+        spacing="space-y-5"
+        busy={loading}
+        label={$adkT("Reset password")}
       >
-        {#if loading}<Loader2 class="h-4 w-4 animate-spin" />{/if} {$adkT("Reset password")} </button>
-      <button
-        type="button"
-        on:click={() => (step = "request")}
-        class="w-full text-center text-xs text-stone-400 hover:text-emerald-400"
-      > {$adkT("Didn't get a code? Try a different email")} </button>
+        <div>
+          <h2 class="text-lg font-bold text-white">
+            {$adkT("Enter your reset code")}
+          </h2>
+          <p class="mt-1 text-sm text-gray-400">
+            {$adkT("Check")} <span class="text-white">{email}</span>
+            {$adkT("for a 6-digit code, then choose a new password.")}
+          </p>
+        </div>
+        <div class="relative">
+          <div
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+          >
+            <KeyRound class="h-5 w-5 text-gray-400" />
+          </div>
+          <input
+            dir="auto"
+            type="text"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            bind:value={code}
+            placeholder={$adkT("6-digit code")}
+            maxlength="6"
+            class="block w-full min-h-[44px] rounded-lg border border-white/10 bg-black/20 py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:ring-1 focus:ring-emerald-500"
+          />
+        </div>
+        <div class="relative">
+          <div
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+          >
+            <Lock class="h-5 w-5 text-gray-400" />
+          </div>
+          <PasswordField
+            strength={true}
+            autocomplete="new-password"
+            bind:value={newPassword}
+            placeholder={$adkT("New password")}
+            class="block w-full min-h-[44px] rounded-lg border border-white/10 bg-black/20 py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:ring-1 focus:ring-emerald-500"
+          />
+        </div>
+        <div class="relative">
+          <div
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+          >
+            <Lock class="h-5 w-5 text-gray-400" />
+          </div>
+          <PasswordField
+            autocomplete="new-password"
+            bind:value={confirmPassword}
+            placeholder={$adkT("Confirm new password")}
+            class="block w-full min-h-[44px] rounded-lg border border-white/10 bg-black/20 py-2.5 pl-10 pr-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:ring-1 focus:ring-emerald-500"
+          />
+        </div>
+        {#if errorMessage}
+          <p
+            class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300"
+          >
+            {$adkT(errorMessage)}
+          </p>
+        {/if}
+        <button
+          type="submit"
+          disabled={loading}
+          class="btn-primary flex w-full min-h-[44px] items-center justify-center gap-2 py-3 disabled:opacity-60"
+        >
+          {#if loading}<Loader2 class="h-4 w-4 animate-spin" />{/if}
+          {$adkT("Reset password")}
+        </button>
+        <button
+          type="button"
+          on:click={() => (step = "request")}
+          class="w-full text-center text-xs text-stone-400 hover:text-emerald-400"
+        >
+          {$adkT("Didn't get a code? Try a different email")}
+        </button>
+      </InteractiveFields>
     </form>
   {/if}
 </div>

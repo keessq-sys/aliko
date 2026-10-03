@@ -99,3 +99,28 @@ test("service links navigate without a full-page error", async ({ page }) => {
   ).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test("browser-only forms cannot submit natively before their handlers are ready", async ({
+  browser, baseURL,
+}) => {
+  const context = await browser.newContext({ baseURL, javaScriptEnabled: false });
+  const page = await context.newPage();
+  try {
+    await page.goto("/auth/admin");
+    await expect(
+      page.getByRole("button", { name: "Sign In", exact: true }),
+    ).toBeDisabled();
+    await expect(
+      page.getByRole("textbox", { name: "Email Address", exact: true }),
+    ).toBeDisabled();
+    await page.goto("/request?service=interior-design");
+    await expect(
+      page.getByRole("textbox", { name: "Full Name *", exact: true }),
+    ).toBeDisabled();
+    await expect(
+      page.getByRole("button", { name: /^Submit Interior/ }),
+    ).toBeDisabled();
+  } finally {
+    await context.close();
+  }
+});

@@ -235,7 +235,7 @@
 
   <!-- ── Mobile drawer ── -->
   {#if isMobileNavOpen}
-    <div class="fixed inset-0 z-50 md:hidden">
+    <div class="fixed inset-x-0 top-[58px] bottom-0 z-50 md:hidden">
       <div
         class="absolute inset-0 bg-black/70 backdrop-blur-sm"
         role="presentation"
