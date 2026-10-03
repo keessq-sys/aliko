@@ -27,6 +27,23 @@ export const submitEnquiry = auditedMutation("enquiries:submitEnquiry")({
       key: contactRateKey(args.email, args.phone),
       throws: true,
     });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(args.email.trim()))
+      throw new Error("Provide a valid email address.");
+    if (args.propertyId) {
+      const property = await ctx.db.get(args.propertyId);
+      if (
+        !property ||
+        !property.isActive ||
+        property.verificationStatus !== "VERIFIED"
+      )
+        throw new Error(
+          "This listing is unavailable. Please contact the company desk.",
+        );
+    }
+    if (args.plotId && !(await ctx.db.get(args.plotId)))
+      throw new Error("This plot is unavailable.");
+    if (args.projectId && !(await ctx.db.get(args.projectId)))
+      throw new Error("This project is unavailable.");
     const now = Date.now();
     return ctx.db.insert("enquiries", {
       ...args,
@@ -95,7 +112,9 @@ export const listMyAssignedEnquiries = query({
   },
 });
 
-export const updateEnquiryStatus = auditedMutation("enquiries:updateEnquiryStatus")({
+export const updateEnquiryStatus = auditedMutation(
+  "enquiries:updateEnquiryStatus",
+)({
   args: {
     enquiryId: v.id("enquiries"),
     status: v.union(

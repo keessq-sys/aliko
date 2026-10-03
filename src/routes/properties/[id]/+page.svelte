@@ -128,15 +128,24 @@
       });
       return;
     }
-    if (!$liveProperty?._id) return;
+    if (!property) {
+      addToast({
+        type: "error",
+        message:
+          "This listing is unavailable. Please contact the company desk.",
+      });
+      return;
+    }
     isSendingInquiry = true;
     try {
       await runMutation(api.enquiries.submitEnquiry, {
-        propertyId: $liveProperty._id,
+        propertyId: $liveProperty?._id,
         name: inquiryName,
         email: inquiryEmail,
         phone: inquiryPhone,
-        message: inquiryMessage,
+        message: $liveProperty?._id
+          ? inquiryMessage
+          : `${inquiryMessage}\nCatalogue reference: ${propertyId} — ${property.title}. Availability must be confirmed by the company.`,
         source: "website",
       } as any);
       addToast({

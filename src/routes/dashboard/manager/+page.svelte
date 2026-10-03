@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from "$app/stores";
   import { getI18n } from "$lib/i18n";
   const { locale: adkLocale } = getI18n();
 
@@ -172,10 +173,15 @@
     { id: "reports", label: "Reports", icon: BarChart2 },
     { id: "settings", label: "Settings", icon: Settings },
   ];
+  $: if (
+    $page.url.hash &&
+    navItems.some((item) => item.id === $page.url.hash.slice(1))
+  )
+    currentTab = $page.url.hash.slice(1);
 </script>
 
 <div
-  class="flex h-screen w-full bg-[#050A0E] text-stone-300 font-sans overflow-hidden"
+  class="flex h-[calc(100dvh-58px)] w-full bg-[#050A0E] text-stone-300 font-sans overflow-hidden"
 >
   <!-- Sidebar -->
   <aside
@@ -189,7 +195,9 @@
           class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center"
         >
           <span class="text-white font-bold">{$adkT("A")}</span>
-        </div> {$adkT("ADK Manager")} </h1>
+        </div>
+        {$adkT("ADK Manager")}
+      </h1>
 
       <div
         class="mt-8 flex items-center gap-3 rounded-xl bg-white/5 p-3 border border-white/5"
@@ -234,7 +242,9 @@
         href="/login?signout=1"
         class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors"
       >
-        <LogOut class="h-5 w-5" /> {$adkT("Sign Out")} </a>
+        <LogOut class="h-5 w-5" />
+        {$adkT("Sign Out")}
+      </a>
     </div>
   </aside>
 
@@ -259,10 +269,12 @@
               class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center"
             >
               <span class="text-white font-bold">{$adkT("A")}</span>
-            </div> {$adkT("ADK Manager")} </h1>
+            </div>
+            {$adkT("ADK Manager")}
+          </h1>
           <button
             class="flex items-center justify-center w-11 h-11 rounded-xl text-stone-400 active:bg-white/10"
-            aria-label={$adkT("Close menu")}
+            aria-label={$adkT("Close sidebar")}
             on:click={() => (isMobileNavOpen = false)}
           >
             <X class="w-5 h-5" />
@@ -293,14 +305,16 @@
             href="/login?signout=1"
             class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors"
           >
-            <LogOut class="h-5 w-5" /> {$adkT("Sign Out")} </a>
+            <LogOut class="h-5 w-5" />
+            {$adkT("Sign Out")}
+          </a>
         </div>
       </aside>
     </div>
   {/if}
 
   <!-- Main Content -->
-  <main class="flex-1 flex flex-col h-screen overflow-hidden">
+  <main class="flex-1 flex flex-col h-[calc(100dvh-58px)] overflow-hidden">
     <!-- Header -->
     <header
       class="h-20 flex-shrink-0 border-b border-white/5 bg-[#050A0E]/80 backdrop-blur-md flex items-center justify-between px-4 md:px-8 z-10 gap-2"
@@ -308,7 +322,7 @@
       <div class="flex items-center gap-2 min-w-0">
         <button
           class="md:hidden flex items-center justify-center w-11 h-11 -ml-2 flex-shrink-0 rounded-full text-stone-300 active:bg-white/10"
-          aria-label={$adkT("Open menu")}
+          aria-label={$adkT("Open sidebar")}
           on:click={() => (isMobileNavOpen = true)}
         >
           <Menu class="h-6 w-6" />
@@ -325,7 +339,8 @@
           <Search
             class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400"
           />
-          <input dir="auto"
+          <input
+            dir="auto"
             type="text"
             placeholder={$adkT("Search...")}
             class="w-64 rounded-full border border-white/10 bg-white/5 py-2 pl-10 pr-4 text-sm focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
@@ -400,20 +415,31 @@
               <div
                 class="lg:col-span-2 rounded-xl border border-white/5 bg-white/[0.02] p-6"
               >
-                <h3 class="text-lg font-semibold text-white mb-4"> {$adkT("Top Performing Properties")} </h3>
+                <h3 class="text-lg font-semibold text-white mb-4">
+                  {$adkT("Top Performing Properties")}
+                </h3>
                 <div class="space-y-4">
                   {#each MOCK_PROPERTIES.slice(0, 3) as prop}
                     <div
                       class="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/5 hover:border-emerald-500/30 transition-colors"
                     >
                       <div>
-                        <h4 class="font-medium text-white">{$adkT(prop.title)}</h4>
-                        <p class="text-sm text-stone-400">{$adkT(prop.location)}</p>
+                        <h4 class="font-medium text-white">
+                          {$adkT(prop.title)}
+                        </h4>
+                        <p class="text-sm text-stone-400">
+                          {$adkT(prop.location)}
+                        </p>
                       </div>
                       <div class="text-right">
                         <p class="font-medium text-emerald-400">
-                          ₦{$adkT((prop.price / 1000000).toFixed(1))}{$adkT("M")} </p>
-                        <p class="text-xs text-stone-500">{$adkT(prop.status)}</p>
+                          ₦{$adkT((prop.price / 1000000).toFixed(1))}{$adkT(
+                            "M",
+                          )}
+                        </p>
+                        <p class="text-xs text-stone-500">
+                          {$adkT(prop.status)}
+                        </p>
                       </div>
                     </div>
                   {/each}
@@ -437,11 +463,15 @@
               <div
                 class="p-6 border-b border-white/5 flex justify-between items-center"
               >
-                <h3 class="text-lg font-semibold text-white">{$adkT("Active Tenants")}</h3>
+                <h3 class="text-lg font-semibold text-white">
+                  {$adkT("Active Tenants")}
+                </h3>
                 <button
                   class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
                 >
-                  <Filter class="w-4 h-4" /> {$adkT("Filter")} </button>
+                  <Filter class="w-4 h-4" />
+                  {$adkT("Filter")}
+                </button>
               </div>
               <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
@@ -459,10 +489,14 @@
                     {#each MOCK_TENANTS as t}
                       <tr class="hover:bg-white/5">
                         <td class="px-6 py-4">
-                          <div class="text-white font-medium">{$adkT(t.name)}</div>
+                          <div class="text-white font-medium">
+                            {$adkT(t.name)}
+                          </div>
                           <div class="text-xs text-stone-500">{t.email}</div>
                         </td>
-                        <td class="px-6 py-4 text-stone-300">{$adkT(t.property)}</td>
+                        <td class="px-6 py-4 text-stone-300"
+                          >{$adkT(t.property)}</td
+                        >
                         <td class="px-6 py-4 text-white">{$adkT(t.rent)}</td>
                         <td class="px-6 py-4 text-stone-400">{$adkT(t.end)}</td>
                         <td class="px-6 py-4">
@@ -529,11 +563,15 @@
                 <div
                   class="p-6 border-b border-white/5 flex justify-between items-center"
                 >
-                  <h3 class="text-lg font-semibold text-white"> {$adkT("Maintenance Work Orders")} </h3>
+                  <h3 class="text-lg font-semibold text-white">
+                    {$adkT("Maintenance Work Orders")}
+                  </h3>
                   <button
                     class="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-lg hover:bg-emerald-500"
                   >
-                    <Plus class="w-4 h-4" /> {$adkT("New Work Order")} </button>
+                    <Plus class="w-4 h-4" />
+                    {$adkT("New Work Order")}
+                  </button>
                 </div>
                 <div class="overflow-x-auto">
                   <table class="w-full text-left text-sm">
@@ -549,12 +587,18 @@
                       {#each MOCK_WORK_ORDERS as wo}
                         <tr class="hover:bg-white/5">
                           <td class="px-6 py-4">
-                            <div class="text-white font-medium">{$adkT(wo.issue)}</div>
+                            <div class="text-white font-medium">
+                              {$adkT(wo.issue)}
+                            </div>
                             <div class="text-xs text-stone-500">
-                              {$adkT(wo.property)} {$adkT("· raised")} {$adkT(wo.raised)}
+                              {$adkT(wo.property)}
+                              {$adkT("· raised")}
+                              {$adkT(wo.raised)}
                             </div>
                           </td>
-                          <td class="px-6 py-4 text-stone-300">{$adkT(wo.vendor)}</td>
+                          <td class="px-6 py-4 text-stone-300"
+                            >{$adkT(wo.vendor)}</td
+                          >
                           <td class="px-6 py-4">
                             <span
                               class="px-2 py-1 rounded-full text-xs border {PRIORITY_CLASSES[
@@ -579,7 +623,9 @@
               <div
                 class="lg:col-span-1 rounded-xl border border-white/5 bg-white/[0.02] p-6"
               >
-                <h3 class="text-lg font-semibold text-white mb-4"> {$adkT("Vendor Directory")} </h3>
+                <h3 class="text-lg font-semibold text-white mb-4">
+                  {$adkT("Vendor Directory")}
+                </h3>
                 <div class="space-y-3">
                   {#each MOCK_VENDORS as vendor}
                     <div
@@ -589,14 +635,18 @@
                         <p class="text-sm font-medium text-white">
                           {$adkT(vendor.name)}
                         </p>
-                        <p class="text-xs text-stone-500">{$adkT(vendor.category)}</p>
+                        <p class="text-xs text-stone-500">
+                          {$adkT(vendor.category)}
+                        </p>
                       </div>
                       <div class="text-right">
                         <p class="text-xs text-emerald-400">
                           &#9733; {$adkT(vendor.rating)}
                         </p>
                         <p class="text-xs text-stone-500">
-                          {$adkT(vendor.activeOrders)} {$adkT("active")} </p>
+                          {$adkT(vendor.activeOrders)}
+                          {$adkT("active")}
+                        </p>
                       </div>
                     </div>
                   {/each}
@@ -604,8 +654,14 @@
               </div>
             </div>
           {:else if currentTab === "agents"}
-            <h3 class="text-lg font-medium text-white mb-4"> {$adkT("Agents assigned to your managed properties")} </h3>
-            {#if $assignedAgents === undefined}<p> {$adkT("Loading assignments…")} </p>{:else if !$assignedAgents.page.length}<p> {$adkT("No approved agent assignments on this page.")} </p>{/if}
+            <h3 class="text-lg font-medium text-white mb-4">
+              {$adkT("Agents assigned to your managed properties")}
+            </h3>
+            {#if $assignedAgents === undefined}<p>
+                {$adkT("Loading assignments…")}
+              </p>{:else if !$assignedAgents.page.length}<p>
+                {$adkT("No approved agent assignments on this page.")}
+              </p>{/if}
             {#each $assignedAgents?.page ?? [] as agent}<article
                 class="theme-surface theme-text border rounded-xl p-4 my-3"
               >
@@ -623,8 +679,14 @@
             <section
               class="theme-surface theme-text border rounded-xl p-5 space-y-4"
             >
-              <h3 class="text-xl font-semibold"> {$adkT("Recorded estate finance report")} </h3>
-              <p> {$adkT("Monthly income and expenses come from your immutable NGN ledger. These are recorded transactions; bank settlement and statutory accounting require finance review.")} </p>
+              <h3 class="text-xl font-semibold">
+                {$adkT("Recorded estate finance report")}
+              </h3>
+              <p>
+                {$adkT(
+                  "Monthly income and expenses come from your immutable NGN ledger. These are recorded transactions; bank settlement and statutory accounting require finance review.",
+                )}
+              </p>
               <button
                 disabled={!$estateSummary}
                 on:click={downloadReport}
@@ -644,7 +706,9 @@
               >
                 <h3
                   class="text-lg font-medium text-white border-b border-white/10 pb-4"
-                > {$adkT("Profile Settings")} </h3>
+                >
+                  {$adkT("Profile Settings")}
+                </h3>
 
                 {#if $myProfile === undefined}
                   <div class="grid grid-cols-2 gap-4">
@@ -658,7 +722,8 @@
                       <label for="manager-name" class="text-sm text-stone-400"
                         >{$adkT("Full Name")}</label
                       >
-                      <input dir="auto"
+                      <input
+                        dir="auto"
                         id="manager-name"
                         type="text"
                         bind:value={profileName}
@@ -669,12 +734,15 @@
                       <label for="manager-email" class="text-sm text-stone-400"
                         >{$adkT("Email Address")}</label
                       >
-                      <input dir="auto"
+                      <input
+                        dir="auto"
                         id="manager-email"
                         type="email"
                         value={$myProfile?.email ?? ""}
                         disabled
-                        title={$adkT("Contact support to change your sign-in email")}
+                        title={$adkT(
+                          "Contact support to change your sign-in email",
+                        )}
                         class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-stone-500 cursor-not-allowed"
                       />
                     </div>
@@ -682,7 +750,8 @@
                       <label for="manager-phone" class="text-sm text-stone-400"
                         >{$adkT("Phone")}</label
                       >
-                      <input dir="auto"
+                      <input
+                        dir="auto"
                         id="manager-phone"
                         type="tel"
                         inputmode="tel"
@@ -703,7 +772,9 @@
                 {#if profileSaved}
                   <p
                     class="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-300"
-                  > {$adkT("Profile updated.")} </p>
+                  >
+                    {$adkT("Profile updated.")}
+                  </p>
                 {/if}
 
                 <div class="pt-4">
@@ -714,7 +785,9 @@
                   >
                     {#if savingProfile}<Loader2
                         class="h-4 w-4 animate-spin"
-                      />{/if} {$adkT("Save Changes")} </button>
+                      />{/if}
+                    {$adkT("Save Changes")}
+                  </button>
                 </div>
               </form>
             </div>

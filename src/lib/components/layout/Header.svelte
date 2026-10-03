@@ -49,6 +49,7 @@
     };
   } | null = null;
 
+  let headerElement: HTMLElement;
   let isMobileMenuOpen = false;
   let isProfileMenuOpen = false;
 
@@ -158,7 +159,19 @@
   }
 </script>
 
-<header class="sticky top-0 z-40 w-full glass-l2 border-b border-white/10">
+<svelte:window
+  on:keydown={(event) => {
+    if (event.key === "Escape") isMobileMenuOpen = false;
+  }}
+  on:click={(event) => {
+    if (!event.composedPath().includes(headerElement)) isMobileMenuOpen = false;
+  }}
+/>
+
+<header
+  bind:this={headerElement}
+  class="sticky top-0 z-40 w-full glass-l2 border-b border-white/10"
+>
   <div class="container mx-auto px-4 lg:px-8">
     <div class="flex items-center gap-4 h-20" dir="ltr">
       <!-- Logo -->
@@ -199,16 +212,11 @@
   <!-- Mobile Menu Drawer -->
   {#if isMobileMenuOpen}
     <div
-      class="fixed inset-x-0 bottom-0 top-20 z-30 bg-black/60"
-      role="presentation"
-      on:click={() => (isMobileMenuOpen = false)}
-    ></div>
-    <div
-      class="absolute top-20 left-0 w-full z-30 bg-[#071018] border-b border-white/15 shadow-2xl"
+      class="mobile-dropdown absolute top-[calc(100%+8px)] right-3 sm:right-6 w-[min(22rem,calc(100vw-24px))] z-50 bg-[#071018] border border-white/15 rounded-2xl shadow-2xl"
       transition:slide={{ duration: 100 }}
     >
       <div
-        class="flex flex-col p-4 gap-2 max-h-[70vh] overflow-y-auto"
+        class="flex flex-col dropdown-scroll p-3 gap-1 max-h-[min(70dvh,640px)] overflow-y-auto overscroll-contain"
         dir={$page.data.locale === "ar" ? "rtl" : "ltr"}
       >
         <div class="flex gap-2">

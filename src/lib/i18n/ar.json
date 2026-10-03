@@ -2790,5 +2790,9 @@
   "starter": "مبتدئ",
   "This booking has no payable outstanding balance.": "لا يوجد رصيد مستحق للدفع لهذا الحجز.",
   "The booking balance changed. Review checkout again.": "تغير رصيد الحجز. يرجى مراجعة صفحة الدفع مرة أخرى.",
-  "A payment is already pending verification for this booking. Contact support before retrying.": "توجد دفعة لهذا الحجز بانتظار التحقق. يرجى التواصل مع الدعم قبل المحاولة مرة أخرى."
+  "A payment is already pending verification for this booking. Contact support before retrying.": "توجد دفعة لهذا الحجز بانتظار التحقق. يرجى التواصل مع الدعم قبل المحاولة مرة أخرى.",
+  "Open sidebar": "فتح الشريط الجانبي",
+  "Close sidebar": "إغلاق الشريط الجانبي",
+  "Dashboard navigation": "التنقل في لوحة التحكم",
+  "Restricted to the designated super administrator. Sign in with your administrator email and password.": "مخصص للمسؤول الرئيسي المعين. سجّل الدخول باستخدام البريد الإلكتروني وكلمة المرور الخاصة بالمسؤول."
 }

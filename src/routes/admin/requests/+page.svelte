@@ -8,7 +8,19 @@
   import { page } from "$app/stores";
   import { useQuery, runMutation } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
-  import { Inbox, Search, Loader2, Send, X, Calendar, MapPin, Building, Phone, Mail, Banknote } from "lucide-svelte";
+  import {
+    Inbox,
+    Search,
+    Loader2,
+    Send,
+    X,
+    Calendar,
+    MapPin,
+    Building,
+    Phone,
+    Mail,
+    Banknote,
+  } from "lucide-svelte";
   import { formatNaira } from "$lib/utils/format";
   import { REQUEST_STATUS_META } from "$lib/types/services";
 
@@ -31,11 +43,10 @@
   let acting = false;
   let actionError = "";
 
-  const requests = useQuery(api.serviceRequests.listRequests, {
+  $: requests = useQuery(api.serviceRequests.listRequests, {
     status: (statusFilter || undefined) as any,
     limit: 200,
   });
-
 
   $: filtered = ($requests ?? []).filter((r: any) => {
     if (!search) return true;
@@ -48,9 +59,15 @@
     );
   });
 
-  $: selected = filtered.find((r: any) => r._id === selectedId) ?? filtered[0] ?? null;
+  $: if ($page.url.searchParams.has("id"))
+    selectedId = $page.url.searchParams.get("id");
+  $: selected =
+    filtered.find((r: any) => r._id === selectedId) ?? filtered[0] ?? null;
 
-  async function updateStatus(status: string, opts?: { response?: string; quote?: number }) {
+  async function updateStatus(
+    status: string,
+    opts?: { response?: string; quote?: number },
+  ) {
     if (!selected) return;
     acting = true;
     actionError = "";
@@ -59,7 +76,8 @@
         id: selected._id as any,
         status: status as any,
         adminResponse: opts?.response ?? (responseText.trim() || undefined),
-        quoteAmount: opts?.quote ?? (quoteAmount ? Number(quoteAmount) : undefined),
+        quoteAmount:
+          opts?.quote ?? (quoteAmount ? Number(quoteAmount) : undefined),
       });
       responseText = "";
       quoteAmount = "";
@@ -71,17 +89,30 @@
   }
 </script>
 
-<svelte:head><title>{$adkT("Service Requests — ADK Admin")}</title></svelte:head>
+<svelte:head><title>{$adkT("Service Requests — ADK Admin")}</title></svelte:head
+>
 
 <div class="p-8">
-  <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+  <div
+    class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center"
+  >
     <div>
-      <h1 class="flex items-center gap-2 text-xl font-bold text-white"><Inbox class="h-5 w-5 text-emerald-400" /> {$adkT("Service Requests Inbox")}</h1>
-      <p class="mt-0.5 text-sm text-stone-500">{$adkT("Supply contracts, purchases, smart homes, interiors, construction & general contracts.")}</p>
+      <h1 class="flex items-center gap-2 text-xl font-bold text-white">
+        <Inbox class="h-5 w-5 text-emerald-400" />
+        {$adkT("Service Requests Inbox")}
+      </h1>
+      <p class="mt-0.5 text-sm text-stone-500">
+        {$adkT(
+          "Supply contracts, purchases, smart homes, interiors, construction & general contracts.",
+        )}
+      </p>
     </div>
     <div class="relative">
-      <Search class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
-      <input dir="auto"
+      <Search
+        class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500"
+      />
+      <input
+        dir="auto"
         type="text"
         bind:value={search}
         placeholder={$adkT("Search reference, name, email…")}
@@ -95,14 +126,20 @@
     {#each FILTERS as f}
       <button
         on:click={() => (statusFilter = f.key)}
-        class="rounded-full px-3.5 py-1.5 text-xs font-medium transition-all {statusFilter === f.key
+        class="rounded-full px-3.5 py-1.5 text-xs font-medium transition-all {statusFilter ===
+        f.key
           ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
           : 'bg-white/5 text-stone-400 border border-white/10 hover:text-white'}"
       >
         {$adkT(f.label)}
         {#if f.key === "NEW" && $requests}
-          <span class="ml-1 rounded-full bg-rose-500/20 px-1.5 text-[10px] font-bold text-rose-300">
-            {$adkT(($requests as any[]).filter((r: any) => r.status === "NEW").length)}
+          <span
+            class="ml-1 rounded-full bg-rose-500/20 px-1.5 text-[10px] font-bold text-rose-300"
+          >
+            {$adkT(
+              ($requests as any[]).filter((r: any) => r.status === "NEW")
+                .length,
+            )}
           </span>
         {/if}
       </button>
@@ -112,24 +149,52 @@
   <div class="grid gap-6 lg:grid-cols-5">
     <!-- List -->
     <div class="lg:col-span-2">
-      <div class="overflow-hidden rounded-2xl" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)">
+      <div
+        class="overflow-hidden rounded-2xl"
+        style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)"
+      >
         {#if $requests === undefined}
-          <div class="flex items-center justify-center py-16 text-stone-500"><Loader2 class="h-6 w-6 animate-spin" /></div>
+          <div class="flex items-center justify-center py-16 text-stone-500">
+            <Loader2 class="h-6 w-6 animate-spin" />
+          </div>
         {:else if filtered.length === 0}
-          <p class="py-16 text-center text-sm text-stone-600">{$adkT("No requests match this view.")}</p>
+          <p class="py-16 text-center text-sm text-stone-600">
+            {$adkT("No requests match this view.")}
+          </p>
         {:else}
-          <div class="divide-y max-h-[70vh] overflow-y-auto" style="border-color: rgba(255,255,255,0.04)">
+          <div
+            class="divide-y max-h-[70vh] overflow-y-auto"
+            style="border-color: rgba(255,255,255,0.04)"
+          >
             {#each filtered as r (r._id)}
               <button
                 on:click={() => (selectedId = r._id)}
-                class="w-full px-5 py-4 text-left transition-colors {selected?._id === r._id ? 'bg-emerald-500/10' : 'hover:bg-white/5'}"
+                class="w-full px-5 py-4 text-left transition-colors {selected?._id ===
+                r._id
+                  ? 'bg-emerald-500/10'
+                  : 'hover:bg-white/5'}"
               >
                 <div class="flex items-center justify-between gap-2">
-                  <span class="truncate text-xs font-bold text-white">{$adkT(r.requesterName)}</span>
-                  <span class="rounded-full px-2 py-0.5 text-[10px] font-bold {REQUEST_STATUS_META[r.status]?.classes ?? ''}">{$adkT(REQUEST_STATUS_META[r.status]?.label ?? r.status)}</span>
+                  <span class="truncate text-xs font-bold text-white"
+                    >{$adkT(r.requesterName)}</span
+                  >
+                  <span
+                    class="rounded-full px-2 py-0.5 text-[10px] font-bold {REQUEST_STATUS_META[
+                      r.status
+                    ]?.classes ?? ''}"
+                    >{$adkT(
+                      REQUEST_STATUS_META[r.status]?.label ?? r.status,
+                    )}</span
+                  >
                 </div>
-                <p class="mt-1 truncate text-xs text-stone-500">{$adkT(r.requestType.replace(/_/g, ' '))} · {$adkT(r.serviceSlug)}</p>
-                <p class="mt-0.5 font-mono text-[10px] text-stone-600">{$adkT(r.reference)}</p>
+                <p class="mt-1 truncate text-xs text-stone-500">
+                  {$adkT(r.requestType.replace(/_/g, " "))} · {$adkT(
+                    r.serviceSlug,
+                  )}
+                </p>
+                <p class="mt-0.5 font-mono text-[10px] text-stone-600">
+                  {$adkT(r.reference)}
+                </p>
               </button>
             {/each}
           </div>
@@ -140,56 +205,137 @@
     <!-- Detail -->
     <div class="lg:col-span-3">
       {#if !selected}
-        <div class="flex h-64 items-center justify-center rounded-2xl text-sm text-stone-600" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)"> {$adkT("Select a request to review.")} </div>
+        <div
+          class="flex h-64 items-center justify-center rounded-2xl text-sm text-stone-600"
+          style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)"
+        >
+          {$adkT("Select a request to review.")}
+        </div>
       {:else}
         <div class="space-y-5">
           <!-- Detail card -->
-          <div class="rounded-2xl p-6" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)">
+          <div
+            class="rounded-2xl p-6"
+            style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)"
+          >
             <div class="mb-4 flex items-start justify-between gap-3">
               <div>
-                <h2 class="text-lg font-bold text-white">{selected.requestType.replace(/_/g, " ")}</h2>
-                <p class="font-mono text-xs text-stone-500">{selected.reference}</p>
+                <h2 class="text-lg font-bold text-white">
+                  {selected.requestType.replace(/_/g, " ")}
+                </h2>
+                <p class="font-mono text-xs text-stone-500">
+                  {selected.reference}
+                </p>
               </div>
-              <span class="rounded-full px-3 py-1 text-xs font-bold {REQUEST_STATUS_META[selected.status]?.classes ?? ''}">
+              <span
+                class="rounded-full px-3 py-1 text-xs font-bold {REQUEST_STATUS_META[
+                  selected.status
+                ]?.classes ?? ''}"
+              >
                 {REQUEST_STATUS_META[selected.status]?.label ?? selected.status}
               </span>
             </div>
 
             <div class="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
-              <div class="flex items-center gap-2 text-stone-300"><Mail class="h-4 w-4 text-stone-600" /> {selected.requesterEmail}</div>
-              <div class="flex items-center gap-2 text-stone-300"><Phone class="h-4 w-4 text-stone-600" /> {selected.requesterPhone}</div>
-              <div class="flex items-center gap-2 text-stone-300"><Building class="h-4 w-4 text-stone-600" /> {selected.company ?? "—"}</div>
-              <div class="flex items-center gap-2 text-stone-300"><MapPin class="h-4 w-4 text-stone-600" /> {selected.location ?? "—"}</div>
-              <div class="flex items-center gap-2 text-stone-300"><Banknote class="h-4 w-4 text-stone-600" /> {selected.budgetMin ? `${formatNaira(selected.budgetMin, $adkLocale)} – ${selected.budgetMax ? formatNaira(selected.budgetMax, $adkLocale) : '+'}` : "Budget not stated"}</div>
-              <div class="flex items-center gap-2 text-stone-300"><Calendar class="h-4 w-4 text-stone-600" /> {selected.timeline ?? "—"}</div>
+              <div class="flex items-center gap-2 text-stone-300">
+                <Mail class="h-4 w-4 text-stone-600" />
+                {selected.requesterEmail}
+              </div>
+              <div class="flex items-center gap-2 text-stone-300">
+                <Phone class="h-4 w-4 text-stone-600" />
+                {selected.requesterPhone}
+              </div>
+              <div class="flex items-center gap-2 text-stone-300">
+                <Building class="h-4 w-4 text-stone-600" />
+                {selected.company ?? "—"}
+              </div>
+              <div class="flex items-center gap-2 text-stone-300">
+                <MapPin class="h-4 w-4 text-stone-600" />
+                {selected.location ?? "—"}
+              </div>
+              <div class="flex items-center gap-2 text-stone-300">
+                <Banknote class="h-4 w-4 text-stone-600" />
+                {selected.budgetMin
+                  ? `${formatNaira(selected.budgetMin, $adkLocale)} – ${selected.budgetMax ? formatNaira(selected.budgetMax, $adkLocale) : "+"}`
+                  : "Budget not stated"}
+              </div>
+              <div class="flex items-center gap-2 text-stone-300">
+                <Calendar class="h-4 w-4 text-stone-600" />
+                {selected.timeline ?? "—"}
+              </div>
             </div>
 
             <div class="mt-5 rounded-xl border border-white/5 bg-black/30 p-4">
-              <p class="mb-1 text-[10px] font-bold uppercase tracking-wider text-stone-600">{$adkT("Project Brief")}</p>
-              <p class="text-sm leading-relaxed text-stone-300">{selected.projectBrief}</p>
+              <p
+                class="mb-1 text-[10px] font-bold uppercase tracking-wider text-stone-600"
+              >
+                {$adkT("Project Brief")}
+              </p>
+              <p class="text-sm leading-relaxed text-stone-300">
+                {selected.projectBrief}
+              </p>
             </div>
 
             {#if selected.adminResponse}
-              <div class="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
-                <p class="mb-1 text-[10px] font-bold uppercase tracking-wider text-emerald-500">{$adkT("Admin Response")}{selected.quoteAmount ? ` · Quote ${formatNaira(selected.quoteAmount, $adkLocale)}` : ""}</p>
-                <p class="text-sm leading-relaxed text-emerald-100">{selected.adminResponse}</p>
+              <div
+                class="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4"
+              >
+                <p
+                  class="mb-1 text-[10px] font-bold uppercase tracking-wider text-emerald-500"
+                >
+                  {$adkT("Admin Response")}{selected.quoteAmount
+                    ? ` · Quote ${formatNaira(selected.quoteAmount, $adkLocale)}`
+                    : ""}
+                </p>
+                <p class="text-sm leading-relaxed text-emerald-100">
+                  {selected.adminResponse}
+                </p>
               </div>
             {/if}
           </div>
 
           <!-- Respond form -->
-          <div class="rounded-2xl p-6" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)">
-            <h3 class="mb-4 text-sm font-bold text-white">{$adkT("Respond & Move Pipeline")}</h3>
+          <div
+            class="rounded-2xl p-6"
+            style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)"
+          >
+            <h3 class="mb-4 text-sm font-bold text-white">
+              {$adkT("Respond & Move Pipeline")}
+            </h3>
             {#if actionError}
-              <p class="mb-3 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300">{$adkT(actionError)}</p>
+              <p
+                class="mb-3 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300"
+              >
+                {$adkT(actionError)}
+              </p>
             {/if}
             <label class="mb-3 block">
-              <span class="mb-1 block text-xs text-stone-500">{$adkT("Response to client (visible in their portal)")}</span>
-              <textarea dir="auto" bind:value={responseText} rows="3" class="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" placeholder={$adkT("e.g. We have reviewed your brief. Quote attached: ₦12,400,000 incl. materials and 6-week delivery.")}></textarea>
+              <span class="mb-1 block text-xs text-stone-500"
+                >{$adkT("Response to client (visible in their portal)")}</span
+              >
+              <textarea
+                dir="auto"
+                bind:value={responseText}
+                rows="3"
+                class="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500"
+                placeholder={$adkT(
+                  "e.g. We have reviewed your brief. Quote attached: ₦12,400,000 incl. materials and 6-week delivery.",
+                )}
+              ></textarea>
             </label>
             <label class="mb-4 block sm:w-64">
-              <span class="mb-1 block text-xs text-stone-500">{$adkT("Quote amount (₦, optional)")}</span>
-              <input dir="auto" type="number" inputmode="numeric" bind:value={quoteAmount} min="0" class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" placeholder="12400000" />
+              <span class="mb-1 block text-xs text-stone-500"
+                >{$adkT("Quote amount (₦, optional)")}</span
+              >
+              <input
+                dir="auto"
+                type="number"
+                inputmode="numeric"
+                bind:value={quoteAmount}
+                min="0"
+                class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500"
+                placeholder="12400000"
+              />
             </label>
 
             <div class="flex flex-wrap gap-2">
@@ -197,12 +343,20 @@
                 <button
                   disabled={acting}
                   on:click={() => updateStatus(st)}
-                  class="rounded-lg px-3.5 py-2 text-xs font-semibold transition-all disabled:opacity-50 {st === 'REJECTED'
+                  class="rounded-lg px-3.5 py-2 text-xs font-semibold transition-all disabled:opacity-50 {st ===
+                  'REJECTED'
                     ? 'border border-rose-500/30 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20'
                     : 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20'}"
                 >
-                  {#if acting}<Loader2 class="mr-1 inline h-3 w-3 animate-spin" />{/if}
-                  {$adkT(st === 'IN_PROGRESS' ? 'Start Progress' : st.charAt(0) + st.slice(1).toLowerCase().replace('_', ' '))}
+                  {#if acting}<Loader2
+                      class="mr-1 inline h-3 w-3 animate-spin"
+                    />{/if}
+                  {$adkT(
+                    st === "IN_PROGRESS"
+                      ? "Start Progress"
+                      : st.charAt(0) +
+                          st.slice(1).toLowerCase().replace("_", " "),
+                  )}
                 </button>
               {/each}
             </div>

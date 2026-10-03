@@ -1,3 +1,4 @@
+import { assertNigeriaLocation } from "./lib/nigeriaLocations";
 import { auditedMutation } from "./lib/auditedMutation";
 import { requireAdmin, requireUser } from "./lib/access";
 import { v } from "convex/values";
@@ -53,7 +54,21 @@ export const submitServiceRequest = auditedMutation(
       .query("services")
       .withIndex("by_slug", (q) => q.eq("slug", args.serviceSlug))
       .unique();
-    if (!service) throw new Error("Unknown service: " + args.serviceSlug);
+    if (!service || !service.isActive)
+      throw new Error(
+        "This service is unavailable. Please contact the company desk.",
+      );
+    if (
+      !args.requesterName.trim() ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(args.requesterEmail.trim()) ||
+      !args.requesterPhone.trim() ||
+      !args.projectBrief.trim()
+    )
+      throw new Error(
+        "Provide a name, valid email, phone number and project brief.",
+      );
+    if (args.state || args.lga)
+      assertNigeriaLocation(args.state ?? "", args.lga);
 
     let userId: any = null;
     try {

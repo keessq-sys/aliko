@@ -2748,5 +2748,9 @@
   "📅 Schedule Physical Inspection": "📅 Schedule Physical Inspection",
   "This booking has no payable outstanding balance.": "This booking has no payable outstanding balance.",
   "The booking balance changed. Review checkout again.": "The booking balance changed. Review checkout again.",
-  "A payment is already pending verification for this booking. Contact support before retrying.": "A payment is already pending verification for this booking. Contact support before retrying."
+  "A payment is already pending verification for this booking. Contact support before retrying.": "A payment is already pending verification for this booking. Contact support before retrying.",
+  "Open sidebar": "Open sidebar",
+  "Close sidebar": "Close sidebar",
+  "Dashboard navigation": "Dashboard navigation",
+  "Restricted to the designated super administrator. Sign in with your administrator email and password.": "Restricted to the designated super administrator. Sign in with your administrator email and password."
 }

@@ -20,6 +20,7 @@
   import Toast from "$lib/components/ui/Toast.svelte";
   import MobileBottomNav from "$lib/components/layout/MobileBottomNav.svelte";
   import { page, navigating } from "$app/stores";
+  import DashboardSidebar from "$lib/components/layout/DashboardSidebar.svelte";
   import WorkspaceNavigation from "$lib/components/layout/WorkspaceNavigation.svelte";
   import { invalidateAll } from "$app/navigation";
   import { onMount } from "svelte";
@@ -90,6 +91,31 @@
     $page.url.pathname.startsWith("/register");
   $: hideHeader = isDashboardRoute || isAdminRoute;
   $: hideFooter = isDashboardRoute || isAdminRoute;
+  $: sharedAccountPage =
+    isDashboardRoute &&
+    !["/dashboard/client", "/dashboard/agent", "/dashboard/manager"].includes(
+      $page.url.pathname,
+    );
+  $: roleDashboard =
+    data.session?.user?.role === "ADMIN"
+      ? "/admin"
+      : data.session?.user?.role === "AGENT"
+        ? "/dashboard/agent"
+        : data.session?.user?.role === "ESTATE_MANAGER"
+          ? "/dashboard/manager"
+          : "/dashboard/client";
+  $: accountLinks = [
+    { id: "dashboard", label: "Dashboard", href: roleDashboard },
+    { id: "account", label: "My profile", href: "/dashboard/account" },
+    { id: "payments", label: "My payments", href: "/dashboard/payments" },
+    {
+      id: "messages",
+      label: "Company conversations",
+      href: "/dashboard/messages",
+    },
+    { id: "properties", label: "Properties", href: "/properties" },
+    { id: "services", label: "Services", href: "/services" },
+  ];
   // Dashboard/admin routes already have their own drawer-based mobile nav;
   // the bottom tab bar is only for the public marketing/browsing site.
   $: showMobileBottomNav = !isDashboardRoute && !isAdminRoute && !isAuthRoute;
@@ -126,7 +152,17 @@
     ? 'pb-16 md:pb-0'
     : ''} min-h-screen bg-[#050A0E]"
 >
-  <slot />
+  {#if sharedAccountPage}
+    <div class="flex flex-col md:flex-row" dir="ltr">
+      <DashboardSidebar
+        items={accountLinks}
+        active={$page.url.pathname.split("/").at(-1) ?? ""}
+      />
+      <div class="min-w-0 flex-1" dir={$locale === "ar" ? "rtl" : "ltr"}>
+        <slot />
+      </div>
+    </div>
+  {:else}<slot />{/if}
 </main>
 
 {#if !hideFooter}

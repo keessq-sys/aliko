@@ -5,7 +5,7 @@
 // since robots.txt only asks a *compliant* crawler not to fetch a URL, while
 // X-Robots-Tag tells any crawler that DOES fetch it not to index what it got;
 // (2) baseline security/cache headers. Protected routes additionally verify
-// the Convex session and enforce the role and administrator MFA boundary.
+// the Convex session and enforce role and account-status boundaries.
 import type { Handle } from "@sveltejs/kit";
 import { sessionToken } from "$lib/server/auth-session";
 import { redirect } from "@sveltejs/kit";
@@ -133,13 +133,6 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
         throw redirect(303, "/unauthorized");
       if (requiredRole && profile.role !== requiredRole)
         throw redirect(303, "/unauthorized");
-      if (pathname.startsWith("/admin")) {
-        const status: any = await client.query(
-          makeFunctionReference<"query">("adminSecurity:status"),
-          {},
-        );
-        if (!status.verified) throw redirect(303, "/auth/security");
-      }
       if (
         pathname.startsWith("/api/media/") &&
         !["ADMIN", "AGENT", "ESTATE_MANAGER"].includes(profile.role)

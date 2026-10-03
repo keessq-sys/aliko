@@ -200,7 +200,7 @@
 </script>
 
 <div
-  class="flex flex-col md:flex-row h-screen overflow-hidden"
+  class="flex flex-col md:flex-row h-[calc(100dvh-58px)] overflow-hidden"
   style="background: var(--c-obsidian)"
 >
   <!-- ── Mobile top bar (hidden on desktop — the sidebar below takes over) ── -->
@@ -210,7 +210,7 @@
   >
     <button
       class="flex items-center justify-center w-11 h-11 -ml-2 rounded-xl text-stone-300 active:bg-white/10"
-      aria-label={$adkT("Open admin menu")}
+      aria-label={$adkT("Open sidebar")}
       on:click={() => (isMobileNavOpen = true)}
     >
       <Menu class="w-6 h-6" />
@@ -257,13 +257,17 @@
               <DiamondMark size={16} />
             </div>
             <div>
-              <p class="text-white font-bold text-xs leading-none"> {$adkT("Aliko Diamond Key")} </p>
-              <p class="text-amber-600 text-xs mt-0.5">{$adkT("Super Admin")}</p>
+              <p class="text-white font-bold text-xs leading-none">
+                {$adkT("Aliko Diamond Key")}
+              </p>
+              <p class="text-amber-600 text-xs mt-0.5">
+                {$adkT("Super Admin")}
+              </p>
             </div>
           </div>
           <button
             class="flex items-center justify-center w-11 h-11 rounded-xl text-stone-400 active:bg-white/10"
-            aria-label={$adkT("Close menu")}
+            aria-label={$adkT("Close sidebar")}
             on:click={() => (isMobileNavOpen = false)}
           >
             <X class="w-5 h-5" />
@@ -345,7 +349,9 @@
             href="/login?signout=1"
             class="flex items-center gap-2 px-3 py-3 rounded-xl text-stone-600 hover:text-stone-400 text-xs transition-colors min-h-[44px]"
           >
-            <LogOut class="w-3.5 h-3.5" /> {$adkT("Sign out")} </a>
+            <LogOut class="w-3.5 h-3.5" />
+            {$adkT("Sign out")}
+          </a>
         </div>
       </aside>
     </div>
@@ -368,7 +374,9 @@
         <DiamondMark size={16} />
       </div>
       <div>
-        <p class="text-white font-bold text-xs leading-none"> {$adkT("Aliko Diamond Key")} </p>
+        <p class="text-white font-bold text-xs leading-none">
+          {$adkT("Aliko Diamond Key")}
+        </p>
         <p class="text-amber-600 text-xs mt-0.5">{$adkT("Super Admin")}</p>
       </div>
     </div>
@@ -466,7 +474,9 @@
         href="/login?signout=1"
         class="flex items-center gap-2 px-3 py-2 rounded-xl text-stone-600 hover:text-stone-400 text-xs transition-colors"
       >
-        <LogOut class="w-3.5 h-3.5" /> {$adkT("Sign out")} </a>
+        <LogOut class="w-3.5 h-3.5" />
+        {$adkT("Sign out")}
+      </a>
     </div>
   </aside>
 
