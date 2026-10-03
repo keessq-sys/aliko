@@ -3,6 +3,7 @@ test("administrator entry is separate and never displays supplied credentials", 
   page,
 }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "Open menu", exact: true }).click();
   await page
     .getByRole("link", { name: "Admin Login", exact: true })
     .first()
@@ -42,7 +43,7 @@ test("hero search retains dark readable fields in light mode", async ({
   await page.addInitScript(() => localStorage.setItem("adk-theme", "light"));
   await page.goto("/");
   const colors = await page
-    .getByRole("combobox", { name: "Location", exact: true })
+    .getByRole("combobox", { name: "State / Abuja FCT", exact: true })
     .evaluate((el) => ({
       background: getComputedStyle(el).backgroundColor,
       color: getComputedStyle(el).color,

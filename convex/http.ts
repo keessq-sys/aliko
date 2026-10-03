@@ -123,10 +123,15 @@ http.route({
     if (!claim.claimed) return new Response("ok", { status: 200 });
 
     try {
-      await ctx.runAction(internal.bookings.processFlutterwaveWebhook, {
-        transactionId: String(event.data.id),
-        reference: event.data.tx_ref,
-      });
+      await ctx.runAction(
+        event.data.tx_ref.startsWith("ADK-ORDER-")
+          ? internal.checkout.processWebhook
+          : internal.bookings.processFlutterwaveWebhook,
+        {
+          transactionId: String(event.data.id),
+          reference: event.data.tx_ref,
+        },
+      );
       await ctx.runMutation(internal.operations.finishWebhookEvent, {
         eventId: claim.eventId,
         status: "PROCESSED",

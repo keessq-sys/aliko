@@ -14,7 +14,9 @@ function makeRef(prefix: string): string {
 }
 
 // ── Public: submit a service request (guests allowed) ──────────────────────
-export const submitServiceRequest = auditedMutation("serviceRequests:submitServiceRequest")({
+export const submitServiceRequest = auditedMutation(
+  "serviceRequests:submitServiceRequest",
+)({
   args: {
     serviceSlug: v.string(),
     requesterName: v.string(),
@@ -34,6 +36,8 @@ export const submitServiceRequest = auditedMutation("serviceRequests:submitServi
       v.literal("BROKERAGE_DEAL"),
     ),
     location: v.optional(v.string()),
+    state: v.optional(v.string()),
+    lga: v.optional(v.string()),
     projectBrief: v.string(),
     budgetMin: v.optional(v.number()),
     budgetMax: v.optional(v.number()),
@@ -96,6 +100,8 @@ export const submitServiceRequest = auditedMutation("serviceRequests:submitServi
       company: args.company,
       requestType: args.requestType,
       location: args.location,
+      state: args.state,
+      lga: args.lga,
       projectBrief: args.projectBrief,
       budgetMin: args.budgetMin,
       budgetMax: args.budgetMax,
@@ -215,7 +221,9 @@ export const getStatusCounts = query({
 });
 
 // ── Admin: update pipeline status / response / quote ───────────────────────
-export const reviewServiceRequest = auditedMutation("serviceRequests:reviewServiceRequest")({
+export const reviewServiceRequest = auditedMutation(
+  "serviceRequests:reviewServiceRequest",
+)({
   args: {
     id: v.id("serviceRequests"),
     status: v.union(
@@ -239,6 +247,8 @@ export const reviewServiceRequest = auditedMutation("serviceRequests:reviewServi
       patch.respondedAt = now;
     }
     if (quoteAmount !== undefined) {
+      if (!Number.isFinite(quoteAmount) || quoteAmount <= 0)
+        throw new Error("Quote amount must be positive.");
       patch.quoteAmount = quoteAmount;
       patch.quotedAt = now;
     }

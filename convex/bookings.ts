@@ -1,4 +1,5 @@
 import { auditedMutation } from "./lib/auditedMutation";
+import { bookingBalance } from "./lib/bookingBalance";
 import { v } from "convex/values";
 import { requireAdmin, requireUser, requireVerifiedNin } from "./lib/access";
 import {
@@ -322,7 +323,8 @@ export const initializePaystackPayment = action({
     if (!userId) throw new Error("Unauthorized");
     const profile = await ctx.runQuery(api.users.getMyProfile, {});
     const identity = await ctx.runQuery(api.identity.status, {});
-    if (identity?.status !== "VERIFIED") throw new Error("Complete NIN verification before checkout.");
+    if (identity?.status !== "VERIFIED")
+      throw new Error("Complete NIN verification before checkout.");
     if (
       !profile ||
       !profile.kycVerified ||
@@ -397,14 +399,22 @@ export const createFlutterwaveAttempt = internalMutation({
   handler: async (ctx, args) => {
     const booking = await ctx.db.get(args.bookingId);
     if (!booking) throw new Error("Booking not found");
-    if (booking.paymentStatus !== "PENDING" || booking.paidAmount !== 0) {
-      throw new Error("This booking is not eligible for a full payment");
-    }
+    if (Math.abs(args.amount - bookingBalance(booking)) > 0.001)
+      throw new Error("The booking balance changed. Review checkout again.");
     const existing = await ctx.db
       .query("payments")
       .withIndex("by_reference", (q) => q.eq("reference", args.reference))
       .unique();
     if (existing) return existing._id;
+    const pending = await ctx.db
+      .query("payments")
+      .withIndex("by_booking", (q) => q.eq("bookingId", args.bookingId))
+      .filter((q) => q.eq(q.field("status"), "PENDING"))
+      .first();
+    if (pending)
+      throw new Error(
+        "A payment is already pending verification for this booking. Contact support before retrying.",
+      );
     const now = Date.now();
     const paymentId = await ctx.db.insert("payments", {
       bookingId: args.bookingId,
@@ -620,7 +630,8 @@ export const initializeFlutterwavePayment = action({
     if (!userId) throw new Error("Unauthorized");
     const profile = await ctx.runQuery(api.users.getMyProfile, {});
     const identity = await ctx.runQuery(api.identity.status, {});
-    if (identity?.status !== "VERIFIED") throw new Error("Complete NIN verification before checkout.");
+    if (identity?.status !== "VERIFIED")
+      throw new Error("Complete NIN verification before checkout.");
     if (
       !profile ||
       !profile.kycVerified ||
@@ -641,8 +652,7 @@ export const initializeFlutterwavePayment = action({
     if (!booking) throw new Error("Booking not found");
     if (booking.clientId !== userId)
       throw new Error("Forbidden — not your booking");
-    if (booking.paymentStatus !== "PENDING" || booking.paidAmount !== 0)
-      throw new Error("This booking is not eligible for a full payment");
+    const amountDue = bookingBalance(booking);
     const secret = process.env.FLUTTERWAVE_SECRET_KEY;
     if (!secret) throw new Error("Flutterwave is not configured");
     assertCheckoutEnvironment("FLUTTERWAVE", secret);
@@ -669,7 +679,7 @@ export const initializeFlutterwavePayment = action({
     await ctx.runMutation(internal.bookings.createFlutterwaveAttempt, {
       bookingId: args.bookingId,
       reference: txRef,
-      amount: booking.totalAmount,
+      amount: amountDue,
       currency: "NGN",
     });
     const response = await fetch("https://api.flutterwave.com/v3/payments", {
@@ -680,7 +690,7 @@ export const initializeFlutterwavePayment = action({
       },
       body: JSON.stringify({
         tx_ref: txRef,
-        amount: booking.totalAmount,
+        amount: amountDue,
         currency: "NGN",
         redirect_url: args.redirectUrl,
         customer: {

@@ -1,3 +1,4 @@
+import { assertNigeriaLocation } from "./lib/nigeriaLocations";
 import { auditedMutation } from "./lib/auditedMutation";
 import { requireAdmin } from "./lib/access";
 import { requireUser } from "./lib/access";
@@ -218,6 +219,7 @@ export const createProperty = auditedMutation("properties:createProperty")({
     price: v.number(),
     location: v.string(),
     state: v.string(),
+    lga: v.optional(v.string()),
     bedrooms: v.optional(v.number()),
     bathrooms: v.optional(v.number()),
     parkingSpots: v.optional(v.number()),
@@ -231,6 +233,7 @@ export const createProperty = auditedMutation("properties:createProperty")({
   },
   handler: async (ctx, args) => {
     const user = await requirePropertyManager(ctx);
+    assertNigeriaLocation(args.state, args.lga);
     const now = Date.now();
     if (
       !Number.isFinite(args.price) ||

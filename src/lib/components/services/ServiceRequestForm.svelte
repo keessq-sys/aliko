@@ -2,43 +2,58 @@
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
 
-  import { Loader2, Send, Info } from 'lucide-svelte';
-  import { api } from '$lib/convex/_generated/api';
-  import { runMutation } from '$lib/convex/queries';
-  import RequestFormShell from './RequestFormShell.svelte';
+  import { Loader2, Send, Info } from "lucide-svelte";
+  import { api } from "$lib/convex/_generated/api";
+  import { runMutation } from "$lib/convex/queries";
+  import RequestFormShell from "./RequestFormShell.svelte";
 
   export let serviceSlug: string;
   export let serviceLabel: string;
   export let requestType: string;
 
   const BUDGETS = [
-    { value: [0, 1_000_000], label: 'Under ₦1M' },
-    { value: [1_000_000, 5_000_000], label: '₦1M – ₦5M' },
-    { value: [5_000_000, 20_000_000], label: '₦5M – ₦20M' },
-    { value: [20_000_000, 100_000_000], label: '₦20M – ₦100M' },
-    { value: [100_000_000, 0], label: '₦100M+' }
+    { value: [0, 1_000_000], label: "Under ₦1M" },
+    { value: [1_000_000, 5_000_000], label: "₦1M – ₦5M" },
+    { value: [5_000_000, 20_000_000], label: "₦5M – ₦20M" },
+    { value: [20_000_000, 100_000_000], label: "₦20M – ₦100M" },
+    { value: [100_000_000, 0], label: "₦100M+" },
   ];
-  const TIMELINES = ['Immediate', 'Within 1 month', '1–3 months', '3–6 months', '6+ months / Flexible'];
+  const TIMELINES = [
+    "Immediate",
+    "Within 1 month",
+    "1–3 months",
+    "3–6 months",
+    "6+ months / Flexible",
+  ];
 
-  let requesterName = '';
-  let email = '';
-  let phone = '';
-  let company = '';
-  let location = '';
-  let projectBrief = '';
+  let requesterName = "";
+  let email = "";
+  let phone = "";
+  let company = "";
+  import NigeriaLocationFields from "$lib/components/ui/NigeriaLocationFields.svelte";
+  let location = "",
+    state = "",
+    lga = "";
+  let projectBrief = "";
   let budgetIdx = -1;
   let timeline = TIMELINES[2];
   let submitting = false;
   let submitted = false;
-  let reference = '';
-  let error = '';
+  let reference = "";
+  let error = "";
 
-  const submitRequest = async (args: any) => runMutation(api.serviceRequests.submitServiceRequest, args);
+  const submitRequest = async (args: any) =>
+    runMutation(api.serviceRequests.submitServiceRequest, args);
 
   async function handleSubmit() {
-    error = '';
-    if (!requesterName.trim() || !email.trim() || !phone.trim() || !projectBrief.trim()) {
-      error = 'Please fill in your name, email, phone and project brief.';
+    error = "";
+    if (
+      !requesterName.trim() ||
+      !email.trim() ||
+      !phone.trim() ||
+      !projectBrief.trim()
+    ) {
+      error = "Please fill in your name, email, phone and project brief.";
       return;
     }
     submitting = true;
@@ -51,36 +66,52 @@
         requesterPhone: phone.trim(),
         company: company.trim() || undefined,
         requestType,
-        location: location.trim() || undefined,
+        location:
+          [location.trim(), lga, state].filter(Boolean).join(", ") || undefined,
+        state: state || undefined,
+        lga: lga || undefined,
         projectBrief: projectBrief.trim(),
         budgetMin: budget ? budget[0] : undefined,
         budgetMax: budget && budget[1] > 0 ? budget[1] : undefined,
-        timeline
+        timeline,
       });
-      reference = result?.reference ?? '';
+      reference = result?.reference ?? "";
       submitted = true;
     } catch (e: any) {
-      error = e?.message ?? 'Submission failed. Please try again.';
+      error = e?.message ?? "Submission failed. Please try again.";
     } finally {
       submitting = false;
     }
   }
 </script>
 
-<RequestFormShell bind:submitted bind:reference serviceLabel={serviceLabel} onReset={() => (submitted = false)}>
+<RequestFormShell
+  bind:submitted
+  bind:reference
+  {serviceLabel}
+  onReset={() => (submitted = false)}
+>
   <form
     on:submit|preventDefault={handleSubmit}
     class="mx-auto max-w-2xl rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 backdrop-blur-xl"
   >
     <div class="mb-6 flex items-center gap-3 border-b border-white/10 pb-4">
-      <span class="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300">{$adkT(serviceLabel)}</span>
-      <span class="text-xs text-stone-500">{$adkT("All fields marked * are required")}</span>
+      <span
+        class="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300"
+        >{$adkT(serviceLabel)}</span
+      >
+      <span class="text-xs text-stone-500"
+        >{$adkT("All fields marked * are required")}</span
+      >
     </div>
 
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
       <label class="block">
-        <span class="mb-1 block text-sm text-stone-400">{$adkT("Full Name *")}</span>
-        <input dir="auto"
+        <span class="mb-1 block text-sm text-stone-400"
+          >{$adkT("Full Name *")}</span
+        >
+        <input
+          dir="auto"
           type="text"
           autocomplete="name"
           bind:value={requesterName}
@@ -89,8 +120,11 @@
         />
       </label>
       <label class="block">
-        <span class="mb-1 block text-sm text-stone-400">{$adkT("Email Address *")}</span>
-        <input dir="auto"
+        <span class="mb-1 block text-sm text-stone-400"
+          >{$adkT("Email Address *")}</span
+        >
+        <input
+          dir="auto"
           type="email"
           inputmode="email"
           autocomplete="email"
@@ -100,10 +134,16 @@
         />
       </label>
       <label class="block">
-        <span class="mb-1 block text-sm text-stone-400">{$adkT("Phone Number *")}</span>
+        <span class="mb-1 block text-sm text-stone-400"
+          >{$adkT("Phone Number *")}</span
+        >
         <div class="flex">
-          <span class="inline-flex items-center rounded-l-lg border border-r-0 border-white/10 bg-black/60 px-3 text-stone-400">+234</span>
-          <input dir="auto"
+          <span
+            class="inline-flex items-center rounded-l-lg border border-r-0 border-white/10 bg-black/60 px-3 text-stone-400"
+            >+234</span
+          >
+          <input
+            dir="auto"
             type="tel"
             inputmode="tel"
             autocomplete="tel-national"
@@ -114,8 +154,11 @@
         </div>
       </label>
       <label class="block">
-        <span class="mb-1 block text-sm text-stone-400">{$adkT("Company (optional)")}</span>
-        <input dir="auto"
+        <span class="mb-1 block text-sm text-stone-400"
+          >{$adkT("Company (optional)")}</span
+        >
+        <input
+          dir="auto"
           type="text"
           autocomplete="organization"
           bind:value={company}
@@ -123,9 +166,15 @@
           placeholder={$adkT("Company / Organisation")}
         />
       </label>
+      <div class="sm:col-span-2">
+        <NigeriaLocationFields bind:state bind:lga />
+      </div>
       <label class="block sm:col-span-2">
-        <span class="mb-1 block text-sm text-stone-400">{$adkT("Project Location")}</span>
-        <input dir="auto"
+        <span class="mb-1 block text-sm text-stone-400"
+          >{$adkT("Project Location")}</span
+        >
+        <input
+          dir="auto"
           type="text"
           bind:value={location}
           class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
@@ -135,19 +184,29 @@
       <label class="block sm:col-span-2">
         <span class="mb-1 flex justify-between text-sm text-stone-400">
           <span>{$adkT("Project Brief *")}</span>
-          <span class="text-xs text-stone-600">{$adkT(projectBrief.length)}/1500</span>
+          <span class="text-xs text-stone-600"
+            >{$adkT(projectBrief.length)}/1500</span
+          >
         </span>
-        <textarea dir="auto"
+        <textarea
+          dir="auto"
           bind:value={projectBrief}
           maxlength="1500"
           rows="5"
           class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
-          placeholder={$adkT("Describe your project: scope, rooms/area, preferred styles or material specs, expected start date...")}
+          placeholder={$adkT(
+            "Describe your project: scope, rooms/area, preferred styles or material specs, expected start date...",
+          )}
         ></textarea>
       </label>
       <label class="block">
-        <span class="mb-1 block text-sm text-stone-400">{$adkT("Budget Range")}</span>
-        <select bind:value={budgetIdx} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-[#0A1628] px-4 py-2.5 text-white outline-none focus:border-emerald-500">
+        <span class="mb-1 block text-sm text-stone-400"
+          >{$adkT("Budget Range")}</span
+        >
+        <select
+          bind:value={budgetIdx}
+          class="w-full min-h-[44px] rounded-lg border border-white/10 bg-[#0A1628] px-4 py-2.5 text-white outline-none focus:border-emerald-500"
+        >
           <option value={-1}>{$adkT("Prefer not to say")}</option>
           {#each BUDGETS as b, i}
             <option value={i}>{$adkT(b.label)}</option>
@@ -155,8 +214,13 @@
         </select>
       </label>
       <label class="block">
-        <span class="mb-1 block text-sm text-stone-400">{$adkT("Expected Timeline")}</span>
-        <select bind:value={timeline} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-[#0A1628] px-4 py-2.5 text-white outline-none focus:border-emerald-500">
+        <span class="mb-1 block text-sm text-stone-400"
+          >{$adkT("Expected Timeline")}</span
+        >
+        <select
+          bind:value={timeline}
+          class="w-full min-h-[44px] rounded-lg border border-white/10 bg-[#0A1628] px-4 py-2.5 text-white outline-none focus:border-emerald-500"
+        >
           {#each TIMELINES as t}
             <option value={t}>{$adkT(t)}</option>
           {/each}
@@ -165,11 +229,21 @@
     </div>
 
     {#if error}
-      <p class="mt-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300">{$adkT(error)}</p>
+      <p
+        class="mt-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300"
+      >
+        {$adkT(error)}
+      </p>
     {/if}
 
-    <div class="mt-6 flex items-start gap-2 rounded-lg border border-blue-500/20 bg-blue-500/5 p-3 text-xs text-blue-200">
-      <Info size={14} class="mt-0.5 flex-shrink-0" /> {$adkT("Your request goes directly to the ADK super-admin desk. You will receive a quote and a dedicated contact within 48 hours.")} </div>
+    <div
+      class="mt-6 flex items-start gap-2 rounded-lg border border-blue-500/20 bg-blue-500/5 p-3 text-xs text-blue-200"
+    >
+      <Info size={14} class="mt-0.5 flex-shrink-0" />
+      {$adkT(
+        "Your request goes directly to the ADK super-admin desk. You will receive a quote and a dedicated contact within 48 hours.",
+      )}
+    </div>
 
     <button
       type="submit"
@@ -177,8 +251,12 @@
       class="btn-primary mt-6 w-full py-3.5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
     >
       {#if submitting}
-        <Loader2 size={16} class="mr-2 animate-spin" /> {$adkT("Submitting…")}{:else}
-        <Send size={16} class="mr-2" /> {$adkT("Submit")} {$adkT(serviceLabel)} {$adkT("Request")}{/if}
+        <Loader2 size={16} class="mr-2 animate-spin" />
+        {$adkT("Submitting…")}{:else}
+        <Send size={16} class="mr-2" />
+        {$adkT("Submit")}
+        {$adkT(serviceLabel)}
+        {$adkT("Request")}{/if}
     </button>
   </form>
 </RequestFormShell>

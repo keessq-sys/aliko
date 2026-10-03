@@ -22,7 +22,8 @@ function setup() {
   return t;
 }
 const credentials = {
-  nin: "12345678901", acceptKycConsent: true,
+  nin: "12345678901",
+  acceptKycConsent: true,
   email: "buyer@example.com",
   password: "Test-password-482!",
 };
@@ -43,14 +44,39 @@ async function signup(t: ReturnType<typeof setup>) {
 describe("real Convex password account lifecycle", () => {
   it("requires NIN and explicit identity consent for public signup and rejects duplicate identities", async () => {
     const t = setup();
-    const params = { ...credentials, name: "مشتري تجريبي", flow: "signUp", acceptPolicies: true, policyVersion: "2026-10-03" };
-    await expect(t.action(api.auth.signIn, { provider: "password", params: { ...params, nin: "" } })).rejects.toThrow(/11-digit/);
-    await expect(t.action(api.auth.signIn, { provider: "password", params: { ...params, acceptKycConsent: false } })).rejects.toThrow(/consent/);
-    expect(await t.run(ctx => ctx.db.query("users").collect())).toHaveLength(0);
+    const params = {
+      ...credentials,
+      name: "مشتري تجريبي",
+      flow: "signUp",
+      acceptPolicies: true,
+      policyVersion: "2026-10-03",
+    };
+    await expect(
+      t.action(api.auth.signIn, {
+        provider: "password",
+        params: { ...params, nin: "" },
+      }),
+    ).rejects.toThrow(/11-digit/);
+    await expect(
+      t.action(api.auth.signIn, {
+        provider: "password",
+        params: { ...params, acceptKycConsent: false },
+      }),
+    ).rejects.toThrow(/consent/);
+    expect(await t.run((ctx) => ctx.db.query("users").collect())).toHaveLength(
+      0,
+    );
     await t.action(api.auth.signIn, { provider: "password", params });
-    await expect(t.action(api.auth.signIn, { provider: "password", params: { ...params, email: "other@example.com" } })).rejects.toThrow(/associated/);
-    expect(await t.run(ctx => ctx.db.query("users").collect())).toHaveLength(1);
-    const user = await t.run(ctx => ctx.db.query("users").first());
+    await expect(
+      t.action(api.auth.signIn, {
+        provider: "password",
+        params: { ...params, email: "other@example.com" },
+      }),
+    ).rejects.toThrow(/associated/);
+    expect(await t.run((ctx) => ctx.db.query("users").collect())).toHaveLength(
+      1,
+    );
+    const user = await t.run((ctx) => ctx.db.query("users").first());
     expect(user?.name).toBe("مشتري تجريبي");
     expect(user?.kycVerified).toBe(false);
     expect(user).not.toHaveProperty("registrationNinCipher");
@@ -132,6 +158,8 @@ describe("real Convex password account lifecycle", () => {
         flow: "signUp",
         name: "Agent Applicant",
         role: "AGENT",
+        operatingState: "Lagos",
+        operatingLga: "Ikeja",
         agencyName: "Test Agency",
         acceptPolicies: true,
         policyVersion: "2026-10-03",
@@ -153,6 +181,8 @@ describe("real Convex password account lifecycle", () => {
         email: credentials.email,
         phone: "+2348000000000",
         agencyName: "Test Agency",
+        operatingState: "Lagos",
+        operatingLga: "Ikeja",
       },
     );
     expect(await t.run((ctx) => ctx.db.get(application.id))).toMatchObject({
@@ -163,6 +193,8 @@ describe("real Convex password account lifecycle", () => {
       authenticated.mutation(api.partners.submitAgentApplication, {
         fullName: "Other",
         email: "someone-else@example.com",
+        operatingState: "Lagos",
+        operatingLga: "Ikeja",
         phone: "+2348000000000",
       }),
     ).rejects.toThrow(/account email/);
@@ -208,6 +240,8 @@ describe("real Convex password account lifecycle", () => {
         flow: "signUp",
         name: "Manager Applicant",
         role: "ESTATE_MANAGER",
+        operatingState: "Lagos",
+        operatingLga: "Ikeja",
         companyName: "Test Management",
         acceptPolicies: true,
         policyVersion: "2026-10-03",
@@ -230,6 +264,8 @@ describe("real Convex password account lifecycle", () => {
         email: credentials.email,
         phone: "+2348000000000",
         statesOfOperation: ["Lagos"],
+        operatingState: "Lagos",
+        operatingLga: "Ikeja",
         plan: "STARTER",
       },
     );

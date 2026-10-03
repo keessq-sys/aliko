@@ -1,3 +1,4 @@
+import { assertNigeriaLocation } from "./lib/nigeriaLocations";
 import { auditedMutation } from "./lib/auditedMutation";
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
@@ -107,6 +108,7 @@ export const createProject = auditedMutation("projects:createProject")({
     const user = await ctx.db.get(userId as Id<"users">);
     await requireAdmin(ctx);
 
+    assertNigeriaLocation(args.state, args.lga);
     const now = Date.now();
     return ctx.db.insert("projects", {
       ...args,

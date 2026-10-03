@@ -1,3 +1,4 @@
+import { assertNigeriaLocation } from "./nigeriaLocations";
 import { getAuthUserId, getAuthSessionId } from "@convex-dev/auth/server";
 
 /** Every protected function checks current account state, not just its JWT. */
@@ -65,14 +66,43 @@ export function publicSignupProfile(params: Record<string, unknown>) {
     name.length > 120
   )
     throw new Error("Provide a valid name and email");
+  if (
+    params.flow === "signUp" &&
+    ["AGENT", "ESTATE_MANAGER"].includes(String(params.role)) &&
+    (!params.operatingState || !params.operatingLga)
+  )
+    throw new Error("Select your operating state and LGA.");
+  if (params.operatingState || params.operatingLga)
+    assertNigeriaLocation(
+      String(params.operatingState ?? ""),
+      String(params.operatingLga ?? ""),
+    );
   return {
+    operatingState:
+      typeof params.operatingState === "string"
+        ? params.operatingState
+        : undefined,
+    operatingLga:
+      typeof params.operatingLga === "string" ? params.operatingLga : undefined,
     email,
     registrationPolicyVersion:
       params.flow === "signUp" ? "2026-10-03" : undefined,
-    registrationNinCipher: params.flow === "signUp" ? String(params.registrationNinCipher ?? "") : undefined,
-    registrationNinHash: params.flow === "signUp" ? String(params.registrationNinHash ?? "") : undefined,
-    registrationNinLastFour: params.flow === "signUp" ? String(params.registrationNinLastFour ?? "") : undefined,
-    customerKind: params.customerKind === "RENTER" ? "RENTER" as const : "BUYER" as const,
+    registrationNinCipher:
+      params.flow === "signUp"
+        ? String(params.registrationNinCipher ?? "")
+        : undefined,
+    registrationNinHash:
+      params.flow === "signUp"
+        ? String(params.registrationNinHash ?? "")
+        : undefined,
+    registrationNinLastFour:
+      params.flow === "signUp"
+        ? String(params.registrationNinLastFour ?? "")
+        : undefined,
+    customerKind:
+      params.customerKind === "RENTER"
+        ? ("RENTER" as const)
+        : ("BUYER" as const),
     name,
     role: "CLIENT" as const,
     isDiaspora: params.isDiaspora === true,
@@ -98,6 +128,10 @@ export function publicSignupProfile(params: Record<string, unknown>) {
 }
 
 export async function requireVerifiedNin(ctx: any, userId: any) {
-  const identity = await ctx.db.query("identities").withIndex("by_user", (q: any) => q.eq("userId", userId)).unique();
-  if (identity?.status !== "VERIFIED") throw new Error("Complete NIN verification before this action.");
+  const identity = await ctx.db
+    .query("identities")
+    .withIndex("by_user", (q: any) => q.eq("userId", userId))
+    .unique();
+  if (identity?.status !== "VERIFIED")
+    throw new Error("Complete NIN verification before this action.");
 }

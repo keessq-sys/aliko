@@ -2,6 +2,7 @@
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
 
+  import { normalizeState } from "../../../convex/lib/nigeriaLocations";
   import type { Property } from "$lib/stores/properties";
   import { useQuery } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
@@ -55,6 +56,8 @@
   // Filter state
   let filters = {
     search: params.get("q") ?? "",
+    state: params.get("state") ?? "",
+    lga: params.get("lga") ?? "",
     type: seedType
       ? seedType.charAt(0).toUpperCase() + seedType.slice(1).toLowerCase()
       : "All",
@@ -72,6 +75,8 @@
   function clearFilters() {
     filters = {
       search: "",
+      state: "",
+      lga: "",
       type: "All",
       status: "All",
       minPrice: 0,
@@ -86,6 +91,9 @@
   // Reactive filtering
   $: filteredProperties = allProperties
     .filter((p: Property) => {
+      if (filters.state && normalizeState(p.location.state) !== filters.state)
+        return false;
+      if (filters.lga && p.location.lga !== filters.lga) return false;
       // Search
       if (filters.search) {
         const q = filters.search.toLowerCase();
@@ -177,7 +185,8 @@
 </script>
 
 <svelte:head>
-  <title>{$adkT("Properties & Real Estate Listings — Aliko Diamond Key")}</title>
+  <title>{$adkT("Properties & Real Estate Listings — Aliko Diamond Key")}</title
+  >
   <meta
     name="description"
     content="Explore verified houses, lands, penthouses, duplexes and commercial properties across Nigeria."
@@ -204,17 +213,27 @@
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-xs text-stone-400 mb-4">
-        <a href="/" class="hover:text-emerald-400 transition-colors">{$adkT("Home")}</a>
+        <a href="/" class="hover:text-emerald-400 transition-colors"
+          >{$adkT("Home")}</a
+        >
         <ChevronRight size={12} />
         <span class="text-emerald-400">{$adkT("Properties")}</span>
       </nav>
 
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 class="text-3xl sm:text-4xl font-serif font-bold text-white mb-2"> {$adkT("Verified Property Listings")} </h1>
-          <p class="text-stone-400 text-sm max-w-xl"> {$adkT("Showing")} <span class="text-emerald-400 font-semibold"
+          <h1 class="text-3xl sm:text-4xl font-serif font-bold text-white mb-2">
+            {$adkT("Verified Property Listings")}
+          </h1>
+          <p class="text-stone-400 text-sm max-w-xl">
+            {$adkT("Showing")}
+            <span class="text-emerald-400 font-semibold"
               >{$adkT(filteredProperties.length)}</span
-            > {$adkT("verified properties in Abuja, Lagos, and top Nigerian growth corridors.")} </p>
+            >
+            {$adkT(
+              "verified properties in Abuja, Lagos, and top Nigerian growth corridors.",
+            )}
+          </p>
         </div>
 
         <!-- View Controls & Sort -->
@@ -259,7 +278,9 @@
               bind:value={filters.sortBy}
               class="appearance-none bg-white/5 border border-white/10 text-white text-xs sm:text-sm rounded-xl px-4 py-2.5 pr-8 focus:outline-none focus:border-emerald-500 cursor-pointer"
             >
-              <option value="Newest" class="bg-[#0A1628]">{$adkT("Newest")}</option>
+              <option value="Newest" class="bg-[#0A1628]"
+                >{$adkT("Newest")}</option
+              >
               <option value="Price: Low to High" class="bg-[#0A1628]"
                 >{$adkT("Price: Low to High")}</option
               >
@@ -289,7 +310,9 @@
         <div
           class="flex flex-wrap items-center gap-2 mt-6 pt-4 border-t border-white/5"
         >
-          <span class="text-xs text-stone-500 mr-1">{$adkT("Active filters:")}</span>
+          <span class="text-xs text-stone-500 mr-1"
+            >{$adkT("Active filters:")}</span
+          >
           {#each activeChips as chip}
             <span
               class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-950/60 border border-emerald-800/60 text-emerald-300"
@@ -307,7 +330,9 @@
           <button
             on:click={clearFilters}
             class="text-xs text-stone-400 hover:text-white ml-2 underline"
-          > {$adkT("Clear all")} </button>
+          >
+            {$adkT("Clear all")}
+          </button>
         </div>
       {/if}
     </div>
@@ -343,12 +368,20 @@
             >
               <SlidersHorizontal size={28} />
             </div>
-            <h3 class="text-xl font-serif font-bold text-white mb-2"> {$adkT("No matching properties found")} </h3>
-            <p class="text-stone-400 text-sm max-w-md mb-6"> {$adkT("We couldn't find any listings matching your current filter criteria. Try expanding your search or clearing active filters.")} </p>
+            <h3 class="text-xl font-serif font-bold text-white mb-2">
+              {$adkT("No matching properties found")}
+            </h3>
+            <p class="text-stone-400 text-sm max-w-md mb-6">
+              {$adkT(
+                "We couldn't find any listings matching your current filter criteria. Try expanding your search or clearing active filters.",
+              )}
+            </p>
             <button
               on:click={clearFilters}
               class="px-6 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-emerald-600 to-emerald-400 text-white shadow-lg hover:shadow-emerald-500/20"
-            > {$adkT("Clear All Filters")} </button>
+            >
+              {$adkT("Clear All Filters")}
+            </button>
           </div>
         {:else if currentView === "grid"}
           <!-- 3-Column Responsive Grid -->
@@ -387,7 +420,9 @@
       <div
         class="flex items-center justify-between pb-4 border-b border-white/10"
       >
-        <h3 class="text-lg font-serif font-bold text-white"> {$adkT("Filter Properties")} </h3>
+        <h3 class="text-lg font-serif font-bold text-white">
+          {$adkT("Filter Properties")}
+        </h3>
         <button
           on:click={() => (isMobileFilterOpen = false)}
           aria-label={$adkT("Close filters")}
@@ -403,7 +438,11 @@
         <button
           on:click={() => (isMobileFilterOpen = false)}
           class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-lg"
-        > {$adkT("Show")} {$adkT(filteredProperties.length)} {$adkT("Properties")} </button>
+        >
+          {$adkT("Show")}
+          {$adkT(filteredProperties.length)}
+          {$adkT("Properties")}
+        </button>
       </div>
     </div>
   </div>

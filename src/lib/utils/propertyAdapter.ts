@@ -35,7 +35,7 @@ export function toDisplayProperty(row: any): Property {
     yearBuilt: row.yearBuilt ?? 0,
     location: {
       address: row.location,
-      lga: "",
+      lga: row.lga ?? "",
       state: row.state,
       lat: row.latitude ?? 0,
       lng: row.longitude ?? 0,

@@ -3,6 +3,51 @@ import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  checkoutOrders: defineTable({
+    reference: v.string(),
+    ownerId: v.id("users"),
+    kind: v.union(
+      v.literal("PROPERTY"),
+      v.literal("SERVICE"),
+      v.literal("MANAGER"),
+    ),
+    targetId: v.string(),
+    title: v.string(),
+    amount: v.number(),
+    currency: v.string(),
+    status: v.union(
+      v.literal("DRAFT"),
+      v.literal("PENDING"),
+      v.literal("PAID"),
+    ),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    paidAt: v.optional(v.number()),
+  })
+    .index("by_reference", ["reference"])
+    .index("by_owner", ["ownerId", "createdAt"])
+    .index("by_target", ["kind", "targetId"])
+    .index("by_target_status", ["kind", "targetId", "status"])
+    .index("by_status", ["status", "createdAt"]),
+  checkoutAttempts: defineTable({
+    orderId: v.id("checkoutOrders"),
+    reference: v.string(),
+    amount: v.number(),
+    currency: v.string(),
+    checkoutUrl: v.optional(v.string()),
+    providerId: v.optional(v.string()),
+    status: v.union(
+      v.literal("PENDING"),
+      v.literal("SUCCESS"),
+      v.literal("FAILED"),
+    ),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_reference", ["reference"])
+    .index("by_order", ["orderId"])
+    .index("by_provider", ["providerId"]),
+
   testimonials: defineTable({
     author: v.string(),
     quote: v.string(),
@@ -145,6 +190,8 @@ export default defineSchema({
 
   // ── Users & Roles ─────────────────────────────────────────────────────────
   users: defineTable({
+    operatingState: v.optional(v.string()),
+    operatingLga: v.optional(v.string()),
     name: v.string(),
     email: v.string(),
     emailVerificationTime: v.optional(v.number()),
@@ -199,16 +246,24 @@ export default defineSchema({
     ninCipher: v.string(),
     fingerprint: v.string(),
     lastFour: v.string(),
-    status: v.union(v.literal("PENDING"), v.literal("VERIFIED"), v.literal("FAILED")),
+    status: v.union(
+      v.literal("PENDING"),
+      v.literal("VERIFIED"),
+      v.literal("FAILED"),
+    ),
     consentVersion: v.string(),
     consentedAt: v.number(),
     reviewedBy: v.optional(v.id("users")),
     reviewedAt: v.optional(v.number()),
     reviewReason: v.optional(v.string()),
-    verificationMethod: v.optional(v.union(v.literal("MANUAL"), v.literal("QOREID"))),
+    verificationMethod: v.optional(
+      v.union(v.literal("MANUAL"), v.literal("QOREID")),
+    ),
     createdAt: v.number(),
     updatedAt: v.number(),
-  }).index("by_user", ["userId"]).index("by_fingerprint", ["fingerprint"]),
+  })
+    .index("by_user", ["userId"])
+    .index("by_fingerprint", ["fingerprint"]),
 
   projects: defineTable({
     name: v.string(),
@@ -650,6 +705,7 @@ export default defineSchema({
     ),
     description: v.string(),
     price: v.number(),
+    lga: v.optional(v.string()),
     location: v.string(),
     state: v.string(),
     bedrooms: v.optional(v.number()),
@@ -736,6 +792,7 @@ export default defineSchema({
     serviceId: v.id("services"),
     serviceSlug: v.string(),
     requesterId: v.optional(v.id("users")), // null = guest submission
+    paidAmount: v.optional(v.number()),
     requesterName: v.string(),
     requesterEmail: v.string(),
     requesterPhone: v.string(),
@@ -753,6 +810,8 @@ export default defineSchema({
       v.literal("BROKERAGE_DEAL"),
     ),
     location: v.optional(v.string()),
+    state: v.optional(v.string()),
+    lga: v.optional(v.string()),
     projectBrief: v.string(),
     budgetMin: v.optional(v.number()),
     budgetMax: v.optional(v.number()),
@@ -801,6 +860,9 @@ export default defineSchema({
     email: v.string(),
     phone: v.string(),
     cacRcNumber: v.optional(v.string()),
+    operatingState: v.optional(v.string()),
+    operatingLga: v.optional(v.string()),
+    paidThrough: v.optional(v.number()),
     statesOfOperation: v.array(v.string()),
     portfolioSize: v.optional(v.string()), // e.g. "1-10", "11-50", "50+"
     plan: v.union(
@@ -835,6 +897,17 @@ export default defineSchema({
     experience: v.optional(v.string()),
     specializations: v.optional(v.array(v.string())),
     bio: v.optional(v.string()),
+    operatingState: v.optional(v.string()),
+    operatingLga: v.optional(v.string()),
+    stateOfOrigin: v.optional(v.string()),
+    birthDate: v.optional(v.string()),
+    gender: v.optional(v.string()),
+    nationality: v.optional(v.string()),
+    niaNumber: v.optional(v.string()),
+    whatsapp: v.optional(v.string()),
+    address: v.optional(v.string()),
+    expectedListings: v.optional(v.string()),
+
     statesOfOperation: v.optional(v.array(v.string())),
     primaryLgas: v.optional(v.string()),
     nin: v.optional(v.string()),

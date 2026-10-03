@@ -5,18 +5,54 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { requireAdmin, requireUser, requireVerifiedNin } from "./lib/access";
 import { rateLimiter, contactRateKey } from "./lib/rateLimits";
 
+import { assertNigeriaLocation, normalizeState } from "./lib/nigeriaLocations";
+
 function makeRef(prefix: string): string {
   const year = new Date().getFullYear();
   const rand = crypto.randomUUID();
   return `ADK-${prefix}-${year}-${rand}`;
 }
 
+export const myEnrolments = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await requireUser(ctx);
+    const managers = await ctx.db
+      .query("estateManagers")
+      .withIndex("by_email", (q) => q.eq("email", user.email))
+      .order("desc")
+      .take(50);
+    const agents = await ctx.db
+      .query("agentApplications")
+      .withIndex("by_email", (q) => q.eq("email", user.email))
+      .order("desc")
+      .take(50);
+    return {
+      managers: managers.filter((m) => m.userId === user._id),
+      agents: agents.filter((a) => a.userId === user._id),
+    };
+  },
+});
+
 // ── Public: agent application (5-step wizard) ──────────────────────────────
-export const submitAgentApplication = auditedMutation("partners:submitAgentApplication")({
+export const submitAgentApplication = auditedMutation(
+  "partners:submitAgentApplication",
+)({
   args: {
     fullName: v.string(),
     email: v.string(),
     phone: v.string(),
+    operatingState: v.optional(v.string()),
+    operatingLga: v.optional(v.string()),
+    stateOfOrigin: v.optional(v.string()),
+    birthDate: v.optional(v.string()),
+    gender: v.optional(v.string()),
+    nationality: v.optional(v.string()),
+    niaNumber: v.optional(v.string()),
+    whatsapp: v.optional(v.string()),
+    address: v.optional(v.string()),
+    expectedListings: v.optional(v.string()),
+
     agencyName: v.optional(v.string()),
     agentType: v.optional(v.string()),
     reanNumber: v.optional(v.string()),
@@ -32,9 +68,28 @@ export const submitAgentApplication = auditedMutation("partners:submitAgentAppli
     const userId = applicant._id;
     if (args.email.trim().toLowerCase() !== applicant.email.toLowerCase())
       throw new Error("Use your account email");
+    const identity = await ctx.db
+      .query("identities")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .unique();
+    if (!identity)
+      throw new Error(
+        "Submit your NIN and consent before professional enrolment.",
+      );
+    if (!args.operatingState || !args.operatingLga)
+      throw new Error("Select your operating state and LGA.");
+    assertNigeriaLocation(args.operatingState, args.operatingLga);
+    for (const state of args.statesOfOperation ?? [])
+      assertNigeriaLocation(state);
     await rateLimiter.limit(ctx, "registration", {
       key: String(userId),
       throws: true,
+    });
+    await ctx.db.patch(userId, {
+      phone: args.phone.trim(),
+      ...(args.address && args.address.trim().length >= 10
+        ? { address: args.address.trim() }
+        : {}),
     });
     const now = Date.now();
     const reference = makeRef("AGT");
@@ -51,30 +106,44 @@ export const submitAgentApplication = auditedMutation("partners:submitAgentAppli
 });
 
 // ── Public: estate manager enrolment ───────────────────────────────────────
-export const submitManagerApplication = auditedMutation("partners:submitManagerApplication")({
+export const submitManagerApplication = auditedMutation(
+  "partners:submitManagerApplication",
+)({
   args: {
     companyName: v.string(),
     contactName: v.string(),
     email: v.string(),
     phone: v.string(),
+    operatingState: v.optional(v.string()),
+    operatingLga: v.optional(v.string()),
     cacRcNumber: v.optional(v.string()),
     statesOfOperation: v.array(v.string()),
     portfolioSize: v.optional(v.string()),
-    plan: v.union(
-      v.literal("STARTER"),
-      v.literal("PROFESSIONAL"),
-      v.literal("ENTERPRISE"),
-    ),
+    plan: v.union(v.literal("STARTER"), v.literal("PROFESSIONAL")),
   },
   handler: async (ctx, args) => {
     const applicant = await requireUser(ctx);
     const userId = applicant._id;
     if (args.email.trim().toLowerCase() !== applicant.email.toLowerCase())
       throw new Error("Use your account email");
+    const identity = await ctx.db
+      .query("identities")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .unique();
+    if (!identity)
+      throw new Error(
+        "Submit your NIN and consent before professional enrolment.",
+      );
+    if (!args.operatingState || !args.operatingLga)
+      throw new Error("Select your operating state and LGA.");
+    assertNigeriaLocation(args.operatingState, args.operatingLga);
+    for (const state of args.statesOfOperation ?? [])
+      assertNigeriaLocation(state);
     await rateLimiter.limit(ctx, "registration", {
       key: String(userId),
       throws: true,
     });
+    await ctx.db.patch(userId, { phone: args.phone.trim() });
     const now = Date.now();
     const id = await ctx.db.insert("estateManagers", {
       userId,
@@ -136,7 +205,9 @@ export const listApprovedAgents = query({
   },
 });
 
-export const reviewAgentApplication = auditedMutation("partners:reviewAgentApplication")({
+export const reviewAgentApplication = auditedMutation(
+  "partners:reviewAgentApplication",
+)({
   args: {
     id: v.id("agentApplications"),
     status: v.union(
@@ -155,7 +226,8 @@ export const reviewAgentApplication = auditedMutation("partners:reviewAgentAppli
     const account = await ctx.db.get(application.userId);
     if (!account || account.role === "ADMIN")
       throw new Error("Invalid applicant account");
-    if (status === "APPROVED") await requireVerifiedNin(ctx, application.userId);
+    if (status === "APPROVED")
+      await requireVerifiedNin(ctx, application.userId);
     await ctx.db.patch(application.userId, {
       role: status === "APPROVED" ? "AGENT" : "CLIENT",
     });
@@ -197,7 +269,9 @@ export const listManagers = query({
   },
 });
 
-export const reviewManagerApplication = auditedMutation("partners:reviewManagerApplication")({
+export const reviewManagerApplication = auditedMutation(
+  "partners:reviewManagerApplication",
+)({
   args: {
     id: v.id("estateManagers"),
     status: v.union(
@@ -214,7 +288,8 @@ export const reviewManagerApplication = auditedMutation("partners:reviewManagerA
     const account = await ctx.db.get(application.userId);
     if (!account || account.role === "ADMIN")
       throw new Error("Invalid applicant account");
-    if (status === "APPROVED") await requireVerifiedNin(ctx, application.userId);
+    if (status === "APPROVED")
+      await requireVerifiedNin(ctx, application.userId);
     await ctx.db.patch(application.userId, {
       role: status === "APPROVED" ? "ESTATE_MANAGER" : "CLIENT",
     });

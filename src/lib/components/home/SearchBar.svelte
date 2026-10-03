@@ -5,7 +5,9 @@
   import { MapPin, Home, Banknote, Bed, Search } from "lucide-svelte";
   import { goto } from "$app/navigation";
 
-  let location = "All";
+  import NigeriaLocationFields from "$lib/components/ui/NigeriaLocationFields.svelte";
+  let location = "",
+    lga = "";
   let propertyType = "All";
   let priceRange = "Any";
   let bedrooms = "Any";
@@ -20,8 +22,8 @@
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    if (location !== "All")
-      params.set("q", location === "PortHarcourt" ? "Port Harcourt" : location);
+    if (location) params.set("state", location);
+    if (lga) params.set("lga", lga);
     if (propertyType !== "All") params.set("type", propertyType);
     if (bedrooms !== "Any") params.set("bedrooms", bedrooms);
     const bracket = PRICE_BRACKETS[priceRange];
@@ -34,27 +36,9 @@
 <div
   class="search-glass rounded-2xl p-4 w-full flex flex-col md:flex-row gap-4 items-center"
 >
-  <!-- Location -->
-  <div
-    class="flex-1 w-full border-b md:border-b-0 md:border-r border-white/10 pb-2 md:pb-0 md:pr-4 flex flex-col"
-  >
-    <label
-      class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"
-    >
-      <MapPin size={12} class="text-emerald-400" /> {$adkT("Location")} </label>
-    <select
-      aria-label={$adkT("Location")}
-      bind:value={location}
-      class="w-full text-sm font-medium"
-    >
-      <option value="All">{$adkT("All Locations")}</option>
-      <option value="Abuja">{$adkT("Abuja, FCT")}</option>
-      <option value="Lagos">{$adkT("Lagos State")}</option>
-      <option value="PortHarcourt">{$adkT("Port Harcourt")}</option>
-      <option value="Kano">{$adkT("Kano")}</option>
-    </select>
+  <div class="col-span-2">
+    <NigeriaLocationFields bind:state={location} bind:lga all />
   </div>
-
   <!-- Property Type -->
   <div
     class="flex-1 w-full border-b md:border-b-0 md:border-r border-white/10 pb-2 md:pb-0 md:pr-4 flex flex-col"
@@ -62,7 +46,9 @@
     <label
       class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"
     >
-      <Home size={12} class="text-amber-400" /> {$adkT("Property Type")} </label>
+      <Home size={12} class="text-amber-400" />
+      {$adkT("Property Type")}
+    </label>
     <select
       aria-label={$adkT("Property type")}
       bind:value={propertyType}
@@ -85,7 +71,9 @@
     <label
       class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"
     >
-      <Banknote size={12} class="text-emerald-400" /> {$adkT("Price Range")} </label>
+      <Banknote size={12} class="text-emerald-400" />
+      {$adkT("Price Range")}
+    </label>
     <select
       aria-label={$adkT("Price range")}
       bind:value={priceRange}
@@ -105,7 +93,9 @@
     <label
       class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"
     >
-      <Bed size={12} class="text-amber-400" /> {$adkT("Bedrooms")} </label>
+      <Bed size={12} class="text-amber-400" />
+      {$adkT("Bedrooms")}
+    </label>
     <select
       aria-label={$adkT("Bedrooms")}
       bind:value={bedrooms}

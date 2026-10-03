@@ -1,6 +1,10 @@
 <script lang="ts">
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
+  import {
+    nigeriaLgas,
+    NIGERIAN_STATES,
+  } from "../../../../convex/lib/nigeriaLocations";
 
   import { api } from "$lib/convex/_generated/api";
   import { runMutation, useQuery } from "$lib/convex/queries";
@@ -45,6 +49,7 @@
     title: "",
     location: "",
     state: "",
+    lga: "",
     price: 0,
     type: "RESIDENTIAL",
     description: "",
@@ -83,6 +88,7 @@
         title: "",
         location: "",
         state: "",
+        lga: "",
         price: 0,
         type: "RESIDENTIAL",
         description: "",
@@ -155,20 +161,27 @@
     <ImagePlus size={18} class="text-emerald-400" />
     {$adkT(title)}
   </h2>
-  <p class="mb-4 text-xs text-stone-500"> {$adkT("JPG, PNG, WebP or AVIF. Images are published to the selected live gallery.")} </p>
+  <p class="mb-4 text-xs text-stone-500">
+    {$adkT(
+      "JPG, PNG, WebP or AVIF. Images are published to the selected live gallery.",
+    )}
+  </p>
   {#if mode === "property"}
     <button
       type="button"
       class="mb-4 text-sm font-semibold text-emerald-400 hover:text-emerald-300"
       on:click={() => (showCreate = !showCreate)}
     >
-      {$adkT(showCreate ? "Close listing form" : "+ Create a new property listing")}
+      {$adkT(
+        showCreate ? "Close listing form" : "+ Create a new property listing",
+      )}
     </button>
     {#if showCreate}
       <div
         class="mb-5 grid gap-3 rounded-xl border border-white/10 bg-black/20 p-4 md:grid-cols-2 theme-panel"
       >
-        <input dir="auto"
+        <input
+          dir="auto"
           bind:value={draft.title}
           aria-label={$adkT("Property title")}
           placeholder={$adkT("Property title")}
@@ -181,25 +194,41 @@
         >
           <option value="RESIDENTIAL">{$adkT("Residential")}</option><option
             value="APARTMENT">{$adkT("Apartment")}</option
-          ><option value="DUPLEX">{$adkT("Duplex")}</option><option value="PENTHOUSE"
-            >{$adkT("Penthouse")}</option
-          ><option value="COMMERCIAL">{$adkT("Commercial")}</option><option value="LAND"
-            >{$adkT("Land")}</option
+          ><option value="DUPLEX">{$adkT("Duplex")}</option><option
+            value="PENTHOUSE">{$adkT("Penthouse")}</option
+          ><option value="COMMERCIAL">{$adkT("Commercial")}</option><option
+            value="LAND">{$adkT("Land")}</option
           >
         </select>
-        <input dir="auto"
+        <input
+          dir="auto"
           bind:value={draft.location}
           aria-label={$adkT("Location")}
           placeholder={$adkT("Location or neighbourhood")}
           class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
         />
-        <input dir="auto"
+        <select
+          on:change={() => (draft.lga = "")}
           bind:value={draft.state}
           aria-label={$adkT("State")}
-          placeholder={$adkT("State")}
-          class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
-        />
-        <input dir="auto"
+          class="theme-input min-h-[44px] border rounded-lg p-3"
+          ><option value="">{$adkT("Select state")}</option
+          >{#each NIGERIAN_STATES as state}<option value={state}
+              >{$adkT(state)}</option
+            >{/each}</select
+        ><label class="theme-text"
+          >{$adkT("Local Government Area")}<select
+            bind:value={draft.lga}
+            disabled={!draft.state}
+            class="theme-input w-full min-h-[44px] border rounded-lg p-3"
+            ><option value="">{$adkT("Select LGA")}</option
+            >{#each nigeriaLgas(draft.state) as lga}<option value={lga}
+                >{$adkT(lga)}</option
+              >{/each}</select
+          ></label
+        >
+        <input
+          dir="auto"
           bind:value={draft.price}
           aria-label={$adkT("Price in naira")}
           type="number"
@@ -207,7 +236,8 @@
           placeholder={$adkT("Price in naira")}
           class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
         />
-        <textarea dir="auto"
+        <textarea
+          dir="auto"
           bind:value={draft.description}
           aria-label={$adkT("Description")}
           placeholder={$adkT("Property description")}
@@ -226,7 +256,9 @@
   {/if}
   <div class="grid gap-4 lg:grid-cols-[minmax(220px,0.7fr)_1.3fr]">
     <label class="block"
-      ><span class="mb-1 block text-xs text-stone-400">{$adkT("Destination")}</span>
+      ><span class="mb-1 block text-xs text-stone-400"
+        >{$adkT("Destination")}</span
+      >
       <select
         bind:value={selectedId}
         class="min-h-[44px] w-full rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
@@ -246,11 +278,14 @@
     />
   </div>
   {#if error}<p class="mt-3 text-sm text-rose-400">{$adkT(error)}</p>{/if}
-  {#if success}<p class="mt-3 text-sm text-emerald-400">{$adkT(success)}</p>{/if}
+  {#if success}<p class="mt-3 text-sm text-emerald-400">
+      {$adkT(success)}
+    </p>{/if}
   {#if mode === "property" && $profile?.role === "ADMIN" && selectedId}
     <div class="mt-4 flex flex-wrap items-center gap-3">
       <label class="text-sm"
-        >{$adkT("Verification evidence reference")}<input dir="auto"
+        >{$adkT("Verification evidence reference")}<input
+          dir="auto"
           bind:value={reviewReference}
           class="theme-input block min-h-[44px] rounded-lg border px-3"
           minlength="8"
@@ -263,7 +298,8 @@
       ><button
         type="button"
         on:click={() => review(false)}
-        class="min-h-[44px] rounded-lg border px-4">{$adkT("Reject listing")}</button
+        class="min-h-[44px] rounded-lg border px-4"
+        >{$adkT("Reject listing")}</button
       >
     </div>
   {/if}
@@ -273,7 +309,9 @@
     disabled={uploading || files.length === 0 || !selectedId}
     class="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-emerald-600 px-4 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
   >
-    {#if uploading}<Loader2 size={15} class="animate-spin" />{/if} {$adkT("Publish")} {$adkT(files.length ||
-      "")} {$adkT("image")}{$adkT(files.length === 1 ? "" : "s")}
+    {#if uploading}<Loader2 size={15} class="animate-spin" />{/if}
+    {$adkT("Publish")}
+    {$adkT(files.length || "")}
+    {$adkT("image")}{$adkT(files.length === 1 ? "" : "s")}
   </button>
 </section>

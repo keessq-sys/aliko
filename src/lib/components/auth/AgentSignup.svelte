@@ -4,7 +4,11 @@
 
   import NinField from "./NinField.svelte";
   import { ninProblem } from "../../../../convex/lib/nin";
-  let nin = "", acceptKycConsent = false;
+  import NigeriaLocationFields from "$lib/components/ui/NigeriaLocationFields.svelte";
+  let operatingState = "",
+    operatingLga = "";
+  let nin = "",
+    acceptKycConsent = false;
   import PasswordField from "$lib/components/auth/PasswordField.svelte";
   import { passwordProblem } from "../../../../convex/lib/passwordPolicy";
   import { Mail, Lock, User, Loader2, Building2 } from "lucide-svelte";
@@ -31,8 +35,11 @@
     if (!password) errors.password = "Password is required";
     else if (passwordProblem(password))
       errors.password = passwordProblem(password)!;
+    if (!operatingState || !operatingLga)
+      errors.location = "Select your operating state and LGA.";
     if (ninProblem(nin)) errors.nin = ninProblem(nin)!;
-    if (!acceptKycConsent) errors.nin = "Accept the NIN verification consent before registration.";
+    if (!acceptKycConsent)
+      errors.nin = "Accept the NIN verification consent before registration.";
     if (!terms) errors.terms = "You must accept the terms";
     return Object.keys(errors).length === 0;
   };
@@ -46,7 +53,10 @@
         provider: "password",
         params: {
           flow: "signUp",
-          nin, acceptKycConsent,
+          nin,
+          acceptKycConsent,
+          operatingState,
+          operatingLga,
           acceptPolicies: terms,
           policyVersion: "2026-10-03",
           email: email.trim().toLowerCase(),
@@ -69,10 +79,19 @@
 </script>
 
 <form on:submit|preventDefault={handleSubmit} class="space-y-5">
+  <NigeriaLocationFields
+    bind:state={operatingState}
+    bind:lga={operatingLga}
+    required
+  />
+  {#if errors.location}<p role="alert" class="text-rose-400">
+      {$adkT(errors.location)}
+    </p>{/if}
   <NinField bind:nin bind:consent={acceptKycConsent} error={errors.nin ?? ""} />
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <label class="block">
-      <span class="mb-1 block text-sm font-medium text-gray-300">{$adkT("Full Name")}</span
+      <span class="mb-1 block text-sm font-medium text-gray-300"
+        >{$adkT("Full Name")}</span
       >
       <div class="relative">
         <div
@@ -80,7 +99,8 @@
         >
           <User class="h-5 w-5 text-gray-400" />
         </div>
-        <input dir="auto"
+        <input
+          dir="auto"
           type="text"
           autocomplete="name"
           bind:value={fullName}
@@ -104,7 +124,8 @@
         >
           <Building2 class="h-5 w-5 text-gray-400" />
         </div>
-        <input dir="auto"
+        <input
+          dir="auto"
           type="text"
           autocomplete="organization"
           bind:value={agencyName}
@@ -125,7 +146,8 @@
       >
         <Mail class="h-5 w-5 text-gray-400" />
       </div>
-      <input dir="auto"
+      <input
+        dir="auto"
         type="email"
         inputmode="email"
         autocomplete="email"
@@ -142,7 +164,9 @@
   </label>
 
   <label class="block">
-    <span class="mb-1 block text-sm font-medium text-gray-300">{$adkT("Password")}</span>
+    <span class="mb-1 block text-sm font-medium text-gray-300"
+      >{$adkT("Password")}</span
+    >
     <div class="relative">
       <div
         class="pointer-events-none absolute top-0 h-[44px] left-0 flex items-center pl-3"
@@ -165,14 +189,21 @@
   </label>
 
   <label class="flex items-start gap-2 text-sm text-gray-300">
-    <input dir="auto"
+    <input
+      dir="auto"
       type="checkbox"
       bind:checked={terms}
       class="mt-0.5 h-4 w-4 rounded border-gray-600 bg-black/20 text-amber-500 focus:ring-amber-500"
     />
-    <span>{$adkT("I confirm my details are accurate and accept the agent terms")}</span>
+    <span
+      >{$adkT(
+        "I confirm my details are accurate and accept the agent terms",
+      )}</span
+    >
   </label>
-  {#if errors.terms}<p class="text-sm text-red-400">{$adkT(errors.terms)}</p>{/if}
+  {#if errors.terms}<p class="text-sm text-red-400">
+      {$adkT(errors.terms)}
+    </p>{/if}
 
   {#if errorMessage}
     <p
@@ -188,7 +219,8 @@
     class="flex w-full justify-center rounded-lg bg-gradient-to-r from-amber-600 to-amber-400 py-3 px-4 text-sm font-medium text-black shadow-[0_0_15px_rgba(217,119,6,0.3)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-70"
   >
     {#if loading}
-      <Loader2 class="mr-2 h-5 w-5 animate-spin" /> {$adkT("Creating account…")}{:else}
+      <Loader2 class="mr-2 h-5 w-5 animate-spin" />
+      {$adkT("Creating account…")}{:else}
       <Building2 class="mr-2 h-5 w-5" /> {$adkT("Create Agent Account")}{/if}
   </button>
 </form>

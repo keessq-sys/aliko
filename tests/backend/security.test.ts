@@ -25,7 +25,17 @@ async function paidBooking(t: ReturnType<typeof setup>) {
       kycVerified: true,
       address: "10 Test Street, Abuja, Nigeria",
     });
-    await ctx.db.insert("identities", { userId: client.id, ninCipher: "test-fixture", fingerprint: String(client.id), lastFour: "8901", status: "VERIFIED", consentVersion: "2026-09-30", consentedAt: now, createdAt: now, updatedAt: now });
+    await ctx.db.insert("identities", {
+      userId: client.id,
+      ninCipher: "test-fixture",
+      fingerprint: String(client.id),
+      lastFour: "8901",
+      status: "VERIFIED",
+      consentVersion: "2026-09-30",
+      consentedAt: now,
+      createdAt: now,
+      updatedAt: now,
+    });
     const projectId = await ctx.db.insert("projects", {
       name: "Test Estate",
       slug: "test-estate",
@@ -211,16 +221,36 @@ describe("production authorization", () => {
     const t = setup();
     const applicant = await user(t);
     const admin = await user(t, "ADMIN");
+    const identityId = await t.run((ctx) =>
+      ctx.db.insert("identities", {
+        userId: applicant.id,
+        ninCipher: "test-fixture",
+        fingerprint: String(applicant.id),
+        lastFour: "8901",
+        status: "PENDING",
+        consentVersion: "2026-10-03",
+        consentedAt: Date.now(),
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }),
+    );
     const result = await applicant.session.mutation(
       api.partners.submitAgentApplication,
       {
         fullName: "Test User",
         email: "CLIENT@example.com",
+        operatingState: "Lagos",
+        operatingLga: "Ikeja",
         phone: "08012345678",
       },
     );
-    await expect(admin.session.mutation(api.partners.reviewAgentApplication, { id: result.id, status: "APPROVED" })).rejects.toThrow(/NIN verification/);
-    await t.run(ctx => ctx.db.insert("identities", { userId: applicant.id, ninCipher: "test-fixture", fingerprint: String(applicant.id), lastFour: "8901", status: "VERIFIED", consentVersion: "2026-09-30", consentedAt: Date.now(), createdAt: Date.now(), updatedAt: Date.now() }));
+    await expect(
+      admin.session.mutation(api.partners.reviewAgentApplication, {
+        id: result.id,
+        status: "APPROVED",
+      }),
+    ).rejects.toThrow(/NIN verification/);
+    await t.run((ctx) => ctx.db.patch(identityId, { status: "VERIFIED" }));
     await admin.session.mutation(api.partners.reviewAgentApplication, {
       id: result.id,
       status: "APPROVED",
