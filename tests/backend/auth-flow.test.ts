@@ -268,6 +268,21 @@ describe("designated administrator and account isolation", () => {
     vi.stubEnv("SUPER_ADMIN_PASSWORD", "Administrator-482!Pass");
     try {
       const t = setup();
+      const legacy = await t.run(async (ctx) => {
+        const id = await ctx.db.insert("users", {
+          name: "Legacy administrator",
+          email: "legacy@example.com",
+          role: "ADMIN",
+          isDiaspora: false,
+          kycVerified: false,
+          createdAt: Date.now(),
+        });
+        const session = await ctx.db.insert("authSessions", {
+          userId: id,
+          expirationTime: Date.now() + 3600000,
+        });
+        return { id, session };
+      });
       await expect(
         t.action(api.auth.signIn, {
           provider: "password",
@@ -299,7 +314,12 @@ describe("designated administrator and account isolation", () => {
         email: "owner@example.com",
       });
       const users = await t.run((ctx) => ctx.db.query("users").collect());
-      expect(users).toHaveLength(1);
+      expect(users).toHaveLength(2);
+      expect(users.filter((user) => user.role === "ADMIN")).toHaveLength(1);
+      expect(await t.run((ctx) => ctx.db.get(legacy.id))).toMatchObject({
+        role: "CLIENT",
+      });
+      expect(await t.run((ctx) => ctx.db.get(legacy.session))).toBeNull();
     } finally {
       delete process.env.SUPER_ADMIN_EMAIL;
       delete process.env.SUPER_ADMIN_PASSWORD;

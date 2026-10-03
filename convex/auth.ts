@@ -115,6 +115,15 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
       if (user?.accountStatus === "SUSPENDED")
         throw new ConvexError("This account is suspended. Contact support.");
       if (!user) throw new Error("Account profile is missing");
+      if (
+        user.role === "ADMIN" &&
+        process.env.SUPER_ADMIN_EMAIL &&
+        user.email.toLowerCase() !==
+          process.env.SUPER_ADMIN_EMAIL.trim().toLowerCase()
+      )
+        throw new ConvexError(
+          "Administrator access is restricted to the designated account.",
+        );
       await ctx.db.patch(userId, { lastActiveAt: Date.now() });
       await ctx.db.insert("adminAuditLog", {
         actorId: userId,
