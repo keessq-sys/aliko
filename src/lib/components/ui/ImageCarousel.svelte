@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { ChevronLeft, ChevronRight, Maximize2, Minimize2 } from 'lucide-svelte';
   import { onDestroy, onMount } from 'svelte';
 
@@ -57,26 +60,26 @@
 <svelte:window on:keydown={handleKeydown} />
 
 <div class="relative group {isFullscreen ? 'theme-contrast-dark fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl' : 'w-full'} flex flex-col">
-  
+
   <!-- Main Image Container -->
   <div
     class="relative overflow-hidden bg-stone-900 {isFullscreen ? 'flex-1 h-full' : `${aspectRatio} rounded-2xl`}"
     role="region"
     aria-roledescription="carousel"
-    aria-label="Image gallery"
+    aria-label={$adkT("Image gallery")}
     on:touchstart={handleTouchStart}
     on:touchend={handleTouchEnd}
   >
     {#if images.length > 0}
-      <div 
+      <div
         class="flex w-full h-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
         style="transform: translateX(-{currentIndex * 100}%)"
       >
         {#each images as img}
           <div class="w-full h-full flex-shrink-0 flex items-center justify-center p-0">
-            <img 
-              src={img} 
-              alt="Gallery item" 
+            <img
+              src={img}
+              alt={$adkT("Gallery item")}
               class="w-full h-full object-cover {isFullscreen ? 'object-contain p-4' : ''}"
               loading="lazy"
             />
@@ -84,9 +87,7 @@
         {/each}
       </div>
     {:else}
-      <div class="w-full h-full flex items-center justify-center text-stone-500">
-        No images available
-      </div>
+      <div class="w-full h-full flex items-center justify-center text-stone-500"> {$adkT("No images available")} </div>
     {/if}
 
     <!-- Overlays (Arrows, Counters, Actions) -->
@@ -94,7 +95,7 @@
       <button
         class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-black/40 text-white backdrop-blur-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-black/60 z-10"
         on:click|stopPropagation={prev}
-        aria-label="Previous image"
+        aria-label={$adkT("Previous image")}
       >
         <ChevronLeft size={24} />
       </button>
@@ -102,20 +103,20 @@
       <button
         class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-black/40 text-white backdrop-blur-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-black/60 z-10"
         on:click|stopPropagation={next}
-        aria-label="Next image"
+        aria-label={$adkT("Next image")}
       >
         <ChevronRight size={24} />
       </button>
 
       <div class="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/50 text-white text-xs font-mono backdrop-blur-md z-10">
-        {currentIndex + 1} / {images.length}
+        {$adkT(currentIndex + 1)} / {$adkT(images.length)}
       </div>
     {/if}
 
     <button
       class="absolute top-4 right-4 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-black/40 text-white backdrop-blur-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-black/60 z-10"
       on:click|stopPropagation={toggleFullscreen}
-      aria-label={isFullscreen ? 'Exit fullscreen' : 'View fullscreen'}
+      aria-label={$adkT(isFullscreen ? 'Exit fullscreen' : 'View fullscreen')}
     >
       {#if isFullscreen}
         <Minimize2 size={20} />
@@ -129,7 +130,7 @@
   {#if showThumbnails && images.length > 1 && !isFullscreen}
     <div class="flex gap-2 mt-2 overflow-x-auto pb-2 scrollbar-hide">
       {#each images as img, i}
-        <button 
+        <button
           class="relative w-20 h-16 rounded-lg overflow-hidden flex-shrink-0 transition-all {i === currentIndex ? 'ring-2 ring-emerald-500' : 'opacity-60 hover:opacity-100'}"
           on:click={() => goTo(i)}
         >

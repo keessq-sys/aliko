@@ -1,5 +1,9 @@
 <script lang="ts">
   import "../app.css";
+  import { provideI18n } from "$lib/i18n";
+  import { afterNavigate } from "$app/navigation";
+  import { api } from "$lib/convex/_generated/api";
+  import { runMutation } from "$lib/convex/queries";
   import { fetchSessionToken } from "$lib/convex/session";
   import { getConvexClient, setupConvex } from "convex-svelte";
   import { env as publicEnv } from "$env/dynamic/public";
@@ -43,6 +47,7 @@
   });
 
   export let data: {
+    locale?: "en" | "ar";
     session?: {
       user?: {
         name?: string | null;
@@ -58,6 +63,11 @@
     globalSchemaJson?: string;
   };
 
+  const { locale } = provideI18n(data.locale ?? "en");
+  $: locale.set(data.locale ?? "en");
+  afterNavigate(() => {
+    if (data.session?.user?.id) void runMutation(api.activity.record, { kind: "PAGE_VIEW", path: $page.url.pathname }).catch(() => {});
+  });
   // Initialize Convex real-time client (falls back gracefully when unset)
   setupConvex(convexUrl, {
     disabled:

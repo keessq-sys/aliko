@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { useQuery, runMutation } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
   import { Building2, Loader2, MapPin, Plus, Search, X, DatabaseZap, Power, PowerOff } from "lucide-svelte";
@@ -124,13 +130,13 @@
   }
 </script>
 
-<svelte:head><title>Properties — ADK Admin</title></svelte:head>
+<svelte:head><title>{$adkT("Properties — ADK Admin")}</title></svelte:head>
 
 <div class="p-8">
   <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
     <div>
-      <h1 class="flex items-center gap-2 text-xl font-bold text-white"><Building2 class="h-5 w-5 text-emerald-400" /> Properties</h1>
-      <p class="mt-0.5 text-sm text-stone-500">Built-unit listings — houses, apartments, duplexes, penthouses and commercial units.</p>
+      <h1 class="flex items-center gap-2 text-xl font-bold text-white"><Building2 class="h-5 w-5 text-emerald-400" /> {$adkT("Properties")}</h1>
+      <p class="mt-0.5 text-sm text-stone-500">{$adkT("Built-unit listings — houses, apartments, duplexes, penthouses and commercial units.")}</p>
     </div>
     <div class="flex flex-wrap items-center gap-3">
       {#if $properties && $properties.length === 0}
@@ -140,27 +146,26 @@
           class="inline-flex min-h-[44px] flex-shrink-0 items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-sm font-medium text-emerald-300 transition-colors hover:bg-emerald-500/20 disabled:opacity-50"
         >
           {#if seeding}<Loader2 size={15} class="animate-spin" />{:else}<DatabaseZap size={15} />{/if}
-          {seeding ? 'Seeding…' : `Seed ${SEED.length} sample listings`}
+          {$adkT(seeding ? 'Seeding…' : `Seed ${SEED.length} sample listings`)}
         </button>
       {/if}
       <div class="relative">
         <Search class="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-500" />
-        <input type="text" bind:value={search} placeholder="Search title or location…" class="w-56 rounded-xl border border-white/10 bg-white/5 py-2 pl-8 pr-3 text-xs text-white placeholder-stone-600 outline-none focus:border-emerald-500" />
+        <input dir="auto" type="text" bind:value={search} placeholder={$adkT("Search title or location…")} class="w-56 rounded-xl border border-white/10 bg-white/5 py-2 pl-8 pr-3 text-xs text-white placeholder-stone-600 outline-none focus:border-emerald-500" />
       </div>
       <button type="button" on:click={openCreateModal} class="inline-flex min-h-[44px] flex-shrink-0 items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500">
-        <Plus size={15} /> New Property
-      </button>
+        <Plus size={15} /> {$adkT("New Property")} </button>
     </div>
   </div>
 
   {#if seedError}
-    <p class="mb-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300">{seedError}</p>
+    <p class="mb-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300">{$adkT(seedError)}</p>
   {/if}
   {#if seedDone}
-    <p class="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-300">Catalog seeded.</p>
+    <p class="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-300">{$adkT("Catalog seeded.")}</p>
   {/if}
 
-  <MediaManager mode="property" title="Publish property gallery images" />
+  <MediaManager mode="property" title={$adkT("Publish property gallery images")} />
 
   {#if $properties === undefined}
     <div class="flex items-center justify-center rounded-2xl py-16" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)">
@@ -168,7 +173,7 @@
     </div>
   {:else if filtered.length === 0}
     <div class="rounded-2xl py-16 text-center" style="background:#0A1628; border: 1px dashed rgba(255,255,255,0.12)">
-      <p class="text-sm text-stone-500">{$properties.length === 0 ? "No properties yet — seed the sample catalog or add one manually." : "No properties match your search."}</p>
+      <p class="text-sm text-stone-500">{$adkT($properties.length === 0 ? "No properties yet — seed the sample catalog or add one manually." : "No properties match your search.")}</p>
     </div>
   {:else}
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -176,8 +181,8 @@
         <div class="rounded-2xl p-5" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.06)">
           <div class="mb-3 flex items-start justify-between gap-2">
             <div class="min-w-0">
-              <h2 class="truncate font-bold text-white">{p.title}</h2>
-              <p class="flex items-center gap-1 text-xs text-stone-500"><MapPin size={11} /> {p.location}, {p.state}</p>
+              <h2 class="truncate font-bold text-white">{$adkT(p.title)}</h2>
+              <p class="flex items-center gap-1 text-xs text-stone-500"><MapPin size={11} /> {$adkT(p.location)}, {$adkT(p.state)}</p>
             </div>
             <button
               type="button"
@@ -188,15 +193,15 @@
                 : 'bg-stone-500/15 text-stone-400 border border-stone-500/30 hover:bg-stone-500/25'}"
             >
               {#if togglingId === p._id}<Loader2 size={10} class="animate-spin" />{:else if p.isActive}<Power size={10} />{:else}<PowerOff size={10} />{/if}
-              {p.isActive ? 'ACTIVE' : 'INACTIVE'}
+              {$adkT(p.isActive ? 'ACTIVE' : 'INACTIVE')}
             </button>
           </div>
-          <p class="mb-3 text-lg font-bold text-amber-400">{formatNaira(p.price)}</p>
+          <p class="mb-3 text-lg font-bold text-amber-400">{$adkT(formatNaira(p.price, $adkLocale))}</p>
           <div class="flex flex-wrap gap-2 border-t border-white/5 pt-3 text-xs text-stone-400">
-            <span class="rounded-full bg-white/5 px-2 py-1">{p.type}</span>
-            <span class="rounded-full bg-white/5 px-2 py-1">{p.status}</span>
-            {#if p.bedrooms}<span class="rounded-full bg-white/5 px-2 py-1">{p.bedrooms} bed</span>{/if}
-            {#if p.sizeSqm}<span class="rounded-full bg-white/5 px-2 py-1">{p.sizeSqm} sqm</span>{/if}
+            <span class="rounded-full bg-white/5 px-2 py-1">{$adkT(p.type)}</span>
+            <span class="rounded-full bg-white/5 px-2 py-1">{$adkT(p.status)}</span>
+            {#if p.bedrooms}<span class="rounded-full bg-white/5 px-2 py-1">{$adkT(p.bedrooms)} {$adkT("bed")}</span>{/if}
+            {#if p.sizeSqm}<span class="rounded-full bg-white/5 px-2 py-1">{$adkT(p.sizeSqm)} {$adkT("sqm")}</span>{/if}
           </div>
         </div>
       {/each}
@@ -209,83 +214,82 @@
     <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" role="presentation" on:click={() => (showCreateModal = false)}></div>
     <div class="relative flex w-full max-w-lg max-h-[90vh] flex-col overflow-y-auto rounded-t-2xl sm:rounded-2xl p-6" style="background:#0A1628; border: 1px solid rgba(255,255,255,0.1)">
       <div class="mb-4 flex items-center justify-between">
-        <h2 class="text-lg font-bold text-white">New Property</h2>
-        <button type="button" aria-label="Close" on:click={() => (showCreateModal = false)} class="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-stone-400 hover:bg-white/10 hover:text-white"><X size={18} /></button>
+        <h2 class="text-lg font-bold text-white">{$adkT("New Property")}</h2>
+        <button type="button" aria-label={$adkT("Close")} on:click={() => (showCreateModal = false)} class="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-stone-400 hover:bg-white/10 hover:text-white"><X size={18} /></button>
       </div>
 
       {#if createError}
-        <p class="mb-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300">{createError}</p>
+        <p class="mb-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300">{$adkT(createError)}</p>
       {/if}
 
       <div class="space-y-4">
         <label class="block">
-          <span class="mb-1 block text-xs text-stone-400">Title *</span>
-          <input type="text" bind:value={form.title} placeholder="e.g. Emerald Luxury Duplex" class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" />
+          <span class="mb-1 block text-xs text-stone-400">{$adkT("Title *")}</span>
+          <input dir="auto" type="text" bind:value={form.title} placeholder={$adkT("e.g. Emerald Luxury Duplex")} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" />
         </label>
         <div class="grid grid-cols-2 gap-3">
           <label class="block">
-            <span class="mb-1 block text-xs text-stone-400">Type</span>
+            <span class="mb-1 block text-xs text-stone-400">{$adkT("Type")}</span>
             <select bind:value={form.type} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500">
-              <option value="RESIDENTIAL">Residential</option>
-              <option value="APARTMENT">Apartment</option>
-              <option value="DUPLEX">Duplex</option>
-              <option value="PENTHOUSE">Penthouse</option>
-              <option value="COMMERCIAL">Commercial</option>
-              <option value="LAND">Land</option>
+              <option value="RESIDENTIAL">{$adkT("Residential")}</option>
+              <option value="APARTMENT">{$adkT("Apartment")}</option>
+              <option value="DUPLEX">{$adkT("Duplex")}</option>
+              <option value="PENTHOUSE">{$adkT("Penthouse")}</option>
+              <option value="COMMERCIAL">{$adkT("Commercial")}</option>
+              <option value="LAND">{$adkT("Land")}</option>
             </select>
           </label>
           <label class="block">
-            <span class="mb-1 block text-xs text-stone-400">Price (NGN) *</span>
-            <input type="number" inputmode="numeric" bind:value={form.price} placeholder="150000000" class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" />
+            <span class="mb-1 block text-xs text-stone-400">{$adkT("Price (NGN) *")}</span>
+            <input dir="auto" type="number" inputmode="numeric" bind:value={form.price} placeholder="150000000" class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" />
           </label>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <label class="block">
-            <span class="mb-1 block text-xs text-stone-400">Location *</span>
-            <input type="text" bind:value={form.location} placeholder="e.g. Lekki Phase 1" class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" />
+            <span class="mb-1 block text-xs text-stone-400">{$adkT("Location *")}</span>
+            <input dir="auto" type="text" bind:value={form.location} placeholder={$adkT("e.g. Lekki Phase 1")} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" />
           </label>
           <label class="block">
-            <span class="mb-1 block text-xs text-stone-400">State *</span>
-            <input type="text" bind:value={form.state} placeholder="e.g. Lagos" class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" />
+            <span class="mb-1 block text-xs text-stone-400">{$adkT("State *")}</span>
+            <input dir="auto" type="text" bind:value={form.state} placeholder={$adkT("e.g. Lagos")} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" />
           </label>
         </div>
         <div class="grid grid-cols-4 gap-3">
           <label class="block">
-            <span class="mb-1 block text-xs text-stone-400">Beds</span>
-            <input type="number" inputmode="numeric" bind:value={form.bedrooms} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
+            <span class="mb-1 block text-xs text-stone-400">{$adkT("Beds")}</span>
+            <input dir="auto" type="number" inputmode="numeric" bind:value={form.bedrooms} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
           </label>
           <label class="block">
-            <span class="mb-1 block text-xs text-stone-400">Baths</span>
-            <input type="number" inputmode="numeric" bind:value={form.bathrooms} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
+            <span class="mb-1 block text-xs text-stone-400">{$adkT("Baths")}</span>
+            <input dir="auto" type="number" inputmode="numeric" bind:value={form.bathrooms} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
           </label>
           <label class="block">
-            <span class="mb-1 block text-xs text-stone-400">Parking</span>
-            <input type="number" inputmode="numeric" bind:value={form.parkingSpots} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
+            <span class="mb-1 block text-xs text-stone-400">{$adkT("Parking")}</span>
+            <input dir="auto" type="number" inputmode="numeric" bind:value={form.parkingSpots} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
           </label>
           <label class="block">
-            <span class="mb-1 block text-xs text-stone-400">Sqm</span>
-            <input type="number" inputmode="numeric" bind:value={form.sizeSqm} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
+            <span class="mb-1 block text-xs text-stone-400">{$adkT("Sqm")}</span>
+            <input dir="auto" type="number" inputmode="numeric" bind:value={form.sizeSqm} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white outline-none focus:border-emerald-500" />
           </label>
         </div>
         <label class="block">
-          <span class="mb-1 block text-xs text-stone-400">Description *</span>
-          <textarea bind:value={form.description} rows="3" class="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500"></textarea>
+          <span class="mb-1 block text-xs text-stone-400">{$adkT("Description *")}</span>
+          <textarea dir="auto" bind:value={form.description} rows="3" class="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500"></textarea>
         </label>
         <label class="block">
-          <span class="mb-1 block text-xs text-stone-400">Amenities (comma-separated)</span>
-          <input type="text" bind:value={form.amenities} placeholder="Pool, Gym, CCTV" class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" />
+          <span class="mb-1 block text-xs text-stone-400">{$adkT("Amenities (comma-separated)")}</span>
+          <input dir="auto" type="text" bind:value={form.amenities} placeholder={$adkT("Pool, Gym, CCTV")} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" />
         </label>
         <label class="block">
-          <span class="mb-1 block text-xs text-stone-400">Image URLs (comma-separated) *</span>
-          <input type="text" bind:value={form.images} placeholder="https://…" class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" />
+          <span class="mb-1 block text-xs text-stone-400">{$adkT("Image URLs (comma-separated) *")}</span>
+          <input dir="auto" type="text" bind:value={form.images} placeholder={$adkT("https://…")} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-emerald-500" />
         </label>
       </div>
 
       <div class="mt-6 flex items-center justify-end gap-3">
-        <button type="button" on:click={() => (showCreateModal = false)} class="min-h-[44px] rounded-lg px-4 py-2 text-sm font-medium text-stone-400 hover:text-white">Cancel</button>
+        <button type="button" on:click={() => (showCreateModal = false)} class="min-h-[44px] rounded-lg px-4 py-2 text-sm font-medium text-stone-400 hover:text-white">{$adkT("Cancel")}</button>
         <button type="button" disabled={creating} on:click={submitCreate} class="flex min-h-[44px] items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">
-          {#if creating}<Loader2 size={15} class="animate-spin" />{/if} Create Property
-        </button>
+          {#if creating}<Loader2 size={15} class="animate-spin" />{/if} {$adkT("Create Property")} </button>
       </div>
     </div>
   </div>

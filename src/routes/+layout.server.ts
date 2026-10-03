@@ -23,6 +23,7 @@ export const load: LayoutServerLoad = async ({ cookies, locals, url }) => {
     : await sessionToken(cookies, url).catch(() => null);
 
   const seoBase = {
+    locale: cookies.get("adk-language") === "ar" ? "ar" as const : "en" as const,
     seo: defaultSEO,
     globalSchemaJson: buildPageGraph(globalSchema),
   };

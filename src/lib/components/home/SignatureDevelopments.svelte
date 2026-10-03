@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { ArrowUpRight } from 'lucide-svelte';
   import { SIGNATURE_DEVELOPMENTS } from '$lib/data/imagery';
   import { tilt } from '$lib/actions/tilt';
@@ -9,15 +12,11 @@
   <div class="container mx-auto px-6">
     <div class="mb-10 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
       <div>
-        <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">Signature Developments</p>
-        <h2 class="font-serif text-3xl font-bold sm:text-5xl">Landmarks Across Nigeria</h2>
-        <p class="mt-3 max-w-xl text-stone-400">
-          A portfolio of master-planned estates and verified developments &mdash; from luxury residential
-          hills to waterfront towers, built and delivered end to end.
-        </p>
+        <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">{$adkT("Signature Developments")}</p>
+        <h2 class="font-serif text-3xl font-bold sm:text-5xl">{$adkT("Landmarks Across Nigeria")}</h2>
+        <p class="mt-3 max-w-xl text-stone-400"> {$adkT("A portfolio of master-planned estates and verified developments — from luxury residential hills to waterfront towers, built and delivered end to end.")} </p>
       </div>
-      <a href="/properties" class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10">
-        Explore All Developments <ArrowUpRight size={16} />
+      <a href="/properties" class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"> {$adkT("Explore All Developments")} <ArrowUpRight size={16} />
       </a>
     </div>
 
@@ -31,14 +30,14 @@
         >
           <img
             src={dev.image}
-            alt={dev.name}
+            alt={$adkT(dev.name)}
             class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
             loading="lazy"
           />
           <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent"></div>
           <div class="theme-contrast-dark absolute inset-x-0 bottom-0 p-5">
-            <p class="text-xs font-medium uppercase tracking-wide text-emerald-300">{dev.location}</p>
-            <h3 class="mt-1 font-serif text-lg font-bold text-white sm:text-xl">{dev.name}</h3>
+            <p class="text-xs font-medium uppercase tracking-wide text-emerald-300">{$adkT(dev.location)}</p>
+            <h3 class="mt-1 font-serif text-lg font-bold text-white sm:text-xl">{$adkT(dev.name)}</h3>
           </div>
         </a>
       {/each}

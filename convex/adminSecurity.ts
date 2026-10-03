@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { v } from "convex/values";
 import { getAuthSessionId } from "@convex-dev/auth/server";
 import { query, mutation, internalMutation } from "./_generated/server";
@@ -61,7 +62,7 @@ export const status = query({
     };
   },
 });
-export const beginEnrollment = mutation({
+export const beginEnrollment = auditedMutation("adminSecurity:beginEnrollment")({
   args: {},
   handler: async (ctx) => {
     const user = await admin(ctx);
@@ -89,7 +90,7 @@ export const beginEnrollment = mutation({
     };
   },
 });
-export const verify = mutation({
+export const verify = auditedMutation("adminSecurity:verify")({
   args: { code: v.string() },
   handler: async (ctx, { code }) => {
     const user = await admin(ctx);

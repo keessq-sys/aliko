@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { requireAdmin } from "./lib/access";
 import { requireUser } from "./lib/access";
 import { v } from "convex/values";
@@ -140,7 +141,7 @@ export const getManageableProperties = query({
   },
 });
 
-export const addPropertyMedia = mutation({
+export const addPropertyMedia = auditedMutation("properties:addPropertyMedia")({
   args: {
     propertyId: v.id("properties"),
     storageIds: v.array(v.id("_storage")),
@@ -208,7 +209,7 @@ export const addPropertyMedia = mutation({
 });
 
 // ── Admin: catalog management ────────────────────────────────────────────
-export const createProperty = mutation({
+export const createProperty = auditedMutation("properties:createProperty")({
   args: {
     slug: v.string(),
     title: v.string(),
@@ -258,7 +259,7 @@ export const createProperty = mutation({
   },
 });
 
-export const updateProperty = mutation({
+export const updateProperty = auditedMutation("properties:updateProperty")({
   args: {
     propertyId: v.id("properties"),
     title: v.optional(v.string()),
@@ -285,7 +286,7 @@ export const updateProperty = mutation({
 // static mock catalog (src/lib/stores/properties.ts) can be loaded into the
 // real database once from the admin UI, instead of shipping a one-off
 // migration script. Upserts by slug — safe to run more than once.
-export const upsertProperty = mutation({
+export const upsertProperty = auditedMutation("properties:upsertProperty")({
   args: {
     slug: v.string(),
     title: v.string(),
@@ -328,7 +329,7 @@ export const upsertProperty = mutation({
   },
 });
 
-export const reviewProperty = mutation({
+export const reviewProperty = auditedMutation("properties:reviewProperty")({
   args: {
     propertyId: v.id("properties"),
     approve: v.boolean(),

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   // src/lib/components/TLDRBlock.svelte
   // A styled, visible answer-first intro: a self-contained 1-3 sentence
   // answer to "what is this page about", rendered before any other content.
@@ -15,8 +18,8 @@
 
 <aside
   class="mb-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.06] px-5 py-4 sm:px-6 sm:py-5"
-  aria-label="Summary"
+  aria-label={$adkT("Summary")}
 >
-  <p class="mb-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">{label}</p>
-  <p class="text-base leading-relaxed text-stone-200 sm:text-lg">{text}</p>
+  <p class="mb-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">{$adkT(label)}</p>
+  <p class="text-base leading-relaxed text-stone-200 sm:text-lg">{$adkT(text)}</p>
 </aside>

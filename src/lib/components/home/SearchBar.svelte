@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { MapPin, Home, Banknote, Bed, Search } from "lucide-svelte";
   import { goto } from "$app/navigation";
 
@@ -38,18 +41,17 @@
     <label
       class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"
     >
-      <MapPin size={12} class="text-emerald-400" /> Location
-    </label>
+      <MapPin size={12} class="text-emerald-400" /> {$adkT("Location")} </label>
     <select
-      aria-label="Location"
+      aria-label={$adkT("Location")}
       bind:value={location}
       class="w-full text-sm font-medium"
     >
-      <option value="All">All Locations</option>
-      <option value="Abuja">Abuja, FCT</option>
-      <option value="Lagos">Lagos State</option>
-      <option value="PortHarcourt">Port Harcourt</option>
-      <option value="Kano">Kano</option>
+      <option value="All">{$adkT("All Locations")}</option>
+      <option value="Abuja">{$adkT("Abuja, FCT")}</option>
+      <option value="Lagos">{$adkT("Lagos State")}</option>
+      <option value="PortHarcourt">{$adkT("Port Harcourt")}</option>
+      <option value="Kano">{$adkT("Kano")}</option>
     </select>
   </div>
 
@@ -60,20 +62,19 @@
     <label
       class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"
     >
-      <Home size={12} class="text-amber-400" /> Property Type
-    </label>
+      <Home size={12} class="text-amber-400" /> {$adkT("Property Type")} </label>
     <select
-      aria-label="Property type"
+      aria-label={$adkT("Property type")}
       bind:value={propertyType}
       class="w-full text-sm font-medium"
     >
-      <option value="All">All Types</option>
-      <option value="Residential">Residential</option>
-      <option value="Commercial">Commercial</option>
-      <option value="Apartment">Apartment</option>
-      <option value="Land">Land / Plots</option>
-      <option value="Duplex">Duplex</option>
-      <option value="Penthouse">Penthouse</option>
+      <option value="All">{$adkT("All Types")}</option>
+      <option value="Residential">{$adkT("Residential")}</option>
+      <option value="Commercial">{$adkT("Commercial")}</option>
+      <option value="Apartment">{$adkT("Apartment")}</option>
+      <option value="Land">{$adkT("Land / Plots")}</option>
+      <option value="Duplex">{$adkT("Duplex")}</option>
+      <option value="Penthouse">{$adkT("Penthouse")}</option>
     </select>
   </div>
 
@@ -84,19 +85,18 @@
     <label
       class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"
     >
-      <Banknote size={12} class="text-emerald-400" /> Price Range
-    </label>
+      <Banknote size={12} class="text-emerald-400" /> {$adkT("Price Range")} </label>
     <select
-      aria-label="Price range"
+      aria-label={$adkT("Price range")}
       bind:value={priceRange}
       class="w-full text-sm font-medium"
     >
-      <option value="Any">Any Price</option>
-      <option value="Under30M">Under ₦30M</option>
-      <option value="Under50M">Under ₦50M</option>
-      <option value="Under100M">Under ₦100M</option>
-      <option value="Under200M">Under ₦200M</option>
-      <option value="500M+">₦500M+</option>
+      <option value="Any">{$adkT("Any Price")}</option>
+      <option value="Under30M">{$adkT("Under ₦30M")}</option>
+      <option value="Under50M">{$adkT("Under ₦50M")}</option>
+      <option value="Under100M">{$adkT("Under ₦100M")}</option>
+      <option value="Under200M">{$adkT("Under ₦200M")}</option>
+      <option value="500M+">{$adkT("₦500M+")}</option>
     </select>
   </div>
 
@@ -105,19 +105,18 @@
     <label
       class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"
     >
-      <Bed size={12} class="text-amber-400" /> Bedrooms
-    </label>
+      <Bed size={12} class="text-amber-400" /> {$adkT("Bedrooms")} </label>
     <select
-      aria-label="Bedrooms"
+      aria-label={$adkT("Bedrooms")}
       bind:value={bedrooms}
       class="w-full text-sm font-medium"
     >
-      <option value="Any">Any</option>
-      <option value="1+">1+ Beds</option>
-      <option value="2+">2+ Beds</option>
-      <option value="3+">3+ Beds</option>
-      <option value="4+">4+ Beds</option>
-      <option value="5+">5+ Beds</option>
+      <option value="Any">{$adkT("Any")}</option>
+      <option value="1+">{$adkT("1+ Beds")}</option>
+      <option value="2+">{$adkT("2+ Beds")}</option>
+      <option value="3+">{$adkT("3+ Beds")}</option>
+      <option value="4+">{$adkT("4+ Beds")}</option>
+      <option value="5+">{$adkT("5+ Beds")}</option>
     </select>
   </div>
 
@@ -127,7 +126,7 @@
     class="w-full md:w-auto h-12 px-6 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-xl flex items-center justify-center gap-2 font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
   >
     <Search size={18} />
-    <span class="md:hidden lg:inline">Search</span>
+    <span class="md:hidden lg:inline">{$adkT("Search")}</span>
   </button>
 </div>
 

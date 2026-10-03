@@ -1,4 +1,4 @@
-export const POLICY_VERSION = '2026-09-30';
+export const POLICY_VERSION = '2026-10-03';
 
 export type LegalPolicy = { title: string; summary: string; sections: { heading: string; body: string[] }[] };
 
@@ -9,14 +9,14 @@ export const legalPolicies: Record<string, LegalPolicy> = {
     { heading: 'Liability and disputes', body: ['Contracts, allocation documents and provider-specific terms govern completed transactions. Nigerian law applies, subject to any dispute process stated in the signed transaction document.'] }
   ]},
   privacy: { title: 'Privacy Policy', summary: 'How ADK collects, uses, shares, secures and deletes personal information.', sections: [
-    { heading: 'Information we process', body: ['We process account and contact details, property and service activity, payment references, support messages, security logs, and identity-verification results. We do not intentionally store full card data. Identity numbers should be sent directly to the approved verification provider and are represented in ADK by a non-reversible digest or provider reference.'] },
+    { heading: 'Information we process', body: ['We process account and contact details, property and service activity, payment references, support messages, security logs, and identity-verification results. We do not intentionally store full card data. We collect your NIN with explicit consent during registration. It is encrypted in a restricted identity record; general profiles and account lists show only a masked number. Only the super administrator can reveal it after a recent security check, and every reveal is audited.'] },
     { heading: 'Purposes and sharing', body: ['We use information to operate accounts, verify identity and title, fulfil requests, prevent fraud, process payments, prepare documents and meet legal duties.', 'We share the minimum required information with contracted payment, messaging, identity, e-signature, hosting and professional-service providers. We do not sell personal information.'] },
     { heading: 'Your choices', body: ['You may request access, correction or deletion, subject to transaction, anti-fraud, tax and property-record retention duties. Contact support from your signed-in account so we can verify the request.'] }
   ]},
   'kyc-consent': { title: 'KYC Consent', summary: 'Consent and notices for identity checks used in property and regulated transactions.', sections: [
     { heading: 'Your authorization', body: ['By starting verification, you authorize ADK and its approved identity provider to validate the identity information and document images you submit against authoritative sources.', 'Consent is recorded with this policy version. You can withdraw before processing begins; completed checks and transaction evidence may be retained where law, fraud prevention or a legal claim requires it.'] },
     { heading: 'Possible outcomes', body: ['A result may be verified, pending, failed or inconclusive. Automated results do not by themselves deny a customer a service. Failed or inconclusive results are referred for manual review and you may provide corrected evidence.'] },
-    { heading: 'Data minimisation', body: ['ADK stores the provider reference, result, timestamps and a non-reversible subject digest. Raw identity numbers should not be stored in application logs or general profile records.'] }
+    { heading: 'Data minimisation', body: ['ADK stores your encrypted NIN, a keyed duplicate-detection fingerprint, verification evidence, consent version and timestamps in restricted records. Raw NINs are excluded from application logs and general profile records. Verification may involve an approved provider or a documented manual review against authorized evidence.'] }
   ]},
   'payments-refunds': { title: 'Payment and Refund Policy', summary: 'Payment confirmation, reservation, refunds and chargeback handling.', sections: [
     { heading: 'Payment confirmation', body: ['A checkout redirect or bank debit is not final confirmation. ADK marks a payment successful only after server-side verification with the payment provider. Duplicate callbacks are ignored.', 'Property reservation and allocation remain subject to availability, verified identity, cleared funds and the signed transaction documents.'] },

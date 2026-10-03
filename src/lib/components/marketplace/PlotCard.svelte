@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { MapPin, Maximize2, Bed, TrendingUp, Check, Heart, ArrowRight } from "lucide-svelte";
   import { formatNaira } from "$lib/utils/format";
 
@@ -82,14 +88,14 @@
 
       <!-- Status badge -->
       <span class="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full {statusClass}">
-        {isAvailable ? "● Available" : plot.status.replace("_", " ")}
+        {$adkT(isAvailable ? "● Available" : plot.status.replace("_", " "))}
       </span>
 
       <!-- Growth badge -->
       {#if growth > 0}
         <span class="absolute top-3 right-12 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1"
               style="background:rgba(217,119,6,0.18);color:#F59E0B;border:1px solid rgba(217,119,6,0.3)">
-          <TrendingUp class="w-3 h-3" />{growth}%
+          <TrendingUp class="w-3 h-3" />{$adkT(growth)}%
         </span>
       {/if}
 
@@ -98,7 +104,7 @@
         class="absolute top-3 right-3 min-h-[44px] min-w-[44px] rounded-full flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200"
         style="background:rgba(0,0,0,0.45)"
         on:click|preventDefault={() => (liked = !liked)}
-        aria-label="Save plot"
+        aria-label={$adkT("Save plot")}
         aria-pressed={liked}
       >
         <Heart class="w-4 h-4 transition-colors {liked ? 'fill-rose-500 text-rose-500' : 'text-white/70'}" />
@@ -107,9 +113,7 @@
       <!-- Featured -->
       {#if plot.isFeatured}
         <span class="absolute bottom-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full"
-              style="background:rgba(217,119,6,0.2);color:#FCD34D;border:1px solid rgba(253,211,77,0.3)">
-          ★ Featured
-        </span>
+              style="background:rgba(217,119,6,0.2);color:#FCD34D;border:1px solid rgba(253,211,77,0.3)"> {$adkT("★ Featured")} </span>
       {/if}
     </div>
 
@@ -120,44 +124,41 @@
         <div class="flex flex-wrap gap-1.5 mb-3">
           {#each badges.slice(0, 2) as badge}
             <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full badge-verified">
-              <Check class="w-2.5 h-2.5" />{badge}
+              <Check class="w-2.5 h-2.5" />{$adkT(badge)}
             </span>
           {/each}
         </div>
       {/if}
 
       <!-- Title -->
-      <h3 class="text-white font-semibold text-sm leading-snug mb-1.5 group-hover:text-emerald-300 transition-colors duration-200">
-        Beacon {plot.beaconNumber}
-        {#if plot.project}<span class="text-stone-500 font-normal"> — {plot.project.name}</span>{/if}
+      <h3 class="text-white font-semibold text-sm leading-snug mb-1.5 group-hover:text-emerald-300 transition-colors duration-200"> {$adkT("Beacon")} {$adkT(plot.beaconNumber)}
+        {#if plot.project}<span class="text-stone-500 font-normal"> — {$adkT(plot.project.name)}</span>{/if}
       </h3>
 
       <!-- Location -->
       {#if plot.project}
         <div class="flex items-center gap-1 text-xs text-stone-500 mb-4">
           <MapPin class="w-3 h-3 flex-shrink-0" />
-          <span class="truncate">{plot.project.location}</span>
+          <span class="truncate">{$adkT(plot.project.location)}</span>
         </div>
       {/if}
 
       <!-- Metrics -->
       <div class="flex items-center gap-2 mb-4 flex-wrap">
         <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs text-stone-300" style="background:rgba(255,255,255,0.04)">
-          <Maximize2 class="w-3.5 h-3.5 text-stone-400" />{plot.sizeSqm} sqm
-        </div>
+          <Maximize2 class="w-3.5 h-3.5 text-stone-400" />{$adkT(plot.sizeSqm)} {$adkT("sqm")} </div>
         <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs" style="background:rgba(217,119,6,0.08);color:#F59E0B">
-          <TrendingUp class="w-3.5 h-3.5" />{formatNaira(plot.price / plot.sizeSqm)}/sqm
-        </div>
+          <TrendingUp class="w-3.5 h-3.5" />{$adkT(formatNaira(plot.price / plot.sizeSqm, $adkLocale))}{$adkT("/sqm")} </div>
       </div>
 
       <!-- Price + CTA -->
       <div class="flex items-center justify-between pt-3 border-t" style="border-top: 1px solid rgba(255,255,255,0.06)">
         <div>
-          <p class="text-white font-black text-lg tracking-tight">{formatNaira(plot.price)}</p>
+          <p class="text-white font-black text-lg tracking-tight">{$adkT(formatNaira(plot.price, $adkLocale))}</p>
         </div>
         <span class="flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl transition-all duration-200 {isAvailable ? 'group-hover:scale-105' : 'opacity-60'}"
               style="background:{isAvailable ? 'linear-gradient(135deg,#065f46,#047857)' : '#1f2937'};color:#fff">
-          {isAvailable ? "Reserve" : "Details"} <ArrowRight class="w-3.5 h-3.5" />
+          {$adkT(isAvailable ? "Reserve" : "Details")} <ArrowRight class="w-3.5 h-3.5" />
         </span>
       </div>
     </div>

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { goto } from "$app/navigation";
   import { useQuery } from "$lib/convex/queries";
   const account = useQuery(api.users.getMyProfile, {});
@@ -157,7 +160,7 @@
 </script>
 
 <svelte:head
-  ><title>Register as a Verified Agent — Aliko Diamond Key</title></svelte:head
+  ><title>{$adkT("Register as a Verified Agent — Aliko Diamond Key")}</title></svelte:head
 >
 
 <div
@@ -175,62 +178,49 @@
       >
         <CheckCircle class="h-12 w-12 text-emerald-400" />
       </div>
-      <h2 class="text-4xl font-bold mb-4">
-        Application Submitted Successfully!
-      </h2>
-      <p class="text-gray-400 text-lg mb-8">
-        Your reference number is <span class="text-amber-400 font-bold"
-          >{reference || "ADK-AGT-2026-0000"}</span
+      <h2 class="text-4xl font-bold mb-4"> {$adkT("Application Submitted Successfully!")} </h2>
+      <p class="text-gray-400 text-lg mb-8"> {$adkT("Your reference number is")} <span class="text-amber-400 font-bold"
+          >{$adkT(reference || "ADK-AGT-2026-0000")}</span
         >
       </p>
 
       <div
         class="bg-white/5 border border-white/10 rounded-2xl p-6 max-w-md mx-auto text-left"
       >
-        <h3 class="font-semibold text-lg mb-4 text-emerald-400">Next Steps:</h3>
+        <h3 class="font-semibold text-lg mb-4 text-emerald-400">{$adkT("Next Steps:")}</h3>
         <ul class="space-y-4 text-gray-300">
           <li class="flex items-center gap-3">
             <div
               class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400"
             >
               1
-            </div>
-            Review in 48hrs
-          </li>
+            </div> {$adkT("Review in 48hrs")} </li>
           <li class="flex items-center gap-3">
             <div
               class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400"
             >
               2
-            </div>
-            Verification Call
-          </li>
+            </div> {$adkT("Verification Call")} </li>
           <li class="flex items-center gap-3">
             <div
               class="w-8 h-8 rounded-full bg-gray-500/20 flex items-center justify-center text-gray-400"
             >
               3
-            </div>
-            Account Activated
-          </li>
+            </div> {$adkT("Account Activated")} </li>
         </ul>
       </div>
 
       <a
         href="/"
         class="inline-block mt-8 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
-        >Return to Home</a
+        >{$adkT("Return to Home")}</a
       >
     </div>
   {:else}
     <div class="max-w-4xl mx-auto">
       <div class="text-center mb-10">
-        <h1 class="text-3xl sm:text-4xl font-bold mb-2">
-          Join as a Verified Agent
-        </h1>
-        <p class="text-gray-400">
-          Complete your professional profile to start listing properties.
-        </p>
+        <h1 class="text-3xl sm:text-4xl font-bold mb-2"> {$adkT("Join as a Verified Agent")} </h1>
+        <p class="text-gray-400"> {$adkT("Complete your professional profile to start listing properties.")} </p>
       </div>
 
       <!-- Stepper -->
@@ -257,11 +247,11 @@
                 {#if currentStep > i + 1}
                   <CheckCircle class="w-6 h-6" />
                 {:else}
-                  {i + 1}
+                  {$adkT(i + 1)}
                 {/if}
               </div>
               <span class="text-xs text-gray-400 hidden sm:block">
-                {i === 0
+                {$adkT(i === 0
                   ? "Personal"
                   : i === 1
                     ? "Professional"
@@ -269,7 +259,7 @@
                       ? "Coverage"
                       : i === 3
                         ? "Documents"
-                        : "Review"}
+                        : "Review")}
               </span>
             </div>
           {/each}
@@ -281,9 +271,7 @@
       >
         {#if currentStep === 1}
           <div in:fade>
-            <h2 class="text-2xl font-bold text-amber-400 mb-6">
-              Personal Information
-            </h2>
+            <h2 class="text-2xl font-bold text-amber-400 mb-6"> {$adkT("Personal Information")} </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="md:col-span-2 flex flex-col items-center mb-4">
                 <div
@@ -291,29 +279,29 @@
                 >
                   <User class="w-8 h-8 text-gray-500" />
                 </div>
-                <span class="text-sm text-amber-400">Upload Photo</span>
+                <span class="text-sm text-amber-400">{$adkT("Upload Photo")}</span>
               </div>
 
               <div>
                 <label
                   for="agent-fullname"
-                  class="block text-sm text-gray-400 mb-1">Full Name *</label
+                  class="block text-sm text-gray-400 mb-1">{$adkT("Full Name *")}</label
                 >
-                <input
+                <input dir="auto"
                   id="agent-fullname"
                   type="text"
                   autocomplete="name"
                   bind:value={formData.fullName}
                   class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                  placeholder="John Doe"
+                  placeholder={$adkT("John Doe")}
                 />
               </div>
 
               <div>
                 <label for="agent-dob" class="block text-sm text-gray-400 mb-1"
-                  >Date of Birth</label
+                  >{$adkT("Date of Birth")}</label
                 >
-                <input
+                <input dir="auto"
                   id="agent-dob"
                   type="date"
                   bind:value={formData.dob}
@@ -324,15 +312,15 @@
               <div>
                 <label
                   for="agent-gender"
-                  class="block text-sm text-gray-400 mb-1">Gender</label
+                  class="block text-sm text-gray-400 mb-1">{$adkT("Gender")}</label
                 >
                 <select
                   id="agent-gender"
                   bind:value={formData.gender}
                   class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                 >
-                  <option>Male</option><option>Female</option><option
-                    >Prefer not to say</option
+                  <option>{$adkT("Male")}</option><option>{$adkT("Female")}</option><option
+                    >{$adkT("Prefer not to say")}</option
                   >
                 </select>
               </div>
@@ -340,38 +328,35 @@
               <div>
                 <label
                   for="agent-nationality"
-                  class="block text-sm text-gray-400 mb-1">Nationality</label
+                  class="block text-sm text-gray-400 mb-1">{$adkT("Nationality")}</label
                 >
                 <select
                   id="agent-nationality"
                   bind:value={formData.nationality}
                   class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                 >
-                  <option>Nigeria</option><option>Other</option>
+                  <option>{$adkT("Nigeria")}</option><option>{$adkT("Other")}</option>
                 </select>
               </div>
 
               <div>
-                <p class="text-sm text-stone-400">
-                  Identity verification is completed through the secure KYC flow
-                  in your account.
-                </p>
+                <p class="text-sm text-stone-400"> {$adkT("Identity verification is completed through the secure KYC flow in your account.")} </p>
               </div>
 
               <div>
                 <label
                   for="agent-state-origin"
                   class="block text-sm text-gray-400 mb-1"
-                  >State of Origin</label
+                  >{$adkT("State of Origin")}</label
                 >
                 <select
                   id="agent-state-origin"
                   bind:value={formData.stateOfOrigin}
                   class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                 >
-                  <option value="">Select State</option>
+                  <option value="">{$adkT("Select State")}</option>
                   {#each NIGERIAN_STATES as state}
-                    <option value={state}>{state}</option>
+                    <option value={state}>{$adkT(state)}</option>
                   {/each}
                 </select>
               </div>
@@ -381,39 +366,37 @@
 
         {#if currentStep === 2}
           <div in:fade>
-            <h2 class="text-2xl font-bold text-amber-400 mb-6">
-              Professional Details
-            </h2>
+            <h2 class="text-2xl font-bold text-amber-400 mb-6"> {$adkT("Professional Details")} </h2>
             <div class="space-y-6">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label
                     for="agent-agency-name"
                     class="block text-sm text-gray-400 mb-1"
-                    >Agency/Company Name</label
+                    >{$adkT("Agency/Company Name")}</label
                   >
-                  <input
+                  <input dir="auto"
                     id="agent-agency-name"
                     type="text"
                     autocomplete="organization"
                     bind:value={formData.agencyName}
                     class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500"
-                    placeholder="e.g. Apex Properties"
+                    placeholder={$adkT("e.g. Apex Properties")}
                   />
                 </div>
                 <div>
                   <label
                     for="agent-type"
-                    class="block text-sm text-gray-400 mb-1">Agent Type</label
+                    class="block text-sm text-gray-400 mb-1">{$adkT("Agent Type")}</label
                   >
                   <select
                     id="agent-type"
                     bind:value={formData.type}
                     class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500"
                   >
-                    <option>Independent Agent</option><option
-                      >Agency Staff</option
-                    ><option>Developer's Agent</option>
+                    <option>{$adkT("Independent Agent")}</option><option
+                      >{$adkT("Agency Staff")}</option
+                    ><option>{$adkT("Developer's Agent")}</option>
                   </select>
                 </div>
                 <div>
@@ -421,33 +404,33 @@
                     for="agent-rean"
                     class="block text-sm text-gray-400 mb-1 flex justify-between"
                   >
-                    <span>REAN Membership Number</span>
+                    <span>{$adkT("REAN Membership Number")}</span>
                     <span
                       class="text-stone-500 text-xs"
-                      title="Real Estate Agents Network — membership optional"
-                      >Optional</span
+                      title={$adkT("Real Estate Agents Network — membership optional")}
+                      >{$adkT("Optional")}</span
                     >
                   </label>
-                  <input
+                  <input dir="auto"
                     id="agent-rean"
                     type="text"
                     bind:value={formData.reanNumber}
                     class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500"
-                    placeholder="Optional"
+                    placeholder={$adkT("Optional")}
                   />
                 </div>
                 <div>
                   <label
                     for="agent-experience"
                     class="block text-sm text-gray-400 mb-1"
-                    >Years of Experience</label
+                    >{$adkT("Years of Experience")}</label
                   >
                   <select
                     id="agent-experience"
                     bind:value={formData.experience}
                     class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500"
                   >
-                    <option>Less than 1</option><option>1-3</option><option
+                    <option>{$adkT("Less than 1")}</option><option>1-3</option><option
                       >3-5</option
                     ><option>5-10</option><option>10+</option>
                   </select>
@@ -457,7 +440,7 @@
               <div>
                 <span
                   id="specializations-label"
-                  class="block text-sm text-gray-400 mb-2">Specializations</span
+                  class="block text-sm text-gray-400 mb-2">{$adkT("Specializations")}</span
                 >
                 <div
                   class="grid grid-cols-2 sm:grid-cols-3 gap-3"
@@ -472,13 +455,13 @@
                         ? 'bg-amber-500/20 border-amber-500 text-amber-400'
                         : 'bg-black/20 border-white/10 hover:border-white/30 text-gray-300'}"
                     >
-                      <input
+                      <input dir="auto"
                         type="checkbox"
                         class="hidden"
                         checked={formData.specializations.includes(spec)}
                         on:change={() => toggleSpec(spec)}
                       />
-                      <span class="text-sm">{spec}</span>
+                      <span class="text-sm">{$adkT(spec)}</span>
                     </label>
                   {/each}
                 </div>
@@ -489,16 +472,16 @@
                   for="agent-bio"
                   class="block text-sm text-gray-400 mb-1 flex justify-between"
                 >
-                  <span>About You / Bio</span>
-                  <span>{formData.bio.length}/500</span>
+                  <span>{$adkT("About You / Bio")}</span>
+                  <span>{$adkT(formData.bio.length)}/500</span>
                 </label>
-                <textarea
+                <textarea dir="auto"
                   id="agent-bio"
                   bind:value={formData.bio}
                   maxlength="500"
                   rows="4"
                   class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500"
-                  placeholder="Tell clients about your experience and approach..."
+                  placeholder={$adkT("Tell clients about your experience and approach...")}
                 ></textarea>
               </div>
             </div>
@@ -507,23 +490,21 @@
 
         {#if currentStep === 3}
           <div in:fade>
-            <h2 class="text-2xl font-bold text-amber-400 mb-6">
-              Contact & Coverage Areas
-            </h2>
+            <h2 class="text-2xl font-bold text-amber-400 mb-6"> {$adkT("Contact & Coverage Areas")} </h2>
             <div class="space-y-6">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label
                     for="agent-phone"
                     class="block text-sm text-gray-400 mb-1"
-                    >Phone Number *</label
+                    >{$adkT("Phone Number *")}</label
                   >
                   <div class="flex">
                     <span
                       class="inline-flex items-center px-3 bg-black/60 border border-r-0 border-white/10 rounded-l-lg text-gray-400"
                       >+234</span
                     >
-                    <input
+                    <input dir="auto"
                       id="agent-phone"
                       type="tel"
                       inputmode="tel"
@@ -537,24 +518,23 @@
                 <div>
                   <div class="mb-1 flex justify-between">
                     <label for="agent-whatsapp" class="text-sm text-gray-400"
-                      >WhatsApp Number</label
+                      >{$adkT("WhatsApp Number")}</label
                     >
                     <label
                       class="flex items-center gap-1 text-xs cursor-pointer"
                     >
-                      <input
+                      <input dir="auto"
                         type="checkbox"
                         bind:checked={formData.whatsappSame}
                         class="rounded border-gray-600 bg-black/40 text-amber-500 focus:ring-amber-500"
-                      /> Same as phone
-                    </label>
+                      /> {$adkT("Same as phone")} </label>
                   </div>
                   <div class="flex">
                     <span
                       class="inline-flex items-center px-3 bg-black/60 border border-r-0 border-white/10 rounded-l-lg text-gray-400"
                       >+234</span
                     >
-                    <input
+                    <input dir="auto"
                       id="agent-whatsapp"
                       type="tel"
                       inputmode="tel"
@@ -570,23 +550,23 @@
                   <label
                     for="agent-email"
                     class="block text-sm text-gray-400 mb-1"
-                    >Business Email *</label
+                    >{$adkT("Business Email *")}</label
                   >
-                  <input
+                  <input dir="auto"
                     id="agent-email"
                     type="email"
                     inputmode="email"
                     autocomplete="email"
                     bind:value={formData.email}
                     class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500"
-                    placeholder="agent@example.com"
+                    placeholder={$adkT("agent@example.com")}
                   />
                 </div>
                 <div>
                   <label
                     for="agent-expected-listings"
                     class="block text-sm text-gray-400 mb-1"
-                    >Expected Monthly Listings</label
+                    >{$adkT("Expected Monthly Listings")}</label
                   >
                   <select
                     id="agent-expected-listings"
@@ -602,14 +582,14 @@
                   <label
                     for="agent-address"
                     class="block text-sm text-gray-400 mb-1"
-                    >Office Address</label
+                    >{$adkT("Office Address")}</label
                   >
-                  <textarea
+                  <textarea dir="auto"
                     id="agent-address"
                     bind:value={formData.address}
                     rows="2"
                     class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500"
-                    placeholder="123 Agent Street..."
+                    placeholder={$adkT("123 Agent Street...")}
                   ></textarea>
                 </div>
               </div>
@@ -618,7 +598,7 @@
                 <span
                   id="states-op-label"
                   class="block text-sm text-gray-400 mb-2"
-                  >States of Operation</span
+                  >{$adkT("States of Operation")}</span
                 >
                 <div
                   class="flex flex-wrap gap-2"
@@ -635,7 +615,7 @@
                         ? 'bg-amber-500/20 border-amber-500 text-amber-400'
                         : 'bg-black/20 border-white/10 text-gray-400 hover:border-white/30'}"
                     >
-                      {state}
+                      {$adkT(state)}
                     </button>
                   {/each}
                 </div>
@@ -643,14 +623,14 @@
 
               <div>
                 <label for="agent-lgas" class="block text-sm text-gray-400 mb-1"
-                  >Primary LGAs (Comma separated)</label
+                  >{$adkT("Primary LGAs (Comma separated)")}</label
                 >
-                <input
+                <input dir="auto"
                   id="agent-lgas"
                   type="text"
                   bind:value={formData.lgas}
                   class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500"
-                  placeholder="Ikeja, Lekki, Abuja Municipal"
+                  placeholder={$adkT("Ikeja, Lekki, Abuja Municipal")}
                 />
               </div>
             </div>
@@ -659,13 +639,8 @@
 
         {#if currentStep === 4}
           <div in:fade>
-            <h2 class="text-2xl font-bold text-amber-400 mb-6">
-              Documents Upload
-            </h2>
-            <p class="text-gray-400 mb-6">
-              Please upload clear copies of the following documents. Files are
-              verified during the review call.
-            </p>
+            <h2 class="text-2xl font-bold text-amber-400 mb-6"> {$adkT("Documents Upload")} </h2>
+            <p class="text-gray-400 mb-6"> {$adkT("Please upload clear copies of the following documents. Files are verified during the review call.")} </p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               {#each [{ id: "photo", name: "Professional Photo", req: true, types: "JPG/PNG, max 2MB" }, { id: "id", name: "Government-Issued ID", req: true, types: "NIN/Passport/DL, max 5MB" }, { id: "license", name: "Agency Authorization", req: true, types: "PDF/JPG, max 5MB" }, { id: "cert", name: "REAN/NIA Certificate", req: false, types: "PDF/JPG, max 5MB" }] as doc}
@@ -676,13 +651,13 @@
                     class="h-10 w-10 text-gray-500 mb-3 group-hover:text-amber-400 transition-colors"
                   />
                   <h3 class="font-medium text-white flex items-center gap-2">
-                    {doc.name}
+                    {$adkT(doc.name)}
                     {#if doc.req}<span
                         class="text-[10px] uppercase bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded"
-                        >Required</span
+                        >{$adkT("Required")}</span
                       >{/if}
                   </h3>
-                  <p class="text-xs text-gray-500 mt-1">{doc.types}</p>
+                  <p class="text-xs text-gray-500 mt-1">{$adkT(doc.types)}</p>
                 </div>
               {/each}
             </div>
@@ -691,24 +666,21 @@
 
         {#if currentStep === 5}
           <div in:fade>
-            <h2 class="text-2xl font-bold text-amber-400 mb-6">
-              Review & Submit
-            </h2>
+            <h2 class="text-2xl font-bold text-amber-400 mb-6"> {$adkT("Review & Submit")} </h2>
 
             <div class="space-y-4 mb-8">
               <div class="bg-black/30 rounded-xl p-5 border border-white/5">
                 <h3
                   class="text-amber-400 font-medium mb-3 flex items-center gap-2"
                 >
-                  <User class="w-4 h-4" /> Personal Info
-                </h3>
+                  <User class="w-4 h-4" /> {$adkT("Personal Info")} </h3>
                 <div class="grid grid-cols-2 gap-y-2 text-sm">
-                  <span class="text-gray-500">Name:</span>
+                  <span class="text-gray-500">{$adkT("Name:")}</span>
                   <span>{formData.fullName || "Not provided"}</span>
-                  <span class="text-gray-500">Nationality:</span>
-                  <span>{formData.nationality}</span>
-                  <span class="text-gray-500">State of Origin:</span>
-                  <span>{formData.stateOfOrigin || "Not provided"}</span>
+                  <span class="text-gray-500">{$adkT("Nationality:")}</span>
+                  <span>{$adkT(formData.nationality)}</span>
+                  <span class="text-gray-500">{$adkT("State of Origin:")}</span>
+                  <span>{$adkT(formData.stateOfOrigin || "Not provided")}</span>
                 </div>
               </div>
 
@@ -716,17 +688,16 @@
                 <h3
                   class="text-amber-400 font-medium mb-3 flex items-center gap-2"
                 >
-                  <Briefcase class="w-4 h-4" /> Professional
-                </h3>
+                  <Briefcase class="w-4 h-4" /> {$adkT("Professional")} </h3>
                 <div class="grid grid-cols-2 gap-y-2 text-sm">
-                  <span class="text-gray-500">Agency:</span>
-                  <span>{formData.agencyName || "Not provided"}</span>
-                  <span class="text-gray-500">Type:</span>
-                  <span>{formData.type}</span>
-                  <span class="text-gray-500">Experience:</span>
-                  <span>{formData.experience} years</span>
-                  <span class="text-gray-500">Specializations:</span>
-                  <span>{formData.specializations.length} selected</span>
+                  <span class="text-gray-500">{$adkT("Agency:")}</span>
+                  <span>{$adkT(formData.agencyName || "Not provided")}</span>
+                  <span class="text-gray-500">{$adkT("Type:")}</span>
+                  <span>{$adkT(formData.type)}</span>
+                  <span class="text-gray-500">{$adkT("Experience:")}</span>
+                  <span>{$adkT(formData.experience)} {$adkT("years")}</span>
+                  <span class="text-gray-500">{$adkT("Specializations:")}</span>
+                  <span>{$adkT(formData.specializations.length)} {$adkT("selected")}</span>
                 </div>
               </div>
 
@@ -734,15 +705,14 @@
                 <h3
                   class="text-amber-400 font-medium mb-3 flex items-center gap-2"
                 >
-                  <MapPin class="w-4 h-4" /> Coverage
-                </h3>
+                  <MapPin class="w-4 h-4" /> {$adkT("Coverage")} </h3>
                 <div class="grid grid-cols-2 gap-y-2 text-sm">
-                  <span class="text-gray-500">Phone:</span>
+                  <span class="text-gray-500">{$adkT("Phone:")}</span>
                   <span>+234 {formData.phone || "Not provided"}</span>
-                  <span class="text-gray-500">Email:</span>
+                  <span class="text-gray-500">{$adkT("Email:")}</span>
                   <span>{formData.email || "Not provided"}</span>
-                  <span class="text-gray-500">States:</span>
-                  <span>{formData.statesOfOp.join(", ") || "None"}</span>
+                  <span class="text-gray-500">{$adkT("States:")}</span>
+                  <span>{$adkT(formData.statesOfOp.join(", ") || "None")}</span>
                 </div>
               </div>
             </div>
@@ -750,17 +720,12 @@
             <label
               class="flex items-start gap-3 cursor-pointer p-4 bg-black/40 border border-white/10 rounded-lg"
             >
-              <input
+              <input dir="auto"
                 type="checkbox"
                 bind:checked={formData.termsAccepted}
                 class="mt-1 w-5 h-5 rounded border-gray-600 text-amber-500 focus:ring-amber-500 bg-black"
               />
-              <span class="text-sm text-gray-300">
-                I confirm that all information provided is accurate and
-                authentic. I agree to the Terms of Service and acknowledge that
-                ADK reserves the right to suspend accounts with fraudulent
-                information.
-              </span>
+              <span class="text-sm text-gray-300"> {$adkT("I confirm that all information provided is accurate and authentic. I agree to the Terms of Service and acknowledge that ADK reserves the right to suspend accounts with fraudulent information.")} </span>
             </label>
           </div>
         {/if}
@@ -769,7 +734,7 @@
           <p
             class="mt-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300"
           >
-            {submitError}
+            {$adkT(submitError)}
           </p>
         {/if}
 
@@ -782,15 +747,13 @@
             on:click={prevStep}
             disabled={currentStep === 1}
           >
-            <ArrowLeft class="w-4 h-4" /> Back
-          </button>
+            <ArrowLeft class="w-4 h-4" /> {$adkT("Back")} </button>
 
           {#if currentStep < totalSteps}
             <button
               class="flex items-center gap-2 min-h-[44px] px-6 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-medium transition-colors shadow-[0_0_15px_rgba(245,158,11,0.3)]"
               on:click={nextStep}
-            >
-              Continue <ArrowRight class="w-4 h-4" />
+            > {$adkT("Continue")} <ArrowRight class="w-4 h-4" />
             </button>
           {:else}
             <button
@@ -799,9 +762,7 @@
               on:click={submitForm}
             >
               {#if submitting}
-                <Loader2 class="w-4 h-4 animate-spin" /> Submitting…
-              {:else}
-                Submit Application <ArrowRight class="w-4 h-4" />
+                <Loader2 class="w-4 h-4 animate-spin" /> {$adkT("Submitting…")}{:else}{$adkT("Submit Application")} <ArrowRight class="w-4 h-4" />
               {/if}
             </button>
           {/if}

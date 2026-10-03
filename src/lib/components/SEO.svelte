@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   // src/lib/components/SEO.svelte
   // Universal <svelte:head> component. Every route renders exactly one of
   // these with a fully-resolved PageSEO object built server-side by
@@ -19,7 +22,7 @@
 </script>
 
 <svelte:head>
-  <title>{seo.title}</title>
+  <title>{$adkT(seo.title)}</title>
   <meta name="description" content={seo.description} />
   <link rel="canonical" href={seo.canonical} />
   <meta name="robots" content={seo.robots} />

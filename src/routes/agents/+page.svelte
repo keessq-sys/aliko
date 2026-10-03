@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import {
     Search,
     MapPin,
@@ -64,7 +67,7 @@
 </script>
 
 <svelte:head
-  ><title>Meet our verified agents | Aliko Diamond Key</title></svelte:head
+  ><title>{$adkT("Meet our verified agents | Aliko Diamond Key")}</title></svelte:head
 >
 
 <div class="min-h-screen bg-[#050A0E] text-white">
@@ -72,15 +75,11 @@
   <div
     class="bg-gradient-to-r from-amber-600 to-amber-800 px-4 py-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between"
   >
-    <div class="text-sm font-medium mb-2 sm:mb-0">
-      Are you a real estate professional? Reach more clients with ADK.
-    </div>
+    <div class="text-sm font-medium mb-2 sm:mb-0"> {$adkT("Are you a real estate professional? Reach more clients with ADK.")} </div>
     <a
       href="/register/agent"
       class="text-sm bg-black/30 hover:bg-black/50 text-white px-4 py-1.5 rounded-full transition-colors border border-white/20 whitespace-nowrap"
-    >
-      Register as Agent &rarr;
-    </a>
+    > {$adkT("Register as Agent →")} </a>
   </div>
 
   <div class="theme-contrast-dark relative overflow-hidden">
@@ -99,23 +98,17 @@
         class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6"
       >
         <div>
-          <h1 class="text-4xl sm:text-5xl font-bold mb-4">
-            Meet Our Verified Agents
-          </h1>
-          <p class="text-gray-400 text-lg max-w-2xl">
-            Connect with top-rated real estate professionals across Nigeria.
-            Every verified agent on our platform has undergone strict background
-            and licensing checks.
-          </p>
+          <h1 class="text-4xl sm:text-5xl font-bold mb-4"> {$adkT("Meet Our Verified Agents")} </h1>
+          <p class="text-gray-400 text-lg max-w-2xl"> {$adkT("Connect with top-rated real estate professionals across Nigeria. Every verified agent on our platform has undergone strict background and licensing checks.")} </p>
         </div>
         <div
           class="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl backdrop-blur-sm"
         >
           <span class="text-2xl font-bold text-emerald-400"
-            >{$agents === undefined ? "—" : visibleAgents.length}</span
+            >{$adkT($agents === undefined ? "—" : visibleAgents.length)}</span
           >
           <span class="text-sm text-gray-400 leading-tight"
-            >Verified<br />Agents</span
+            >{$adkT("Verified")}<br />{$adkT("Agents")}</span
           >
         </div>
       </div>
@@ -128,33 +121,33 @@
           <Search
             class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
           />
-          <input
-            aria-label="Search verified agents"
+          <input dir="auto"
+            aria-label={$adkT("Search verified agents")}
             type="text"
             bind:value={searchQuery}
-            placeholder="Search by name, agency, or location..."
+            placeholder={$adkT("Search by name, agency, or location...")}
             class="w-full min-h-[44px] bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
           />
         </div>
 
         <div class="flex gap-4 overflow-x-auto pb-2 lg:pb-0 hide-scrollbar">
           <select
-            aria-label="Filter agents by specialization"
+            aria-label={$adkT("Filter agents by specialization")}
             bind:value={specializationFilter}
             class="min-h-[44px] bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-emerald-500 min-w-[150px]"
           >
             {#each specializationOptions as opt}
-              <option value={opt}>{opt}</option>
+              <option value={opt}>{$adkT(opt)}</option>
             {/each}
           </select>
 
           <select
-            aria-label="Filter agents by location"
+            aria-label={$adkT("Filter agents by location")}
             bind:value={stateFilter}
             class="min-h-[44px] bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-emerald-500 min-w-[150px]"
           >
             {#each stateOptions as opt}
-              <option value={opt}>{opt}</option>
+              <option value={opt}>{$adkT(opt)}</option>
             {/each}
           </select>
 
@@ -162,8 +155,7 @@
             on:click={clearFilters}
             class="min-h-[44px] bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl px-4 py-3 text-white transition-colors flex items-center gap-2"
           >
-            <Filter class="w-4 h-4" /> Clear
-          </button>
+            <Filter class="w-4 h-4" /> {$adkT("Clear")} </button>
         </div>
       </div>
 
@@ -178,7 +170,7 @@
         <div
           class="rounded-2xl border border-dashed border-white/10 py-20 text-center"
         >
-          <p class="text-sm text-stone-500">No agents match your search.</p>
+          <p class="text-sm text-stone-500">{$adkT("No agents match your search.")}</p>
         </div>
       {:else}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -200,8 +192,7 @@
                 <div
                   class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-emerald-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-lg shadow-emerald-500/20"
                 >
-                  <Verified class="w-3 h-3" /> VERIFIED
-                </div>
+                  <Verified class="w-3 h-3" /> {$adkT("VERIFIED")} </div>
               </div>
 
               <!-- Info -->
@@ -212,20 +203,19 @@
                   {agent.fullName}
                 </h3>
                 <p class="text-sm text-stone-400 mb-2">
-                  {agent.agencyName ?? "Independent Agent"}
+                  {$adkT(agent.agencyName ?? "Independent Agent")}
                 </p>
 
                 {#if agent.experience}
                   <p class="mb-3 text-xs text-stone-500">
-                    {agent.experience} experience
-                  </p>
+                    {$adkT(agent.experience)} {$adkT("experience")} </p>
                 {/if}
 
                 <div class="flex flex-wrap justify-center gap-1.5 mb-3">
                   {#each agent.specializations as spec}
                     <span
                       class="text-[10px] bg-white/10 text-gray-300 px-2 py-1 rounded-md"
-                      >{spec}</span
+                      >{$adkT(spec)}</span
                     >
                   {/each}
                 </div>
@@ -234,7 +224,7 @@
                   class="flex items-center justify-center gap-1 text-xs text-gray-400"
                 >
                   <MapPin class="w-3 h-3" />
-                  {agent.statesOfOperation.join(", ") || "Nigeria"}
+                  {$adkT(agent.statesOfOperation.join(", ") || "Nigeria")}
                 </div>
               </div>
 
@@ -244,8 +234,7 @@
                   href={`tel:${"+2347047669943"}`}
                   class="flex min-h-[44px] items-center justify-center gap-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs text-white transition-colors"
                 >
-                  <Phone class="w-3 h-3" /> Call
-                </a>
+                  <Phone class="w-3 h-3" /> {$adkT("Call")} </a>
                 <a
                   href={whatsappHref(
                     `Hi ${agent.fullName}, I found your profile on Aliko Diamond Key and would like to talk about a property.`,
@@ -255,8 +244,7 @@
                   rel="noopener noreferrer"
                   class="flex min-h-[44px] items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-xs text-white transition-colors"
                 >
-                  <MessageCircle class="w-3 h-3" /> WhatsApp
-                </a>
+                  <MessageCircle class="w-3 h-3" /> {$adkT("WhatsApp")} </a>
               </div>
             </div>
           {/each}

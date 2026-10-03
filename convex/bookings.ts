@@ -1,5 +1,6 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { v } from "convex/values";
-import { requireAdmin, requireUser } from "./lib/access";
+import { requireAdmin, requireUser, requireVerifiedNin } from "./lib/access";
 import {
   query,
   mutation,
@@ -113,7 +114,7 @@ export const getBookingByReference = query({
 
 // ── Mutations ──────────────────────────────────────────────────────────────
 
-export const createBooking = mutation({
+export const createBooking = auditedMutation("bookings:createBooking")({
   args: {
     plotId: v.id("plots"),
     installmentPlan: v.optional(v.string()),
@@ -123,6 +124,7 @@ export const createBooking = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized — please sign in to book");
     const client = await requireUser(ctx);
+    await requireVerifiedNin(ctx, client._id);
     if (
       !client.kycVerified ||
       !client.address ||
@@ -264,7 +266,7 @@ export const confirmPayment = internalMutation({
   },
 });
 
-export const cancelBooking = mutation({
+export const cancelBooking = auditedMutation("bookings:cancelBooking")({
   args: { bookingId: v.id("bookings"), reason: v.optional(v.string()) },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -319,6 +321,8 @@ export const initializePaystackPayment = action({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized");
     const profile = await ctx.runQuery(api.users.getMyProfile, {});
+    const identity = await ctx.runQuery(api.identity.status, {});
+    if (identity?.status !== "VERIFIED") throw new Error("Complete NIN verification before checkout.");
     if (
       !profile ||
       !profile.kycVerified ||
@@ -615,6 +619,8 @@ export const initializeFlutterwavePayment = action({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized");
     const profile = await ctx.runQuery(api.users.getMyProfile, {});
+    const identity = await ctx.runQuery(api.identity.status, {});
+    if (identity?.status !== "VERIFIED") throw new Error("Complete NIN verification before checkout.");
     if (
       !profile ||
       !profile.kycVerified ||

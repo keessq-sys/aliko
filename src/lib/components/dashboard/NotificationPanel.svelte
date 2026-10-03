@@ -1,13 +1,16 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { Bell, CheckCircle2, X, XCircle, Info, AlertTriangle } from 'lucide-svelte';
 
   export let notifications: any[] = [];
-  
+
   let currentFilter = 'All';
   const filters = ['All', 'Leads', 'Properties', 'Payments', 'System'];
-  
-  $: filteredNotifs = currentFilter === 'All' 
-    ? notifications 
+
+  $: filteredNotifs = currentFilter === 'All'
+    ? notifications
     : notifications.filter(n => n.type === currentFilter.toLowerCase());
 
   function getIcon(type: string) {
@@ -36,21 +39,19 @@
   <div class="flex items-center justify-between border-b border-white/10 px-6 py-4">
     <div class="flex items-center gap-2">
       <Bell class="h-5 w-5 text-emerald-500" />
-      <h2 class="text-lg font-semibold text-white">Notifications</h2>
+      <h2 class="text-lg font-semibold text-white">{$adkT("Notifications")}</h2>
     </div>
-    <button class="text-xs font-medium text-emerald-500 hover:text-emerald-400">
-      Mark all as read
-    </button>
+    <button class="text-xs font-medium text-emerald-500 hover:text-emerald-400"> {$adkT("Mark all as read")} </button>
   </div>
 
   <!-- Filters -->
   <div class="flex gap-2 overflow-x-auto border-b border-white/5 px-4 py-3 hide-scrollbar">
     {#each filters as filter}
-      <button 
+      <button
         on:click={() => currentFilter = filter}
         class="whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium transition-colors {currentFilter === filter ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/5 text-stone-400 hover:bg-white/10'}"
       >
-        {filter}
+        {$adkT(filter)}
       </button>
     {/each}
   </div>
@@ -64,20 +65,20 @@
             {#if !notif.read}
               <div class="absolute left-0 top-0 h-full w-1 bg-emerald-500"></div>
             {/if}
-            
+
             <div class="flex gap-3">
               <div class="mt-1 flex-shrink-0">
                 <svelte:component this={getIcon(notif.iconType)} class="h-5 w-5 {getColorClass(notif.iconType, notif.read)}" />
               </div>
               <div class="flex-1 space-y-1">
                 <p class="text-sm font-medium {notif.read ? 'text-stone-300' : 'text-white'}">
-                  {notif.title}
+                  {$adkT(notif.title)}
                 </p>
-                <p class="text-xs text-stone-400">{notif.message}</p>
-                <p class="text-xs text-stone-500 mt-2">{notif.timestamp}</p>
+                <p class="text-xs text-stone-400">{$adkT(notif.message)}</p>
+                <p class="text-xs text-stone-500 mt-2">{$adkT(notif.timestamp)}</p>
               </div>
               {#if !notif.read}
-                <button type="button" aria-label="Mark notification as read" class="relative h-6 w-6 rounded-full flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:bg-white/10 transition-all before:content-[''] before:absolute before:inset-[-10px]">
+                <button type="button" aria-label={$adkT("Mark notification as read")} class="relative h-6 w-6 rounded-full flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:bg-white/10 transition-all before:content-[''] before:absolute before:inset-[-10px]">
                   <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
                 </button>
               {/if}
@@ -90,8 +91,8 @@
         <div class="mb-4 rounded-full bg-white/5 p-4">
           <Bell class="h-8 w-8 text-stone-600" />
         </div>
-        <p class="text-sm font-medium text-stone-300">No notifications</p>
-        <p class="mt-1 text-xs text-stone-500">You're all caught up!</p>
+        <p class="text-sm font-medium text-stone-300">{$adkT("No notifications")}</p>
+        <p class="mt-1 text-xs text-stone-500">{$adkT("You're all caught up!")}</p>
       </div>
     {/if}
   </div>

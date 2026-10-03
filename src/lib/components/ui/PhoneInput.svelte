@@ -2,7 +2,7 @@
   export let value: string = '';
   export let placeholder: string = 'Phone number';
   export let disabled: boolean = false;
-  
+
   function handleInput(e: Event) {
     const target = e.target as HTMLInputElement;
     let val = target.value.replace(/\D/g, '');
@@ -19,7 +19,7 @@
   <div class="flex items-center px-3 border-r border-stone-700 bg-stone-800 text-stone-300">
     +234
   </div>
-  <input
+  <input dir="auto"
     type="tel"
     inputmode="numeric"
     class="flex-1 bg-transparent px-3 py-2 text-white placeholder-stone-500 outline-none"

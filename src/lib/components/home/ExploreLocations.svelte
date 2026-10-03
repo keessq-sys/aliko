@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { MapPin } from "lucide-svelte";
   import { EXPLORE_LOCATIONS } from "$lib/data/imagery";
   import { reveal, revealStagger } from "$lib/actions/reveal";
@@ -10,16 +13,9 @@
     <div class="mb-10 text-center">
       <p
         class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400"
-      >
-        Nationwide Coverage
-      </p>
-      <h2 class="font-serif text-3xl font-bold sm:text-5xl">
-        Explore Nigeria, City by City
-      </h2>
-      <p class="mx-auto mt-3 max-w-xl text-stone-400">
-        Explore architecture and places across Nigeria &mdash; from Lagos's
-        waterfront to Abuja's diplomatic districts.
-      </p>
+      > {$adkT("Nationwide Coverage")} </p>
+      <h2 class="font-serif text-3xl font-bold sm:text-5xl"> {$adkT("Explore Nigeria, City by City")} </h2>
+      <p class="mx-auto mt-3 max-w-xl text-stone-400"> {$adkT("Explore architecture and places across Nigeria — from Lagos's waterfront to Abuja's diplomatic districts.")} </p>
     </div>
 
     <div
@@ -34,7 +30,7 @@
         >
           <img
             src={loc.images[0]}
-            alt={`${loc.city} landmark and city view`}
+            alt={$adkT(`${loc.city} landmark and city view`)}
             class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
             loading="lazy"
           />
@@ -42,7 +38,7 @@
             {#each loc.images.slice(1) as image, i}
               <img
                 src={image}
-                alt={`${loc.city} ${i === 0 ? "residential" : "aerial"} view`}
+                alt={$adkT(`${loc.city} ${i === 0 ? "residential" : "aerial"} view`)}
                 class="h-12 w-12 rounded-lg border-2 border-white/70 object-cover shadow-lg"
                 loading="lazy"
               />
@@ -53,9 +49,8 @@
           ></div>
           <div class="theme-contrast-dark absolute inset-x-0 bottom-0 p-4">
             <p class="flex items-center gap-1 text-[11px] text-emerald-300">
-              <MapPin size={11} /> Explore this location
-            </p>
-            <h3 class="font-serif text-lg font-bold text-white">{loc.city}</h3>
+              <MapPin size={11} /> {$adkT("Explore this location")} </p>
+            <h3 class="font-serif text-lg font-bold text-white">{$adkT(loc.city)}</h3>
           </div>
         </a>
       {/each}

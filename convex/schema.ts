@@ -149,6 +149,11 @@ export default defineSchema({
     email: v.string(),
     emailVerificationTime: v.optional(v.number()),
     registrationPolicyVersion: v.optional(v.string()),
+    // Temporary encrypted signup envelope, removed in the same transaction.
+    registrationNinCipher: v.optional(v.string()),
+    registrationNinHash: v.optional(v.string()),
+    registrationNinLastFour: v.optional(v.string()),
+    customerKind: v.optional(v.union(v.literal("BUYER"), v.literal("RENTER"))),
     requestedAccountType: v.optional(
       v.union(
         v.literal("CLIENT"),
@@ -189,6 +194,22 @@ export default defineSchema({
     .index("by_role_created", ["role", "createdAt"]),
 
   // ── Projects (Estates / Developments) ────────────────────────────────────
+  identities: defineTable({
+    userId: v.id("users"),
+    ninCipher: v.string(),
+    fingerprint: v.string(),
+    lastFour: v.string(),
+    status: v.union(v.literal("PENDING"), v.literal("VERIFIED"), v.literal("FAILED")),
+    consentVersion: v.string(),
+    consentedAt: v.number(),
+    reviewedBy: v.optional(v.id("users")),
+    reviewedAt: v.optional(v.number()),
+    reviewReason: v.optional(v.string()),
+    verificationMethod: v.optional(v.union(v.literal("MANUAL"), v.literal("QOREID"))),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_user", ["userId"]).index("by_fingerprint", ["fingerprint"]),
+
   projects: defineTable({
     name: v.string(),
     slug: v.string(),

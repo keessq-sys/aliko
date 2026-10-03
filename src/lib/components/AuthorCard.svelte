@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   // src/lib/components/AuthorCard.svelte
   // E-E-A-T author block. Renders the Person entity visibly (name, role,
   // photo, bio, profile links) next to whatever content they're accountable
@@ -18,7 +24,7 @@
 
   const formattedDate = $derived(
     dateModified
-      ? new Date(dateModified).toLocaleDateString('en-NG', { year: 'numeric', month: 'long', day: 'numeric' })
+      ? new Date(dateModified).toLocaleDateString($adkLocale === "ar" ? "ar-NG" : "en-NG", { year: 'numeric', month: 'long', day: 'numeric' })
       : null
   );
 </script>
@@ -27,7 +33,7 @@
   {#if author.image}
     <img
       src={author.image}
-      alt={author.name}
+      alt={$adkT(author.name)}
       width="56"
       height="56"
       class="h-14 w-14 flex-shrink-0 rounded-full object-cover ring-2 ring-emerald-500/30"
@@ -37,17 +43,16 @@
   <div class="min-w-0">
     <p class="truncate text-sm font-semibold text-white">
       {#if author.url}
-        <a href={author.url} class="hover:text-emerald-400" rel="author">{author.name}</a>
+        <a href={author.url} class="hover:text-emerald-400" rel="author">{$adkT(author.name)}</a>
       {:else}
-        {author.name}
+        {$adkT(author.name)}
       {/if}
     </p>
     {#if author.role}
-      <p class="truncate text-xs text-stone-400">{author.role}</p>
+      <p class="truncate text-xs text-stone-400">{$adkT(author.role)}</p>
     {/if}
     {#if formattedDate}
-      <p class="mt-1 text-xs text-stone-500">
-        Last updated <time datetime={dateModified}>{formattedDate}</time>
+      <p class="mt-1 text-xs text-stone-500"> {$adkT("Last updated")} <time datetime={dateModified}>{$adkT(formattedDate)}</time>
       </p>
     {/if}
   </div>

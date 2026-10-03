@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   // src/lib/components/PageTemplate.svelte
   // Generic optimized content-page shell: eyebrow + H1, TL;DR, an <article>
   // slot for the question-based body, then FAQ / author / related-links /
@@ -55,9 +58,9 @@
   <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
     <header class="mb-8">
       {#if eyebrow}
-        <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">{eyebrow}</p>
+        <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">{$adkT(eyebrow)}</p>
       {/if}
-      <h1 class="font-serif text-3xl font-bold sm:text-4xl">{title}</h1>
+      <h1 class="font-serif text-3xl font-bold sm:text-4xl">{$adkT(title)}</h1>
     </header>
 
     {#if tldr}
@@ -81,13 +84,13 @@
     {/if}
 
     {#if sources.length}
-      <section aria-label="Sources" class="mt-12 border-t border-white/10 pt-8">
-        <h2 class="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">Sources</h2>
+      <section aria-label={$adkT("Sources")} class="mt-12 border-t border-white/10 pt-8">
+        <h2 class="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">{$adkT("Sources")}</h2>
         <ul class="space-y-1.5">
           {#each sources as source (source.href)}
             <li class="text-sm text-stone-400">
               <cite class="not-italic">
-                <a href={source.href} class="hover:text-emerald-400" rel="noopener noreferrer">{source.label}</a>
+                <a href={source.href} class="hover:text-emerald-400" rel="noopener noreferrer">{$adkT(source.label)}</a>
               </cite>
             </li>
           {/each}

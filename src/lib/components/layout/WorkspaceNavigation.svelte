@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
+  import LanguageSwitcher from "$lib/components/ui/LanguageSwitcher.svelte";
   import { Menu, X, ArrowLeft, ArrowRight, LogOut } from "lucide-svelte";
   import { goto } from "$app/navigation";
   import ThemeToggle from "$lib/components/ui/ThemeToggle.svelte";
@@ -33,40 +37,41 @@
 </script>
 
 <div class="workspace-navigation">
-  <a class="workspace-brand" href="/" aria-label="Aliko Diamond Key home"
+  <a class="workspace-brand" href="/" aria-label={$adkT("Aliko Diamond Key home")}
     ><img
       src="/adk-logo.png"
-      alt="Aliko Diamond Key"
+      alt={$adkT("Aliko Diamond Key")}
       width="46"
       height="40"
     /></a
   >
-  <nav aria-label="Account navigation" class="flex items-center gap-1 p-1">
+  <nav aria-label={$adkT("Account navigation")} class="flex items-center gap-1 p-1">
     <button
-      aria-label="Go back"
-      title="Go back"
+      aria-label={$adkT("Go back")}
+      title={$adkT("Go back")}
       on:click={() => window.history.back()}><ArrowLeft size={18} /></button
     >
     <button
-      aria-label="Go forward"
-      title="Go forward"
+      aria-label={$adkT("Go forward")}
+      title={$adkT("Go forward")}
       on:click={() => window.history.forward()}><ArrowRight size={18} /></button
     >
+    <LanguageSwitcher />
     <ThemeToggle />
     <button
-      aria-label={open ? "Close account navigation" : "Open account navigation"}
+      aria-label={$adkT(open ? "Close account navigation" : "Open account navigation")}
       aria-expanded={open}
       on:click={() => (open = !open)}
       >{#if open}<X size={20} />{:else}<Menu size={20} />{/if}</button
     >
-    <button on:click={logout} disabled={busy} aria-label="Logout"
-      ><LogOut size={18} /><span class="hidden sm:inline">Logout</span></button
+    <button on:click={logout} disabled={busy} aria-label={$adkT("Logout")}
+      ><LogOut size={18} /><span class="hidden sm:inline">{$adkT("Logout")}</span></button
     >
   </nav>
   {#if open}<div class="workspace-menu">
       {#each [{ href: dashboard, label: "Dashboard" }, { href: "/dashboard/account", label: "My profile" }, { href: "/dashboard/messages", label: "Company conversations" }, { href: "/properties", label: "Properties" }, { href: "/services", label: "Services" }, { href: "/", label: "Website home" }] as item}<a
           href={item.href}
-          on:click={() => (open = false)}>{item.label}</a
+          on:click={() => (open = false)}>{$adkT(item.label)}</a
         >{/each}
     </div>{/if}
 </div>

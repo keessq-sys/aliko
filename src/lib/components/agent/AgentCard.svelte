@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { Star, CheckCircle, MoreVertical } from 'lucide-svelte';
 
   export let agent: any;
@@ -21,23 +24,23 @@
   <!-- Profile -->
   <div class="flex items-start gap-4">
     <div class="relative h-16 w-16 flex-shrink-0">
-      <img src={agent.photo} alt={agent.name} class="h-full w-full rounded-full object-cover ring-2 ring-white/10" />
+      <img src={agent.photo} alt={$adkT(agent.name)} class="h-full w-full rounded-full object-cover ring-2 ring-white/10" />
       <div class="absolute -bottom-1 -right-1 rounded-full bg-emerald-500 p-1 ring-2 ring-[#050A0E]">
         <CheckCircle class="h-3 w-3 text-[#050A0E]" />
       </div>
     </div>
-    
+
     <div>
-      <h4 class="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">{agent.name}</h4>
-      <p class="text-sm text-stone-400">{agent.agency}</p>
-      
+      <h4 class="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">{$adkT(agent.name)}</h4>
+      <p class="text-sm text-stone-400">{$adkT(agent.agency)}</p>
+
       <div class="mt-2 flex items-center gap-2">
         <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider {getStatusColor(agent.status)}">
-          {agent.status}
+          {$adkT(agent.status)}
         </span>
         <div class="flex items-center gap-1 text-sm font-medium text-amber-400">
           <Star class="h-3 w-3 fill-amber-400" />
-          {agent.rating.toFixed(1)}
+          {$adkT(agent.rating.toFixed(1))}
         </div>
       </div>
     </div>
@@ -46,27 +49,27 @@
   <!-- Stats Grid -->
   <div class="mt-6 grid grid-cols-3 gap-4 border-t border-white/10 pt-6">
     <div>
-      <p class="text-xs text-stone-500">Listings</p>
-      <p class="mt-1 text-lg font-semibold text-white">{agent.listings}</p>
+      <p class="text-xs text-stone-500">{$adkT("Listings")}</p>
+      <p class="mt-1 text-lg font-semibold text-white">{$adkT(agent.listings)}</p>
     </div>
     <div>
-      <p class="text-xs text-stone-500">Clients</p>
-      <p class="mt-1 text-lg font-semibold text-white">{agent.clients}</p>
+      <p class="text-xs text-stone-500">{$adkT("Clients")}</p>
+      <p class="mt-1 text-lg font-semibold text-white">{$adkT(agent.clients)}</p>
     </div>
     <div>
-      <p class="text-xs text-stone-500">Revenue</p>
-      <p class="mt-1 text-sm font-semibold text-white">₦{(agent.revenue / 1000000).toFixed(1)}M</p>
+      <p class="text-xs text-stone-500">{$adkT("Revenue")}</p>
+      <p class="mt-1 text-sm font-semibold text-white">₦{$adkT((agent.revenue / 1000000).toFixed(1))}{$adkT("M")}</p>
     </div>
   </div>
 
   <!-- Performance Bar -->
   <div class="mt-6">
     <div class="flex justify-between text-xs mb-1.5">
-      <span class="text-stone-400">Monthly Target</span>
-      <span class="text-emerald-400 font-medium">{(agent.listings / 50 * 100).toFixed(0)}%</span>
+      <span class="text-stone-400">{$adkT("Monthly Target")}</span>
+      <span class="text-emerald-400 font-medium">{$adkT((agent.listings / 50 * 100).toFixed(0))}%</span>
     </div>
     <div class="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-      <div 
+      <div
         class="h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400 transition-all duration-1000"
         style="width: {Math.min(100, agent.listings / 50 * 100)}%"
       ></div>
@@ -75,11 +78,7 @@
 
   <!-- Actions -->
   <div class="mt-6 flex gap-2">
-    <button class="flex-1 rounded-lg border border-emerald-500/50 bg-emerald-500/10 py-2 text-sm font-medium text-emerald-400 hover:bg-emerald-500/20 transition-colors">
-      View Profile
-    </button>
-    <button class="flex-1 rounded-lg border border-white/10 bg-white/5 py-2 text-sm font-medium text-stone-300 hover:bg-white/10 transition-colors">
-      Message
-    </button>
+    <button class="flex-1 rounded-lg border border-emerald-500/50 bg-emerald-500/10 py-2 text-sm font-medium text-emerald-400 hover:bg-emerald-500/20 transition-colors"> {$adkT("View Profile")} </button>
+    <button class="flex-1 rounded-lg border border-white/10 bg-white/5 py-2 text-sm font-medium text-stone-300 hover:bg-white/10 transition-colors"> {$adkT("Message")} </button>
   </div>
 </div>

@@ -13,6 +13,7 @@ const app = defineApp({
   env: {
     JWT_PRIVATE_KEY: v.optional(v.string()),
     JWKS: v.optional(v.string()),
+    NIN_ENCRYPTION_KEY: v.optional(v.string()),
     MFA_ENCRYPTION_KEY: v.optional(v.string()),
     ADMIN_MFA_REQUIRED: v.optional(v.string()),
     ADMIN_MFA_RECOVERY_ENABLED: v.optional(v.string()),

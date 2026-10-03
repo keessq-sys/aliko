@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { estateAggregate } from "./aggregates";
 import { internalMutation } from "./_generated/server";
 import { v } from "convex/values";
@@ -6,7 +7,7 @@ import { mutation, query } from "./_generated/server";
 import { requireUser, requireAdmin } from "./lib/access";
 import { validateAttachments } from "./lib/attachments";
 import { rateLimiter } from "./lib/rateLimits";
-export const resolveTenant = mutation({
+export const resolveTenant = auditedMutation("estateOperations:resolveTenant")({
   args: { email: v.string() },
   handler: async (ctx, args) => {
     const user = await actor(ctx);
@@ -46,7 +47,7 @@ export const leases = query({
       .paginate(args.paginationOpts);
   },
 });
-export const saveLease = mutation({
+export const saveLease = auditedMutation("estateOperations:saveLease")({
   args: {
     id: v.optional(v.id("leases")),
     propertyId: v.id("properties"),
@@ -164,7 +165,7 @@ export const ledger = query({
       .paginate(args.paginationOpts);
   },
 });
-export const postLedger = mutation({
+export const postLedger = auditedMutation("estateOperations:postLedger")({
   args: {
     leaseId: v.optional(v.id("leases")),
     recordId: v.optional(v.id("managementRecords")),

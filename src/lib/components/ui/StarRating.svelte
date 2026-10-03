@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { Star } from 'lucide-svelte';
   import { createEventDispatcher } from 'svelte';
 
@@ -25,31 +28,31 @@
   }
 </script>
 
-<div class="flex items-center gap-1" role="group" aria-label="Star rating" on:mouseleave={() => hoverValue = null}>
+<div class="flex items-center gap-1" role="group" aria-label={$adkT("Star rating")} on:mouseleave={() => hoverValue = null}>
   {#each Array(max) as _, i}
     {@const starValue = i + 1}
     {@const fill = displayValue >= starValue ? 1 : displayValue >= starValue - 0.5 ? 0.5 : 0}
-    
-    <button 
+
+    <button
       class="relative {interactive ? 'cursor-pointer hover:scale-110' : 'cursor-default'} transition-transform focus:outline-none"
       on:mouseenter={() => interactive && (hoverValue = starValue)}
       on:click={() => handleClick(starValue)}
       type="button"
     >
       <!-- Background star (empty) -->
-      <Star 
-        size={sizeClasses[size]} 
-        class="text-stone-700" 
+      <Star
+        size={sizeClasses[size]}
+        class="text-stone-700"
       />
-      
+
       <!-- Foreground star (filled) -->
-      <div 
-        class="absolute top-0 left-0 overflow-hidden" 
+      <div
+        class="absolute top-0 left-0 overflow-hidden"
         style="width: {fill * 100}%;"
       >
-        <Star 
-          size={sizeClasses[size]} 
-          class="text-amber-400 fill-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" 
+        <Star
+          size={sizeClasses[size]}
+          class="text-amber-400 fill-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]"
         />
       </div>
     </button>

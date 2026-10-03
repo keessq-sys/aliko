@@ -1,7 +1,8 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { requireAdmin, requireUser } from "./lib/access";
+import { requireAdmin, requireUser, requireVerifiedNin } from "./lib/access";
 import { rateLimiter, contactRateKey } from "./lib/rateLimits";
 
 function makeRef(prefix: string): string {
@@ -11,7 +12,7 @@ function makeRef(prefix: string): string {
 }
 
 // ── Public: agent application (5-step wizard) ──────────────────────────────
-export const submitAgentApplication = mutation({
+export const submitAgentApplication = auditedMutation("partners:submitAgentApplication")({
   args: {
     fullName: v.string(),
     email: v.string(),
@@ -50,7 +51,7 @@ export const submitAgentApplication = mutation({
 });
 
 // ── Public: estate manager enrolment ───────────────────────────────────────
-export const submitManagerApplication = mutation({
+export const submitManagerApplication = auditedMutation("partners:submitManagerApplication")({
   args: {
     companyName: v.string(),
     contactName: v.string(),
@@ -135,7 +136,7 @@ export const listApprovedAgents = query({
   },
 });
 
-export const reviewAgentApplication = mutation({
+export const reviewAgentApplication = auditedMutation("partners:reviewAgentApplication")({
   args: {
     id: v.id("agentApplications"),
     status: v.union(
@@ -154,6 +155,7 @@ export const reviewAgentApplication = mutation({
     const account = await ctx.db.get(application.userId);
     if (!account || account.role === "ADMIN")
       throw new Error("Invalid applicant account");
+    if (status === "APPROVED") await requireVerifiedNin(ctx, application.userId);
     await ctx.db.patch(application.userId, {
       role: status === "APPROVED" ? "AGENT" : "CLIENT",
     });
@@ -195,7 +197,7 @@ export const listManagers = query({
   },
 });
 
-export const reviewManagerApplication = mutation({
+export const reviewManagerApplication = auditedMutation("partners:reviewManagerApplication")({
   args: {
     id: v.id("estateManagers"),
     status: v.union(
@@ -212,6 +214,7 @@ export const reviewManagerApplication = mutation({
     const account = await ctx.db.get(application.userId);
     if (!account || account.role === "ADMIN")
       throw new Error("Invalid applicant account");
+    if (status === "APPROVED") await requireVerifiedNin(ctx, application.userId);
     await ctx.db.patch(application.userId, {
       role: status === "APPROVED" ? "ESTATE_MANAGER" : "CLIENT",
     });

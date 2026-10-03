@@ -1,4 +1,14 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
+  import ActivityDesk from "$lib/components/dashboard/ActivityDesk.svelte";
+  import IdentityReview from "$lib/components/dashboard/IdentityReview.svelte";
+  let selectedUser: any = null;
+
   import { useQuery } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
   import { UserCog, Loader2, ShieldCheck, ShieldAlert, Search } from "lucide-svelte";
@@ -29,17 +39,17 @@
   });
 </script>
 
-<svelte:head><title>Users & Roles — ADK Admin</title></svelte:head>
+<svelte:head><title>{$adkT("Users & Roles — ADK Admin")}</title></svelte:head>
 
 <div class="p-8">
   <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
     <div>
-      <h1 class="flex items-center gap-2 text-xl font-bold text-white"><UserCog class="h-5 w-5 text-purple-400" /> Users & Roles</h1>
-      <p class="mt-0.5 text-sm text-stone-500">Every account on the platform, live from the database.</p>
+      <h1 class="flex items-center gap-2 text-xl font-bold text-white"><UserCog class="h-5 w-5 text-purple-400" /> {$adkT("Users & Roles")}</h1>
+      <p class="mt-0.5 text-sm text-stone-500">{$adkT("Every account on the platform, live from the database.")}</p>
     </div>
     <div class="relative">
       <Search class="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-500" />
-      <input type="text" bind:value={search} placeholder="Search name or email…" class="w-64 rounded-xl border border-white/10 bg-white/5 py-2 pl-8 pr-3 text-xs text-white placeholder-stone-600 outline-none focus:border-emerald-500" />
+      <input dir="auto" type="text" bind:value={search} placeholder={$adkT("Search name or email…")} class="w-64 rounded-xl border border-white/10 bg-white/5 py-2 pl-8 pr-3 text-xs text-white placeholder-stone-600 outline-none focus:border-emerald-500" />
     </div>
   </div>
 
@@ -52,11 +62,11 @@
           ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
           : 'bg-white/5 text-stone-400 border border-white/10 hover:text-white'}"
       >
-        {r || "All"}
+        {$adkT(r || "All")}
         {#if $roleCounts && r}
-          <span class="ml-1 text-[10px] text-stone-500">{$roleCounts.counts[r] ?? 0}</span>
+          <span class="ml-1 text-[10px] text-stone-500">{$adkT($roleCounts.counts[r] ?? 0)}</span>
         {:else if $roleCounts && !r}
-          <span class="ml-1 text-[10px] text-stone-500">{$roleCounts.total}</span>
+          <span class="ml-1 text-[10px] text-stone-500">{$adkT($roleCounts.total)}</span>
         {/if}
       </button>
     {/each}
@@ -67,17 +77,17 @@
       <div class="flex items-center justify-center py-16 text-stone-500"><Loader2 class="h-6 w-6 animate-spin" /></div>
     {:else if filtered.length === 0}
       <p class="py-16 text-center text-sm text-stone-600">
-        {$users.length === 0 ? "No users yet — accounts appear here as soon as they sign up." : "No users match this filter."}
+        {$adkT($users.length === 0 ? "No users yet — accounts appear here as soon as they sign up." : "No users match this filter.")}
       </p>
     {:else}
       <div class="overflow-x-auto">
       <table class="w-full text-left text-sm">
         <thead class="bg-white/5 text-stone-400">
           <tr>
-            <th class="px-6 py-4">User</th>
-            <th class="px-6 py-4">Role</th>
-            <th class="px-6 py-4">KYC</th>
-            <th class="px-6 py-4">Joined</th>
+            <th class="px-6 py-4">{$adkT("User")}</th>
+            <th class="px-6 py-4">{$adkT("Role")}</th>
+            <th class="px-6 py-4">{$adkT("NIN verification")}</th>
+            <th class="px-6 py-4">{$adkT("Joined")}</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-white/5">
@@ -89,17 +99,20 @@
               </td>
               <td class="px-6 py-4">
                 <span class="rounded-full px-2.5 py-1 text-xs font-semibold {ROLE_BADGES[user.role ?? 'CLIENT'] ?? ROLE_BADGES.CLIENT}">
-                  {user.role ?? "CLIENT"}
+                  {$adkT(user.role ?? "CLIENT")}
                 </span>
               </td>
               <td class="px-6 py-4">
-                {#if user.kycVerified}
-                  <span class="inline-flex items-center gap-1 text-xs text-emerald-400"><ShieldCheck size={13} /> Verified</span>
+                <bdi class="block">{user.maskedNin ?? "Not submitted"}</bdi>
+                <span class="block text-xs">{user.identityStatus}</span>
+                <button class="underline min-h-[44px]" on:click={() => selectedUser = user}>{$adkT("Review identity and activity")}</button>
+                {#if user.identityStatus === "VERIFIED"}
+                  <span class="inline-flex items-center gap-1 text-xs text-emerald-400"><ShieldCheck size={13} /> {$adkT("Verified")}</span>
                 {:else}
-                  <span class="inline-flex items-center gap-1 text-xs text-stone-500"><ShieldAlert size={13} /> Pending</span>
+                  <span class="inline-flex items-center gap-1 text-xs text-stone-500"><ShieldAlert size={13} /> {$adkT("Pending")}</span>
                 {/if}
               </td>
-              <td class="px-6 py-4 text-stone-400">{user.createdAt ? formatRelative(new Date(user.createdAt)) : "—"}</td>
+              <td class="px-6 py-4 text-stone-400">{user.createdAt ? formatRelative(new Date(user.createdAt), $adkLocale) : "—"}</td>
             </tr>
           {/each}
         </tbody>
@@ -107,4 +120,9 @@
       </div>
     {/if}
   </div>
+  {#if selectedUser}
+    <button class="btn-ghost mt-5" on:click={() => selectedUser = null}>{$adkT("Show all user activity")}</button>
+    {#key selectedUser._id}<IdentityReview userId={selectedUser._id} name={selectedUser.name} />{/key}
+  {/if}
+  {#key selectedUser?._id}<ActivityDesk userId={selectedUser?._id} />{/key}
 </div>

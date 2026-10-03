@@ -27,7 +27,9 @@
     "test:e2e:report": "playwright show-report",
     "dev:preview": "vite dev --host 127.0.0.1 --port 5188 --strictPort",
     "format:check": "prettier --check .",
-    "test:backend": "vitest run"
+    "test:backend": "vitest run",
+    "i18n:extract": "node scripts/localize-interface.mjs",
+    "i18n:translate": "node scripts/translate-arabic-catalog.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
@@ -66,8 +68,10 @@
     "@types/three": "^0.166.0",
     "clsx": "^2.1.1",
     "convex": "^1.17.1",
+    "convex-helpers": "^0.1.126",
     "convex-svelte": "^0.14.0",
     "date-fns": "^4.1.0",
+    "i18next": "^26.4.2",
     "lucide-svelte": "^0.466.0",
     "pdf-lib": "^1.17.1",
     "qrcode": "^1.5.4",

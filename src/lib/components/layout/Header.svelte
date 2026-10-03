@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
+  import LanguageSwitcher from "$lib/components/ui/LanguageSwitcher.svelte";
   import {
     ArrowLeft,
     ArrowRight,
@@ -47,7 +51,6 @@
 
   let isMobileMenuOpen = false;
   let isProfileMenuOpen = false;
-  let isServicesOpen = false;
 
   $: isLoggedIn = !!session?.user;
   $: userRole = (session?.user?.role ?? "client").toLowerCase();
@@ -162,92 +165,16 @@
       <a
         href="/"
         class="group flex min-h-[64px] items-center"
-        aria-label="Aliko Diamond Key Realtors Ltd home"
+        aria-label={$adkT("Aliko Diamond Key Realtors Ltd home")}
       >
         <img
           src="/adk-logo.png"
-          alt="Aliko Diamond Key Realtors Ltd"
+          alt={$adkT("Aliko Diamond Key Realtors Ltd")}
           width="1351"
           height="1164"
           class="h-16 w-auto rounded-lg bg-white object-contain shadow-[0_0_18px_rgba(202,151,35,0.2)] transition-transform duration-300 group-hover:scale-[1.03]"
         />
       </a>
-
-      <!-- Desktop Nav -->
-      <nav class="hidden xl:flex items-center gap-4 xl:gap-6">
-        {#each navLinks as link}
-          <a
-            href={link.href}
-            class="text-sm font-medium transition-colors hover:text-emerald-400 relative {$page
-              .url.pathname === link.href
-              ? 'text-emerald-400'
-              : 'text-stone-300'}"
-          >
-            {link.name}
-            {#if $page.url.pathname === link.href}
-              <div
-                class="absolute -bottom-7 left-0 w-full h-0.5 bg-emerald-500 shadow-[0_0_10px_rgba(5,150,105,0.8)]"
-              ></div>
-            {/if}
-          </a>
-        {/each}
-
-        <!-- Services Dropdown -->
-        <div
-          class="relative"
-          role="none"
-          on:mouseenter={() => (isServicesOpen = true)}
-          on:mouseleave={() => (isServicesOpen = false)}
-        >
-          <button
-            class="flex items-center gap-1 text-sm font-medium transition-colors {isServicesOpen ||
-            $page.url.pathname.startsWith('/services')
-              ? 'text-emerald-400'
-              : 'text-stone-300 hover:text-emerald-400'}"
-            on:click={() => (isServicesOpen = !isServicesOpen)}
-          >
-            Services
-            <ChevronDown
-              size={14}
-              class="transition-transform {isServicesOpen ? 'rotate-180' : ''}"
-            />
-          </button>
-
-          {#if isServicesOpen}
-            <div
-              class="absolute right-0 top-full pt-3 z-50"
-              transition:slide={{ duration: 180 }}
-            >
-              <div
-                class="w-[34rem] rounded-2xl glass-l3 border border-white/10 shadow-2xl p-3"
-              >
-                <a
-                  href="/services"
-                  class="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold uppercase tracking-wider text-emerald-400 hover:bg-white/5"
-                >
-                  All Services <ChevronRight size={12} />
-                </a>
-                <div class="h-px bg-white/10 my-1"></div>
-                <div class="grid grid-cols-2 gap-0.5">
-                  {#each serviceLinks as s}
-                    <a
-                      href={s.href}
-                      class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-stone-300 transition-colors hover:bg-white/5 hover:text-white"
-                      on:click={() => (isServicesOpen = false)}
-                    >
-                      <s.icon
-                        size={15}
-                        class="flex-shrink-0 text-emerald-400/80"
-                      />
-                      <span class="truncate">{s.name}</span>
-                    </a>
-                  {/each}
-                </div>
-              </div>
-            </div>
-          {/if}
-        </div>
-      </nav>
 
       <!-- Desktop Actions -->
       <div class="hidden xl:flex items-center gap-3">
@@ -255,16 +182,16 @@
         <a
           href="/auth/admin"
           class="text-sm font-semibold min-h-[44px] flex items-center"
-          >Admin Login</a
+          >{$adkT("Admin Login")}</a
         >
         {#if isLoggedIn}
           <button
             on:click={signOut}
-            class="min-h-[44px] px-3 text-sm font-semibold">Logout</button
+            class="min-h-[44px] px-3 text-sm font-semibold">{$adkT("Logout")}</button
           >
           <button
             class="relative flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full text-stone-300 hover:text-white hover:bg-white/10 transition-colors"
-            aria-label="Notifications"
+            aria-label={$adkT("Notifications")}
           >
             <Bell size={20} />
             {#if unreadNotifications > 0}
@@ -277,7 +204,7 @@
           <div class="relative">
             <button
               class="flex items-center gap-2 min-h-[44px] pl-3 pr-1 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
-              aria-label="Account menu"
+              aria-label={$adkT("Account menu")}
               aria-expanded={isProfileMenuOpen}
               on:click={toggleProfileMenu}
             >
@@ -304,7 +231,7 @@
                     {session?.user?.email ?? ""}
                   </p>
                   <div class="mt-2 badge-agent inline-block capitalize">
-                    {userRole.replace("_", " ")}
+                    {$adkT(userRole.replace("_", " "))}
                   </div>
                 </div>
 
@@ -312,32 +239,28 @@
                   href={dashboardHref}
                   class="flex items-center gap-3 px-4 py-2 text-sm text-stone-300 hover:text-white hover:bg-white/5 transition-colors"
                 >
-                  <LayoutDashboard size={16} /> Dashboard
-                </a>
+                  <LayoutDashboard size={16} /> {$adkT("Dashboard")} </a>
                 <a
                   href="/dashboard/account"
                   class="flex items-center gap-3 px-4 py-2 text-sm text-stone-300 hover:text-white hover:bg-white/5 transition-colors"
                 >
-                  <User size={16} /> Profile
-                </a>
+                  <User size={16} /> {$adkT("Profile")} </a>
                 <a
                   href="/dashboard/messages"
                   class="flex items-center gap-3 px-4 py-2 text-sm theme-text min-h-[44px]"
-                  >Conversations</a
+                  >{$adkT("Conversations")}</a
                 >
                 <a
                   href="/legal/track"
                   class="flex items-center gap-3 px-4 py-2 text-sm text-stone-300 hover:text-white hover:bg-white/5 transition-colors"
                 >
-                  <Settings size={16} /> Track Documents
-                </a>
+                  <Settings size={16} /> {$adkT("Track Documents")} </a>
                 <div class="h-px bg-white/10 my-2"></div>
                 <button
                   class="flex items-center gap-3 px-4 py-2 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors w-full text-left"
                   on:click={signOut}
                 >
-                  <LogOut size={16} /> Sign out
-                </button>
+                  <LogOut size={16} /> {$adkT("Sign out")} </button>
               </div>
             {/if}
           </div>
@@ -345,31 +268,32 @@
           <a
             href="/auth?tab=signin"
             class="text-sm font-medium text-stone-300 hover:text-white transition-colors px-4 py-2"
-            >Sign In</a
+            >{$adkT("Sign In")}</a
           >
-          <a href="/auth?tab=signup" class="btn-primary">Register</a>
+          <a href="/auth?tab=signup" class="btn-primary">{$adkT("Register")}</a>
         {/if}
       </div>
 
-      <div class="hidden xl:flex items-center" aria-label="Page history">
+      <div class="hidden xl:flex items-center" aria-label={$adkT("Page history")}>
         <button
-          aria-label="Go back"
-          title="Go back"
+          aria-label={$adkT("Go back")}
+          title={$adkT("Go back")}
           class="min-h-[44px] min-w-[44px]"
           on:click={() => window.history.back()}><ArrowLeft size={18} /></button
         >
         <button
-          aria-label="Go forward"
-          title="Go forward"
+          aria-label={$adkT("Go forward")}
+          title={$adkT("Go forward")}
           class="min-h-[44px] min-w-[44px]"
           on:click={() => window.history.forward()}
           ><ArrowRight size={18} /></button
         >
       </div>
+      <LanguageSwitcher />
       <!-- Mobile Menu Button -->
       <button
         class="flex items-center justify-center min-h-[44px] min-w-[44px] text-stone-300 hover:text-white"
-        aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+        aria-label={$adkT(isMobileMenuOpen ? "Close menu" : "Open menu")}
         aria-expanded={isMobileMenuOpen}
         on:click={toggleMobileMenu}
       >
@@ -396,12 +320,12 @@
       <div class="flex flex-col p-4 gap-2 max-h-[70vh] overflow-y-auto">
         <div class="flex gap-2">
           <button
-            aria-label="Go back"
+            aria-label={$adkT("Go back")}
             class="min-h-[44px] min-w-[44px]"
             on:click={() => window.history.back()}
             ><ArrowLeft size={18} /></button
           ><button
-            aria-label="Go forward"
+            aria-label={$adkT("Go forward")}
             class="min-h-[44px] min-w-[44px]"
             on:click={() => window.history.forward()}
             ><ArrowRight size={18} /></button
@@ -416,15 +340,13 @@
               : 'text-stone-300 hover:bg-white/5'}"
             on:click={() => (isMobileMenuOpen = false)}
           >
-            {link.name}
+            {$adkT(link.name)}
           </a>
         {/each}
 
         <div
           class="px-2 pt-3 pb-1 text-xs uppercase font-mono text-stone-500 tracking-wider"
-        >
-          Services
-        </div>
+        > {$adkT("Services")} </div>
         {#each serviceLinks as s}
           <a
             href={s.href}
@@ -432,7 +354,7 @@
             on:click={() => (isMobileMenuOpen = false)}
           >
             <s.icon size={15} class="text-emerald-400/80" />
-            {s.name}
+            {$adkT(s.name)}
           </a>
         {/each}
 
@@ -440,58 +362,53 @@
 
         <div
           class="px-2 py-1 text-xs uppercase font-mono text-stone-500 tracking-wider"
-        >
-          Dashboards
-        </div>
+        > {$adkT("Dashboards")} </div>
         <a
           href="/dashboard/manager"
           class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5"
           on:click={() => (isMobileMenuOpen = false)}
         >
-          <Building2 size={15} class="text-emerald-400/80" /> Estate Manager
-        </a>
+          <Building2 size={15} class="text-emerald-400/80" /> {$adkT("Estate Manager")} </a>
         <a
           href="/dashboard/agent"
           class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5"
           on:click={() => (isMobileMenuOpen = false)}
         >
-          <Users size={15} class="text-emerald-400/80" /> Agent Dashboard
-        </a>
+          <Users size={15} class="text-emerald-400/80" /> {$adkT("Agent Dashboard")} </a>
         <a
           href="/dashboard/client"
           class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-stone-300 hover:bg-white/5"
           on:click={() => (isMobileMenuOpen = false)}
         >
-          <Home size={15} class="text-emerald-400/80" /> Client Portal
-        </a>
+          <Home size={15} class="text-emerald-400/80" /> {$adkT("Client Portal")} </a>
 
         <div class="h-px bg-white/10 my-2"></div>
 
         <div
           class="flex items-center justify-between rounded-lg px-4 py-2 text-sm text-stone-300"
         >
-          <span>Appearance</span><ThemeToggle />
+          <span>{$adkT("Appearance")}</span><ThemeToggle />
           <a href="/auth/admin" on:click={() => (isMobileMenuOpen = false)}
-            >Admin Login</a
+            >{$adkT("Admin Login")}</a
           >
         </div>
 
         {#if isLoggedIn}
           <button
             class="px-4 py-3 rounded-lg text-base font-medium text-rose-400 hover:bg-rose-500/10 text-left w-full"
-            on:click={signOut}>Sign out</button
+            on:click={signOut}>{$adkT("Sign out")}</button
           >
         {:else}
           <div class="flex flex-col gap-3 pt-2">
             <a
               href="/auth?tab=signin"
               class="btn-ghost w-full justify-center"
-              on:click={() => (isMobileMenuOpen = false)}>Sign In</a
+              on:click={() => (isMobileMenuOpen = false)}>{$adkT("Sign In")}</a
             >
             <a
               href="/auth?tab=signup"
               class="btn-primary w-full justify-center"
-              on:click={() => (isMobileMenuOpen = false)}>Register</a
+              on:click={() => (isMobileMenuOpen = false)}>{$adkT("Register")}</a
             >
           </div>
         {/if}

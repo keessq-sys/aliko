@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { useQuery, runMutation } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
   import { MessageSquare, Loader2, Phone, Mail } from "lucide-svelte";
@@ -39,13 +45,13 @@
   }
 </script>
 
-<svelte:head><title>Enquiries — ADK Admin</title></svelte:head>
+<svelte:head><title>{$adkT("Enquiries — ADK Admin")}</title></svelte:head>
 
 <div class="p-8">
   <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
     <div>
-      <h1 class="flex items-center gap-2 text-xl font-bold text-white"><MessageSquare class="h-5 w-5 text-emerald-400" /> Enquiries</h1>
-      <p class="mt-0.5 text-sm text-stone-500">Leads submitted from property, plot and project pages.</p>
+      <h1 class="flex items-center gap-2 text-xl font-bold text-white"><MessageSquare class="h-5 w-5 text-emerald-400" /> {$adkT("Enquiries")}</h1>
+      <p class="mt-0.5 text-sm text-stone-500">{$adkT("Leads submitted from property, plot and project pages.")}</p>
     </div>
   </div>
 
@@ -55,9 +61,7 @@
       class="min-h-[44px] rounded-full px-3.5 py-1.5 text-xs font-medium transition-all {statusFilter === ''
         ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
         : 'bg-white/5 text-stone-400 border border-white/10 hover:text-white'}"
-    >
-      All
-    </button>
+    > {$adkT("All")} </button>
     {#each STATUS_OPTIONS as s}
       <button
         on:click={() => (statusFilter = s)}
@@ -65,7 +69,7 @@
           ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
           : 'bg-white/5 text-stone-400 border border-white/10 hover:text-white'}"
       >
-        {s}
+        {$adkT(s)}
       </button>
     {/each}
   </div>
@@ -74,20 +78,20 @@
     {#if $enquiries === undefined}
       <div class="flex items-center justify-center py-16 text-stone-500"><Loader2 class="h-6 w-6 animate-spin" /></div>
     {:else if filtered.length === 0}
-      <p class="py-16 text-center text-sm text-stone-600">{$enquiries.length === 0 ? "No enquiries yet." : "No enquiries match this view."}</p>
+      <p class="py-16 text-center text-sm text-stone-600">{$adkT($enquiries.length === 0 ? "No enquiries yet." : "No enquiries match this view.")}</p>
     {:else}
       <div class="divide-y" style="border-color: rgba(255,255,255,0.04)">
         {#each filtered as e (e._id)}
           <div class="flex flex-wrap items-center gap-4 px-6 py-4">
             <div class="min-w-0 flex-1">
-              <p class="text-sm font-medium text-white">{e.name} <span class="text-stone-600">·</span> <span class="text-stone-400">{subjectLabel(e)}</span></p>
+              <p class="text-sm font-medium text-white">{$adkT(e.name)} <span class="text-stone-600">·</span> <span class="text-stone-400">{$adkT(subjectLabel(e))}</span></p>
               <p class="mt-0.5 flex flex-wrap items-center gap-3 text-xs text-stone-500">
                 <span class="flex items-center gap-1"><Mail size={11} /> {e.email}</span>
                 <span class="flex items-center gap-1"><Phone size={11} /> {e.phone}</span>
               </p>
-              {#if e.message}<p class="mt-1 text-xs text-stone-500 line-clamp-1">{e.message}</p>{/if}
+              {#if e.message}<p class="mt-1 text-xs text-stone-500 line-clamp-1">{$adkT(e.message)}</p>{/if}
             </div>
-            <span class="hidden text-xs text-stone-600 sm:block">{formatRelative(new Date(e.createdAt))}</span>
+            <span class="hidden text-xs text-stone-600 sm:block">{$adkT(formatRelative(new Date(e.createdAt), $adkLocale))}</span>
             <select
               value={e.status}
               disabled={updatingId === e._id}
@@ -95,7 +99,7 @@
               class="min-h-[44px] rounded-full border px-2.5 py-1 text-xs font-semibold outline-none disabled:opacity-50 {STATUS_CLASSES[e.status] ?? ''}"
             >
               {#each STATUS_OPTIONS as s}
-                <option value={s}>{s}</option>
+                <option value={s}>{$adkT(s)}</option>
               {/each}
             </select>
           </div>

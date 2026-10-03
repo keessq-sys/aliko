@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { requireAdmin } from "./lib/access";
@@ -28,7 +29,7 @@ export const reviewQueue = query({
       .paginate(args.paginationOpts);
   },
 });
-export const saveTestimonial = mutation({
+export const saveTestimonial = auditedMutation("content:saveTestimonial")({
   args: {
     id: v.optional(v.id("testimonials")),
     author: v.string(),

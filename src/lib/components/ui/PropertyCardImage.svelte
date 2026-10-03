@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   export let images: string[] = [];
   export let title: string;
   let failed: string[] = [];
@@ -22,7 +25,7 @@
     <img
       use:recoverFailedImage
       src={source}
-      alt={title}
+      alt={$adkT(title)}
       class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
       on:error={() => markFailed(source)}
     />
@@ -31,8 +34,6 @@
   <div
     class="property-image-unavailable flex h-full items-center justify-center px-6 text-center text-sm"
     role="img"
-    aria-label={`${title}: photograph unavailable`}
-  >
-    Property photographs will be available soon
-  </div>
+    aria-label={$adkT(`${title}: photograph unavailable`)}
+  > {$adkT("Property photographs will be available soon")} </div>
 {/if}

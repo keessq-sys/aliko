@@ -1,4 +1,16 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
+  import { page } from "$app/stores";
+  import type { Id } from "../../../../convex/_generated/dataModel";
+  export let adminMode = false;
+  let recipientId = $page.url.searchParams.get("recipient") ?? "";
+  const recipients = useQuery(adminMode ? api.users.listUsers : null, { limit: 500 });
+
   import { api } from "$lib/convex/_generated/api";
   import { useQuery, runMutation } from "$lib/convex/queries";
   import ScannedAttachments from "./ScannedAttachments.svelte";
@@ -31,7 +43,7 @@
     busy = true;
     error = "";
     try {
-      const id = await runMutation(api.messaging.create, { subject, body });
+      const id = await runMutation(api.messaging.create, { subject, body, recipientId: adminMode && recipientId ? recipientId as Id<"users"> : undefined });
       selected = { _id: id, subject, status: "OPEN" };
       messageCursor = null;
       subject = "";
@@ -78,15 +90,16 @@
 </script>
 
 <section class="theme-surface theme-text rounded-2xl border p-5 space-y-5">
-  <h2 class="text-2xl font-semibold">Conversations</h2>
-  <p>
-    Messages are private to your account and the support administrators. Replies
-    update in real time.
-  </p>
-  {#if error}<p role="alert" class="text-rose-600">{error}</p>{/if}
+  <h2 class="text-2xl font-semibold">{$adkT("Conversations")}</h2>
+  <p> {$adkT("Messages are private to your account and the support administrators. Replies update in real time.")} </p>
+  {#if error}<p role="alert" class="text-rose-600">{$adkT(error)}</p>{/if}
   <form on:submit|preventDefault={create} class="grid gap-3">
+    {#if adminMode}<label>{$adkT("Recipient")}<select required bind:value={recipientId} class="theme-input block w-full p-3 border rounded">
+      <option value="">{$adkT("Choose an account")}</option>
+      {#each $recipients ?? [] as recipient}<option value={recipient._id}>{recipient.name} — {recipient.email}</option>{/each}
+    </select></label>{/if}
     <label
-      >Subject<input
+      >{$adkT("Subject")}<input dir="auto"
         required
         minlength="3"
         maxlength="180"
@@ -94,7 +107,7 @@
         class="theme-input block w-full p-3 border rounded"
       /></label
     ><label
-      >Message<textarea
+      >{$adkT("Message")}<textarea dir="auto"
         required
         maxlength="10000"
         bind:value={body}
@@ -103,14 +116,12 @@
     ><button
       disabled={busy}
       class="min-h-[44px] px-4 py-2 rounded bg-emerald-700 text-white"
-      >Start conversation</button
+      >{$adkT("Start conversation")}</button
     >
   </form>
   <div class="grid gap-5 md:grid-cols-2">
     <div class="space-y-2">
-      {#if $threads === undefined}<p>
-          Loading conversations…
-        </p>{:else if !$threads.page.length}<p>No conversations yet.</p>{/if}
+      {#if $threads === undefined}<p> {$adkT("Loading conversations…")} </p>{:else if !$threads.page.length}<p>{$adkT("No conversations yet.")}</p>{/if}
       {#each $threads?.page ?? [] as thread}<button
           class="theme-surface block w-full text-left p-3 border rounded min-h-[44px]"
           on:click={() => {
@@ -120,20 +131,20 @@
             reference = crypto.randomUUID();
           }}
           >{thread.subject}<span class="block text-sm"
-            >{thread.status} · {new Date(
+            >{$adkT(thread.status)} · {new Date(
               thread.updatedAt,
-            ).toLocaleString()}</span
+            ).toLocaleString($adkLocale === "ar" ? "ar-NG" : "en-NG")}</span
           ></button
         >{/each}
       <button
         class="min-h-[44px] px-3 border rounded"
         disabled={!cursor}
-        on:click={() => (cursor = null)}>Latest</button
+        on:click={() => (cursor = null)}>{$adkT("Latest")}</button
       ><button
         class="min-h-[44px] px-3 border rounded"
         disabled={!$threads || $threads.isDone}
         on:click={() => (cursor = $threads?.continueCursor ?? null)}
-        >Older conversations</button
+        >{$adkT("Older conversations")}</button
       >
     </div>
     {#if selected}<div class="space-y-3">
@@ -150,11 +161,11 @@
             class="p-3 border rounded"
           >
             <p class="text-xs">
-              {message.authorRole} · {new Date(
+              {$adkT(message.authorRole)} · {new Date(
                 message.createdAt,
-              ).toLocaleString()}
+              ).toLocaleString($adkLocale === "ar" ? "ar-NG" : "en-NG")}
             </p>
-            <p class="whitespace-pre-wrap break-words mt-2">{message.body}</p>
+            <p dir="auto" class="whitespace-pre-wrap break-words mt-2">{message.body}</p>
             {#each message.attachments as file}{#if file?.url}<a
                   href={file.url}
                   target="_blank"
@@ -166,14 +177,14 @@
           class="min-h-[44px] border rounded px-3"
           disabled={!$messages || $messages.isDone}
           on:click={() => (messageCursor = $messages?.continueCursor ?? null)}
-          >Earlier messages</button
+          >{$adkT("Earlier messages")}</button
         >
         {#if selected.status === "OPEN"}<form
             on:submit|preventDefault={send}
             class="space-y-3"
           >
             <label
-              >Reply<textarea
+              >{$adkT("Reply")}<textarea dir="auto"
                 required
                 maxlength="10000"
                 bind:value={reply}
@@ -182,7 +193,7 @@
             ><ScannedAttachments bind:selected={attachments} /><button
               disabled={busy}
               class="min-h-[44px] rounded px-4 bg-emerald-700 text-white"
-              >Send reply</button
+              >{$adkT("Send reply")}</button
             >
           </form>{/if}
       </div>{/if}

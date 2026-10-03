@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { requireUser, requireAdmin } from "./lib/access";
@@ -38,7 +39,7 @@ export const listRecords = query({
     return rows;
   },
 });
-export const saveRecord = mutation({
+export const saveRecord = auditedMutation("management:saveRecord")({
   args: {
     id: v.optional(v.id("managementRecords")),
     kind,

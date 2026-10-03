@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { onMount, onDestroy } from "svelte";
   import { MapPin, KeyRound } from "lucide-svelte";
 
@@ -249,7 +252,7 @@
     >
       <img
         src="/images/maps/nigeria-political.svg"
-        alt="Political map of Nigeria showing states, cities and transport routes"
+        alt={$adkT("Political map of Nigeria showing states, cities and transport routes")}
         class="absolute inset-0 h-full w-full object-contain p-8 opacity-55"
       />
       <div
@@ -259,13 +262,11 @@
       <div
         class="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full border border-amber-500/30 bg-black/70 px-4 py-2 text-xs text-amber-300 backdrop-blur-md"
       >
-        <KeyRound size={14} />
-        Nigeria reference map — precise property pins require the interactive map
-      </div>
+        <KeyRound size={14} /> {$adkT("Nigeria reference map — precise property pins require the interactive map")} </div>
       {#if markers.length === 0}
         <div class="relative z-10 flex flex-col items-center text-stone-500">
           <MapPin size={40} class="mb-2" />
-          <p class="text-sm">No locations to display</p>
+          <p class="text-sm">{$adkT("No locations to display")}</p>
         </div>
       {/if}
     </div>

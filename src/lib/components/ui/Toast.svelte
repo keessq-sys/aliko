@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { toasts, removeToast } from '$lib/stores/ui';
   import { CheckCircle, XCircle, AlertTriangle, Info, X } from 'lucide-svelte';
   import { fly } from 'svelte/transition';
@@ -28,18 +31,18 @@
 
 <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 w-full max-w-sm pointer-events-none">
   {#each $toasts as toast (toast.id)}
-    <div 
+    <div
       animate:flip={{duration: 250}}
       transition:fly={{x: 50, duration: 250}}
       class="pointer-events-auto relative flex items-start gap-3 p-4 rounded-xl border backdrop-blur-md shadow-lg {colors[toast.type]}"
     >
       <svelte:component this={icons[toast.type]} class="w-5 h-5 shrink-0 {iconColors[toast.type]} mt-0.5" />
-      
+
       <div class="flex-1 pr-6">
-        <p class="text-sm font-medium">{toast.message}</p>
+        <p class="text-sm font-medium">{$adkT(toast.message)}</p>
       </div>
 
-      <button 
+      <button
         class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
         on:click={() => removeToast(toast.id)}
       >
@@ -49,7 +52,7 @@
       <!-- Progress bar -->
       {#if toast.duration}
         <div class="absolute bottom-0 left-0 right-0 h-1 bg-black/20 overflow-hidden rounded-b-xl">
-          <div 
+          <div
             class="h-full bg-white/30 origin-left"
             style="animation: shrink {toast.duration}ms linear forwards;"
           ></div>

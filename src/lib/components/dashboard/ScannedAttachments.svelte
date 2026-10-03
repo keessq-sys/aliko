@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { api } from "$lib/convex/_generated/api";
   import { useQuery, runMutation } from "$lib/convex/queries";
   export let selected: any[] = [];
@@ -42,13 +45,10 @@
 </script>
 
 <fieldset class="theme-surface rounded-xl border p-3">
-  <legend>Attachments</legend>
-  <p class="text-sm">
-    Upload a PDF, JPG or PNG. Files become selectable after the security scan
-    passes.
-  </p>
+  <legend>{$adkT("Attachments")}</legend>
+  <p class="text-sm"> {$adkT("Upload a PDF, JPG or PNG. Files become selectable after the security scan passes.")} </p>
   <label class="block my-3"
-    >Upload a file<input
+    >{$adkT("Upload a file")}<input dir="auto"
       type="file"
       accept="application/pdf,image/jpeg,image/png"
       disabled={busy}
@@ -56,15 +56,15 @@
       class="block w-full mt-2"
     /></label
   >
-  {#if error}<p role="alert">{error}</p>{/if}
+  {#if error}<p role="alert">{$adkT(error)}</p>{/if}
   {#each $assets?.page ?? [] as asset}<label class="flex gap-2 py-2"
-      ><input
+      ><input dir="auto"
         type="checkbox"
         checked={selected.includes(asset._id)}
         disabled={asset.status !== "ACTIVE" ||
           (!selected.includes(asset._id) && selected.length >= 10)}
         on:change={(e) => select(asset._id, e.currentTarget.checked)}
-      /><span>{asset.fileName} — {asset.status.replaceAll("_", " ")}</span
+      /><span>{$adkT(asset.fileName)} — {$adkT(asset.status.replaceAll("_", " "))}</span
       ></label
     >{/each}
   <div class="flex gap-3">
@@ -72,13 +72,13 @@
       type="button"
       class="min-h-[44px] px-3 border rounded"
       disabled={!cursor}
-      on:click={() => (cursor = null)}>Latest files</button
+      on:click={() => (cursor = null)}>{$adkT("Latest files")}</button
     ><button
       type="button"
       class="min-h-[44px] px-3 border rounded"
       disabled={!$assets || $assets.isDone}
       on:click={() => (cursor = $assets?.continueCursor ?? null)}
-      >Older files</button
+      >{$adkT("Older files")}</button
     >
   </div>
 </fieldset>

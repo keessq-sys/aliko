@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import {
@@ -10,7 +11,7 @@ import {
 import { internal } from "./_generated/api";
 import { rateLimiter } from "./lib/rateLimits";
 import { requireUser } from "./lib/access";
-const CONSENT_VERSION = "2026-09-30";
+const CONSENT_VERSION = "2026-10-03";
 import type { Id } from "./_generated/dataModel";
 
 const verificationType = v.union(
@@ -191,7 +192,7 @@ async function currentUser(ctx: any) {
 }
 
 /** Records explicit consent before any identity data is sent to a provider. */
-export const acceptKycConsent = mutation({
+export const acceptKycConsent = auditedMutation("kyc:acceptKycConsent")({
   args: { version: v.string() },
   handler: async (ctx, { version }) => {
     const user = await currentUser(ctx);

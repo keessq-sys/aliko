@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import SEO from '$lib/components/SEO.svelte';
   import TLDRBlock from '$lib/components/TLDRBlock.svelte';
   import FAQSection from '$lib/components/FAQSection.svelte';
@@ -12,8 +15,8 @@
 <div class="min-h-screen bg-[#050A0E] pb-24 pt-16 text-white">
   <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
     <header class="mb-8">
-      <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">Help Center</p>
-      <h1 class="font-serif text-3xl font-bold sm:text-4xl">Frequently Asked Questions</h1>
+      <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">{$adkT("Help Center")}</p>
+      <h1 class="font-serif text-3xl font-bold sm:text-4xl">{$adkT("Frequently Asked Questions")}</h1>
     </header>
 
     <TLDRBlock
@@ -23,7 +26,7 @@
     <FAQSection faqs={data.faqs} grouped heading="" />
 
     <RelatedLinks
-      title="Related pages"
+      title={$adkT("Related pages")}
       links={[
         { href: '/glossary', label: 'Real Estate Glossary', description: 'Plain-language definitions of Nigerian land-title terms.' },
         { href: '/about', label: 'About Aliko Diamond Key', description: 'Our verification methodology and leadership.' },

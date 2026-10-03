@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { onMount } from "svelte";
   import {
     MapPin,
@@ -66,7 +69,7 @@
         playsinline
       ></video>
     {:else}
-      <img src={HERO_IMAGES.home} alt="Premium property skyline" />
+      <img src={HERO_IMAGES.home} alt={$adkT("Premium property skyline")} />
     {/if}
   </div>
   <div class="hero-scrim"></div>
@@ -100,30 +103,21 @@
           class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel text-sm text-emerald-400 font-medium"
         >
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"
-          ></span>
-          Explore Nigerian property and services
-        </div>
+          ></span> {$adkT("Explore Nigerian property and services")} </div>
 
         <h1
           transition:accessibleFade={{ duration: 800, delay: 200 }}
           class="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight"
-        >
-          Find Your <br />
+        > {$adkT("Find Your")} <br />
           <span
             class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600"
-            >Diamond Key</span
-          > <br />
-          Property.
-        </h1>
+            >{$adkT("Diamond Key")}</span
+          > <br /> {$adkT("Property.")} </h1>
 
         <p
           transition:accessibleFade={{ duration: 800, delay: 300 }}
           class="text-lg md:text-xl text-gray-400 max-w-xl"
-        >
-          Browse reviewed property listings and request land, design,
-          construction and property services. Confirm title and availability
-          with our team before committing.
-        </p>
+        > {$adkT("Browse reviewed property listings and request land, design, construction and property services. Confirm title and availability with our team before committing.")} </p>
 
         <div
           transition:accessibleFade={{ duration: 800, delay: 400 }}
@@ -139,15 +133,12 @@
           <a
             href="/properties"
             class="px-8 py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-xl font-bold text-white shadow-[0_0_20px_rgba(5,150,105,0.4)] transition-all hover:scale-105"
-          >
-            Browse Properties
-          </a>
+          > {$adkT("Browse Properties")} </a>
           <a
             href="/map"
             class="px-8 py-4 glass-panel rounded-xl font-bold hover:bg-white/10 transition-all flex items-center gap-2"
           >
-            <MapPin size={20} /> View on Map
-          </a>
+            <MapPin size={20} /> {$adkT("View on Map")} </a>
           <a
             href={whatsappHref(
               "Hi, I'd like to speak with someone about a property.",
@@ -156,8 +147,7 @@
             rel="noopener noreferrer"
             class="px-8 py-4 rounded-xl font-bold border border-[#25D366]/40 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-all flex items-center gap-2"
           >
-            <MessageCircle size={20} /> Chat on WhatsApp
-          </a>
+            <MessageCircle size={20} /> {$adkT("Chat on WhatsApp")} </a>
         </div>
 
         <div
@@ -165,13 +155,13 @@
           class="flex items-center gap-6 mt-8 text-sm text-gray-400 font-medium"
         >
           <span class="flex items-center gap-1"
-            ><CheckCircle2 size={16} class="text-emerald-500" /> Publication review</span
+            ><CheckCircle2 size={16} class="text-emerald-500" /> {$adkT("Publication review")}</span
           >
           <span class="flex items-center gap-1"
-            ><CheckCircle2 size={16} class="text-emerald-500" /> Payment references</span
+            ><CheckCircle2 size={16} class="text-emerald-500" /> {$adkT("Payment references")}</span
           >
           <span class="flex items-center gap-1"
-            ><CheckCircle2 size={16} class="text-emerald-500" /> Customer support</span
+            ><CheckCircle2 size={16} class="text-emerald-500" /> {$adkT("Customer support")}</span
           >
         </div>
       {/if}
@@ -200,40 +190,34 @@
             <div class="relative h-3/5 w-full rounded-2xl overflow-hidden">
               <img
                 src="/Frontend%20UI%20Images/HOUSES/IMG-20260921-WA0228.jpg"
-                alt="Example residential architecture"
+                alt={$adkT("Example residential architecture")}
                 class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700"
               />
               <div
                 class="absolute top-4 left-4 bg-[#050a0e] backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold border border-white/10 flex items-center gap-1"
               >
-                <CheckCircle2 size={12} class="text-emerald-400" /> Architecture showcase
-              </div>
+                <CheckCircle2 size={12} class="text-emerald-400" /> {$adkT("Architecture showcase")} </div>
             </div>
 
             <div class="flex-1 flex flex-col justify-between px-2">
               <div>
-                <h3 class="text-xl font-bold">Discover Nigerian homes</h3>
+                <h3 class="text-xl font-bold">{$adkT("Discover Nigerian homes")}</h3>
                 <p class="text-gray-400 text-sm flex items-center gap-1 mt-1">
-                  <MapPin size={14} /> Browse the published catalogue
-                </p>
+                  <MapPin size={14} /> {$adkT("Browse the published catalogue")} </p>
               </div>
 
               <div class="flex justify-between items-end">
                 <div>
-                  <p class="text-xs text-gray-500 mb-1">
-                    Listings become available after review
-                  </p>
+                  <p class="text-xs text-gray-500 mb-1"> {$adkT("Listings become available after review")} </p>
                   <p
                     class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500"
-                  >
-                    Explore properties
-                  </p>
+                  > {$adkT("Explore properties")} </p>
                 </div>
                 <div
                   class="bg-emerald-500/20 text-emerald-400 p-2 rounded-xl border border-emerald-500/30 flex items-center gap-1"
                 >
                   <TrendingUp size={16} />
-                  <span class="text-xs font-bold">Enquire</span>
+                  <span class="text-xs font-bold">{$adkT("Enquire")}</span>
                 </div>
               </div>
             </div>

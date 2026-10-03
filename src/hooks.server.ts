@@ -155,7 +155,11 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
     }
   }
 
-  const response = await resolve(event);
+  const language = event.cookies.get("adk-language") === "ar" ? "ar" : "en";
+  const response = await resolve(event, { transformPageChunk: ({ html }) =>
+    html.replace('<html lang="en"', `<html lang="${language}" dir="${language === "ar" ? "rtl" : "ltr"}"`) });
+  response.headers.append("Vary", "Cookie");
+  response.headers.set("Content-Language", language);
 
   if (isPrivateRoute(pathname)) {
     // Authoritative "do not index" — wins over any inherited/default indexing

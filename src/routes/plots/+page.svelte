@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { useQuery, runMutation } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
   import { formatNaira, formatSqm } from "$lib/utils/format";
@@ -103,7 +109,7 @@
 </script>
 
 <svelte:head>
-  <title>Available Land Plots — Aliko Diamond Key</title>
+  <title>{$adkT("Available Land Plots — Aliko Diamond Key")}</title>
   <meta
     name="description"
     content="Browse verified, title-checked land plots across our estates and reserve one directly — live from our plot registry."
@@ -123,19 +129,13 @@
         <div
           class="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/60 px-3 py-1 font-mono text-xs text-emerald-400"
         >
-          <ShieldCheck size={13} /> LIVE PLOT REGISTRY
-        </div>
+          <ShieldCheck size={13} /> {$adkT("LIVE PLOT REGISTRY")} </div>
         <h1
           class="mb-4 font-serif text-4xl font-bold leading-tight sm:text-5xl"
-        >
-          Reserve a <span class="text-gradient-gold">Verified</span>
-          <span class="text-gradient-emerald">Land Plot</span>
+        > {$adkT("Reserve a")} <span class="text-gradient-gold">{$adkT("Verified")}</span>
+          <span class="text-gradient-emerald">{$adkT("Land Plot")}</span>
         </h1>
-        <p class="text-base leading-relaxed text-stone-400">
-          Every plot below is queried directly from our registry — real beacon
-          numbers, real title status, real availability. Reserving a plot
-          creates a real booking against it.
-        </p>
+        <p class="text-base leading-relaxed text-stone-400"> {$adkT("Every plot below is queried directly from our registry — real beacon numbers, real title status, real availability. Reserving a plot creates a real booking against it.")} </p>
       </div>
     </div>
   </section>
@@ -143,13 +143,13 @@
   <section class="border-b border-white/5 bg-white/[0.02] py-4">
     <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4">
       <select
-        aria-label="Filter plots by project"
+        aria-label={$adkT("Filter plots by project")}
         bind:value={projectFilter}
         class="rounded-xl border border-white/10 bg-black/40 px-4 py-2 text-sm text-white outline-none focus:border-emerald-500"
       >
-        <option value="">All Projects</option>
+        <option value="">{$adkT("All Projects")}</option>
         {#each visibleProjects as p}
-          <option value={p._id}>{p.name}</option>
+          <option value={p._id}>{$adkT(p.name)}</option>
         {/each}
       </select>
       <div class="flex flex-wrap gap-2">
@@ -161,7 +161,7 @@
               ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
               : 'bg-white/5 text-stone-400 border border-white/10 hover:text-white'}"
           >
-            {s ? s.replace(/_/g, " ") : "All Statuses"}
+            {$adkT(s ? s.replace(/_/g, " ") : "All Statuses")}
           </button>
         {/each}
       </div>
@@ -189,14 +189,14 @@
               <div class="h-40 overflow-hidden">
                 <img
                   src={plot.heroImageUrl}
-                  alt={plot.project?.name ?? "Plot"}
+                  alt={$adkT(plot.project?.name ?? "Plot")}
                   class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
             {/if}
             <div class="flex flex-1 flex-col p-5">
               <div class="mb-2 flex items-center justify-between">
-                <p class="text-xs text-stone-500">Beacon</p>
+                <p class="text-xs text-stone-500">{$adkT("Beacon")}</p>
                 <span
                   class="rounded-full px-2 py-0.5 text-[10px] font-bold {plot.status ===
                   'AVAILABLE'
@@ -205,31 +205,31 @@
                       ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
                       : 'bg-stone-500/15 text-stone-400 border border-stone-500/30'}"
                 >
-                  {plot.status.replace(/_/g, " ")}
+                  {$adkT(plot.status.replace(/_/g, " "))}
                 </span>
               </div>
               <h3 class="mb-1 font-serif text-xl font-bold text-white">
-                {plot.beaconNumber}
+                {$adkT(plot.beaconNumber)}
               </h3>
               <p class="mb-3 flex items-center gap-1 text-xs text-stone-500">
                 <MapPin size={12} />
-                {plot.project?.name ?? "Unknown project"}, {plot.project
-                  ?.state ?? ""}
+                {$adkT(plot.project?.name ?? "Unknown project")}, {$adkT(plot.project
+                  ?.state ?? "")}
               </p>
               <div
                 class="mt-auto flex items-end justify-between border-t border-white/5 pt-3"
               >
                 <div>
                   <p class="text-lg font-bold text-amber-400">
-                    {formatNaira(plot.price)}
+                    {$adkT(formatNaira(plot.price, $adkLocale))}
                   </p>
                   <p class="text-xs text-stone-500">
-                    {formatSqm(plot.sizeSqm)}
+                    {$adkT(formatSqm(plot.sizeSqm, $adkLocale))}
                   </p>
                 </div>
                 {#if plot.titleVerified}
                   <span class="flex items-center gap-1 text-xs text-emerald-400"
-                    ><ShieldCheck size={13} /> Verified</span
+                    ><ShieldCheck size={13} /> {$adkT("Verified")}</span
                   >
                 {/if}
               </div>
@@ -258,68 +258,63 @@
       {#if bookingResult}
         <div class="text-center">
           <CheckCircle2 size={40} class="mx-auto mb-3 text-emerald-400" />
-          <h3 class="mb-1 text-lg font-bold text-white">Plot Reserved</h3>
-          <p class="mb-4 text-sm text-stone-400">Your booking reference is</p>
+          <h3 class="mb-1 text-lg font-bold text-white">{$adkT("Plot Reserved")}</h3>
+          <p class="mb-4 text-sm text-stone-400">{$adkT("Your booking reference is")}</p>
           <p
             class="mb-4 rounded-lg bg-black/40 py-2 font-mono text-sm text-emerald-300"
           >
-            {bookingResult.reference}
+            {$adkT(bookingResult.reference)}
           </p>
-          <p class="mb-6 text-xs text-stone-500">
-            Our team will reach out with payment instructions to complete your
-            purchase.
-          </p>
+          <p class="mb-6 text-xs text-stone-500"> {$adkT("Our team will reach out with payment instructions to complete your purchase.")} </p>
           <button on:click={closeModal} class="btn-primary w-full py-2.5"
-            >Done</button
+            >{$adkT("Done")}</button
           >
         </div>
       {:else}
         <div class="mb-4 flex items-start justify-between">
           <div>
-            <h3 class="text-lg font-bold text-white">
-              Reserve {selectedPlot.beaconNumber}
+            <h3 class="text-lg font-bold text-white"> {$adkT("Reserve")} {$adkT(selectedPlot.beaconNumber)}
             </h3>
             <p class="text-xs text-stone-500">
-              {selectedPlot.project?.name} &middot; {formatSqm(
-                selectedPlot.sizeSqm,
-              )}
+              {$adkT(selectedPlot.project?.name)} &middot; {$adkT(formatSqm(
+                selectedPlot.sizeSqm, $adkLocale))}
             </p>
           </div>
           <button
             on:click={closeModal}
-            aria-label="Close"
+            aria-label={$adkT("Close")}
             class="flex items-center justify-center min-h-[44px] min-w-[44px] -mr-2 -mt-2 rounded-full text-stone-500 hover:bg-white/10 hover:text-white"
             ><X size={16} /></button
           >
         </div>
         <p class="mb-4 text-2xl font-bold text-amber-400">
-          {formatNaira(selectedPlot.price)}
+          {$adkT(formatNaira(selectedPlot.price, $adkLocale))}
         </p>
 
         {#if bookingError}
           <div
             class="mb-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300"
           >
-            {bookingError}
+            {$adkT(bookingError)}
             {#if bookingError.includes("sign in")}
               <a
                 href="/auth?tab=signin"
                 class="ml-1 inline-flex items-center gap-1 font-semibold text-emerald-300 hover:underline"
-                ><LogIn size={12} /> Sign in</a
+                ><LogIn size={12} /> {$adkT("Sign in")}</a
               >
             {/if}
           </div>
         {/if}
 
         <label class="mb-5 block">
-          <span class="mb-1.5 block text-xs text-stone-500">Payment plan</span>
+          <span class="mb-1.5 block text-xs text-stone-500">{$adkT("Payment plan")}</span>
           <select
             bind:value={installmentPlan}
             class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-500"
           >
-            <option value="OUTRIGHT">Outright payment</option>
-            <option value="6-MONTHS">6-month installments</option>
-            <option value="12-MONTHS">12-month installments</option>
+            <option value="OUTRIGHT">{$adkT("Outright payment")}</option>
+            <option value="6-MONTHS">{$adkT("6-month installments")}</option>
+            <option value="12-MONTHS">{$adkT("12-month installments")}</option>
           </select>
         </label>
 
@@ -329,20 +324,15 @@
           class="btn-primary flex w-full min-h-[44px] items-center justify-center gap-2 py-3 disabled:opacity-50"
         >
           {#if booking}<Loader2 size={16} class="animate-spin" />{/if}
-          {installmentPlan === "OUTRIGHT"
+          {$adkT(installmentPlan === "OUTRIGHT"
             ? "Reserve & Pay Now"
-            : "Reserve This Plot"}
+            : "Reserve This Plot")}
         </button>
         {#if installmentPlan === "OUTRIGHT"}
-          <p class="mt-3 text-center text-[11px] text-stone-600">
-            You'll review the order before continuing to Flutterwave's secure
-            checkout for {formatNaira(selectedPlot.price)}.
+          <p class="mt-3 text-center text-[11px] text-stone-600"> {$adkT("You'll review the order before continuing to Flutterwave's secure checkout for")} {$adkT(formatNaira(selectedPlot.price, $adkLocale))}.
           </p>
         {:else}
-          <p class="mt-3 text-center text-[11px] text-stone-600">
-            This reserves the plot. Our team will contact you with the {installmentPlan}
-            payment schedule.
-          </p>
+          <p class="mt-3 text-center text-[11px] text-stone-600"> {$adkT("This reserves the plot. Our team will contact you with the")} {$adkT(installmentPlan)} {$adkT("payment schedule.")} </p>
         {/if}
       {/if}
     </div>

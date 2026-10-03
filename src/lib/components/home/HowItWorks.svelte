@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { Search, CalendarDays, ShieldCheck, Key } from "lucide-svelte";
   import { reveal, revealStagger } from "$lib/actions/reveal";
 
@@ -84,16 +87,9 @@
     <div class="text-center max-w-2xl mx-auto mb-16">
       <h4
         class="text-amber-500 font-bold tracking-widest uppercase text-sm mb-2"
-      >
-        Simple Process
-      </h4>
-      <h2 class="text-3xl md:text-5xl font-extrabold mb-4">
-        Your Journey to Property Ownership
-      </h2>
-      <p class="text-gray-400">
-        We've streamlined the Nigerian real estate process to make buying,
-        selling, or renting transparent and stress-free.
-      </p>
+      > {$adkT("Simple Process")} </h4>
+      <h2 class="text-3xl md:text-5xl font-extrabold mb-4"> {$adkT("Your Journey to Property Ownership")} </h2>
+      <p class="text-gray-400"> {$adkT("We've streamlined the Nigerian real estate process to make buying, selling, or renting transparent and stress-free.")} </p>
     </div>
 
     <div class="relative">
@@ -120,7 +116,7 @@
               ]
                 .badge} flex items-center justify-center font-bold text-sm group-hover:scale-110 transition-transform"
             >
-              {step.id}
+              {$adkT(step.id)}
             </div>
 
             <!-- Icon -->
@@ -140,8 +136,8 @@
 
             <!-- Text -->
             <div>
-              <h3 class="text-xl font-bold mb-2">{step.title}</h3>
-              <p class="text-gray-400 text-sm leading-relaxed">{step.desc}</p>
+              <h3 class="text-xl font-bold mb-2">{$adkT(step.title)}</h3>
+              <p class="text-gray-400 text-sm leading-relaxed">{$adkT(step.desc)}</p>
             </div>
           </div>
         {/each}

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { CheckCircle2, MessageCircle } from 'lucide-svelte';
   import { fade } from 'svelte/transition';
   import { whatsappHref } from '$lib/data/contact';
@@ -21,23 +24,21 @@
     <div class="mb-8 inline-flex h-24 w-24 items-center justify-center rounded-full bg-emerald-500/15">
       <CheckCircle2 class="h-12 w-12 text-emerald-400" />
     </div>
-    <h2 class="mb-4 text-3xl font-bold text-white">Request Submitted Successfully!</h2>
-    <p class="mb-8 text-lg text-stone-400">
-      Your reference number is
-      <span class="font-mono font-bold text-amber-400">{reference || 'ADK-SVC-2026-0000'}</span>
+    <h2 class="mb-4 text-3xl font-bold text-white">{$adkT("Request Submitted Successfully!")}</h2>
+    <p class="mb-8 text-lg text-stone-400"> {$adkT("Your reference number is")} <span class="font-mono font-bold text-amber-400">{$adkT(reference || 'ADK-SVC-2026-0000')}</span>
     </p>
 
     <div class="mx-auto max-w-md rounded-2xl border border-white/10 bg-white/5 p-6 text-left">
-      <h3 class="mb-4 text-lg font-semibold text-emerald-400">What happens next</h3>
+      <h3 class="mb-4 text-lg font-semibold text-emerald-400">{$adkT("What happens next")}</h3>
       <ol class="space-y-4 text-stone-300">
         {#each STEPS as step, i}
           <li class="flex items-start gap-3">
             <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-sm font-bold text-emerald-400">
-              {i + 1}
+              {$adkT(i + 1)}
             </span>
             <span>
-              <span class="font-medium text-white">{step.title}</span>
-              <span class="block text-sm text-stone-400">{step.desc}</span>
+              <span class="font-medium text-white">{$adkT(step.title)}</span>
+              <span class="block text-sm text-stone-400">{$adkT(step.desc)}</span>
             </span>
           </li>
         {/each}
@@ -45,10 +46,10 @@
     </div>
 
     <div class="mt-8 flex flex-wrap justify-center gap-3">
-      <a href={whatsappHref(`Hello Aliko Diamond Key Support, I just submitted ${serviceLabel} request ${reference}. Please help me with the next steps.`)} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-lg bg-[#25D366] px-6 py-3 font-semibold text-black transition-colors hover:bg-[#36e477]"><MessageCircle size={18} /> Chat with Support</a>
-      <a href={homeHref} class="rounded-lg bg-white/10 px-6 py-3 transition-colors hover:bg-white/20">Return Home</a>
-      <a href="/dashboard/client" class="btn-primary px-6 py-3">Track in Client Portal</a>
-      <button type="button" on:click={onReset} class="rounded-lg border border-white/10 px-6 py-3 text-stone-300 transition-colors hover:bg-white/10">Submit Another Request</button>
+      <a href={whatsappHref(`Hello Aliko Diamond Key Support, I just submitted ${serviceLabel} request ${reference}. Please help me with the next steps.`)} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-lg bg-[#25D366] px-6 py-3 font-semibold text-black transition-colors hover:bg-[#36e477]"><MessageCircle size={18} /> {$adkT("Chat with Support")}</a>
+      <a href={homeHref} class="rounded-lg bg-white/10 px-6 py-3 transition-colors hover:bg-white/20">{$adkT("Return Home")}</a>
+      <a href="/dashboard/client" class="btn-primary px-6 py-3">{$adkT("Track in Client Portal")}</a>
+      <button type="button" on:click={onReset} class="rounded-lg border border-white/10 px-6 py-3 text-stone-300 transition-colors hover:bg-white/10">{$adkT("Submit Another Request")}</button>
     </div>
   </div>
 {:else}

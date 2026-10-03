@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { onMount, onDestroy } from "svelte";
   import { goto } from "$app/navigation";
 
@@ -228,14 +231,12 @@
 >
   {#if staticMode}
     <div class="absolute inset-0 overflow-auto px-5 pt-16 pb-16">
-      <p class="text-white mb-3">
-        Plot list — the 3D plan is unavailable or motion is reduced.
-      </p>
+      <p class="text-white mb-3"> {$adkT("Plot list — the 3D plan is unavailable or motion is reduced.")} </p>
       <div class="grid grid-cols-2 gap-3">
         {#each hotspots as hotspot}<a
             class="min-h-[44px] border border-white/30 rounded p-3 text-white"
             href={`/plots?plot=${encodeURIComponent(hotspot.plotId)}`}
-            >{hotspot.beaconNumber} · {hotspot.status.replaceAll("_", " ")}</a
+            >{$adkT(hotspot.beaconNumber)} · {$adkT(hotspot.status.replaceAll("_", " "))}</a
           >{/each}
       </div>
     </div>
@@ -251,7 +252,7 @@
         style="background:rgba(0,0,0,0.55);backdrop-filter:blur(8px)"
       >
         <span class="w-2 h-2 rounded-sm" style="background:{color}"></span>
-        {label}
+        {$adkT(label)}
       </div>
     {/each}
   </div>
@@ -264,12 +265,8 @@
     <span
       class="w-1.5 h-1.5 rounded-full bg-emerald-400"
       style="animation:glowPulse 2s infinite"
-    ></span>
-    Live plot status · schematic markers
-  </div>
+    ></span> {$adkT("Live plot status · schematic markers")} </div>
 
   <!-- Hint -->
-  <p class="absolute bottom-4 right-4 text-xs text-stone-500 hidden sm:block">
-    Click a beacon to view
-  </p>
+  <p class="absolute bottom-4 right-4 text-xs text-stone-500 hidden sm:block"> {$adkT("Click a beacon to view")} </p>
 </div>

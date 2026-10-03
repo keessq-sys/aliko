@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { api } from "$lib/convex/_generated/api";
   import { useQuery, runMutation } from "$lib/convex/queries";
   import ScannedAttachments from "$lib/components/dashboard/ScannedAttachments.svelte";
@@ -106,61 +112,61 @@
   }
 </script>
 
-<svelte:head><title>Estate operations | Aliko Diamond Key</title></svelte:head>
+<svelte:head><title>{$adkT("Estate operations | Aliko Diamond Key")}</title></svelte:head>
 <main class="theme-text container mx-auto px-4 pt-28 pb-12 space-y-8">
-  <h1 class="text-3xl font-semibold">Leases, occupancy and ledger</h1>
-  <a href="/dashboard/manager" class="underline">Manager dashboard</a
-  >{#if error}<p role="alert">{error}</p>{/if}
+  <h1 class="text-3xl font-semibold">{$adkT("Leases, occupancy and ledger")}</h1>
+  <a href="/dashboard/manager" class="underline">{$adkT("Manager dashboard")}</a
+  >{#if error}<p role="alert">{$adkT(error)}</p>{/if}
   <section class="theme-surface p-5 border rounded-xl space-y-4">
-    <h2 class="text-xl">Lease register</h2>
+    <h2 class="text-xl">{$adkT("Lease register")}</h2>
     <form on:submit|preventDefault={save} class="grid sm:grid-cols-2 gap-3">
       <label
-        >Property<select
+        >{$adkT("Property")}<select
           required
           bind:value={propertyId}
           class="theme-input block w-full border rounded p-3"
-          ><option value="">Select property</option
+          ><option value="">{$adkT("Select property")}</option
           >{#each $properties ?? [] as property}<option value={property._id}
-              >{property.title}</option
+              >{$adkT(property.title)}</option
             >{/each}</select
         ></label
       >{#if !tenantId}<label
-          >Tenant account email<input
+          >{$adkT("Tenant account email")}<input dir="auto"
             type="email"
             required
             bind:value={tenantEmail}
             class="theme-input block w-full border rounded p-3"
           /></label
-        >{:else}<p>Tenant account remains linked to this lease.</p>{/if}<label
-        >Unit identifier<input
+        >{:else}<p>{$adkT("Tenant account remains linked to this lease.")}</p>{/if}<label
+        >{$adkT("Unit identifier")}<input dir="auto"
           required
           maxlength="80"
           bind:value={unit}
           class="theme-input block w-full border rounded p-3"
         /></label
       ><label
-        >Status<select
+        >{$adkT("Status")}<select
           bind:value={status}
           class="theme-input block w-full border rounded p-3"
-          ><option>DRAFT</option><option>ACTIVE</option><option>ENDED</option
+          ><option>{$adkT("DRAFT")}</option><option>{$adkT("ACTIVE")}</option><option>{$adkT("ENDED")}</option
           ></select
         ></label
       ><label
-        >Start date<input
+        >{$adkT("Start date")}<input dir="auto"
           type="date"
           required
           bind:value={startDate}
           class="theme-input block w-full border rounded p-3"
         /></label
       ><label
-        >End date<input
+        >{$adkT("End date")}<input dir="auto"
           type="date"
           required
           bind:value={endDate}
           class="theme-input block w-full border rounded p-3"
         /></label
       ><label
-        >Rent (₦)<input
+        >{$adkT("Rent (₦)")}<input dir="auto"
           type="number"
           min="0"
           step="0.01"
@@ -169,7 +175,7 @@
           class="theme-input block w-full border rounded p-3"
         /></label
       ><label
-        >Deposit (₦)<input
+        >{$adkT("Deposit (₦)")}<input dir="auto"
           type="number"
           min="0"
           step="0.01"
@@ -184,59 +190,55 @@
       <button
         disabled={busy}
         class="rounded min-h-[44px] p-3 bg-emerald-700 text-white"
-        >Save lease</button
+        >{$adkT("Save lease")}</button
       ><button
         type="button"
         on:click={reset}
-        class="rounded min-h-[44px] p-3 border">New lease</button
+        class="rounded min-h-[44px] p-3 border">{$adkT("New lease")}</button
       >
     </form>
     {#each $leases?.page ?? [] as lease}<article class="border rounded p-3">
-        <h3>Unit {lease.unit} · {lease.status}</h3>
+        <h3>{$adkT("Unit")} {$adkT(lease.unit)} · {$adkT(lease.status)}</h3>
         <p>
-          {lease.startDate} to {lease.endDate} · ₦{lease.rent.toLocaleString()}
+          {$adkT(lease.startDate)} {$adkT("to")} {$adkT(lease.endDate)} · ₦{$adkT(lease.rent.toLocaleString($adkLocale === "ar" ? "ar-NG" : "en-NG"))}
         </p>
         <button
           on:click={() => edit(lease)}
-          class="min-h-[44px] border rounded px-3">Edit lease</button
+          class="min-h-[44px] border rounded px-3">{$adkT("Edit lease")}</button
         >
       </article>{/each}<button
       class="min-h-[44px] border rounded px-3"
       disabled={!cursor}
-      on:click={() => (cursor = null)}>Latest leases</button
+      on:click={() => (cursor = null)}>{$adkT("Latest leases")}</button
     ><button
       class="min-h-[44px] border rounded px-3"
       disabled={!$leases || $leases.isDone}
       on:click={() => (cursor = $leases?.continueCursor ?? null)}
-      >Older leases</button
+      >{$adkT("Older leases")}</button
     >
   </section>
   <section class="theme-surface border rounded-xl p-5 space-y-4">
-    <h2 class="text-xl">Financial ledger</h2>
-    <p>
-      Entries record estate income and expenses. They do not certify provider
-      payments. Posted entries are immutable; use a separately referenced
-      correction entry.
-    </p>
+    <h2 class="text-xl">{$adkT("Financial ledger")}</h2>
+    <p> {$adkT("Entries record estate income and expenses. They do not certify provider payments. Posted entries are immutable; use a separately referenced correction entry.")} </p>
     <form on:submit|preventDefault={post} class="grid sm:grid-cols-2 gap-3">
       <label
-        >Lease<select
+        >{$adkT("Lease")}<select
           required
           bind:value={leaseId}
           class="theme-input block w-full border rounded p-3"
-          ><option value="">Select lease from the displayed page</option
+          ><option value="">{$adkT("Select lease from the displayed page")}</option
           >{#each $leases?.page ?? [] as lease}<option value={lease._id}
-              >Unit {lease.unit} · {lease.startDate}</option
+              >{$adkT("Unit")} {$adkT(lease.unit)} · {$adkT(lease.startDate)}</option
             >{/each}</select
         ></label
       ><label
-        >Entry type<select
+        >{$adkT("Entry type")}<select
           bind:value={direction}
           class="theme-input block w-full border rounded p-3"
-          ><option>INCOME</option><option>EXPENSE</option></select
+          ><option>{$adkT("INCOME")}</option><option>{$adkT("EXPENSE")}</option></select
         ></label
       ><label
-        >Amount (₦)<input
+        >{$adkT("Amount (₦)")}<input dir="auto"
           type="number"
           min="0.01"
           step="0.01"
@@ -245,7 +247,7 @@
           class="theme-input block w-full border rounded p-3"
         /></label
       ><label
-        >Receipt reference<input
+        >{$adkT("Receipt reference")}<input dir="auto"
           required
           minlength="3"
           maxlength="120"
@@ -253,7 +255,7 @@
           class="theme-input block w-full border rounded p-3"
         /></label
       ><label
-        >Description<input
+        >{$adkT("Description")}<input dir="auto"
           required
           maxlength="1000"
           bind:value={description}
@@ -262,25 +264,25 @@
       ><button
         disabled={busy}
         class="min-h-[44px] bg-emerald-700 text-white rounded p-3"
-        >Post entry</button
+        >{$adkT("Post entry")}</button
       >
     </form>
     {#each $ledger?.page ?? [] as entry}<article class="border rounded p-3">
         <p>
-          {entry.reference} · {entry.direction} · ₦{(
+          {$adkT(entry.reference)} · {$adkT(entry.direction)} · ₦{$adkT((
             entry.amountMinor / 100
-          ).toLocaleString()}
+          ).toLocaleString($adkLocale === "ar" ? "ar-NG" : "en-NG"))}
         </p>
-        <p>{entry.description}</p>
+        <p>{$adkT(entry.description)}</p>
       </article>{/each}<button
       class="min-h-[44px] border rounded px-3"
       disabled={!ledgerCursor}
-      on:click={() => (ledgerCursor = null)}>Latest entries</button
+      on:click={() => (ledgerCursor = null)}>{$adkT("Latest entries")}</button
     ><button
       class="min-h-[44px] border rounded px-3"
       disabled={!$ledger || $ledger.isDone}
       on:click={() => (ledgerCursor = $ledger?.continueCursor ?? null)}
-      >Older entries</button
+      >{$adkT("Older entries")}</button
     >
   </section>
 </main>

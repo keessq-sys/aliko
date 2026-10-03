@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { onMount } from 'svelte';
   import { ArrowUpRight, ArrowDownRight } from 'lucide-svelte';
 
@@ -21,7 +24,7 @@
       const steps = 30;
       const stepTime = Math.abs(Math.floor(duration / steps));
       const stepValue = targetValue / steps;
-      
+
       let currentStep = 0;
       const timer = setInterval(() => {
         currentStep++;
@@ -39,16 +42,16 @@
   <!-- Top Section -->
   <div class="flex items-start justify-between">
     <div>
-      <p class="text-sm font-medium text-stone-400">{title}</p>
+      <p class="text-sm font-medium text-stone-400">{$adkT(title)}</p>
       <div class="mt-2 flex items-baseline gap-1">
-        {#if prefix}<span class="text-xl text-stone-300">{prefix}</span>{/if}
+        {#if prefix}<span class="text-xl text-stone-300">{$adkT(prefix)}</span>{/if}
         <h3 class="text-3xl font-bold text-white">
-          {isNumber ? (displayValue % 1 === 0 ? displayValue : displayValue.toFixed(1)) : value}
+          {$adkT(isNumber ? (displayValue % 1 === 0 ? displayValue : displayValue.toFixed(1)) : value)}
         </h3>
-        {#if suffix}<span class="text-xl text-stone-300">{suffix}</span>{/if}
+        {#if suffix}<span class="text-xl text-stone-300">{$adkT(suffix)}</span>{/if}
       </div>
     </div>
-    
+
     {#if icon}
       <div class={`flex h-12 w-12 items-center justify-center rounded-lg ${iconBg}`}>
         <svelte:component this={icon} class="h-6 w-6 text-emerald-400" />
@@ -64,7 +67,7 @@
       {:else}
         <ArrowDownRight class="h-4 w-4" />
       {/if}
-      <span>{change}</span>
+      <span>{$adkT(change)}</span>
     </div>
 
     <!-- Mini Sparkline -->

@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { TrendingUp, Download, Info } from "lucide-svelte";
   import { reveal } from "$lib/actions/reveal";
 
@@ -45,10 +51,10 @@
       const lines = [
         "Aliko Diamond Key - Investment scenario",
         `Prepared: ${new Date().toISOString().slice(0, 10)}`,
-        `Investment: NGN ${(investment * 1000000).toLocaleString("en-NG")}`,
+        `Investment: NGN ${(investment * 1000000).toLocaleString($adkLocale === "ar" ? "ar-NG" : "en-NG")}`,
         `Term: ${years} years`,
         `Assumed annual growth: ${growthRate}%`,
-        `Projected value: NGN ${Math.round(futureValue * 1000000).toLocaleString("en-NG")}`,
+        `Projected value: NGN ${Math.round(futureValue * 1000000).toLocaleString($adkLocale === "ar" ? "ar-NG" : "en-NG")}`,
         "Illustrative compound-growth scenario only.",
         "Growth assumptions are selected by the user; returns are not guaranteed.",
         "This calculation excludes taxes, fees, inflation and financing costs.",
@@ -80,12 +86,8 @@
 <section class="py-24 bg-[#050A0E] text-white" use:reveal>
   <div class="container mx-auto px-6 max-w-6xl">
     <div class="text-center mb-16">
-      <h2 class="text-3xl md:text-5xl font-extrabold mb-4">
-        Investment ROI Calculator
-      </h2>
-      <p class="text-gray-400">
-        Project your returns on Nigerian real estate investments over time.
-      </p>
+      <h2 class="text-3xl md:text-5xl font-extrabold mb-4"> {$adkT("Investment ROI Calculator")} </h2>
+      <p class="text-gray-400"> {$adkT("Project your returns on Nigerian real estate investments over time.")} </p>
     </div>
 
     <div
@@ -98,26 +100,26 @@
         >
           <button
             class={`px-6 py-2 rounded-lg font-bold text-sm transition-colors ${currency === "NGN" ? "bg-emerald-600 text-white" : "text-gray-400 hover:text-white"}`}
-            on:click={() => (currency = "NGN")}>NGN (₦)</button
+            on:click={() => (currency = "NGN")}>{$adkT("NGN (₦)")}</button
           >
           <button
             class={`px-6 py-2 rounded-lg font-bold text-sm transition-colors ${currency === "USD" ? "bg-emerald-600 text-white" : "text-gray-400 hover:text-white"}`}
-            on:click={() => (currency = "USD")}>USD ($)</button
+            on:click={() => (currency = "USD")}>{$adkT("USD ($)")}</button
           >
         </div>
 
         <div>
           <div class="flex justify-between mb-2">
             <label for="roi-investment" class="font-semibold text-gray-300"
-              >Initial Investment</label
+              >{$adkT("Initial Investment")}</label
             >
             <span class="font-bold text-amber-400"
-              >{symbol}{currency === "NGN"
+              >{$adkT(symbol)}{$adkT(currency === "NGN"
                 ? investment
-                : Number(displayInvestment).toLocaleString()}{suffix}</span
+                : Number(displayInvestment).toLocaleString($adkLocale === "ar" ? "ar-NG" : "en-NG"))}{$adkT(suffix)}</span
             >
           </div>
-          <input
+          <input dir="auto"
             id="roi-investment"
             type="range"
             min="10"
@@ -126,19 +128,19 @@
             bind:value={investment}
           />
           <div class="flex justify-between text-xs text-gray-500 mt-1">
-            <span>₦10M</span>
-            <span>₦500M</span>
+            <span>{$adkT("₦10M")}</span>
+            <span>{$adkT("₦500M")}</span>
           </div>
         </div>
 
         <div>
           <div class="flex justify-between mb-2">
             <label for="roi-duration" class="font-semibold text-gray-300"
-              >Investment Duration</label
+              >{$adkT("Investment Duration")}</label
             >
-            <span class="font-bold text-amber-400">{years} Years</span>
+            <span class="font-bold text-amber-400">{$adkT(years)} {$adkT("Years")}</span>
           </div>
-          <input
+          <input dir="auto"
             id="roi-duration"
             type="range"
             min="1"
@@ -153,14 +155,14 @@
             <label
               for="roi-growth"
               class="font-semibold text-gray-300 flex items-center gap-1"
-              >Expected Growth Rate <Info
+              >{$adkT("Expected Growth Rate")} <Info
                 size={14}
                 class="text-gray-500"
               /></label
             >
-            <span class="font-bold text-amber-400">{growthRate}% / year</span>
+            <span class="font-bold text-amber-400">{$adkT(growthRate)}{$adkT("% / year")}</span>
           </div>
-          <input
+          <input dir="auto"
             type="range"
             id="roi-growth"
             min="5"
@@ -169,8 +171,7 @@
             bind:value={growthRate}
           />
           <p class={`text-xs mt-2 font-bold ${riskColor}`}>
-            {riskLevel} Projection
-          </p>
+            {$adkT(riskLevel)} {$adkT("Projection")} </p>
         </div>
       </div>
 
@@ -180,19 +181,19 @@
       >
         <div class="grid grid-cols-2 gap-4 mb-8">
           <div class="p-4 bg-white/5 rounded-xl">
-            <p class="text-sm text-gray-400 mb-1">Projected Value</p>
+            <p class="text-sm text-gray-400 mb-1">{$adkT("Projected Value")}</p>
             <p class="text-2xl md:text-3xl font-bold text-emerald-400">
-              {symbol}{currency === "USD"
-                ? parseInt(displayFutureValue).toLocaleString()
-                : displayFutureValue}{suffix}
+              {$adkT(symbol)}{$adkT(currency === "USD"
+                ? parseInt(displayFutureValue).toLocaleString($adkLocale === "ar" ? "ar-NG" : "en-NG")
+                : displayFutureValue)}{$adkT(suffix)}
             </p>
           </div>
           <div class="p-4 bg-white/5 rounded-xl">
-            <p class="text-sm text-gray-400 mb-1">Total Profit</p>
+            <p class="text-sm text-gray-400 mb-1">{$adkT("Total Profit")}</p>
             <p class="text-2xl md:text-3xl font-bold text-amber-400">
-              +{symbol}{currency === "USD"
-                ? parseInt(displayProfit).toLocaleString()
-                : displayProfit}{suffix}
+              +{$adkT(symbol)}{$adkT(currency === "USD"
+                ? parseInt(displayProfit).toLocaleString($adkLocale === "ar" ? "ar-NG" : "en-NG")
+                : displayProfit)}{$adkT(suffix)}
             </p>
           </div>
         </div>
@@ -207,8 +208,7 @@
               <!-- Tooltip -->
               <div
                 class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity"
-              >
-                Yr {i + 1}
+              > {$adkT("Yr")} {$adkT(i + 1)}
               </div>
             </div>
           {/each}
@@ -218,14 +218,9 @@
           on:click={downloadProjection}
           class="w-full py-4 border border-white/10 hover:bg-white/10 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors mt-auto"
         >
-          <Download size={18} /> Download Projection PDF
-        </button>
-        <p class="mt-3 text-xs text-gray-400">
-          Illustrative assumptions; returns are not guaranteed. Taxes, fees and
-          financing costs are excluded. Currency conversion uses an illustrative
-          fixed rate.
-        </p>
-        {#if exportError}<p role="alert">{exportError}</p>{/if}
+          <Download size={18} /> {$adkT("Download Projection PDF")} </button>
+        <p class="mt-3 text-xs text-gray-400"> {$adkT("Illustrative assumptions; returns are not guaranteed. Taxes, fees and financing costs are excluded. Currency conversion uses an illustrative fixed rate.")} </p>
+        {#if exportError}<p role="alert">{$adkT(exportError)}</p>{/if}
       </div>
     </div>
   </div>

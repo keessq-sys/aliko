@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
@@ -83,7 +84,7 @@ export const getProject = query({
   },
 });
 
-export const createProject = mutation({
+export const createProject = auditedMutation("projects:createProject")({
   args: {
     name: v.string(),
     slug: v.string(),
@@ -119,7 +120,7 @@ export const createProject = mutation({
   },
 });
 
-export const updateProject = mutation({
+export const updateProject = auditedMutation("projects:updateProject")({
   args: {
     projectId: v.id("projects"),
     name: v.optional(v.string()),

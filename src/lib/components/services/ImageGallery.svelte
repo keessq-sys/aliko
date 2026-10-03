@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { X, ChevronLeft, ChevronRight, Expand, Images } from 'lucide-svelte';
 
   export let images: string[] = [];
@@ -38,11 +41,10 @@
     <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
       <div>
         <p class="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-400">
-          <Images size={15} aria-hidden="true" /> Project catalogue
-        </p>
-        <h2 class="font-serif text-2xl font-bold text-white">{title}</h2>
+          <Images size={15} aria-hidden="true" /> {$adkT("Project catalogue")} </p>
+        <h2 class="font-serif text-2xl font-bold text-white">{$adkT(title)}</h2>
       </div>
-      <p class="text-sm text-slate-400">{images.length} {images.length === 1 ? 'image' : 'images'}</p>
+      <p class="text-sm text-slate-400">{$adkT(images.length)} {$adkT(images.length === 1 ? 'image' : 'images')}</p>
     </div>
 
     <div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
@@ -68,7 +70,7 @@
           class="min-h-[44px] rounded-full border border-white/15 bg-white/[0.04] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:border-emerald-400/50 hover:bg-emerald-400/10 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           on:click={() => (showAll = !showAll)}
         >
-          {showAll ? 'Show fewer images' : `View all ${images.length} images`}
+          {$adkT(showAll ? 'Show fewer images' : `View all ${images.length} images`)}
         </button>
       </div>
     {/if}
@@ -84,14 +86,14 @@
       aria-label="{title} image viewer"
       tabindex="-1"
     >
-      <button type="button" class="absolute right-5 top-5 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-white/10 text-white hover:bg-white/20" on:click={close} aria-label="Close">
+      <button type="button" class="absolute right-5 top-5 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-white/10 text-white hover:bg-white/20" on:click={close} aria-label={$adkT("Close")}>
         <X size={22} />
       </button>
       <button
         type="button"
         class="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-white/10 text-white hover:bg-white/20 sm:left-6"
         on:click|stopPropagation={prev}
-        aria-label="Previous image"
+        aria-label={$adkT("Previous image")}
       >
         <ChevronLeft size={24} />
       </button>
@@ -102,14 +104,14 @@
           class="max-h-[85vh] max-w-[90vw] rounded-lg object-contain"
         />
         <p class="mt-3 text-center text-sm text-white/70">
-          {lightboxIndex + 1} of {images.length}
+          {$adkT(lightboxIndex + 1)} {$adkT("of")} {$adkT(images.length)}
         </p>
       </div>
       <button
         type="button"
         class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-white/10 text-white hover:bg-white/20 sm:right-6"
         on:click|stopPropagation={next}
-        aria-label="Next image"
+        aria-label={$adkT("Next image")}
       >
         <ChevronRight size={24} />
       </button>

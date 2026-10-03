@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { Search, ChevronDown, ChevronUp, SlidersHorizontal, Check } from 'lucide-svelte';
 
   export let filters: any = {
@@ -25,14 +28,14 @@
   const types = ['All', 'Residential', 'Commercial', 'Apartment', 'Land', 'Duplex', 'Penthouse'];
   const statuses = ['All', 'Available', 'Reserved', 'Sold'];
   const bedBathOpts = ['Any', '1', '2', '3', '4', '5+'];
-  
+
   const amenitiesList = ['Pool', 'Gym', 'CCTV', 'Generator', 'Solar', 'BQ', 'Smart Home', 'Security'];
 
-  $: activeFilterCount = (filters.type !== 'All' ? 1 : 0) + 
-                         (filters.status !== 'All' ? 1 : 0) + 
-                         (filters.bedrooms !== 'Any' ? 1 : 0) + 
-                         (filters.bathrooms !== 'Any' ? 1 : 0) + 
-                         (filters.verifiedOnly ? 1 : 0) + 
+  $: activeFilterCount = (filters.type !== 'All' ? 1 : 0) +
+                         (filters.status !== 'All' ? 1 : 0) +
+                         (filters.bedrooms !== 'Any' ? 1 : 0) +
+                         (filters.bathrooms !== 'Any' ? 1 : 0) +
+                         (filters.verifiedOnly ? 1 : 0) +
                          (filters.search ? 1 : 0);
 
   function toggleSection(section: keyof typeof expandedSections) {
@@ -44,11 +47,10 @@
   <div class="theme-light-surface p-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-[#0A1118]/95 z-10">
     <div class="flex items-center gap-2">
       <SlidersHorizontal size={18} class="text-emerald-500" />
-      <h2 class="text-lg font-semibold text-white">Filters</h2>
+      <h2 class="text-lg font-semibold text-white">{$adkT("Filters")}</h2>
     </div>
     {#if activeFilterCount > 0}
-      <button on:click={onClear} class="text-xs text-emerald-400 hover:text-emerald-300">
-        Clear All ({activeFilterCount})
+      <button on:click={onClear} class="text-xs text-emerald-400 hover:text-emerald-300"> {$adkT("Clear All (")}{$adkT(activeFilterCount)})
       </button>
     {/if}
   </div>
@@ -58,10 +60,10 @@
     <div>
       <div class="relative">
         <Search size={16} class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-        <input 
-          type="text" 
+        <input dir="auto"
+          type="text"
           bind:value={filters.search}
-          placeholder="Location, Estate, etc..." 
+          placeholder={$adkT("Location, Estate, etc...")}
           class="w-full bg-black/40 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
         />
       </div>
@@ -69,27 +71,25 @@
 
     <!-- Verified Toggle -->
     <label class="flex items-center justify-between cursor-pointer group">
-      <span class="text-sm text-gray-300 group-hover:text-white transition-colors">Verified Properties Only</span>
+      <span class="text-sm text-gray-300 group-hover:text-white transition-colors">{$adkT("Verified Properties Only")}</span>
       <div class="relative">
-        <input type="checkbox" bind:checked={filters.verifiedOnly} class="sr-only peer" />
+        <input dir="auto" type="checkbox" bind:checked={filters.verifiedOnly} class="sr-only peer" />
         <div class="w-10 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
       </div>
     </label>
 
     <!-- Property Type -->
     <div class="border-t border-white/5 pt-4">
-      <button class="w-full flex items-center justify-between text-sm font-medium text-gray-200 mb-3" on:click={() => toggleSection('type')}>
-        Property Type
-        {#if expandedSections.type}<ChevronUp size={16}/>{:else}<ChevronDown size={16}/>{/if}
+      <button class="w-full flex items-center justify-between text-sm font-medium text-gray-200 mb-3" on:click={() => toggleSection('type')}> {$adkT("Property Type")} {#if expandedSections.type}<ChevronUp size={16}/>{:else}<ChevronDown size={16}/>{/if}
       </button>
       {#if expandedSections.type}
         <div class="flex flex-wrap gap-2">
           {#each types as type}
-            <button 
+            <button
               on:click={() => filters.type = type}
               class="px-3 py-1.5 text-xs rounded-full border transition-colors {filters.type === type ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-black/30 border-white/10 text-gray-400 hover:border-white/30 hover:text-gray-200'}"
             >
-              {type}
+              {$adkT(type)}
             </button>
           {/each}
         </div>
@@ -98,42 +98,38 @@
 
     <!-- Price Range (Simplified for mockup) -->
     <div class="border-t border-white/5 pt-4">
-      <button class="w-full flex items-center justify-between text-sm font-medium text-gray-200 mb-3" on:click={() => toggleSection('price')}>
-        Price Range
-        {#if expandedSections.price}<ChevronUp size={16}/>{:else}<ChevronDown size={16}/>{/if}
+      <button class="w-full flex items-center justify-between text-sm font-medium text-gray-200 mb-3" on:click={() => toggleSection('price')}> {$adkT("Price Range")} {#if expandedSections.price}<ChevronUp size={16}/>{:else}<ChevronDown size={16}/>{/if}
       </button>
       {#if expandedSections.price}
         <div class="space-y-4">
           <div class="flex items-center justify-between text-xs text-amber-400">
-            <span>₦{(filters.minPrice/1000000).toFixed(0)}M</span>
-            <span>₦{(filters.maxPrice/1000000).toFixed(0)}M+</span>
+            <span>₦{$adkT((filters.minPrice/1000000).toFixed(0))}{$adkT("M")}</span>
+            <span>₦{$adkT((filters.maxPrice/1000000).toFixed(0))}{$adkT("M+")}</span>
           </div>
-          <input aria-label="Maximum property price in naira" type="range" min="0" max="1000000000" step="10000000" bind:value={filters.maxPrice} class="w-full accent-emerald-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer" />
+          <input dir="auto" aria-label={$adkT("Maximum property price in naira")} type="range" min="0" max="1000000000" step="10000000" bind:value={filters.maxPrice} class="w-full accent-emerald-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer" />
         </div>
       {/if}
     </div>
 
     <!-- Rooms -->
     <div class="border-t border-white/5 pt-4">
-      <button class="w-full flex items-center justify-between text-sm font-medium text-gray-200 mb-3" on:click={() => toggleSection('rooms')}>
-        Rooms
-        {#if expandedSections.rooms}<ChevronUp size={16}/>{:else}<ChevronDown size={16}/>{/if}
+      <button class="w-full flex items-center justify-between text-sm font-medium text-gray-200 mb-3" on:click={() => toggleSection('rooms')}> {$adkT("Rooms")} {#if expandedSections.rooms}<ChevronUp size={16}/>{:else}<ChevronDown size={16}/>{/if}
       </button>
       {#if expandedSections.rooms}
         <div class="space-y-4">
           <div>
-            <div class="text-xs text-gray-400 mb-2">Bedrooms</div>
+            <div class="text-xs text-gray-400 mb-2">{$adkT("Bedrooms")}</div>
             <div class="flex gap-1">
               {#each bedBathOpts as opt}
-                <button on:click={() => filters.bedrooms = opt} class="flex-1 py-1.5 text-xs rounded border text-center transition-colors {filters.bedrooms === opt ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-black/30 border-white/10 text-gray-400'}">{opt}</button>
+                <button on:click={() => filters.bedrooms = opt} class="flex-1 py-1.5 text-xs rounded border text-center transition-colors {filters.bedrooms === opt ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-black/30 border-white/10 text-gray-400'}">{$adkT(opt)}</button>
               {/each}
             </div>
           </div>
           <div>
-            <div class="text-xs text-gray-400 mb-2">Bathrooms</div>
+            <div class="text-xs text-gray-400 mb-2">{$adkT("Bathrooms")}</div>
             <div class="flex gap-1">
               {#each bedBathOpts as opt}
-                <button on:click={() => filters.bathrooms = opt} class="flex-1 py-1.5 text-xs rounded border text-center transition-colors {filters.bathrooms === opt ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-black/30 border-white/10 text-gray-400'}">{opt}</button>
+                <button on:click={() => filters.bathrooms = opt} class="flex-1 py-1.5 text-xs rounded border text-center transition-colors {filters.bathrooms === opt ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-black/30 border-white/10 text-gray-400'}">{$adkT(opt)}</button>
               {/each}
             </div>
           </div>

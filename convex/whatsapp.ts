@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { v } from "convex/values";
 import { action, internalAction, internalMutation, query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
@@ -139,7 +140,7 @@ export const getHumanReviewQueue = query({
   },
 });
 
-export const resolveSession = mutation({
+export const resolveSession = auditedMutation("whatsapp:resolveSession")({
   args: { sessionId: v.id("whatsAppSessions") },
   handler: async (ctx, { sessionId }) => {
     const userId = await getAuthUserId(ctx);

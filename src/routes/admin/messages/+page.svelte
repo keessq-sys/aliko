@@ -2,4 +2,4 @@
   import MessageDesk from "$lib/components/dashboard/MessageDesk.svelte";
 </script>
 
-<div class="p-5"><MessageDesk /></div>
+<div class="p-5"><MessageDesk adminMode={true} /></div>

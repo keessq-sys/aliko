@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import SEO from '$lib/components/SEO.svelte';
   import TLDRBlock from '$lib/components/TLDRBlock.svelte';
 
@@ -10,8 +13,8 @@
 <div class="min-h-screen bg-[#050A0E] pb-24 pt-16 text-white">
   <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
     <header class="mb-8">
-      <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">Glossary</p>
-      <h1 class="font-serif text-3xl font-bold sm:text-4xl">Real Estate & Land-Title Glossary</h1>
+      <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">{$adkT("Glossary")}</p>
+      <h1 class="font-serif text-3xl font-bold sm:text-4xl">{$adkT("Real Estate & Land-Title Glossary")}</h1>
     </header>
 
     <TLDRBlock
@@ -23,10 +26,10 @@
         <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
           <dt>
             <a href={`/glossary/${term.slug}`} class="text-lg font-semibold text-white hover:text-emerald-400">
-              {term.term}
+              {$adkT(term.term)}
             </a>
           </dt>
-          <dd class="mt-1.5 text-sm leading-relaxed text-stone-400">{term.shortDefinition}</dd>
+          <dd class="mt-1.5 text-sm leading-relaxed text-stone-400">{$adkT(term.shortDefinition)}</dd>
         </div>
       {/each}
     </dl>

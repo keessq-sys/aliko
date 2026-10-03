@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { api } from "$lib/convex/_generated/api";
   import { useQuery, runAction, runMutation } from "$lib/convex/queries";
   let documentId: any = "",
@@ -137,27 +140,22 @@
 </script>
 
 <section class="theme-surface theme-text m-5 p-5 border rounded-xl space-y-5">
-  <h1 class="text-2xl font-semibold">
-    Payment reconciliation and workflow recovery
-  </h1>
-  <p>
-    These actions require recent administrator MFA. A refund does not
-    automatically reverse legal title.
-  </p>
-  {#if error}<p role="alert">{error}</p>{/if}{#if message}<p role="status">
-      {message}
+  <h1 class="text-2xl font-semibold"> {$adkT("Payment reconciliation and workflow recovery")} </h1>
+  <p> {$adkT("These actions require recent administrator MFA. A refund does not automatically reverse legal title.")} </p>
+  {#if error}<p role="alert">{$adkT(error)}</p>{/if}{#if message}<p role="status">
+      {$adkT(message)}
     </p>{/if}
   <button
     disabled={busy}
     on:click={refunds}
-    class="min-h-[44px] border rounded p-3">Reconcile pending refunds</button
+    class="min-h-[44px] border rounded p-3">{$adkT("Reconcile pending refunds")}</button
   >
   <form
     on:submit|preventDefault={importSettlements}
     class="flex flex-wrap gap-3"
   >
     <label
-      >From<input
+      >{$adkT("From")}<input dir="auto"
         type="date"
         required
         bind:value={from}
@@ -165,7 +163,7 @@
         class="theme-input block border rounded p-3"
       /></label
     ><label
-      >To<input
+      >{$adkT("To")}<input dir="auto"
         type="date"
         required
         bind:value={to}
@@ -173,113 +171,113 @@
         class="theme-input block border rounded p-3"
       /></label
     ><button disabled={busy} class="min-h-[44px] border rounded p-3"
-      >Import settlement headers{nextPage && nextPage > 1
+      >{$adkT("Import settlement headers")}{$adkT(nextPage && nextPage > 1
         ? ` (page ${nextPage})`
-        : ""}</button
+        : "")}</button
     >
   </form>
-  <h2 class="text-xl">Settlements</h2>
+  <h2 class="text-xl">{$adkT("Settlements")}</h2>
   {#each $settlementRecords?.page ?? [] as row}<article
       class="border rounded p-3"
     >
       <p>
-        {row.providerSettlementId} · {row.currency}
-        {row.amount} · {row.status}
+        {$adkT(row.providerSettlementId)} · {$adkT(row.currency)}
+        {$adkT(row.amount)} · {$adkT(row.status)}
       </p>
       <button
         disabled={busy}
         on:click={() => match(row)}
         class="min-h-[44px] border rounded px-3"
-        >Fetch and reconcile transactions</button
+        >{$adkT("Fetch and reconcile transactions")}</button
       ><button
         on:click={() => {
           selected = row;
           cursor = null;
         }}
-        class="min-h-[44px] border rounded px-3">View matches</button
+        class="min-h-[44px] border rounded px-3">{$adkT("View matches")}</button
       >
     </article>{/each}
-  {#if selected}<h3>Transactions for {selected.providerSettlementId}</h3>
+  {#if selected}<h3>{$adkT("Transactions for")} {selected.providerSettlementId}</h3>
     {#each $transactions?.page ?? [] as row}<article class="border rounded p-3">
         <p>
-          {row.providerTransactionId} · {row.matched
+          {$adkT(row.providerTransactionId)} · {$adkT(row.matched
             ? "Matched"
-            : "Needs review"} · net {row.currency}
-          {row.netMinor / 100}
+            : "Needs review")} {$adkT("· net")} {$adkT(row.currency)}
+          {$adkT(row.netMinor / 100)}
         </p>
         <p>{row.reason ?? ""}</p>
       </article>{/each}<button
       disabled={!$transactions || $transactions.isDone}
       on:click={() => (cursor = $transactions?.continueCursor ?? null)}
-      class="min-h-[44px] border rounded px-3">More transactions</button
+      class="min-h-[44px] border rounded px-3">{$adkT("More transactions")}</button
     >{/if}
   <button
     class="min-h-[44px] border rounded px-3"
     disabled={!$settlementRecords || $settlementRecords.isDone}
     on:click={() =>
       (settlementCursor = $settlementRecords?.continueCursor ?? null)}
-    >Older settlements</button
+    >{$adkT("Older settlements")}</button
   >
-  <h2 class="text-xl">Refunds</h2>
+  <h2 class="text-xl">{$adkT("Refunds")}</h2>
   {#each $refundRecords?.page ?? [] as row}<p class="border rounded p-3">
-      ₦{row.amount} · {row.status} · {row.providerRefundId ??
-        "Provider outcome unknown — do not resubmit"} · {row.lastError ?? ""}
+      ₦{$adkT(row.amount)} · {$adkT(row.status)} · {$adkT(row.providerRefundId ??
+        "Provider outcome unknown — do not resubmit")} · {$adkT(row.lastError ?? "")}
     </p>
     {#if row.status === "PENDING"}<button
         disabled={busy}
         class="min-h-[44px] border rounded px-3"
         on:click={() => reconcileRefund(row)}
-        >Verify existing provider refund</button
+        >{$adkT("Verify existing provider refund")}</button
       >{/if}{/each}
   <button
     class="min-h-[44px] border rounded px-3"
     disabled={!$refundRecords || $refundRecords.isDone}
     on:click={() => (refundCursor = $refundRecords?.continueCursor ?? null)}
-    >Older refunds</button
+    >{$adkT("Older refunds")}</button
   >
-  <h2 class="text-xl">Signature request reconciliation</h2>
+  <h2 class="text-xl">{$adkT("Signature request reconciliation")}</h2>
   <form on:submit|preventDefault={reconcileSignature} class="grid gap-3">
     <label
-      >Document<select
+      >{$adkT("Document")}<select
         required
         bind:value={documentId}
         class="theme-input block border rounded p-3"
-        ><option value="">Select document</option
+        ><option value="">{$adkT("Select document")}</option
         >{#each $documents?.page ?? [] as doc}<option value={doc._id}
-            >{doc.referenceCode} · {doc.signatureDispatchState ??
-              doc.status}</option
+            >{$adkT(doc.referenceCode)} · {$adkT(doc.signatureDispatchState ??
+              doc.status)}</option
           >{/each}</select
       ></label
     ><label
-      >Existing Dropbox Sign request ID<input
+      >{$adkT("Existing Dropbox Sign request ID")}<input dir="auto"
         required
         bind:value={requestId}
         class="theme-input block border rounded p-3"
       /></label
     ><button disabled={busy} class="min-h-[44px] border rounded p-3"
-      >Verify provider request</button
+      >{$adkT("Verify provider request")}</button
     >
   </form>
   <button
     class="min-h-[44px] border rounded px-3"
     disabled={!$documents || $documents.isDone}
     on:click={() => (documentCursor = $documents?.continueCursor ?? null)}
-    >Older documents</button
+    >{$adkT("Older documents")}</button
   >
-  <h2 class="text-xl">Fulfilment recovery</h2>
+  <h2 class="text-xl">{$adkT("Fulfilment recovery")}</h2>
   {#each $bookings?.page ?? [] as row}<article class="border rounded p-3">
-      <p>{row.reference} · {row.fulfillmentError}</p>
+      <p>{$adkT(row.reference)} · {$adkT(row.fulfillmentError)}</p>
       <button
         disabled={busy}
         on:click={() => restart(row)}
         class="min-h-[44px] border rounded px-3"
-        >Restart corrected workflow</button
+        >{$adkT("Restart corrected workflow")}</button
       >
     </article>{/each}
   <button
     class="min-h-[44px] border rounded px-3"
     disabled={!$bookings || $bookings.isDone}
     on:click={() => (bookingCursor = $bookings?.continueCursor ?? null)}
-    >Older recovery cases</button
+    >{$adkT("Older recovery cases")}</button
   >
 </section>

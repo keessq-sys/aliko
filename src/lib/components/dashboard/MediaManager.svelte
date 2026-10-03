@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { api } from "$lib/convex/_generated/api";
   import { runMutation, useQuery } from "$lib/convex/queries";
   import FileUpload from "$lib/components/ui/FileUpload.svelte";
@@ -150,66 +153,64 @@
 >
   <h2 class="mb-1 flex items-center gap-2 font-bold text-white theme-text">
     <ImagePlus size={18} class="text-emerald-400" />
-    {title}
+    {$adkT(title)}
   </h2>
-  <p class="mb-4 text-xs text-stone-500">
-    JPG, PNG, WebP or AVIF. Images are published to the selected live gallery.
-  </p>
+  <p class="mb-4 text-xs text-stone-500"> {$adkT("JPG, PNG, WebP or AVIF. Images are published to the selected live gallery.")} </p>
   {#if mode === "property"}
     <button
       type="button"
       class="mb-4 text-sm font-semibold text-emerald-400 hover:text-emerald-300"
       on:click={() => (showCreate = !showCreate)}
     >
-      {showCreate ? "Close listing form" : "+ Create a new property listing"}
+      {$adkT(showCreate ? "Close listing form" : "+ Create a new property listing")}
     </button>
     {#if showCreate}
       <div
         class="mb-5 grid gap-3 rounded-xl border border-white/10 bg-black/20 p-4 md:grid-cols-2 theme-panel"
       >
-        <input
+        <input dir="auto"
           bind:value={draft.title}
-          aria-label="Property title"
-          placeholder="Property title"
+          aria-label={$adkT("Property title")}
+          placeholder={$adkT("Property title")}
           class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
         />
         <select
           bind:value={draft.type}
-          aria-label="Property type"
+          aria-label={$adkT("Property type")}
           class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
         >
-          <option value="RESIDENTIAL">Residential</option><option
-            value="APARTMENT">Apartment</option
-          ><option value="DUPLEX">Duplex</option><option value="PENTHOUSE"
-            >Penthouse</option
-          ><option value="COMMERCIAL">Commercial</option><option value="LAND"
-            >Land</option
+          <option value="RESIDENTIAL">{$adkT("Residential")}</option><option
+            value="APARTMENT">{$adkT("Apartment")}</option
+          ><option value="DUPLEX">{$adkT("Duplex")}</option><option value="PENTHOUSE"
+            >{$adkT("Penthouse")}</option
+          ><option value="COMMERCIAL">{$adkT("Commercial")}</option><option value="LAND"
+            >{$adkT("Land")}</option
           >
         </select>
-        <input
+        <input dir="auto"
           bind:value={draft.location}
-          aria-label="Location"
-          placeholder="Location or neighbourhood"
+          aria-label={$adkT("Location")}
+          placeholder={$adkT("Location or neighbourhood")}
           class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
         />
-        <input
+        <input dir="auto"
           bind:value={draft.state}
-          aria-label="State"
-          placeholder="State"
+          aria-label={$adkT("State")}
+          placeholder={$adkT("State")}
           class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
         />
-        <input
+        <input dir="auto"
           bind:value={draft.price}
-          aria-label="Price in naira"
+          aria-label={$adkT("Price in naira")}
           type="number"
           min="1"
-          placeholder="Price in naira"
+          placeholder={$adkT("Price in naira")}
           class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
         />
-        <textarea
+        <textarea dir="auto"
           bind:value={draft.description}
-          aria-label="Description"
-          placeholder="Property description"
+          aria-label={$adkT("Description")}
+          placeholder={$adkT("Property description")}
           rows="3"
           class="rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white theme-input"
         ></textarea>
@@ -218,21 +219,21 @@
           on:click={createListing}
           disabled={creating}
           class="min-h-[44px] rounded-lg bg-amber-500 px-4 text-sm font-bold text-black disabled:opacity-50 md:col-span-2"
-          >{creating ? "Creating…" : "Create listing"}</button
+          >{$adkT(creating ? "Creating…" : "Create listing")}</button
         >
       </div>
     {/if}
   {/if}
   <div class="grid gap-4 lg:grid-cols-[minmax(220px,0.7fr)_1.3fr]">
     <label class="block"
-      ><span class="mb-1 block text-xs text-stone-400">Destination</span>
+      ><span class="mb-1 block text-xs text-stone-400">{$adkT("Destination")}</span>
       <select
         bind:value={selectedId}
         class="min-h-[44px] w-full rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
       >
-        <option value="">Select {mode}</option>
+        <option value="">{$adkT("Select")} {$adkT(mode)}</option>
         {#each rows as row}<option value={row._id}
-            >{mode === "property" ? row.title : row.name}</option
+            >{$adkT(mode === "property" ? row.title : row.name)}</option
           >{/each}
       </select>
     </label>
@@ -240,16 +241,16 @@
       accept="image/jpeg,image/png,image/webp,image/avif"
       multiple
       maxSizeMB={15}
-      label="Choose gallery images"
+      label={$adkT("Choose gallery images")}
       on:files={(event) => (files = event.detail.files)}
     />
   </div>
-  {#if error}<p class="mt-3 text-sm text-rose-400">{error}</p>{/if}
-  {#if success}<p class="mt-3 text-sm text-emerald-400">{success}</p>{/if}
+  {#if error}<p class="mt-3 text-sm text-rose-400">{$adkT(error)}</p>{/if}
+  {#if success}<p class="mt-3 text-sm text-emerald-400">{$adkT(success)}</p>{/if}
   {#if mode === "property" && $profile?.role === "ADMIN" && selectedId}
     <div class="mt-4 flex flex-wrap items-center gap-3">
       <label class="text-sm"
-        >Verification evidence reference<input
+        >{$adkT("Verification evidence reference")}<input dir="auto"
           bind:value={reviewReference}
           class="theme-input block min-h-[44px] rounded-lg border px-3"
           minlength="8"
@@ -258,11 +259,11 @@
         type="button"
         on:click={() => review(true)}
         class="min-h-[44px] rounded-lg bg-emerald-700 px-4 text-white"
-        >Approve publication</button
+        >{$adkT("Approve publication")}</button
       ><button
         type="button"
         on:click={() => review(false)}
-        class="min-h-[44px] rounded-lg border px-4">Reject listing</button
+        class="min-h-[44px] rounded-lg border px-4">{$adkT("Reject listing")}</button
       >
     </div>
   {/if}
@@ -272,7 +273,7 @@
     disabled={uploading || files.length === 0 || !selectedId}
     class="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-emerald-600 px-4 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
   >
-    {#if uploading}<Loader2 size={15} class="animate-spin" />{/if} Publish {files.length ||
-      ""} image{files.length === 1 ? "" : "s"}
+    {#if uploading}<Loader2 size={15} class="animate-spin" />{/if} {$adkT("Publish")} {$adkT(files.length ||
+      "")} {$adkT("image")}{$adkT(files.length === 1 ? "" : "s")}
   </button>
 </section>

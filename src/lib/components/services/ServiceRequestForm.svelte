@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { Loader2, Send, Info } from 'lucide-svelte';
   import { api } from '$lib/convex/_generated/api';
   import { runMutation } from '$lib/convex/queries';
@@ -70,37 +73,37 @@
     class="mx-auto max-w-2xl rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 backdrop-blur-xl"
   >
     <div class="mb-6 flex items-center gap-3 border-b border-white/10 pb-4">
-      <span class="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300">{serviceLabel}</span>
-      <span class="text-xs text-stone-500">All fields marked * are required</span>
+      <span class="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300">{$adkT(serviceLabel)}</span>
+      <span class="text-xs text-stone-500">{$adkT("All fields marked * are required")}</span>
     </div>
 
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
       <label class="block">
-        <span class="mb-1 block text-sm text-stone-400">Full Name *</span>
-        <input
+        <span class="mb-1 block text-sm text-stone-400">{$adkT("Full Name *")}</span>
+        <input dir="auto"
           type="text"
           autocomplete="name"
           bind:value={requesterName}
           class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
-          placeholder="e.g. Adaeze Okonkwo"
+          placeholder={$adkT("e.g. Adaeze Okonkwo")}
         />
       </label>
       <label class="block">
-        <span class="mb-1 block text-sm text-stone-400">Email Address *</span>
-        <input
+        <span class="mb-1 block text-sm text-stone-400">{$adkT("Email Address *")}</span>
+        <input dir="auto"
           type="email"
           inputmode="email"
           autocomplete="email"
           bind:value={email}
           class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
-          placeholder="you@example.com"
+          placeholder={$adkT("you@example.com")}
         />
       </label>
       <label class="block">
-        <span class="mb-1 block text-sm text-stone-400">Phone Number *</span>
+        <span class="mb-1 block text-sm text-stone-400">{$adkT("Phone Number *")}</span>
         <div class="flex">
           <span class="inline-flex items-center rounded-l-lg border border-r-0 border-white/10 bg-black/60 px-3 text-stone-400">+234</span>
-          <input
+          <input dir="auto"
             type="tel"
             inputmode="tel"
             autocomplete="tel-national"
@@ -111,64 +114,62 @@
         </div>
       </label>
       <label class="block">
-        <span class="mb-1 block text-sm text-stone-400">Company (optional)</span>
-        <input
+        <span class="mb-1 block text-sm text-stone-400">{$adkT("Company (optional)")}</span>
+        <input dir="auto"
           type="text"
           autocomplete="organization"
           bind:value={company}
           class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
-          placeholder="Company / Organisation"
+          placeholder={$adkT("Company / Organisation")}
         />
       </label>
       <label class="block sm:col-span-2">
-        <span class="mb-1 block text-sm text-stone-400">Project Location</span>
-        <input
+        <span class="mb-1 block text-sm text-stone-400">{$adkT("Project Location")}</span>
+        <input dir="auto"
           type="text"
           bind:value={location}
           class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
-          placeholder="e.g. Lekki Phase 1, Lagos"
+          placeholder={$adkT("e.g. Lekki Phase 1, Lagos")}
         />
       </label>
       <label class="block sm:col-span-2">
         <span class="mb-1 flex justify-between text-sm text-stone-400">
-          <span>Project Brief *</span>
-          <span class="text-xs text-stone-600">{projectBrief.length}/1500</span>
+          <span>{$adkT("Project Brief *")}</span>
+          <span class="text-xs text-stone-600">{$adkT(projectBrief.length)}/1500</span>
         </span>
-        <textarea
+        <textarea dir="auto"
           bind:value={projectBrief}
           maxlength="1500"
           rows="5"
           class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-white placeholder-stone-600 outline-none focus:border-emerald-500"
-          placeholder="Describe your project: scope, rooms/area, preferred styles or material specs, expected start date..."
+          placeholder={$adkT("Describe your project: scope, rooms/area, preferred styles or material specs, expected start date...")}
         ></textarea>
       </label>
       <label class="block">
-        <span class="mb-1 block text-sm text-stone-400">Budget Range</span>
+        <span class="mb-1 block text-sm text-stone-400">{$adkT("Budget Range")}</span>
         <select bind:value={budgetIdx} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-[#0A1628] px-4 py-2.5 text-white outline-none focus:border-emerald-500">
-          <option value={-1}>Prefer not to say</option>
+          <option value={-1}>{$adkT("Prefer not to say")}</option>
           {#each BUDGETS as b, i}
-            <option value={i}>{b.label}</option>
+            <option value={i}>{$adkT(b.label)}</option>
           {/each}
         </select>
       </label>
       <label class="block">
-        <span class="mb-1 block text-sm text-stone-400">Expected Timeline</span>
+        <span class="mb-1 block text-sm text-stone-400">{$adkT("Expected Timeline")}</span>
         <select bind:value={timeline} class="w-full min-h-[44px] rounded-lg border border-white/10 bg-[#0A1628] px-4 py-2.5 text-white outline-none focus:border-emerald-500">
           {#each TIMELINES as t}
-            <option value={t}>{t}</option>
+            <option value={t}>{$adkT(t)}</option>
           {/each}
         </select>
       </label>
     </div>
 
     {#if error}
-      <p class="mt-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300">{error}</p>
+      <p class="mt-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300">{$adkT(error)}</p>
     {/if}
 
     <div class="mt-6 flex items-start gap-2 rounded-lg border border-blue-500/20 bg-blue-500/5 p-3 text-xs text-blue-200">
-      <Info size={14} class="mt-0.5 flex-shrink-0" />
-      Your request goes directly to the ADK super-admin desk. You will receive a quote and a dedicated contact within 48 hours.
-    </div>
+      <Info size={14} class="mt-0.5 flex-shrink-0" /> {$adkT("Your request goes directly to the ADK super-admin desk. You will receive a quote and a dedicated contact within 48 hours.")} </div>
 
     <button
       type="submit"
@@ -176,10 +177,8 @@
       class="btn-primary mt-6 w-full py-3.5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
     >
       {#if submitting}
-        <Loader2 size={16} class="mr-2 animate-spin" /> Submitting…
-      {:else}
-        <Send size={16} class="mr-2" /> Submit {serviceLabel} Request
-      {/if}
+        <Loader2 size={16} class="mr-2 animate-spin" /> {$adkT("Submitting…")}{:else}
+        <Send size={16} class="mr-2" /> {$adkT("Submit")} {$adkT(serviceLabel)} {$adkT("Request")}{/if}
     </button>
   </form>
 </RequestFormShell>

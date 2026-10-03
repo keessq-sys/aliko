@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import type { Property } from "$lib/stores/properties";
   import { useQuery } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
@@ -174,7 +177,7 @@
 </script>
 
 <svelte:head>
-  <title>Properties & Real Estate Listings — Aliko Diamond Key</title>
+  <title>{$adkT("Properties & Real Estate Listings — Aliko Diamond Key")}</title>
   <meta
     name="description"
     content="Explore verified houses, lands, penthouses, duplexes and commercial properties across Nigeria."
@@ -201,21 +204,17 @@
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-xs text-stone-400 mb-4">
-        <a href="/" class="hover:text-emerald-400 transition-colors">Home</a>
+        <a href="/" class="hover:text-emerald-400 transition-colors">{$adkT("Home")}</a>
         <ChevronRight size={12} />
-        <span class="text-emerald-400">Properties</span>
+        <span class="text-emerald-400">{$adkT("Properties")}</span>
       </nav>
 
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 class="text-3xl sm:text-4xl font-serif font-bold text-white mb-2">
-            Verified Property Listings
-          </h1>
-          <p class="text-stone-400 text-sm max-w-xl">
-            Showing <span class="text-emerald-400 font-semibold"
-              >{filteredProperties.length}</span
-            > verified properties in Abuja, Lagos, and top Nigerian growth corridors.
-          </p>
+          <h1 class="text-3xl sm:text-4xl font-serif font-bold text-white mb-2"> {$adkT("Verified Property Listings")} </h1>
+          <p class="text-stone-400 text-sm max-w-xl"> {$adkT("Showing")} <span class="text-emerald-400 font-semibold"
+              >{$adkT(filteredProperties.length)}</span
+            > {$adkT("verified properties in Abuja, Lagos, and top Nigerian growth corridors.")} </p>
         </div>
 
         <!-- View Controls & Sort -->
@@ -229,7 +228,7 @@
               class="p-2 rounded-lg transition-colors {currentView === 'grid'
                 ? 'bg-emerald-600 text-white shadow-lg'
                 : 'text-stone-400 hover:text-white'}"
-              title="Grid View"
+              title={$adkT("Grid View")}
             >
               <LayoutGrid size={18} />
             </button>
@@ -238,7 +237,7 @@
               class="p-2 rounded-lg transition-colors {currentView === 'list'
                 ? 'bg-emerald-600 text-white shadow-lg'
                 : 'text-stone-400 hover:text-white'}"
-              title="List View"
+              title={$adkT("List View")}
             >
               <LayoutList size={18} />
             </button>
@@ -247,7 +246,7 @@
               class="p-2 rounded-lg transition-colors {currentView === 'map'
                 ? 'bg-emerald-600 text-white shadow-lg'
                 : 'text-stone-400 hover:text-white'}"
-              title="Map View"
+              title={$adkT("Map View")}
             >
               <MapIcon size={18} />
             </button>
@@ -256,16 +255,16 @@
           <!-- Sort Select -->
           <div class="relative">
             <select
-              aria-label="Sort properties"
+              aria-label={$adkT("Sort properties")}
               bind:value={filters.sortBy}
               class="appearance-none bg-white/5 border border-white/10 text-white text-xs sm:text-sm rounded-xl px-4 py-2.5 pr-8 focus:outline-none focus:border-emerald-500 cursor-pointer"
             >
-              <option value="Newest" class="bg-[#0A1628]">Newest</option>
+              <option value="Newest" class="bg-[#0A1628]">{$adkT("Newest")}</option>
               <option value="Price: Low to High" class="bg-[#0A1628]"
-                >Price: Low to High</option
+                >{$adkT("Price: Low to High")}</option
               >
               <option value="Price: High to Low" class="bg-[#0A1628]"
-                >Price: High to Low</option
+                >{$adkT("Price: High to Low")}</option
               >
             </select>
             <ArrowUpDown
@@ -280,7 +279,7 @@
             class="md:hidden flex items-center gap-2 px-3 py-2.5 bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 rounded-xl text-xs font-medium"
           >
             <SlidersHorizontal size={14} />
-            <span>Filters</span>
+            <span>{$adkT("Filters")}</span>
           </button>
         </div>
       </div>
@@ -290,16 +289,16 @@
         <div
           class="flex flex-wrap items-center gap-2 mt-6 pt-4 border-t border-white/5"
         >
-          <span class="text-xs text-stone-500 mr-1">Active filters:</span>
+          <span class="text-xs text-stone-500 mr-1">{$adkT("Active filters:")}</span>
           {#each activeChips as chip}
             <span
               class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-950/60 border border-emerald-800/60 text-emerald-300"
             >
-              {chip}
+              {$adkT(chip)}
               <button
                 on:click={() => removeChip(chip)}
                 class="hover:text-white"
-                title="Remove"
+                title={$adkT("Remove")}
               >
                 <X size={12} />
               </button>
@@ -308,9 +307,7 @@
           <button
             on:click={clearFilters}
             class="text-xs text-stone-400 hover:text-white ml-2 underline"
-          >
-            Clear all
-          </button>
+          > {$adkT("Clear all")} </button>
         </div>
       {/if}
     </div>
@@ -346,19 +343,12 @@
             >
               <SlidersHorizontal size={28} />
             </div>
-            <h3 class="text-xl font-serif font-bold text-white mb-2">
-              No matching properties found
-            </h3>
-            <p class="text-stone-400 text-sm max-w-md mb-6">
-              We couldn't find any listings matching your current filter
-              criteria. Try expanding your search or clearing active filters.
-            </p>
+            <h3 class="text-xl font-serif font-bold text-white mb-2"> {$adkT("No matching properties found")} </h3>
+            <p class="text-stone-400 text-sm max-w-md mb-6"> {$adkT("We couldn't find any listings matching your current filter criteria. Try expanding your search or clearing active filters.")} </p>
             <button
               on:click={clearFilters}
               class="px-6 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-emerald-600 to-emerald-400 text-white shadow-lg hover:shadow-emerald-500/20"
-            >
-              Clear All Filters
-            </button>
+            > {$adkT("Clear All Filters")} </button>
           </div>
         {:else if currentView === "grid"}
           <!-- 3-Column Responsive Grid -->
@@ -397,12 +387,10 @@
       <div
         class="flex items-center justify-between pb-4 border-b border-white/10"
       >
-        <h3 class="text-lg font-serif font-bold text-white">
-          Filter Properties
-        </h3>
+        <h3 class="text-lg font-serif font-bold text-white"> {$adkT("Filter Properties")} </h3>
         <button
           on:click={() => (isMobileFilterOpen = false)}
-          aria-label="Close filters"
+          aria-label={$adkT("Close filters")}
           class="flex items-center justify-center min-h-[44px] min-w-[44px] -mr-2 text-stone-400 hover:text-white"
         >
           <X size={20} />
@@ -415,9 +403,7 @@
         <button
           on:click={() => (isMobileFilterOpen = false)}
           class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-lg"
-        >
-          Show {filteredProperties.length} Properties
-        </button>
+        > {$adkT("Show")} {$adkT(filteredProperties.length)} {$adkT("Properties")} </button>
       </div>
     </div>
   </div>

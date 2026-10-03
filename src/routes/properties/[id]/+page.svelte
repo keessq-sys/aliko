@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { page } from "$app/stores";
   import type { Property } from "$lib/stores/properties";
   import { useQuery, runMutation } from "$lib/convex/queries";
@@ -168,9 +174,9 @@
 
 <svelte:head>
   <title
-    >{property
+    >{$adkT(property
       ? `${property.title} — Aliko Diamond Key`
-      : "Property Details — Aliko Diamond Key"}</title
+      : "Property Details — Aliko Diamond Key")}</title
   >
 </svelte:head>
 
@@ -189,33 +195,26 @@
       >
         <Home size={36} />
       </div>
-      <h1 class="text-3xl font-serif font-bold text-white mb-3">
-        Property Not Found
-      </h1>
-      <p class="text-stone-400 mb-8 max-w-md mx-auto text-sm">
-        The property listing you are looking for may have been sold, unlisted,
-        or does not exist.
-      </p>
+      <h1 class="text-3xl font-serif font-bold text-white mb-3"> {$adkT("Property Not Found")} </h1>
+      <p class="text-stone-400 mb-8 max-w-md mx-auto text-sm"> {$adkT("The property listing you are looking for may have been sold, unlisted, or does not exist.")} </p>
       <a
         href="/properties"
         class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-400 text-white font-semibold text-sm shadow-lg hover:shadow-emerald-500/20"
-      >
-        Browse All Properties
-      </a>
+      > {$adkT("Browse All Properties")} </a>
     </div>
   {:else}
     <!-- Breadcrumb bar -->
     <div class="border-b border-white/5 bg-white/[0.01] py-4">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <nav class="flex items-center gap-2 text-xs text-stone-400">
-          <a href="/" class="hover:text-emerald-400 transition-colors">Home</a>
+          <a href="/" class="hover:text-emerald-400 transition-colors">{$adkT("Home")}</a>
           <ChevronRight size={12} />
           <a href="/properties" class="hover:text-emerald-400 transition-colors"
-            >Properties</a
+            >{$adkT("Properties")}</a
           >
           <ChevronRight size={12} />
           <span class="text-emerald-400 truncate max-w-xs"
-            >{property.title}</span
+            >{$adkT(property.title)}</span
           >
         </nav>
       </div>
@@ -237,29 +236,28 @@
                   ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
                   : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}"
             >
-              {property.status}
+              {$adkT(property.status)}
             </span>
             <span
               class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-800 text-stone-300 border border-stone-700 capitalize"
             >
-              {property.type}
+              {$adkT(property.type)}
             </span>
             {#if property.isVerified}
               <span
                 class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-950/60 border border-emerald-700/60 text-emerald-300"
               >
-                <ShieldCheck size={13} /> AGIS & Title Verified
-              </span>
+                <ShieldCheck size={13} /> {$adkT("AGIS & Title Verified")} </span>
             {/if}
           </div>
           <h1 class="text-2xl sm:text-4xl font-serif font-bold text-white mb-2">
-            {property.title}
+            {$adkT(property.title)}
           </h1>
           <div class="flex items-center gap-2 text-stone-400 text-sm">
             <MapPin size={16} class="text-emerald-500 flex-shrink-0" />
             <span
-              >{property.location.address}, {property.location.lga}, {property
-                .location.state}</span
+              >{property.location.address}, {$adkT(property.location.lga)}, {$adkT(property
+                .location.state)}</span
             >
           </div>
         </div>
@@ -271,18 +269,14 @@
           <div>
             <div
               class="text-xs text-stone-400 text-right uppercase tracking-wider font-mono"
-            >
-              Guide Price
-            </div>
+            > {$adkT("Guide Price")} </div>
             <div
               class="text-3xl sm:text-4xl font-bold font-serif text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200"
             >
-              ₦{(property.price / 1_000_000).toLocaleString()}M
-            </div>
+              ₦{$adkT((property.price / 1_000_000).toLocaleString($adkLocale === "ar" ? "ar-NG" : "en-NG"))}{$adkT("M")} </div>
             {#if property.pricePerSqm}
               <div class="text-xs text-stone-500 text-right">
-                ₦{property.pricePerSqm.toLocaleString()} / sqm
-              </div>
+                ₦{$adkT(property.pricePerSqm.toLocaleString($adkLocale === "ar" ? "ar-NG" : "en-NG"))} {$adkT("/ sqm")} </div>
             {/if}
           </div>
 
@@ -290,14 +284,14 @@
             <button
               on:click={handleShare}
               class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-stone-300 transition-colors"
-              title="Share listing"
+              title={$adkT("Share listing")}
             >
               <Share2 size={18} />
             </button>
             <button
               on:click={handleSave}
               class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-stone-300 transition-colors"
-              title="Save to wishlist"
+              title={$adkT("Save to wishlist")}
             >
               <Heart
                 size={18}
@@ -310,7 +304,7 @@
 
       <!-- Gallery Slider -->
       <div class="mb-10">
-        <PropertyGallery images={property.images} title={property.title} />
+        <PropertyGallery images={property.images} title={$adkT(property.title)} />
       </div>
 
       <!-- Main Layout: 2 Columns (68% Content, 32% Sticky Sidebar) -->
@@ -321,9 +315,7 @@
           <div
             class="p-6 rounded-2xl bg-[#0A1118]/80 backdrop-blur-xl border border-white/10 shadow-xl"
           >
-            <h2 class="text-lg font-serif font-bold text-white mb-4">
-              Property Overview
-            </h2>
+            <h2 class="text-lg font-serif font-bold text-white mb-4"> {$adkT("Property Overview")} </h2>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div
                 class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3"
@@ -334,10 +326,9 @@
                   <Bed size={20} />
                 </div>
                 <div>
-                  <div class="text-xs text-stone-400">Bedrooms</div>
+                  <div class="text-xs text-stone-400">{$adkT("Bedrooms")}</div>
                   <div class="text-base font-semibold text-white">
-                    {property.bedrooms} Beds
-                  </div>
+                    {$adkT(property.bedrooms)} {$adkT("Beds")} </div>
                 </div>
               </div>
 
@@ -350,10 +341,9 @@
                   <Bath size={20} />
                 </div>
                 <div>
-                  <div class="text-xs text-stone-400">Bathrooms</div>
+                  <div class="text-xs text-stone-400">{$adkT("Bathrooms")}</div>
                   <div class="text-base font-semibold text-white">
-                    {property.bathrooms} Baths
-                  </div>
+                    {$adkT(property.bathrooms)} {$adkT("Baths")} </div>
                 </div>
               </div>
 
@@ -366,10 +356,9 @@
                   <Square size={20} />
                 </div>
                 <div>
-                  <div class="text-xs text-stone-400">Land Area</div>
+                  <div class="text-xs text-stone-400">{$adkT("Land Area")}</div>
                   <div class="text-base font-semibold text-white">
-                    {property.sizeSqm} sqm
-                  </div>
+                    {$adkT(property.sizeSqm)} {$adkT("sqm")} </div>
                 </div>
               </div>
 
@@ -382,10 +371,9 @@
                   <Car size={20} />
                 </div>
                 <div>
-                  <div class="text-xs text-stone-400">Parking</div>
+                  <div class="text-xs text-stone-400">{$adkT("Parking")}</div>
                   <div class="text-base font-semibold text-white">
-                    {property.parkingSpots} Cars
-                  </div>
+                    {$adkT(property.parkingSpots)} {$adkT("Cars")} </div>
                 </div>
               </div>
 
@@ -398,9 +386,9 @@
                   <Calendar size={20} />
                 </div>
                 <div>
-                  <div class="text-xs text-stone-400">Year Built</div>
+                  <div class="text-xs text-stone-400">{$adkT("Year Built")}</div>
                   <div class="text-base font-semibold text-white">
-                    {property.yearBuilt}
+                    {$adkT(property.yearBuilt)}
                   </div>
                 </div>
               </div>
@@ -414,9 +402,9 @@
                   <Building size={20} />
                 </div>
                 <div>
-                  <div class="text-xs text-stone-400">Property Type</div>
+                  <div class="text-xs text-stone-400">{$adkT("Property Type")}</div>
                   <div class="text-base font-semibold text-white capitalize">
-                    {property.type}
+                    {$adkT(property.type)}
                   </div>
                 </div>
               </div>
@@ -427,13 +415,11 @@
           <div
             class="p-6 rounded-2xl bg-[#0A1118]/80 backdrop-blur-xl border border-white/10 shadow-xl"
           >
-            <h2 class="text-lg font-serif font-bold text-white mb-4">
-              About This Property
-            </h2>
+            <h2 class="text-lg font-serif font-bold text-white mb-4"> {$adkT("About This Property")} </h2>
             <p
               class="text-stone-300 text-sm sm:text-base leading-relaxed whitespace-pre-line"
             >
-              {property.description}
+              {$adkT(property.description)}
             </p>
 
             {#if property.tags && property.tags.length > 0}
@@ -444,7 +430,7 @@
                   <span
                     class="px-3 py-1 rounded-full text-xs font-medium bg-emerald-950/40 text-emerald-300 border border-emerald-800/40"
                   >
-                    #{tag}
+                    #{$adkT(tag)}
                   </span>
                 {/each}
               </div>
@@ -455,9 +441,7 @@
           <div
             class="p-6 rounded-2xl bg-[#0A1118]/80 backdrop-blur-xl border border-white/10 shadow-xl"
           >
-            <h2 class="text-lg font-serif font-bold text-white mb-4">
-              Features & Amenities
-            </h2>
+            <h2 class="text-lg font-serif font-bold text-white mb-4"> {$adkT("Features & Amenities")} </h2>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {#each property.amenities as amenity}
                 <div
@@ -467,7 +451,7 @@
                     size={16}
                     class="text-emerald-400 flex-shrink-0"
                   />
-                  <span>{amenity}</span>
+                  <span>{$adkT(amenity)}</span>
                 </div>
               {/each}
             </div>
@@ -479,9 +463,7 @@
           >
             <div class="flex items-center justify-between mb-4">
               <div>
-                <h2 class="text-lg font-serif font-bold text-white">
-                  Location & Neighbourhood
-                </h2>
+                <h2 class="text-lg font-serif font-bold text-white"> {$adkT("Location & Neighbourhood")} </h2>
                 <p class="text-stone-400 text-xs mt-0.5">
                   {property.location.address}
                 </p>
@@ -492,9 +474,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="text-xs text-emerald-400 hover:text-emerald-300 underline"
-              >
-                Open in Google Maps ↗
-              </a>
+              > {$adkT("Open in Google Maps ↗")} </a>
             </div>
 
             <!-- Map View -->
@@ -504,7 +484,7 @@
                 lng={property.location.lng}
                 zoom={15}
                 height="320px"
-                label={property.title}
+                label={$adkT(property.title)}
               />
             </div>
 
@@ -513,40 +493,26 @@
               <div
                 class="p-3 rounded-xl bg-white/[0.02] border border-white/5 text-center"
               >
-                <div class="text-xs text-stone-400">
-                  Airport (Nnamdi Azikiwe)
-                </div>
-                <div class="text-sm font-semibold text-emerald-400 mt-1">
-                  ~25 mins
-                </div>
+                <div class="text-xs text-stone-400"> {$adkT("Airport (Nnamdi Azikiwe)")} </div>
+                <div class="text-sm font-semibold text-emerald-400 mt-1"> {$adkT("~25 mins")} </div>
               </div>
               <div
                 class="p-3 rounded-xl bg-white/[0.02] border border-white/5 text-center"
               >
-                <div class="text-xs text-stone-400">
-                  Central Business District
-                </div>
-                <div class="text-sm font-semibold text-emerald-400 mt-1">
-                  ~10 mins
-                </div>
+                <div class="text-xs text-stone-400"> {$adkT("Central Business District")} </div>
+                <div class="text-sm font-semibold text-emerald-400 mt-1"> {$adkT("~10 mins")} </div>
               </div>
               <div
                 class="p-3 rounded-xl bg-white/[0.02] border border-white/5 text-center"
               >
-                <div class="text-xs text-stone-400">
-                  Top International Schools
-                </div>
-                <div class="text-sm font-semibold text-emerald-400 mt-1">
-                  ~5 mins
-                </div>
+                <div class="text-xs text-stone-400"> {$adkT("Top International Schools")} </div>
+                <div class="text-sm font-semibold text-emerald-400 mt-1"> {$adkT("~5 mins")} </div>
               </div>
               <div
                 class="p-3 rounded-xl bg-white/[0.02] border border-white/5 text-center"
               >
-                <div class="text-xs text-stone-400">Shopping Mall & Dining</div>
-                <div class="text-sm font-semibold text-emerald-400 mt-1">
-                  ~8 mins
-                </div>
+                <div class="text-xs text-stone-400">{$adkT("Shopping Mall & Dining")}</div>
+                <div class="text-sm font-semibold text-emerald-400 mt-1"> {$adkT("~8 mins")} </div>
               </div>
             </div>
           </div>
@@ -557,43 +523,25 @@
           >
             <div class="flex items-center gap-2 mb-4">
               <TrendingUp size={20} class="text-emerald-400" />
-              <h2 class="text-lg font-serif font-bold text-white">
-                Investment Performance Metrics
-              </h2>
+              <h2 class="text-lg font-serif font-bold text-white"> {$adkT("Investment Performance Metrics")} </h2>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div class="p-4 rounded-xl bg-black/40 border border-white/5">
-                <div class="text-xs text-stone-400 mb-1">
-                  Estimated Rental Yield
-                </div>
+                <div class="text-xs text-stone-400 mb-1"> {$adkT("Estimated Rental Yield")} </div>
                 <div class="text-2xl font-bold text-emerald-400 font-mono">
                   6.8% - 8.4%
                 </div>
-                <div class="text-[11px] text-stone-500 mt-1">
-                  Annual projected return based on district rentals
-                </div>
+                <div class="text-[11px] text-stone-500 mt-1"> {$adkT("Annual projected return based on district rentals")} </div>
               </div>
               <div class="p-4 rounded-xl bg-black/40 border border-white/5">
-                <div class="text-xs text-stone-400 mb-1">
-                  Historical Capital Appreciation
-                </div>
-                <div class="text-2xl font-bold text-amber-400 font-mono">
-                  +24% / yr
-                </div>
-                <div class="text-[11px] text-stone-500 mt-1">
-                  Average 5-year FCT prime district trend
-                </div>
+                <div class="text-xs text-stone-400 mb-1"> {$adkT("Historical Capital Appreciation")} </div>
+                <div class="text-2xl font-bold text-amber-400 font-mono"> {$adkT("+24% / yr")} </div>
+                <div class="text-[11px] text-stone-500 mt-1"> {$adkT("Average 5-year FCT prime district trend")} </div>
               </div>
               <div class="p-4 rounded-xl bg-black/40 border border-white/5">
-                <div class="text-xs text-stone-400 mb-1">
-                  Legal Risk Assessment
-                </div>
-                <div class="text-2xl font-bold text-emerald-300 font-mono">
-                  0.0% Clean
-                </div>
-                <div class="text-[11px] text-stone-500 mt-1">
-                  Certified C of O, AGIS verified registry
-                </div>
+                <div class="text-xs text-stone-400 mb-1"> {$adkT("Legal Risk Assessment")} </div>
+                <div class="text-2xl font-bold text-emerald-300 font-mono"> {$adkT("0.0% Clean")} </div>
+                <div class="text-[11px] text-stone-500 mt-1"> {$adkT("Certified C of O, AGIS verified registry")} </div>
               </div>
             </div>
           </div>
@@ -602,12 +550,10 @@
           {#if similarProperties.length > 0}
             <div class="pt-4">
               <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-serif font-bold text-white">
-                  Similar Properties
-                </h2>
+                <h2 class="text-xl font-serif font-bold text-white"> {$adkT("Similar Properties")} </h2>
                 <a
                   href="/properties"
-                  class="text-xs text-emerald-400 hover:underline">View all</a
+                  class="text-xs text-emerald-400 hover:underline">{$adkT("View all")}</a
                 >
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -630,22 +576,21 @@
             >
               <img
                 src={property.agent.avatar}
-                alt={property.agent.name}
+                alt={$adkT(property.agent.name)}
                 class="w-14 h-14 rounded-full object-cover border-2 border-emerald-500/50"
               />
               <div>
                 <div class="flex items-center gap-1.5">
                   <h3 class="font-semibold text-white text-base">
-                    {property.agent.name}
+                    {$adkT(property.agent.name)}
                   </h3>
                   <ShieldCheck size={14} class="text-emerald-400" />
                 </div>
-                <p class="text-xs text-stone-400">{property.agent.agency}</p>
+                <p class="text-xs text-stone-400">{$adkT(property.agent.agency)}</p>
                 <div
                   class="flex items-center gap-1 mt-1 text-xs text-amber-400 font-semibold"
                 >
-                  ★ {property.agent.rating} (48 reviews)
-                </div>
+                  ★ {$adkT(property.agent.rating)} {$adkT("(48 reviews)")} </div>
               </div>
             </div>
 
@@ -656,7 +601,7 @@
                 class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-white/5 hover:bg-emerald-900/30 border border-white/10 text-xs font-medium text-stone-300 hover:text-emerald-400 transition-colors"
               >
                 <Phone size={16} class="mb-1 text-emerald-400" />
-                <span>Call</span>
+                <span>{$adkT("Call")}</span>
               </a>
               <a
                 href={whatsappHref(
@@ -667,14 +612,14 @@
                 class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-white/5 hover:bg-emerald-900/30 border border-white/10 text-xs font-medium text-stone-300 hover:text-emerald-400 transition-colors"
               >
                 <MessageCircle size={16} class="mb-1 text-emerald-400" />
-                <span>WhatsApp</span>
+                <span>{$adkT("WhatsApp")}</span>
               </a>
               <a
                 href={`mailto:alikodiamondkey@gmail.com?subject=${encodeURIComponent("Property enquiry: " + property.title)}`}
                 class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-white/5 hover:bg-emerald-900/30 border border-white/10 text-xs font-medium text-stone-300 hover:text-emerald-400 transition-colors"
               >
                 <Mail size={16} class="mb-1 text-emerald-400" />
-                <span>Email</span>
+                <span>{$adkT("Email")}</span>
               </a>
             </div>
 
@@ -682,9 +627,7 @@
             <button
               on:click={() => (isViewingModalOpen = true)}
               class="w-full mb-6 py-3 rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-amber-300 text-black font-bold text-sm shadow-lg hover:shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
-            >
-              📅 Schedule Physical Inspection
-            </button>
+            > {$adkT("📅 Schedule Physical Inspection")} </button>
 
             <!-- Direct Contact Form -->
             <form
@@ -693,44 +636,42 @@
             >
               <h4
                 class="text-xs uppercase font-mono tracking-wider text-stone-400"
-              >
-                Send Direct Inquiry
-              </h4>
+              > {$adkT("Send Direct Inquiry")} </h4>
               <div>
-                <input
+                <input dir="auto"
                   type="text"
                   autocomplete="name"
                   bind:value={inquiryName}
-                  placeholder="Your Full Name"
+                  placeholder={$adkT("Your Full Name")}
                   required
                   class="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
               <div>
-                <input
+                <input dir="auto"
                   type="email"
                   inputmode="email"
                   autocomplete="email"
                   bind:value={inquiryEmail}
-                  placeholder="Email Address"
+                  placeholder={$adkT("Email Address")}
                   required
                   class="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
               <div>
-                <input
+                <input dir="auto"
                   type="tel"
                   inputmode="tel"
                   autocomplete="tel"
                   bind:value={inquiryPhone}
-                  placeholder="Phone Number (+234)"
+                  placeholder={$adkT("Phone Number (+234)")}
                   required
                   class="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
               <div>
-                <textarea
-                  aria-label="Message to the property team"
+                <textarea dir="auto"
+                  aria-label={$adkT("Message to the property team")}
                   bind:value={inquiryMessage}
                   rows="3"
                   class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500 resize-none"
@@ -742,10 +683,10 @@
                 class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg transition-colors"
               >
                 {#if isSendingInquiry}
-                  <span>Sending message...</span>
+                  <span>{$adkT("Sending message...")}</span>
                 {:else}
                   <Send size={14} />
-                  <span>Send Message to Agent</span>
+                  <span>{$adkT("Send Message to Agent")}</span>
                 {/if}
               </button>
             </form>
@@ -757,13 +698,9 @@
           >
             <div class="flex items-center gap-2 text-white font-semibold">
               <ShieldCheck size={16} class="text-emerald-400" />
-              <span>100% Legal Guarantee</span>
+              <span>{$adkT("100% Legal Guarantee")}</span>
             </div>
-            <p>
-              Every transaction on Aliko Diamond Key is backed by our full
-              money-back guarantee and verified through AGIS / state land
-              registries.
-            </p>
+            <p> {$adkT("Every transaction on Aliko Diamond Key is backed by our full money-back guarantee and verified through AGIS / state land registries.")} </p>
           </div>
         </div>
       </div>
@@ -787,22 +724,17 @@
     <div
       class="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-[#0A1118] border border-emerald-900/50 rounded-t-2xl sm:rounded-2xl p-6 shadow-2xl z-10"
     >
-      <h3 class="text-xl font-serif font-bold text-white mb-2">
-        Schedule Property Inspection
-      </h3>
-      <p class="text-xs text-stone-400 mb-6">
-        Select your preferred date and time. Our verified agent will meet you on
-        site or provide a virtual guided tour.
-      </p>
+      <h3 class="text-xl font-serif font-bold text-white mb-2"> {$adkT("Schedule Property Inspection")} </h3>
+      <p class="text-xs text-stone-400 mb-6"> {$adkT("Select your preferred date and time. Our verified agent will meet you on site or provide a virtual guided tour.")} </p>
 
       <div class="space-y-4 mb-6">
         <div>
           <label
             for="viewing-date"
             class="block text-xs font-medium text-stone-300 mb-1"
-            >Preferred Date</label
+            >{$adkT("Preferred Date")}</label
           >
-          <input
+          <input dir="auto"
             id="viewing-date"
             type="date"
             bind:value={viewingDate}
@@ -814,17 +746,17 @@
           <label
             for="viewing-time"
             class="block text-xs font-medium text-stone-300 mb-1"
-            >Preferred Time</label
+            >{$adkT("Preferred Time")}</label
           >
           <select
             id="viewing-time"
             bind:value={viewingTime}
             class="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-emerald-500"
           >
-            <option value="09:00" class="bg-[#0A1628]">09:00 AM</option>
-            <option value="11:00" class="bg-[#0A1628]">11:00 AM</option>
-            <option value="14:00" class="bg-[#0A1628]">02:00 PM</option>
-            <option value="16:00" class="bg-[#0A1628]">04:00 PM</option>
+            <option value="09:00" class="bg-[#0A1628]">{$adkT("09:00 AM")}</option>
+            <option value="11:00" class="bg-[#0A1628]">{$adkT("11:00 AM")}</option>
+            <option value="14:00" class="bg-[#0A1628]">{$adkT("02:00 PM")}</option>
+            <option value="16:00" class="bg-[#0A1628]">{$adkT("04:00 PM")}</option>
           </select>
         </div>
       </div>
@@ -833,15 +765,11 @@
         <button
           on:click={() => (isViewingModalOpen = false)}
           class="min-h-[44px] px-4 py-2 rounded-xl text-xs font-medium text-stone-400 hover:text-white"
-        >
-          Cancel
-        </button>
+        > {$adkT("Cancel")} </button>
         <button
           on:click={scheduleViewing}
           class="min-h-[44px] px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg"
-        >
-          Confirm Request
-        </button>
+        > {$adkT("Confirm Request")} </button>
       </div>
     </div>
   </div>

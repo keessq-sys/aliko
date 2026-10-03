@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { ShieldCheck, FileText, Lock, Building } from "lucide-svelte";
   import { reveal } from "$lib/actions/reveal";
 
@@ -46,17 +49,12 @@
           >
             <ShieldCheck class="text-emerald-400" size={32} />
             <span class="text-xl font-extrabold tracking-wide uppercase"
-              >100% Legal Guarantee</span
+              >{$adkT("100% Legal Guarantee")}</span
             >
           </div>
         </div>
-        <h3 class="text-4xl font-extrabold mb-4">
-          Review every property before you commit.
-        </h3>
-        <p class="text-gray-300">
-          Our multi-layered verification system ensures your investment is
-          completely secure and legally binding.
-        </p>
+        <h3 class="text-4xl font-extrabold mb-4"> {$adkT("Review every property before you commit.")} </h3>
+        <p class="text-gray-300"> {$adkT("Our multi-layered verification system ensures your investment is completely secure and legally binding.")} </p>
       </div>
 
       <!-- Right: Pillars -->
@@ -79,8 +77,8 @@
               />
             </div>
             <div>
-              <h4 class="font-bold text-lg mb-1">{pillar.title}</h4>
-              <p class="text-sm text-gray-400">{pillar.desc}</p>
+              <h4 class="font-bold text-lg mb-1">{$adkT(pillar.title)}</h4>
+              <p class="text-sm text-gray-400">{$adkT(pillar.desc)}</p>
             </div>
           </div>
         {/each}
@@ -91,23 +89,13 @@
     <div class="mt-16 pt-8 border-t border-white/10">
       <p
         class="text-center text-xs text-gray-500 uppercase tracking-widest mb-6"
-      >
-        Every Title Is Cross-Checked Against
-      </p>
+      > {$adkT("Every Title Is Cross-Checked Against")} </p>
       <div class="flex flex-wrap justify-center gap-x-12 gap-y-4 opacity-60">
-        <div class="text-sm font-semibold tracking-wide">
-          CAC Company Registry
-        </div>
-        <div class="text-sm font-semibold tracking-wide">
-          AGIS Land Records (FCT)
-        </div>
-        <div class="text-sm font-semibold tracking-wide">
-          State Ministry of Lands
-        </div>
+        <div class="text-sm font-semibold tracking-wide"> {$adkT("CAC Company Registry")} </div>
+        <div class="text-sm font-semibold tracking-wide"> {$adkT("AGIS Land Records (FCT)")} </div>
+        <div class="text-sm font-semibold tracking-wide"> {$adkT("State Ministry of Lands")} </div>
       </div>
-      <p class="mt-6 text-center text-xs text-gray-600">
-        Payments processed securely via Paystack.
-      </p>
+      <p class="mt-6 text-center text-xs text-gray-600"> {$adkT("Payments processed securely via Paystack.")} </p>
     </div>
   </div>
 </section>

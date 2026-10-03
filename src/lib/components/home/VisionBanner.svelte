@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { ShieldCheck, Leaf, Users2 } from "lucide-svelte";
   import { VISION_BANNER_IMAGE } from "$lib/data/imagery";
   import { reveal } from "$lib/actions/reveal";
@@ -24,21 +27,14 @@
   <div class="container relative mx-auto px-6 text-center">
     <p
       class="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-amber-400"
-    >
-      Our Approach
-    </p>
+    > {$adkT("Our Approach")} </p>
     <h2
       class="mx-auto max-w-3xl font-serif text-3xl font-bold leading-tight sm:text-5xl"
-    >
-      Live. Build. Invest. <span class="text-gradient-emerald"
-        >With Clear Information.</span
+    > {$adkT("Live. Build. Invest.")} <span class="text-gradient-emerald"
+        >{$adkT("With Clear Information.")}</span
       >
     </h2>
-    <p class="mx-auto mt-5 max-w-2xl text-stone-300">
-      Explore published listings and request supporting documents before
-      committing. Our team coordinates services from the first site visit to the
-      final handover; availability and delivery terms require confirmation.
-    </p>
+    <p class="mx-auto mt-5 max-w-2xl text-stone-300"> {$adkT("Explore published listings and request supporting documents before committing. Our team coordinates services from the first site visit to the final handover; availability and delivery terms require confirmation.")} </p>
 
     <div class="mx-auto mt-12 grid max-w-3xl grid-cols-1 gap-6 sm:grid-cols-3">
       {#each pillars as p}
@@ -46,7 +42,7 @@
           class="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md"
         >
           <svelte:component this={p.icon} size={28} class="text-emerald-400" />
-          <p class="text-sm text-stone-200">{p.label}</p>
+          <p class="text-sm text-stone-200">{$adkT(p.label)}</p>
         </div>
       {/each}
     </div>

@@ -10,6 +10,7 @@
 
 import type * as ResendOTPPasswordReset from "../ResendOTPPasswordReset.js";
 import type * as accountSecurity from "../accountSecurity.js";
+import type * as activity from "../activity.js";
 import type * as adminSecurity from "../adminSecurity.js";
 import type * as aggregates from "../aggregates.js";
 import type * as auth from "../auth.js";
@@ -24,12 +25,15 @@ import type * as estateOperations from "../estateOperations.js";
 import type * as fulfillment from "../fulfillment.js";
 import type * as geocoding from "../geocoding.js";
 import type * as http from "../http.js";
+import type * as identity from "../identity.js";
 import type * as kyc from "../kyc.js";
 import type * as legalDocuments from "../legalDocuments.js";
 import type * as lib_access from "../lib/access.js";
 import type * as lib_attachments from "../lib/attachments.js";
+import type * as lib_auditedMutation from "../lib/auditedMutation.js";
 import type * as lib_checkoutReadiness from "../lib/checkoutReadiness.js";
 import type * as lib_mediaSecurity from "../lib/mediaSecurity.js";
+import type * as lib_nin from "../lib/nin.js";
 import type * as lib_passwordPolicy from "../lib/passwordPolicy.js";
 import type * as lib_providerPayments from "../lib/providerPayments.js";
 import type * as lib_rateLimits from "../lib/rateLimits.js";
@@ -65,6 +69,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   ResendOTPPasswordReset: typeof ResendOTPPasswordReset;
   accountSecurity: typeof accountSecurity;
+  activity: typeof activity;
   adminSecurity: typeof adminSecurity;
   aggregates: typeof aggregates;
   auth: typeof auth;
@@ -79,12 +84,15 @@ declare const fullApi: ApiFromModules<{
   fulfillment: typeof fulfillment;
   geocoding: typeof geocoding;
   http: typeof http;
+  identity: typeof identity;
   kyc: typeof kyc;
   legalDocuments: typeof legalDocuments;
   "lib/access": typeof lib_access;
   "lib/attachments": typeof lib_attachments;
+  "lib/auditedMutation": typeof lib_auditedMutation;
   "lib/checkoutReadiness": typeof lib_checkoutReadiness;
   "lib/mediaSecurity": typeof lib_mediaSecurity;
+  "lib/nin": typeof lib_nin;
   "lib/passwordPolicy": typeof lib_passwordPolicy;
   "lib/providerPayments": typeof lib_providerPayments;
   "lib/rateLimits": typeof lib_rateLimits;

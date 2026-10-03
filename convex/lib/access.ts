@@ -50,7 +50,7 @@ export async function requireAdmin(ctx: any, maxAgeMs = 30 * 60000) {
 export function publicSignupProfile(params: Record<string, unknown>) {
   if (
     params.flow === "signUp" &&
-    (params.acceptPolicies !== true || params.policyVersion !== "2026-10-01")
+    (params.acceptPolicies !== true || params.policyVersion !== "2026-10-03")
   )
     throw new Error(
       "Accept the current Terms and Privacy Policy before registration",
@@ -68,7 +68,11 @@ export function publicSignupProfile(params: Record<string, unknown>) {
   return {
     email,
     registrationPolicyVersion:
-      params.flow === "signUp" ? "2026-10-01" : undefined,
+      params.flow === "signUp" ? "2026-10-03" : undefined,
+    registrationNinCipher: params.flow === "signUp" ? String(params.registrationNinCipher ?? "") : undefined,
+    registrationNinHash: params.flow === "signUp" ? String(params.registrationNinHash ?? "") : undefined,
+    registrationNinLastFour: params.flow === "signUp" ? String(params.registrationNinLastFour ?? "") : undefined,
+    customerKind: params.customerKind === "RENTER" ? "RENTER" as const : "BUYER" as const,
     name,
     role: "CLIENT" as const,
     isDiaspora: params.isDiaspora === true,
@@ -91,4 +95,9 @@ export function publicSignupProfile(params: Record<string, unknown>) {
     createdAt: Date.now(),
     lastActiveAt: Date.now(),
   };
+}
+
+export async function requireVerifiedNin(ctx: any, userId: any) {
+  const identity = await ctx.db.query("identities").withIndex("by_user", (q: any) => q.eq("userId", userId)).unique();
+  if (identity?.status !== "VERIFIED") throw new Error("Complete NIN verification before this action.");
 }

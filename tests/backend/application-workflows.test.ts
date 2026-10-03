@@ -30,6 +30,7 @@ async function user(
       createdAt: Date.now(),
     }),
   );
+  await t.run(ctx => ctx.db.insert("identities", { userId: id, ninCipher: "test-fixture", fingerprint: String(id), lastFour: "8901", status: "VERIFIED", consentVersion: "2026-10-03", consentedAt: Date.now(), createdAt: Date.now(), updatedAt: Date.now() }));
   const sessionId = await t.run((ctx) =>
     ctx.db.insert("authSessions", {
       userId: id,
@@ -209,7 +210,7 @@ describe("estate operations and ledger", () => {
       propertyId,
       tenantId: tenant.id,
       unit: "A1",
-      startDate: "2026-10-01",
+      startDate: "2026-10-03",
       endDate: "2027-10-01",
       rent: 50000,
       deposit: 10000,
@@ -240,7 +241,7 @@ describe("estate operations and ledger", () => {
       propertyId,
       tenantId: tenant.id,
       unit: "A1",
-      startDate: "2026-10-01",
+      startDate: "2026-10-03",
       endDate: "2027-10-01",
       rent: 50000,
       deposit: 10000,
@@ -400,9 +401,9 @@ describe("registration and account re-verification", () => {
         name: "Test",
         email: "test@example.com",
         acceptPolicies: true,
-        policyVersion: "2026-10-01",
+        policyVersion: "2026-10-03",
       }).registrationPolicyVersion,
-    ).toBe("2026-10-01");
+    ).toBe("2026-10-03");
   });
   it("persists failed code attempts and expires every session on verified email change", async () => {
     const t = setup(),

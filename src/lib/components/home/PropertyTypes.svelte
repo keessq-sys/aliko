@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { api } from "$lib/convex/_generated/api";
   import { useQuery } from "$lib/convex/queries";
   const summary = useQuery(api.catalog.publicSummary, {});
@@ -75,13 +78,8 @@
 <section class="py-24 bg-[#050A0E] text-white" use:reveal>
   <div class="container mx-auto px-6">
     <div class="text-center mb-16">
-      <h2 class="text-3xl md:text-4xl font-extrabold mb-4">
-        Browse by Property Type
-      </h2>
-      <p class="text-gray-400">
-        Explore our diverse portfolio of properties tailored to your specific
-        needs.
-      </p>
+      <h2 class="text-3xl md:text-4xl font-extrabold mb-4"> {$adkT("Browse by Property Type")} </h2>
+      <p class="text-gray-400"> {$adkT("Explore our diverse portfolio of properties tailored to your specific needs.")} </p>
     </div>
 
     <div
@@ -99,16 +97,15 @@
             <div
               class={`w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform`}
             >
-              {type.emoji}
+              {$adkT(type.emoji)}
             </div>
             <div>
-              <h3 class="text-xl font-bold mb-1">{type.name}</h3>
-              <p class="text-xs text-gray-400 mb-2">{type.desc}</p>
+              <h3 class="text-xl font-bold mb-1">{$adkT(type.name)}</h3>
+              <p class="text-xs text-gray-400 mb-2">{$adkT(type.desc)}</p>
               <span
                 class="text-xs font-semibold px-2 py-1 rounded-md bg-white/10 text-gray-300"
               >
-                {$summary?.types[type.type.toUpperCase()] ?? "—"} Listings
-              </span>
+                {$adkT($summary?.types[type.type.toUpperCase()] ?? "—")} {$adkT("Listings")} </span>
             </div>
           </div>
           <div

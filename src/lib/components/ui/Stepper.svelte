@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { Check } from 'lucide-svelte';
 
   export let steps: string[] = [];
@@ -9,9 +12,9 @@
   <div class="flex items-center justify-between relative">
     <!-- Background Track -->
     <div class="absolute top-1/2 left-0 w-full h-1 -translate-y-1/2 bg-stone-800 rounded-full z-0"></div>
-    
+
     <!-- Progress Fill -->
-    <div 
+    <div
       class="absolute top-1/2 left-0 h-1 -translate-y-1/2 bg-emerald-500 rounded-full z-0 transition-all duration-450 ease-in-out shadow-[0_0_10px_rgba(5,150,105,0.5)]"
       style="width: {(currentStep / (steps.length - 1)) * 100}%"
     ></div>
@@ -22,11 +25,11 @@
           {#if i < currentStep}
             <Check size={16} />
           {:else}
-            <span class="text-sm font-semibold">{i + 1}</span>
+            <span class="text-sm font-semibold">{$adkT(i + 1)}</span>
           {/if}
         </div>
         <span class="absolute top-10 text-xs font-medium whitespace-nowrap {i <= currentStep ? 'text-stone-200' : 'text-stone-500'}">
-          {step}
+          {$adkT(step)}
         </span>
       </div>
     {/each}

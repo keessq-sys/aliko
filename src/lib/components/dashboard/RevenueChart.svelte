@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { onMount } from "svelte";
 
   export let data: { month: string; revenue: number; expenses: number }[] = [];
@@ -59,15 +62,15 @@
   bind:clientWidth={width}
 >
   <div class="mb-4 flex items-center justify-between">
-    <h3 class="text-lg font-semibold text-white">Financial Overview</h3>
+    <h3 class="text-lg font-semibold text-white">{$adkT("Financial Overview")}</h3>
     <div class="flex items-center gap-4 text-sm">
       <div class="flex items-center gap-2">
         <div class="h-3 w-3 rounded-full bg-emerald-500"></div>
-        <span class="text-stone-400">Revenue</span>
+        <span class="text-stone-400">{$adkT("Revenue")}</span>
       </div>
       <div class="flex items-center gap-2">
         <div class="h-3 w-3 rounded-full bg-rose-500"></div>
-        <span class="text-stone-400">Expenses</span>
+        <span class="text-stone-400">{$adkT("Expenses")}</span>
       </div>
     </div>
   </div>
@@ -103,7 +106,7 @@
           font-size="10"
           text-anchor="end"
         >
-          {tick >= 1000000 ? (tick / 1000000).toFixed(1) + "M" : tick}
+          {$adkT(tick >= 1000000 ? (tick / 1000000).toFixed(1) + "M" : tick)}
         </text>
       {/each}
 
@@ -116,7 +119,7 @@
           font-size="12"
           text-anchor="middle"
         >
-          {d.month}
+          {$adkT(d.month)}
         </text>
       {/each}
 

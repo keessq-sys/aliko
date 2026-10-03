@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { Eye, EyeOff } from "lucide-svelte";
   import {
     passwordProblem,
@@ -11,7 +14,7 @@
 </script>
 
 <div class="relative">
-  <input
+  <input dir="auto"
     {...$$restProps}
     type={visible ? "text" : "password"}
     bind:value
@@ -34,7 +37,7 @@
     min="0"
     max="5"
     value={score}
-    aria-label="Password strength"
+    aria-label={$adkT("Password strength")}
   ></meter>
   <p class="mt-1 text-xs text-stone-400" aria-live="polite">
     {value && !passwordProblem(value)

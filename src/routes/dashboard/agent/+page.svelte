@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import OperationsWorkspace from "$lib/components/dashboard/OperationsWorkspace.svelte";
   const workspaceTabs: Record<string, string> = {
     referrals: "REFERRAL",
@@ -111,7 +117,7 @@
       "General property enquiry",
     source: lead.source ?? "Website",
     status: lead.status.toLowerCase(),
-    date: new Date(lead.createdAt).toLocaleDateString(),
+    date: new Date(lead.createdAt).toLocaleDateString($adkLocale === "ar" ? "ar-NG" : "en-NG"),
     value: lead.property?.price ?? lead.plot?.price ?? 0,
   }));
 
@@ -124,7 +130,7 @@
   $: VIEWINGS = ($myAssignedVisits ?? []).map((visit) => ({
     client: visit.client?.name ?? "Client",
     property: visit.property?.title ?? visit.project?.name ?? "Site visit",
-    time: `${new Date(visit.requestedAt).toLocaleDateString()} · ${visit.preferredTime}`,
+    time: `${new Date(visit.requestedAt).toLocaleDateString($adkLocale === "ar" ? "ar-NG" : "en-NG")} · ${visit.preferredTime}`,
     status: visit.status[0] + visit.status.slice(1).toLowerCase(),
   }));
 
@@ -177,17 +183,15 @@
         <div
           class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center"
         >
-          <span class="text-white font-bold">A</span>
-        </div>
-        Agent Portal
-      </h1>
+          <span class="text-white font-bold">{$adkT("A")}</span>
+        </div> {$adkT("Agent Portal")} </h1>
 
       <div
         class="mt-8 flex items-center gap-3 rounded-xl bg-white/5 p-3 border border-white/5"
       >
         <img
           src="https://picsum.photos/seed/agent/100/100"
-          alt="Agent"
+          alt={$adkT("Agent")}
           class="h-10 w-10 rounded-full object-cover"
         />
         <div>
@@ -211,7 +215,7 @@
             : 'text-stone-400 hover:bg-white/5 hover:text-white'}"
         >
           <svelte:component this={item.icon} class="h-5 w-5" />
-          {item.label}
+          {$adkT(item.label)}
         </button>
       {/each}
     </nav>
@@ -221,9 +225,7 @@
         href="/login?signout=1"
         class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors"
       >
-        <LogOut class="h-5 w-5" />
-        Sign Out
-      </a>
+        <LogOut class="h-5 w-5" /> {$adkT("Sign Out")} </a>
     </div>
   </aside>
 
@@ -247,13 +249,11 @@
             <div
               class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center"
             >
-              <span class="text-white font-bold">A</span>
-            </div>
-            Agent Portal
-          </h1>
+              <span class="text-white font-bold">{$adkT("A")}</span>
+            </div> {$adkT("Agent Portal")} </h1>
           <button
             class="flex items-center justify-center w-11 h-11 rounded-xl text-stone-400 active:bg-white/10"
-            aria-label="Close menu"
+            aria-label={$adkT("Close menu")}
             on:click={() => (isMobileNavOpen = false)}
           >
             <X class="w-5 h-5" />
@@ -272,7 +272,7 @@
                 : 'text-stone-400 hover:bg-white/5 hover:text-white'}"
             >
               <svelte:component this={item.icon} class="h-5 w-5" />
-              {item.label}
+              {$adkT(item.label)}
             </button>
           {/each}
         </nav>
@@ -281,9 +281,7 @@
             href="/login?signout=1"
             class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors"
           >
-            <LogOut class="h-5 w-5" />
-            Sign Out
-          </a>
+            <LogOut class="h-5 w-5" /> {$adkT("Sign Out")} </a>
         </div>
       </aside>
     </div>
@@ -296,7 +294,7 @@
       <div class="flex items-center gap-2 min-w-0">
         <button
           class="md:hidden flex items-center justify-center w-11 h-11 -ml-2 flex-shrink-0 rounded-full text-stone-300 active:bg-white/10"
-          aria-label="Open menu"
+          aria-label={$adkT("Open menu")}
           on:click={() => (isMobileNavOpen = true)}
         >
           <Menu class="h-6 w-6" />
@@ -304,7 +302,7 @@
         <h2
           class="text-lg md:text-2xl font-semibold text-white capitalize truncate"
         >
-          {currentTab.replace("-", " ")}
+          {$adkT(currentTab.replace("-", " "))}
         </h2>
       </div>
       <button
@@ -319,20 +317,20 @@
         <div in:fly={{ y: 10, duration: 220, delay: 80 }}>
           {#if workspaceTabs[currentTab]}<OperationsWorkspace
               kind={workspaceTabs[currentTab]}
-              title={currentTab.replace("-", " ")}
+              title={$adkT(currentTab.replace("-", " "))}
             />{:else if currentTab === "overview"}
             <div
               class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
             >
               <StatCard
-                title="Active Listings"
+                title={$adkT("Active Listings")}
                 value={$myListingsCount ?? "—"}
                 change="Assigned to you"
                 changeType="up"
                 icon={Home}
               />
               <StatCard
-                title="New Leads"
+                title={$adkT("New Leads")}
                 value={$myAssignedEnquiries?.length ?? "—"}
                 change="Assigned enquiries"
                 changeType="up"
@@ -340,7 +338,7 @@
                 iconBg="bg-blue-500/20"
               />
               <StatCard
-                title="Viewings Scheduled"
+                title={$adkT("Viewings Scheduled")}
                 value={$myAssignedVisits?.length ?? "—"}
                 change="Assigned site visits"
                 changeType="up"
@@ -348,9 +346,9 @@
                 iconBg="bg-purple-500/20"
               />
               <StatCard
-                title="Commission Earned"
+                title={$adkT("Commission Earned")}
                 value={$finances
-                  ? `₦${$finances.commission.toLocaleString()}`
+                  ? `₦${$finances.commission.toLocaleString($adkLocale === "ar" ? "ar-NG" : "en-NG")}`
                   : "—"}
                 change="Approved paid commissions"
                 changeType="up"
@@ -366,9 +364,7 @@
 
               <!-- Schedule mini-view -->
               <div class="rounded-xl border border-white/5 bg-white/[0.02] p-6">
-                <h3 class="text-lg font-semibold text-white mb-4">
-                  Today's Schedule
-                </h3>
+                <h3 class="text-lg font-semibold text-white mb-4"> {$adkT("Today's Schedule")} </h3>
                 <div class="space-y-4">
                   {#each VIEWINGS as view}
                     <div
@@ -376,47 +372,45 @@
                     >
                       <div class="flex justify-between items-start mb-2">
                         <span class="text-emerald-400 text-sm font-medium"
-                          >{view.time}</span
+                          >{$adkT(view.time)}</span
                         >
                         <span
                           class="text-xs px-2 py-1 rounded bg-stone-800 text-stone-300"
-                          >{view.status}</span
+                          >{$adkT(view.status)}</span
                         >
                       </div>
-                      <h4 class="text-white font-medium">{view.client}</h4>
-                      <p class="text-sm text-stone-400">{view.property}</p>
+                      <h4 class="text-white font-medium">{$adkT(view.client)}</h4>
+                      <p class="text-sm text-stone-400">{$adkT(view.property)}</p>
                     </div>
                   {/each}
                   <button
                     class="w-full py-2 text-sm text-stone-400 hover:text-white border border-white/10 rounded-lg"
-                    >View Full Calendar</button
+                    >{$adkT("View Full Calendar")}</button
                   >
                 </div>
               </div>
             </div>
 
             <div>
-              <h3 class="text-lg font-semibold text-white mb-4">
-                Recent Leads
-              </h3>
+              <h3 class="text-lg font-semibold text-white mb-4"> {$adkT("Recent Leads")} </h3>
               <LeadsTable leads={MOCK_LEADS.slice(0, 3)} />
             </div>
           {:else if currentTab === "leads"}
             <div class="mb-6 flex justify-between">
-              <h3 class="text-xl font-medium text-white">Lead Pipeline</h3>
+              <h3 class="text-xl font-medium text-white">{$adkT("Lead Pipeline")}</h3>
               <button
                 class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg flex gap-2"
-                ><Plus class="w-4 h-4" /> Add Lead</button
+                ><Plus class="w-4 h-4" /> {$adkT("Add Lead")}</button
               >
             </div>
             <LeadsTable leads={MOCK_LEADS} />
           {:else if currentTab === "listings"}
             <div class="mb-6 flex justify-between items-center">
-              <h3 class="text-xl font-medium text-white">My Listings</h3>
+              <h3 class="text-xl font-medium text-white">{$adkT("My Listings")}</h3>
             </div>
             <MediaManager
               mode="property"
-              title="Upload images to my listings"
+              title={$adkT("Upload images to my listings")}
             />
             <PropertyTable properties={listingRows} />
           {:else if currentTab === "referrals"}
@@ -424,27 +418,21 @@
               class="mb-6 flex flex-col sm:flex-row justify-between sm:items-center gap-4"
             >
               <div>
-                <h3 class="text-xl font-medium text-white">
-                  Service Referrals
-                </h3>
-                <p class="text-sm text-stone-400 mt-1">
-                  Refer closed-sale clients into ADK's interior design,
-                  renovation, smart-home and construction services — earn {(
+                <h3 class="text-xl font-medium text-white"> {$adkT("Service Referrals")} </h3>
+                <p class="text-sm text-stone-400 mt-1"> {$adkT("Refer closed-sale clients into ADK's interior design, renovation, smart-home and construction services — earn")} {$adkT((
                     REFERRAL_COMMISSION_RATE * 100
-                  ).toFixed(0)}% on every completed request.
-                </p>
+                  ).toFixed(0))}{$adkT("% on every completed request.")} </p>
               </div>
               <a
                 href="/services"
                 class="flex-shrink-0 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium"
               >
-                <Send class="w-4 h-4" /> New Referral
-              </a>
+                <Send class="w-4 h-4" /> {$adkT("New Referral")} </a>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <StatCard
-                title="Active Referrals"
+                title={$adkT("Active Referrals")}
                 value={MOCK_REFERRALS.filter((r) => r.status !== "COMPLETED")
                   .length}
                 change="Across 4 clients"
@@ -453,7 +441,7 @@
                 iconBg="bg-purple-500/20"
               />
               <StatCard
-                title="Referral Earnings"
+                title={$adkT("Referral Earnings")}
                 value={(
                   MOCK_REFERRALS.reduce(
                     (s, r) =>
@@ -472,7 +460,7 @@
                 iconBg="bg-emerald-500/20"
               />
               <StatCard
-                title="Pipeline Value"
+                title={$adkT("Pipeline Value")}
                 value={(
                   MOCK_REFERRALS.reduce((s, r) => s + r.value, 0) / 1000000
                 ).toFixed(1)}
@@ -492,44 +480,44 @@
                 <table class="w-full text-left text-sm">
                   <thead class="bg-white/5 text-stone-400">
                     <tr>
-                      <th class="px-6 py-4">Client</th>
-                      <th class="px-6 py-4">Service</th>
-                      <th class="px-6 py-4">Est. Value</th>
-                      <th class="px-6 py-4">Status</th>
-                      <th class="px-6 py-4">Referred</th>
+                      <th class="px-6 py-4">{$adkT("Client")}</th>
+                      <th class="px-6 py-4">{$adkT("Service")}</th>
+                      <th class="px-6 py-4">{$adkT("Est. Value")}</th>
+                      <th class="px-6 py-4">{$adkT("Status")}</th>
+                      <th class="px-6 py-4">{$adkT("Referred")}</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-white/5">
                     {#each MOCK_REFERRALS as r}
                       <tr class="hover:bg-white/5">
                         <td class="px-6 py-4 text-white font-medium"
-                          >{r.client}</td
+                          >{$adkT(r.client)}</td
                         >
                         <td class="px-6 py-4">
-                          <span class="text-stone-300">{r.service}</span>
+                          <span class="text-stone-300">{$adkT(r.service)}</span>
                           <span
                             class="block text-xs {SERVICE_CATEGORY_META[
                               r.category
                             ]?.color ?? 'text-stone-500'}"
-                            >{SERVICE_CATEGORY_META[r.category]?.label ??
-                              r.category}</span
+                            >{$adkT(SERVICE_CATEGORY_META[r.category]?.label ??
+                              r.category)}</span
                           >
                         </td>
                         <td class="px-6 py-4 text-stone-300"
-                          >{r.value > 0
+                          >{$adkT(r.value > 0
                             ? `₦${(r.value / 1000000).toFixed(1)}M`
-                            : "—"}</td
+                            : "—")}</td
                         >
                         <td class="px-6 py-4">
                           <span
                             class="px-2 py-1 rounded-full text-xs {REQUEST_STATUS_META[
                               r.status
                             ]?.classes}"
-                            >{REQUEST_STATUS_META[r.status]?.label ??
-                              r.status}</span
+                            >{$adkT(REQUEST_STATUS_META[r.status]?.label ??
+                              r.status)}</span
                           >
                         </td>
-                        <td class="px-6 py-4 text-stone-500">{r.date}</td>
+                        <td class="px-6 py-4 text-stone-500">{$adkT(r.date)}</td>
                       </tr>
                     {/each}
                   </tbody>
@@ -540,7 +528,7 @@
             <div class="space-y-6">
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <StatCard
-                  title="YTD Commission"
+                  title={$adkT("YTD Commission")}
                   value="10.9"
                   prefix="₦"
                   suffix="M"
@@ -550,7 +538,7 @@
                   iconBg="bg-emerald-500/20"
                 />
                 <StatCard
-                  title="This Month"
+                  title={$adkT("This Month")}
                   value="1.8"
                   prefix="₦"
                   suffix="M"
@@ -559,7 +547,7 @@
                   icon={DollarSign}
                 />
                 <StatCard
-                  title="Pending Payout"
+                  title={$adkT("Pending Payout")}
                   value="640"
                   prefix="₦"
                   suffix="K"
@@ -570,18 +558,16 @@
                 />
               </div>
               <div class="p-6 rounded-xl border border-white/5 bg-white/[0.02]">
-                <h3 class="text-lg font-semibold text-white mb-4">
-                  Commission History
-                </h3>
+                <h3 class="text-lg font-semibold text-white mb-4"> {$adkT("Commission History")} </h3>
                 <RevenueChart data={COMMISSION_DATA} type="bar" />
               </div>
             </div>
           {:else if currentTab === "schedule"}
             <div class="mb-6 flex justify-between items-center">
-              <h3 class="text-xl font-medium text-white">Upcoming Viewings</h3>
+              <h3 class="text-xl font-medium text-white">{$adkT("Upcoming Viewings")}</h3>
               <button
                 class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg flex gap-2 text-sm"
-                ><Plus class="w-4 h-4" /> Schedule Viewing</button
+                ><Plus class="w-4 h-4" /> {$adkT("Schedule Viewing")}</button
               >
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -589,15 +575,15 @@
                 <div class="p-4 rounded-lg bg-white/5 border border-white/5">
                   <div class="flex justify-between items-start mb-2">
                     <span class="text-emerald-400 text-sm font-medium"
-                      >{view.time}</span
+                      >{$adkT(view.time)}</span
                     >
                     <span
                       class="text-xs px-2 py-1 rounded bg-stone-800 text-stone-300"
-                      >{view.status}</span
+                      >{$adkT(view.status)}</span
                     >
                   </div>
-                  <h4 class="text-white font-medium">{view.client}</h4>
-                  <p class="text-sm text-stone-400">{view.property}</p>
+                  <h4 class="text-white font-medium">{$adkT(view.client)}</h4>
+                  <p class="text-sm text-stone-400">{$adkT(view.property)}</p>
                 </div>
               {/each}
             </div>
@@ -612,15 +598,15 @@
                   <div
                     class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center bg-emerald-900/40 text-emerald-300 font-semibold text-sm"
                   >
-                    {msg.from[0]}
+                    {$adkT(msg.from[0])}
                   </div>
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center justify-between">
-                      <p class="text-white font-medium text-sm">{msg.from}</p>
-                      <span class="text-xs text-stone-500">{msg.time}</span>
+                      <p class="text-white font-medium text-sm">{$adkT(msg.from)}</p>
+                      <span class="text-xs text-stone-500">{$adkT(msg.time)}</span>
                     </div>
                     <p class="text-sm text-stone-400 truncate mt-0.5">
-                      {msg.preview}
+                      {$adkT(msg.preview)}
                     </p>
                   </div>
                   {#if msg.unread}
@@ -639,9 +625,7 @@
               >
                 <h3
                   class="text-lg font-medium text-white border-b border-white/10 pb-4"
-                >
-                  Profile Settings
-                </h3>
+                > {$adkT("Profile Settings")} </h3>
                 {#if $myProfile === undefined}
                   <div class="grid grid-cols-2 gap-4">
                     {#each Array(2) as _}<div
@@ -653,9 +637,9 @@
                     <div class="space-y-2">
                       <label
                         for="agent-profile-name"
-                        class="text-sm text-stone-400">Full Name</label
+                        class="text-sm text-stone-400">{$adkT("Full Name")}</label
                       >
-                      <input
+                      <input dir="auto"
                         id="agent-profile-name"
                         type="text"
                         bind:value={profileName}
@@ -665,23 +649,23 @@
                     <div class="space-y-2">
                       <label
                         for="agent-profile-email"
-                        class="text-sm text-stone-400">Email Address</label
+                        class="text-sm text-stone-400">{$adkT("Email Address")}</label
                       >
-                      <input
+                      <input dir="auto"
                         id="agent-profile-email"
                         type="email"
                         value={$myProfile?.email ?? ""}
                         disabled
-                        title="Contact support to change your sign-in email"
+                        title={$adkT("Contact support to change your sign-in email")}
                         class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-stone-500 cursor-not-allowed"
                       />
                     </div>
                     <div class="space-y-2">
                       <label
                         for="agent-profile-phone"
-                        class="text-sm text-stone-400">Phone</label
+                        class="text-sm text-stone-400">{$adkT("Phone")}</label
                       >
-                      <input
+                      <input dir="auto"
                         id="agent-profile-phone"
                         type="tel"
                         inputmode="tel"
@@ -695,15 +679,13 @@
                   <p
                     class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300"
                   >
-                    {profileError}
+                    {$adkT(profileError)}
                   </p>
                 {/if}
                 {#if profileSaved}
                   <p
                     class="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-300"
-                  >
-                    Profile updated.
-                  </p>
+                  > {$adkT("Profile updated.")} </p>
                 {/if}
                 <div class="pt-4">
                   <button
@@ -713,8 +695,7 @@
                   >
                     {#if savingProfile}<Loader2
                         class="h-4 w-4 animate-spin"
-                      />{/if} Save Changes
-                  </button>
+                      />{/if} {$adkT("Save Changes")} </button>
                 </div>
               </form>
             </div>

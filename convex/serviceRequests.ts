@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { requireAdmin, requireUser } from "./lib/access";
 import { v } from "convex/values";
 import { query, mutation, internalMutation } from "./_generated/server";
@@ -13,7 +14,7 @@ function makeRef(prefix: string): string {
 }
 
 // ── Public: submit a service request (guests allowed) ──────────────────────
-export const submitServiceRequest = mutation({
+export const submitServiceRequest = auditedMutation("serviceRequests:submitServiceRequest")({
   args: {
     serviceSlug: v.string(),
     requesterName: v.string(),
@@ -214,7 +215,7 @@ export const getStatusCounts = query({
 });
 
 // ── Admin: update pipeline status / response / quote ───────────────────────
-export const reviewServiceRequest = mutation({
+export const reviewServiceRequest = auditedMutation("serviceRequests:reviewServiceRequest")({
   args: {
     id: v.id("serviceRequests"),
     status: v.union(
@@ -329,7 +330,7 @@ export const listMessages = query({
   },
 });
 
-export const sendMessage = mutation({
+export const sendMessage = auditedMutation("serviceRequests:sendMessage")({
   args: { requestId: v.id("serviceRequests"), body: v.string() },
   handler: async (ctx, { requestId, body }) => {
     const access = await requireConversationAccess(ctx, requestId);

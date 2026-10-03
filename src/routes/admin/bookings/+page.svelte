@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { useQuery, runMutation, runAction } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
   import { DollarSign, Loader2, Search, XCircle, RotateCcw, Download } from "lucide-svelte";
@@ -58,7 +64,7 @@
     if (!Number.isFinite(amount) || amount <= 0) return alert("Enter a valid positive amount.");
     const reason = prompt("Reason for this refund (required for the audit trail):", "Customer-approved refund");
     if (!reason) return;
-    if (!confirm(`Send a ${formatNaira(amount)} refund to the original payment method?`)) return;
+    if (!confirm(`Send a ${formatNaira(amount, $adkLocale)} refund to the original payment method?`)) return;
     refundingId = payment._id;
     try {
       const result = await runAction(api.paymentOperations.refundFlutterwavePayment, { paymentId: payment._id, amount, reason } as any);
@@ -88,45 +94,44 @@
   }
 </script>
 
-<svelte:head><title>Bookings — ADK Admin</title></svelte:head>
+<svelte:head><title>{$adkT("Bookings — ADK Admin")}</title></svelte:head>
 
 <div class="p-8">
   <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
     <div>
-      <h1 class="flex items-center gap-2 text-xl font-bold text-white"><DollarSign class="h-5 w-5 text-emerald-400" /> Bookings</h1>
-      <p class="mt-0.5 text-sm text-stone-500">Every plot reservation and its payment status.</p>
+      <h1 class="flex items-center gap-2 text-xl font-bold text-white"><DollarSign class="h-5 w-5 text-emerald-400" /> {$adkT("Bookings")}</h1>
+      <p class="mt-0.5 text-sm text-stone-500">{$adkT("Every plot reservation and its payment status.")}</p>
     </div>
     <div class="flex flex-wrap items-center gap-2">
       <button type="button" disabled={importingSettlements} on:click={importSettlements} class="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-emerald-500/30 px-3 text-xs text-emerald-300 hover:bg-emerald-500/10 disabled:opacity-50">
-        {#if importingSettlements}<Loader2 size={14} class="animate-spin" />{:else}<Download size={14} />{/if} Import settlements
-      </button>
+        {#if importingSettlements}<Loader2 size={14} class="animate-spin" />{:else}<Download size={14} />{/if} {$adkT("Import settlements")} </button>
       <div class="relative">
         <Search class="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-500" />
-        <input type="text" bind:value={search} placeholder="Search reference, client, plot…" class="w-64 rounded-xl border border-white/10 bg-white/5 py-2 pl-8 pr-3 text-xs text-white placeholder-stone-600 outline-none focus:border-emerald-500" />
+        <input dir="auto" type="text" bind:value={search} placeholder={$adkT("Search reference, client, plot…")} class="w-64 rounded-xl border border-white/10 bg-white/5 py-2 pl-8 pr-3 text-xs text-white placeholder-stone-600 outline-none focus:border-emerald-500" />
       </div>
     </div>
   </div>
 
   <div class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
     <div class="rounded-xl px-4 py-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06)">
-      <p class="text-xl font-black text-white">{$bookings?.length ?? '—'}</p>
-      <p class="text-xs text-stone-500">Total</p>
+      <p class="text-xl font-black text-white">{$adkT($bookings?.length ?? '—')}</p>
+      <p class="text-xs text-stone-500">{$adkT("Total")}</p>
     </div>
     <div class="rounded-xl px-4 py-3" style="background: rgba(217,119,6,0.08); border: 1px solid rgba(217,119,6,0.2)">
-      <p class="text-xl font-black text-amber-400">{statusCounts.PENDING ?? 0}</p>
-      <p class="text-xs text-stone-500">Pending</p>
+      <p class="text-xl font-black text-amber-400">{$adkT(statusCounts.PENDING ?? 0)}</p>
+      <p class="text-xs text-stone-500">{$adkT("Pending")}</p>
     </div>
     <div class="rounded-xl px-4 py-3" style="background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2)">
-      <p class="text-xl font-black text-blue-300">{statusCounts.PARTIAL ?? 0}</p>
-      <p class="text-xs text-stone-500">Partial</p>
+      <p class="text-xl font-black text-blue-300">{$adkT(statusCounts.PARTIAL ?? 0)}</p>
+      <p class="text-xs text-stone-500">{$adkT("Partial")}</p>
     </div>
     <div class="rounded-xl px-4 py-3" style="background: rgba(5,150,105,0.08); border: 1px solid rgba(5,150,105,0.2)">
-      <p class="text-xl font-black text-emerald-400">{statusCounts.SUCCESS ?? 0}</p>
-      <p class="text-xs text-stone-500">Paid</p>
+      <p class="text-xl font-black text-emerald-400">{$adkT(statusCounts.SUCCESS ?? 0)}</p>
+      <p class="text-xs text-stone-500">{$adkT("Paid")}</p>
     </div>
     <div class="rounded-xl px-4 py-3" style="background: rgba(225,29,72,0.08); border: 1px solid rgba(225,29,72,0.2)">
-      <p class="text-xl font-black text-rose-400">{statusCounts.FAILED ?? 0}</p>
-      <p class="text-xs text-stone-500">Failed / Cancelled</p>
+      <p class="text-xl font-black text-rose-400">{$adkT(statusCounts.FAILED ?? 0)}</p>
+      <p class="text-xs text-stone-500">{$adkT("Failed / Cancelled")}</p>
     </div>
   </div>
 
@@ -138,7 +143,7 @@
           ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
           : 'bg-white/5 text-stone-400 border border-white/10 hover:text-white'}"
       >
-        {s || 'All'}
+        {$adkT(s || 'All')}
       </button>
     {/each}
   </div>
@@ -147,50 +152,49 @@
     {#if $bookings === undefined}
       <div class="flex items-center justify-center py-16 text-stone-500"><Loader2 class="h-6 w-6 animate-spin" /></div>
     {:else if filtered.length === 0}
-      <p class="py-16 text-center text-sm text-stone-600">{$bookings.length === 0 ? "No bookings yet." : "No bookings match this view."}</p>
+      <p class="py-16 text-center text-sm text-stone-600">{$adkT($bookings.length === 0 ? "No bookings yet." : "No bookings match this view.")}</p>
     {:else}
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead class="bg-white/5 text-stone-400">
             <tr>
-              <th class="px-6 py-4">Reference</th>
-              <th class="px-6 py-4">Client</th>
-              <th class="px-6 py-4">Plot</th>
-              <th class="px-6 py-4">Plan</th>
-              <th class="px-6 py-4">Paid / Total</th>
-              <th class="px-6 py-4">Provider</th>
-              <th class="px-6 py-4">Status</th>
-              <th class="px-6 py-4">Date</th>
-              <th class="px-6 py-4 text-right">Actions</th>
+              <th class="px-6 py-4">{$adkT("Reference")}</th>
+              <th class="px-6 py-4">{$adkT("Client")}</th>
+              <th class="px-6 py-4">{$adkT("Plot")}</th>
+              <th class="px-6 py-4">{$adkT("Plan")}</th>
+              <th class="px-6 py-4">{$adkT("Paid / Total")}</th>
+              <th class="px-6 py-4">{$adkT("Provider")}</th>
+              <th class="px-6 py-4">{$adkT("Status")}</th>
+              <th class="px-6 py-4">{$adkT("Date")}</th>
+              <th class="px-6 py-4 text-right">{$adkT("Actions")}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-white/5">
             {#each filtered as b (b._id)}
               <tr class="hover:bg-white/5">
-                <td class="px-6 py-4 font-mono text-xs text-stone-400">{b.reference}</td>
-                <td class="px-6 py-4 text-white">{b.client?.name ?? '—'}</td>
-                <td class="px-6 py-4 text-stone-300">{b.plot?.beaconNumber ?? '—'} <span class="text-xs text-stone-600">{b.project?.name ?? ''}</span></td>
-                <td class="px-6 py-4 text-stone-400">{b.installmentPlan ?? 'OUTRIGHT'}</td>
-                <td class="px-6 py-4 text-white">{formatNaira(b.paidAmount)} <span class="text-xs text-stone-600">/ {formatNaira(b.totalAmount)}</span></td>
+                <td class="px-6 py-4 font-mono text-xs text-stone-400">{$adkT(b.reference)}</td>
+                <td class="px-6 py-4 text-white">{$adkT(b.client?.name ?? '—')}</td>
+                <td class="px-6 py-4 text-stone-300">{$adkT(b.plot?.beaconNumber ?? '—')} <span class="text-xs text-stone-600">{$adkT(b.project?.name ?? '')}</span></td>
+                <td class="px-6 py-4 text-stone-400">{$adkT(b.installmentPlan ?? 'OUTRIGHT')}</td>
+                <td class="px-6 py-4 text-white">{$adkT(formatNaira(b.paidAmount, $adkLocale))} <span class="text-xs text-stone-600">/ {$adkT(formatNaira(b.totalAmount, $adkLocale))}</span></td>
                 <td class="px-6 py-4">
                   {#if b.payments?.[0]}
-                    <p class="text-xs font-semibold text-stone-300">{b.payments[0].provider}</p>
-                    <p class="mt-0.5 font-mono text-[10px] text-stone-600">{b.payments[0].providerReference ?? b.payments[0].reference}</p>
+                    <p class="text-xs font-semibold text-stone-300">{$adkT(b.payments[0].provider)}</p>
+                    <p class="mt-0.5 font-mono text-[10px] text-stone-600">{$adkT(b.payments[0].providerReference ?? b.payments[0].reference)}</p>
                   {:else}
                     <span class="text-stone-600">—</span>
                   {/if}
                 </td>
                 <td class="px-6 py-4">
                   <span class="rounded-full border px-2.5 py-1 text-xs font-semibold {STATUS_CLASSES[b.paymentStatus] ?? 'text-stone-400 bg-stone-500/10 border-stone-500/30'}">
-                    {b.paymentStatus}
+                    {$adkT(b.paymentStatus)}
                   </span>
                 </td>
-                <td class="px-6 py-4 text-xs text-stone-600">{formatRelative(new Date(b.createdAt))}</td>
+                <td class="px-6 py-4 text-xs text-stone-600">{$adkT(formatRelative(new Date(b.createdAt), $adkLocale))}</td>
                 <td class="px-6 py-4 text-right">
                   {#if b.payments?.[0]?.provider === 'FLUTTERWAVE' && b.payments[0].status === 'SUCCESS'}
                     <button type="button" disabled={refundingId === b.payments[0]._id} on:click={() => refund(b.payments[0])} class="mr-2 inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-amber-500/30 px-3 py-1.5 text-xs text-amber-300 hover:bg-amber-500/10 disabled:opacity-50">
-                      {#if refundingId === b.payments[0]._id}<Loader2 size={13} class="animate-spin" />{:else}<RotateCcw size={13} />{/if} Refund
-                    </button>
+                      {#if refundingId === b.payments[0]._id}<Loader2 size={13} class="animate-spin" />{:else}<RotateCcw size={13} />{/if} {$adkT("Refund")} </button>
                   {/if}
                   {#if b.paidAmount === 0 && b.paymentStatus !== 'FAILED'}
                     <button
@@ -199,8 +203,7 @@
                       on:click={() => cancel(b._id)}
                       class="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-rose-500/30 px-3 py-1.5 text-xs text-rose-300 transition-colors hover:bg-rose-500/10 disabled:opacity-50"
                     >
-                      {#if cancelingId === b._id}<Loader2 size={13} class="animate-spin" />{:else}<XCircle size={13} />{/if} Cancel
-                    </button>
+                      {#if cancelingId === b._id}<Loader2 size={13} class="animate-spin" />{:else}<XCircle size={13} />{/if} {$adkT("Cancel")} </button>
                   {/if}
                 </td>
               </tr>

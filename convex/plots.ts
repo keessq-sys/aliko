@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { requireAdmin } from "./lib/access";
 import { v } from "convex/values";
 import { query, mutation, internalMutation } from "./_generated/server";
@@ -116,7 +117,7 @@ export const getAvailablePlotCount = query({
 
 // ── Admin Mutations ────────────────────────────────────────────────────────
 
-export const createPlot = mutation({
+export const createPlot = auditedMutation("plots:createPlot")({
   args: {
     projectId: v.id("projects"),
     beaconNumber: v.string(),
@@ -171,7 +172,7 @@ export const createPlot = mutation({
   },
 });
 
-export const verifyPlotTitle = mutation({
+export const verifyPlotTitle = auditedMutation("plots:verifyPlotTitle")({
   args: {
     plotId: v.id("plots"),
     verificationDocsUrls: v.array(v.string()),
@@ -208,7 +209,7 @@ export const updatePlotStatus = internalMutation({
   },
 });
 
-export const updatePlotPrice = mutation({
+export const updatePlotPrice = auditedMutation("plots:updatePlotPrice")({
   args: {
     plotId: v.id("plots"),
     price: v.number(),
@@ -227,7 +228,7 @@ export const updatePlotPrice = mutation({
   },
 });
 
-export const generateUploadUrl = mutation({
+export const generateUploadUrl = auditedMutation("plots:generateUploadUrl")({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized");

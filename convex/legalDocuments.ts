@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { requireAdmin, requireUser } from "./lib/access";
 import { workflow } from "./fulfillment";
 import type { WorkflowId } from "@convex-dev/workflow";
@@ -718,7 +719,7 @@ export const dispatchSignature = internalAction({
 
 // Admin actions ─────────────────────────────────────────────────────────────
 
-export const reviewDocument = mutation({
+export const reviewDocument = auditedMutation("legalDocuments:reviewDocument")({
   args: {
     documentId: v.id("legalDocuments"),
     decision: v.union(v.literal("VERIFIED"), v.literal("REJECTED")),

@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { useQuery } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
   import { Bell, Mail, MessageSquare, Smartphone, Loader2 } from "lucide-svelte";
@@ -26,27 +32,27 @@
   $: failedCount = ($notifications ?? []).filter((n: any) => n.status === 'FAILED').length;
 </script>
 
-<svelte:head><title>Notifications — ADK Admin</title></svelte:head>
+<svelte:head><title>{$adkT("Notifications — ADK Admin")}</title></svelte:head>
 
 <div class="p-8">
   <div class="mb-6">
-    <h1 class="flex items-center gap-2 text-xl font-bold text-white"><Bell class="h-5 w-5 text-amber-400" /> Notification Log</h1>
-    <p class="mt-0.5 text-sm text-stone-500">Every email, WhatsApp, SMS and push notification sent by the platform.</p>
+    <h1 class="flex items-center gap-2 text-xl font-bold text-white"><Bell class="h-5 w-5 text-amber-400" /> {$adkT("Notification Log")}</h1>
+    <p class="mt-0.5 text-sm text-stone-500">{$adkT("Every email, WhatsApp, SMS and push notification sent by the platform.")}</p>
   </div>
 
   <!-- Stat strip -->
   <div class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
     <div class="rounded-xl px-4 py-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06)">
-      <p class="text-xl font-black text-white">{$notifications?.length ?? '—'}</p>
-      <p class="text-xs text-stone-500">Total Logged</p>
+      <p class="text-xl font-black text-white">{$adkT($notifications?.length ?? '—')}</p>
+      <p class="text-xs text-stone-500">{$adkT("Total Logged")}</p>
     </div>
     <div class="rounded-xl px-4 py-3" style="background: rgba(5,150,105,0.08); border: 1px solid rgba(5,150,105,0.2)">
-      <p class="text-xl font-black text-emerald-400">{sentCount}</p>
-      <p class="text-xs text-stone-500">Sent</p>
+      <p class="text-xl font-black text-emerald-400">{$adkT(sentCount)}</p>
+      <p class="text-xs text-stone-500">{$adkT("Sent")}</p>
     </div>
     <div class="rounded-xl px-4 py-3" style="background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.2)">
-      <p class="text-xl font-black text-rose-400">{failedCount}</p>
-      <p class="text-xs text-stone-500">Failed</p>
+      <p class="text-xl font-black text-rose-400">{$adkT(failedCount)}</p>
+      <p class="text-xs text-stone-500">{$adkT("Failed")}</p>
     </div>
   </div>
 
@@ -60,8 +66,8 @@
           : 'bg-white/5 text-stone-400 border border-white/10 hover:text-white'}"
       >
         {#if c}<svelte:component this={CHANNEL_ICONS[c]} size={12} />{/if}
-        {c || 'All'}
-        {#if c}<span class="text-[10px] text-stone-500">{channelCounts[c] ?? 0}</span>{/if}
+        {$adkT(c || 'All')}
+        {#if c}<span class="text-[10px] text-stone-500">{$adkT(channelCounts[c] ?? 0)}</span>{/if}
       </button>
     {/each}
   </div>
@@ -70,7 +76,7 @@
     {#if $notifications === undefined}
       <div class="flex items-center justify-center py-16 text-stone-500"><Loader2 class="h-6 w-6 animate-spin" /></div>
     {:else if filtered.length === 0}
-      <p class="py-16 text-center text-sm text-stone-600">{$notifications.length === 0 ? "No notifications sent yet." : "No notifications on this channel."}</p>
+      <p class="py-16 text-center text-sm text-stone-600">{$adkT($notifications.length === 0 ? "No notifications sent yet." : "No notifications on this channel.")}</p>
     {:else}
       <div class="divide-y" style="border-color: rgba(255,255,255,0.04)">
         {#each filtered as n (n._id)}
@@ -79,10 +85,10 @@
             <div class="rounded-lg bg-white/5 p-2.5 text-stone-400"><Icon size={16} /></div>
             <div class="flex-1 min-w-0">
               <p class="truncate text-sm text-white">{n.subject ?? n.message}</p>
-              <p class="text-xs text-stone-600">To {n.recipient} · {n.channel.toLowerCase()}</p>
+              <p class="text-xs text-stone-600">{$adkT("To")} {$adkT(n.recipient)} · {$adkT(n.channel.toLowerCase())}</p>
             </div>
-            <span class="text-xs font-semibold {n.status === 'SENT' ? 'text-emerald-400' : n.status === 'FAILED' ? 'text-rose-400' : 'text-stone-500'}">{n.status}</span>
-            <span class="hidden text-xs text-stone-600 sm:block">{formatRelative(new Date(n.createdAt))}</span>
+            <span class="text-xs font-semibold {n.status === 'SENT' ? 'text-emerald-400' : n.status === 'FAILED' ? 'text-rose-400' : 'text-stone-500'}">{$adkT(n.status)}</span>
+            <span class="hidden text-xs text-stone-600 sm:block">{$adkT(formatRelative(new Date(n.createdAt), $adkLocale))}</span>
           </div>
         {/each}
       </div>

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { onMount } from 'svelte';
   import { Moon, Sun } from 'lucide-svelte';
   let theme: 'light' | 'dark' = 'dark';
@@ -21,6 +24,6 @@
   });
 </script>
 
-<button type="button" on:click={toggle} class="theme-toggle inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-white/10 bg-white/5 text-stone-300 transition hover:bg-white/10 hover:text-white" aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`} title={`Use ${theme === 'dark' ? 'light' : 'dark'} mode`}>
+<button type="button" on:click={toggle} class="theme-toggle inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-white/10 bg-white/5 text-stone-300 transition hover:bg-white/10 hover:text-white" aria-label={$adkT(`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`)} title={$adkT(`Use ${theme === 'dark' ? 'light' : 'dark'} mode`)}>
   {#if theme === 'dark'}<Sun size={19} />{:else}<Moon size={19} />{/if}
 </button>

@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { requireAdmin } from "./lib/access";
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
@@ -31,7 +32,7 @@ export const listMilestones = query({
 });
 
 // ── Admin: publish a new construction milestone ─────────────────────────────
-export const createMilestone = mutation({
+export const createMilestone = auditedMutation("milestones:createMilestone")({
   args: {
     projectId: v.id("projects"),
     title: v.string(),

@@ -1,8 +1,11 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { ArrowDown, ArrowUp, Inbox } from 'lucide-svelte';
 
   type Row = Record<string, any>;
-  
+
   export let columns: {
     key: string;
     label: string;
@@ -44,12 +47,12 @@
     <thead class="bg-stone-900/50 text-stone-400 border-b border-white/10">
       <tr>
         {#each columns as col}
-          <th 
+          <th
             class="px-6 py-4 font-medium {col.sortable ? 'cursor-pointer hover:text-white transition-colors select-none' : ''} {sortKey === col.key ? 'text-emerald-400' : ''}"
             on:click={() => handleSort(col.key)}
           >
             <div class="flex items-center gap-1.5">
-              {col.label}
+              {$adkT(col.label)}
               {#if col.sortable}
                 <div class="flex flex-col text-[10px] leading-[0.5] opacity-50 {sortKey === col.key ? 'opacity-100 text-emerald-400' : ''}">
                   <ArrowUp size={12} class={sortKey === col.key && sortDirection === 'asc' ? 'opacity-100' : 'opacity-30'} />
@@ -60,11 +63,11 @@
           </th>
         {/each}
         {#if $$slots.actions}
-          <th class="px-6 py-4 font-medium text-right">Actions</th>
+          <th class="px-6 py-4 font-medium text-right">{$adkT("Actions")}</th>
         {/if}
       </tr>
     </thead>
-    
+
     <tbody class="divide-y divide-white/5">
       {#if loading}
         {#each Array(3) as _}
@@ -82,7 +85,7 @@
           <td colspan={columns.length + ($$slots.actions ? 1 : 0)} class="px-6 py-12 text-center text-stone-500">
             <div class="flex flex-col items-center gap-2">
               <Inbox size={32} class="opacity-50" />
-              <p>{emptyMessage}</p>
+              <p>{$adkT(emptyMessage)}</p>
             </div>
           </td>
         </tr>
@@ -94,7 +97,7 @@
                 {#if col.render}
                   {@html col.render(row[col.key], row)}
                 {:else}
-                  {row[col.key]}
+                  {$adkT(row[col.key])}
                 {/if}
               </td>
             {/each}

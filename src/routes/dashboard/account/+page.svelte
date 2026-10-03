@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
+  import IdentityStatus from "$lib/components/auth/IdentityStatus.svelte";
   import PasswordField from "$lib/components/auth/PasswordField.svelte";
   import { api } from "$lib/convex/_generated/api";
   import { useQuery, runMutation, runAction } from "$lib/convex/queries";
@@ -63,33 +67,34 @@
   }
 </script>
 
-<svelte:head><title>Account settings | Aliko Diamond Key</title></svelte:head>
+<svelte:head><title>{$adkT("Account settings | Aliko Diamond Key")}</title></svelte:head>
 <main class="theme-text container mx-auto max-w-2xl px-4 pt-28 pb-12 space-y-6">
-  <h1 class="text-3xl font-semibold">Account settings</h1>
-  <a href="/dashboard/messages" class="underline">Your conversations</a
-  >{#if error}<p role="alert">{error}</p>{/if}{#if message}<p role="status">
-      {message}
+  <h1 class="text-3xl font-semibold">{$adkT("Account settings")}</h1>
+  <IdentityStatus />
+  <a href="/dashboard/messages" class="underline">{$adkT("Your conversations")}</a
+  >{#if error}<p role="alert">{$adkT(error)}</p>{/if}{#if message}<p role="status">
+      {$adkT(message)}
     </p>{/if}
   <form
     on:submit|preventDefault={save}
     class="theme-surface border rounded-xl p-5 space-y-4"
   >
-    <h2 class="text-xl">Profile</h2>
+    <h2 class="text-xl">{$adkT("Profile")}</h2>
     <label class="block"
-      >Name<input
+      >{$adkT("Name")}<input dir="auto"
         required
         maxlength="120"
         bind:value={name}
         class="theme-input block w-full border rounded p-3"
       /></label
     ><label class="block"
-      >Phone<input
+      >{$adkT("Phone")}<input dir="auto"
         maxlength="80"
         bind:value={phone}
         class="theme-input block w-full border rounded p-3"
       /></label
     ><label class="block"
-      >Legal address<textarea
+      >{$adkT("Legal address")}<textarea dir="auto"
         maxlength="500"
         bind:value={address}
         class="theme-input block w-full border rounded p-3"
@@ -97,18 +102,15 @@
     ><button
       disabled={busy}
       class="bg-emerald-700 text-white rounded p-3 min-h-[44px]"
-      >Save profile</button
+      >{$adkT("Save profile")}</button
     >
   </form>
   <section class="theme-surface border rounded-xl p-5 space-y-4">
-    <h2 class="text-xl">Change sign-in email</h2>
-    <p>
-      Confirm your password and verify your new email address. All sessions are
-      revoked when the change completes.
-    </p>
+    <h2 class="text-xl">{$adkT("Change sign-in email")}</h2>
+    <p> {$adkT("Confirm your password and verify your new email address. All sessions are revoked when the change completes.")} </p>
     <form on:submit|preventDefault={request} class="space-y-3">
       <label class="block"
-        >New email<input
+        >{$adkT("New email")}<input dir="auto"
           type="email"
           required
           maxlength="254"
@@ -116,7 +118,7 @@
           class="theme-input block w-full border rounded p-3"
         /></label
       ><label class="block"
-        >Current password<PasswordField
+        >{$adkT("Current password")}<PasswordField
           strength={true}
           autocomplete="current-password"
           required
@@ -124,18 +126,18 @@
           class="theme-input block w-full border rounded p-3"
         /></label
       ><button disabled={busy} class="border rounded p-3 min-h-[44px]"
-        >Send verification code</button
+        >{$adkT("Send verification code")}</button
       >
     </form>
     <form on:submit|preventDefault={confirm} class="space-y-3">
       <label class="block"
-        >Verification code<input
+        >{$adkT("Verification code")}<input dir="auto"
           required
           bind:value={code}
           class="theme-input block w-full border rounded p-3"
         /></label
       ><button disabled={busy} class="border rounded p-3 min-h-[44px]"
-        >Confirm email change</button
+        >{$adkT("Confirm email change")}</button
       >
     </form>
   </section>

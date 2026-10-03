@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { MapPin, Navigation } from "lucide-svelte";
   import MasterPlanViewer from "$lib/components/three/MasterPlanViewer.svelte";
   import { useQuery } from "$lib/convex/queries";
@@ -52,13 +55,8 @@
         >
           <MapPin class="text-emerald-400" size={24} />
         </div>
-        <h2 class="text-3xl md:text-4xl font-extrabold mb-3 leading-tight">
-          Explore {mappedProject?.name} in 3D
-        </h2>
-        <p class="text-gray-400">
-          Drag to orbit, hover a beacon to inspect it, and click through to any
-          available plot &mdash; live, in three dimensions.
-        </p>
+        <h2 class="text-3xl md:text-4xl font-extrabold mb-3 leading-tight"> {$adkT("Explore")} {$adkT(mappedProject?.name)} {$adkT("in 3D")} </h2>
+        <p class="text-gray-400"> {$adkT("Drag to orbit, hover a beacon to inspect it, and click through to any available plot — live, in three dimensions.")} </p>
       </div>
 
       <div class="flex flex-col lg:flex-row gap-6 items-stretch">
@@ -74,24 +72,24 @@
         <div
           class="w-full lg:w-4/12 glass-panel rounded-3xl p-8 flex flex-col justify-center"
         >
-          <h3 class="text-xl font-bold mb-4">Mapped Plot Availability</h3>
+          <h3 class="text-xl font-bold mb-4">{$adkT("Mapped Plot Availability")}</h3>
           <div class="space-y-4 mb-8">
             <div
               class="flex justify-between items-center border-b border-white/10 pb-2"
             >
-              <span class="font-medium text-gray-300">Available</span>
-              <span class="text-emerald-400 font-bold">{available} plots</span>
+              <span class="font-medium text-gray-300">{$adkT("Available")}</span>
+              <span class="text-emerald-400 font-bold">{$adkT(available)} {$adkT("plots")}</span>
             </div>
             <div
               class="flex justify-between items-center border-b border-white/10 pb-2"
             >
-              <span class="font-medium text-gray-300">Reserved</span>
-              <span class="text-amber-400 font-bold">{reserved} plots</span>
+              <span class="font-medium text-gray-300">{$adkT("Reserved")}</span>
+              <span class="text-amber-400 font-bold">{$adkT(reserved)} {$adkT("plots")}</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="font-medium text-gray-300">Mapped in 3D</span>
+              <span class="font-medium text-gray-300">{$adkT("Mapped in 3D")}</span>
               <span class="text-emerald-400 font-bold"
-                >{hotspots.length} plots</span
+                >{$adkT(hotspots.length)} {$adkT("plots")}</span
               >
             </div>
           </div>
@@ -99,8 +97,7 @@
             href="/map"
             class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors"
           >
-            <Navigation size={18} /> Open Full Map
-          </a>
+            <Navigation size={18} /> {$adkT("Open Full Map")} </a>
         </div>
       </div>
     </div>

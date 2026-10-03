@@ -90,6 +90,10 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
             ? "Accept the current Terms and Privacy Policy before registration."
             : "Authentication could not be completed. Check your details and try again. If this continues, contact support.";
     const knownMessages = [
+      "Enter your 11-digit National Identification Number (NIN).",
+      "Accept the NIN verification consent before registration.",
+      "This NIN is already associated with an account. Contact support.",
+      "Identity registration is temporarily unavailable. Contact support.",
       "Email or password is incorrect.",
       "Password recovery email is not configured. Please contact support.",
       "The recovery code is invalid or expired.",
@@ -139,6 +143,7 @@ export const DELETE: RequestHandler = async ({ request, cookies, url }) => {
       if (token) {
         const client = authClient();
         client.setAuth(token);
+        await client.mutation(makeFunctionReference<"mutation">("activity:record"), { kind: "SIGN_OUT_REQUESTED" }).catch(() => {});
         await client.action(
           makeFunctionReference<"action">("auth:signOut"),
           {},

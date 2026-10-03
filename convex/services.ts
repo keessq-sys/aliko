@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { requireAdmin } from "./lib/access";
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
@@ -71,7 +72,7 @@ export const getService = query({
   },
 });
 
-export const addServiceMedia = mutation({
+export const addServiceMedia = auditedMutation("services:addServiceMedia")({
   args: {
     id: v.id("services"),
     storageIds: v.array(v.id("_storage")),
@@ -124,7 +125,7 @@ export const addServiceMedia = mutation({
 });
 
 // ── Admin CRUD ─────────────────────────────────────────────────────────────
-export const upsertService = mutation({
+export const upsertService = auditedMutation("services:upsertService")({
   args: {
     id: v.optional(v.id("services")),
     slug: v.string(),
@@ -166,7 +167,7 @@ export const upsertService = mutation({
   },
 });
 
-export const setServiceActive = mutation({
+export const setServiceActive = auditedMutation("services:setServiceActive")({
   args: { id: v.id("services"), isActive: v.boolean() },
   handler: async (ctx, { id, isActive }) => {
     await requireAdmin(ctx);

@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { requireAdmin, requireUser } from "./lib/access";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
@@ -66,7 +67,7 @@ async function authenticatedUser(ctx: any) {
   return requireUser(ctx);
 }
 
-export const generateUploadUrl = mutation({
+export const generateUploadUrl = auditedMutation("storage:generateUploadUrl")({
   args: {
     purpose,
     fileName: v.string(),
@@ -102,7 +103,7 @@ export const generateUploadUrl = mutation({
   },
 });
 
-export const registerUpload = mutation({
+export const registerUpload = auditedMutation("storage:registerUpload")({
   args: {
     storageId: v.id("_storage"),
     purpose,
@@ -292,7 +293,7 @@ export const getAssetUrl = query({
   },
 });
 
-export const reviewAsset = mutation({
+export const reviewAsset = auditedMutation("storage:reviewAsset")({
   args: {
     assetId: v.id("storedAssets"),
     status: v.union(v.literal("ACTIVE"), v.literal("QUARANTINED")),
@@ -394,7 +395,7 @@ export const retryPendingScans = internalMutation({
     }
   },
 });
-export const retryAssetScan = mutation({
+export const retryAssetScan = auditedMutation("storage:retryAssetScan")({
   args: { assetId: v.id("storedAssets") },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { useQuery } from '$lib/convex/queries';
   import { api } from '$lib/convex/_generated/api';
   import { toDisplayProperty } from '$lib/utils/propertyAdapter';
@@ -14,7 +17,7 @@
 </script>
 
 <svelte:head>
-  <title>Map Explorer — Aliko Diamond Key</title>
+  <title>{$adkT("Map Explorer — Aliko Diamond Key")}</title>
   <meta name="description" content="Explore real estate and property listings geographically with our interactive property map." />
 </svelte:head>
 
@@ -23,14 +26,12 @@
   <div class="border-b border-white/5 bg-white/[0.02] py-4 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
     <div class="flex items-center gap-4">
       <a href="/properties" class="flex items-center gap-1.5 text-xs text-stone-400 hover:text-emerald-400 transition-colors">
-        <ArrowLeft size={14} /> Back to Grid
-      </a>
+        <ArrowLeft size={14} /> {$adkT("Back to Grid")} </a>
       <div class="h-4 w-px bg-white/10"></div>
-      <h1 class="text-base sm:text-lg font-serif font-bold text-white">Interactive Property Map</h1>
+      <h1 class="text-base sm:text-lg font-serif font-bold text-white">{$adkT("Interactive Property Map")}</h1>
     </div>
     <div class="text-xs text-stone-400">
-      <span class="text-emerald-400 font-semibold">{mapProperties.length}</span> properties on map
-    </div>
+      <span class="text-emerald-400 font-semibold">{$adkT(mapProperties.length)}</span> {$adkT("properties on map")} </div>
   </div>
 
   <!-- Full Height Map View -->

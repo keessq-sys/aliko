@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
@@ -20,7 +21,7 @@ function requireMaintenanceSecret(value: string) {
   if (difference !== 0) throw new Error("Forbidden");
 }
 
-export const register = mutation({
+export const register = auditedMutation("r2Assets:register")({
   args: {
     key: v.string(),
     collection: v.string(),
@@ -74,7 +75,7 @@ export const authorizeDelete = query({
   },
 });
 
-export const markDeleted = mutation({
+export const markDeleted = auditedMutation("r2Assets:markDeleted")({
   args: { key: v.string() },
   handler: async (ctx, { key }) => {
     const actor = await user(ctx);
@@ -123,7 +124,7 @@ export const findRegisteredKeys = query({
   },
 });
 
-export const recordOrphanCleanup = mutation({
+export const recordOrphanCleanup = auditedMutation("r2Assets:recordOrphanCleanup")({
   args: { keys: v.array(v.string()) },
   handler: async (ctx, { keys }) => {
     const actor = await user(ctx);
@@ -164,7 +165,7 @@ export const findRegisteredKeysForMaintenance = query({
   },
 });
 
-export const recordScheduledOrphanCleanup = mutation({
+export const recordScheduledOrphanCleanup = auditedMutation("r2Assets:recordScheduledOrphanCleanup")({
   args: { keys: v.array(v.string()), secret: v.string() },
   handler: async (ctx, { keys, secret }) => {
     requireMaintenanceSecret(secret);

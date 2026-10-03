@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { ArrowRight, Lamp, Sparkles, Sofa, Grid3x3, HardHat, Cpu, Building2, FileSignature, Hammer, DraftingCompass, LayoutGrid, Landmark } from 'lucide-svelte';
   import { SERVICES, SERVICE_CATEGORY_META } from '$lib/types/services';
 
@@ -28,11 +31,10 @@
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="mb-12 flex flex-col justify-between gap-4 md:flex-row md:items-end">
       <div>
-        <div class="mb-2 font-mono text-xs uppercase tracking-widest text-amber-400">BEYOND REAL ESTATE</div>
-        <h2 class="font-serif text-3xl font-bold text-white sm:text-4xl">{SERVICES.length} Service Divisions, One Contract</h2>
+        <div class="mb-2 font-mono text-xs uppercase tracking-widest text-amber-400">{$adkT("BEYOND REAL ESTATE")}</div>
+        <h2 class="font-serif text-3xl font-bold text-white sm:text-4xl">{$adkT(SERVICES.length)} {$adkT("Service Divisions, One Contract")}</h2>
       </div>
-      <a href="/services" class="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-400 transition-colors hover:text-emerald-300">
-        Explore All Services <ArrowRight size={16} />
+      <a href="/services" class="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-400 transition-colors hover:text-emerald-300"> {$adkT("Explore All Services")} <ArrowRight size={16} />
       </a>
     </div>
 
@@ -47,11 +49,11 @@
           <div class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 transition-transform duration-300 group-hover:scale-110">
             <Icon size={22} />
           </div>
-          <h3 class="mb-1 text-sm font-bold text-white">{service.name}</h3>
-          <p class="mb-4 line-clamp-2 text-[11px] leading-relaxed text-stone-400">{service.tagline}</p>
+          <h3 class="mb-1 text-sm font-bold text-white">{$adkT(service.name)}</h3>
+          <p class="mb-4 line-clamp-2 text-[11px] leading-relaxed text-stone-400">{$adkT(service.tagline)}</p>
           <div class="flex items-center justify-between">
             <span class="rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
-              {SERVICE_CATEGORY_META[service.category].label.split(' ')[0]}
+              {$adkT(SERVICE_CATEGORY_META[service.category].label.split(' ')[0])}
             </span>
             <ArrowRight size={14} class="text-stone-600 transition-all group-hover:translate-x-1 group-hover:text-emerald-400" />
           </div>
@@ -62,10 +64,10 @@
     <!-- Bundled CTA strip -->
     <div class="mt-8 flex flex-col items-center justify-between gap-4 rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-950/30 to-emerald-950/20 p-6 md:flex-row">
       <div>
-        <h3 class="font-serif text-lg font-bold text-white">Buy a property, move in fully finished.</h3>
-        <p class="text-sm text-stone-400">Bundle purchase with interior design, furnishing and smart-home installation in one contract.</p>
+        <h3 class="font-serif text-lg font-bold text-white">{$adkT("Buy a property, move in fully finished.")}</h3>
+        <p class="text-sm text-stone-400">{$adkT("Bundle purchase with interior design, furnishing and smart-home installation in one contract.")}</p>
       </div>
-      <a href="/request?service=interior-design" class="btn-secondary flex-shrink-0 px-6 py-3 text-sm">Request a Bundle Quote</a>
+      <a href="/request?service=interior-design" class="btn-secondary flex-shrink-0 px-6 py-3 text-sm">{$adkT("Request a Bundle Quote")}</a>
     </div>
   </div>
 </section>

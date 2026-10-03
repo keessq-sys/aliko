@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { requireAdmin, requireUser } from "./lib/access";
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
@@ -7,7 +8,7 @@ import { contactRateKey, rateLimiter } from "./lib/rateLimits";
 
 // ── Public: submit an enquiry from a property/plot/project page ──────────
 // No auth required — this is the lead-capture path for anonymous visitors.
-export const submitEnquiry = mutation({
+export const submitEnquiry = auditedMutation("enquiries:submitEnquiry")({
   args: {
     propertyId: v.optional(v.id("properties")),
     plotId: v.optional(v.id("plots")),
@@ -94,7 +95,7 @@ export const listMyAssignedEnquiries = query({
   },
 });
 
-export const updateEnquiryStatus = mutation({
+export const updateEnquiryStatus = auditedMutation("enquiries:updateEnquiryStatus")({
   args: {
     enquiryId: v.id("enquiries"),
     status: v.union(

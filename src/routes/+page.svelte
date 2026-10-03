@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import HeroSection from '$lib/components/home/HeroSection.svelte';
   import StatsStrip from '$lib/components/home/StatsStrip.svelte';
   import SignatureDevelopments from '$lib/components/home/SignatureDevelopments.svelte';
@@ -26,13 +29,7 @@
   <!-- Answer-first TL;DR: a direct, self-contained answer to "what is Aliko
        Diamond Key" above the fold, ahead of the animated hero, so an AI
        crawler or reader gets the core claim in the first paragraph of HTML. -->
-  <p class="sr-only">
-    Aliko Diamond Key Realtors Ltd is a government-verified real estate, land and
-    property-services marketplace operating in Abuja FCT and Lagos, Nigeria. Every
-    listing is title-checked against CAC, AGIS and State Ministry of Lands records
-    before publication, and clients can bundle a purchase with interior design,
-    construction, smart-home installation or facility management from the same platform.
-  </p>
+  <p class="sr-only"> {$adkT("Aliko Diamond Key Realtors Ltd is a government-verified real estate, land and property-services marketplace operating in Abuja FCT and Lagos, Nigeria. Every listing is title-checked against CAC, AGIS and State Ministry of Lands records before publication, and clients can bundle a purchase with interior design, construction, smart-home installation or facility management from the same platform.")} </p>
   <HeroSection />
   <StatsStrip />
   <SignatureDevelopments />

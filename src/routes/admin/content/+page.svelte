@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { api } from "$lib/convex/_generated/api";
   import { useQuery, runMutation } from "$lib/convex/queries";
   let cursor: string | null = null,
@@ -49,35 +52,32 @@
 </script>
 
 <section class="theme-surface theme-text m-5 p-5 rounded-xl border space-y-4">
-  <h1 class="text-2xl">Testimonial publication review</h1>
-  <p>
-    Publish only genuine customer statements with a recorded consent reference.
-    Do not invent customer identities or results.
-  </p>
-  {#if error}<p role="alert">{error}</p>{/if}
+  <h1 class="text-2xl">{$adkT("Testimonial publication review")}</h1>
+  <p> {$adkT("Publish only genuine customer statements with a recorded consent reference. Do not invent customer identities or results.")} </p>
+  {#if error}<p role="alert">{$adkT(error)}</p>{/if}
   <form on:submit|preventDefault={save} class="grid gap-3">
     <label
-      >Author display name<input
+      >{$adkT("Author display name")}<input dir="auto"
         required
         maxlength="120"
         bind:value={author}
         class="theme-input block border rounded p-3 w-full"
       /></label
     ><label
-      >Location<input
+      >{$adkT("Location")}<input dir="auto"
         maxlength="120"
         bind:value={location}
         class="theme-input block border rounded p-3 w-full"
       /></label
     ><label
-      >Customer statement<textarea
+      >{$adkT("Customer statement")}<textarea dir="auto"
         required
         maxlength="1500"
         bind:value={quote}
         class="theme-input block border rounded p-3 w-full"
       ></textarea></label
     ><label
-      >Recorded publication consent reference<input
+      >{$adkT("Recorded publication consent reference")}<input dir="auto"
         required
         minlength="5"
         maxlength="300"
@@ -85,21 +85,21 @@
         class="theme-input block border rounded p-3 w-full"
       /></label
     ><label
-      ><input type="checkbox" bind:checked={approved} /> Approved for publication</label
+      ><input dir="auto" type="checkbox" bind:checked={approved} /> {$adkT("Approved for publication")}</label
     ><button disabled={busy} class="min-h-[44px] border rounded px-3"
-      >Save review</button
+      >{$adkT("Save review")}</button
     >
   </form>
   {#each $queue?.page ?? [] as row}<article class="border rounded p-3">
-      <p>{row.author} · {row.approved ? "Published" : "Unpublished"}</p>
-      <p>{row.quote}</p>
+      <p>{$adkT(row.author)} · {$adkT(row.approved ? "Published" : "Unpublished")}</p>
+      <p>{$adkT(row.quote)}</p>
       <button
         class="min-h-[44px] border rounded px-3"
-        on:click={() => edit(row)}>Edit review</button
+        on:click={() => edit(row)}>{$adkT("Edit review")}</button
       >
     </article>{/each}<button
     disabled={!$queue || $queue.isDone}
     on:click={() => (cursor = $queue?.continueCursor ?? null)}
-    class="min-h-[44px] border rounded px-3">Older reviews</button
+    class="min-h-[44px] border rounded px-3">{$adkT("Older reviews")}</button
   >
 </section>

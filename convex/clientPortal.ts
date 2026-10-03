@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { requireUser } from "./lib/access";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
@@ -48,7 +49,7 @@ export const listSavedProperties = query({
   },
 });
 
-export const toggleSavedProperty = mutation({
+export const toggleSavedProperty = auditedMutation("clientPortal:toggleSavedProperty")({
   args: { propertyId: v.id("properties") },
   handler: async (ctx, { propertyId }) => {
     const userId = await clientId(ctx);
@@ -107,7 +108,7 @@ export const getMySiteVisits = query({
   },
 });
 
-export const cancelMySiteVisit = mutation({
+export const cancelMySiteVisit = auditedMutation("clientPortal:cancelMySiteVisit")({
   args: { visitId: v.id("siteVisitRequests") },
   handler: async (ctx, { visitId }) => {
     const userId = await clientId(ctx);

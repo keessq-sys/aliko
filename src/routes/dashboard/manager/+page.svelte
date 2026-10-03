@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import OperationsWorkspace from "$lib/components/dashboard/OperationsWorkspace.svelte";
   const workspaceTabs: Record<string, string> = {
     tenants: "TENANT",
@@ -182,17 +188,15 @@
         <div
           class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center"
         >
-          <span class="text-white font-bold">A</span>
-        </div>
-        ADK Manager
-      </h1>
+          <span class="text-white font-bold">{$adkT("A")}</span>
+        </div> {$adkT("ADK Manager")} </h1>
 
       <div
         class="mt-8 flex items-center gap-3 rounded-xl bg-white/5 p-3 border border-white/5"
       >
         {#if $myProfile?.avatarUrl}<img
             src={$myProfile.avatarUrl}
-            alt="Your profile"
+            alt={$adkT("Your profile")}
             class="h-10 w-10 rounded-full object-cover"
           />{:else}<span
             class="h-10 w-10 rounded-full theme-surface flex items-center justify-center"
@@ -202,13 +206,13 @@
           <p class="text-sm font-medium text-white">
             {$myProfile?.name ?? "Estate Manager"}
           </p>
-          <p class="text-xs text-emerald-500">Estate management</p>
+          <p class="text-xs text-emerald-500">{$adkT("Estate management")}</p>
         </div>
       </div>
     </div>
 
     <a href="/dashboard/operations" class="theme-text underline mx-6 py-3"
-      >Leases and financial ledger</a
+      >{$adkT("Leases and financial ledger")}</a
     >
     <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1 hide-scrollbar">
       {#each navItems as item}
@@ -220,7 +224,7 @@
             : 'text-stone-400 hover:bg-white/5 hover:text-white'}"
         >
           <svelte:component this={item.icon} class="h-5 w-5" />
-          {item.label}
+          {$adkT(item.label)}
         </button>
       {/each}
     </nav>
@@ -230,9 +234,7 @@
         href="/login?signout=1"
         class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors"
       >
-        <LogOut class="h-5 w-5" />
-        Sign Out
-      </a>
+        <LogOut class="h-5 w-5" /> {$adkT("Sign Out")} </a>
     </div>
   </aside>
 
@@ -256,20 +258,18 @@
             <div
               class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center"
             >
-              <span class="text-white font-bold">A</span>
-            </div>
-            ADK Manager
-          </h1>
+              <span class="text-white font-bold">{$adkT("A")}</span>
+            </div> {$adkT("ADK Manager")} </h1>
           <button
             class="flex items-center justify-center w-11 h-11 rounded-xl text-stone-400 active:bg-white/10"
-            aria-label="Close menu"
+            aria-label={$adkT("Close menu")}
             on:click={() => (isMobileNavOpen = false)}
           >
             <X class="w-5 h-5" />
           </button>
         </div>
         <a href="/dashboard/operations" class="theme-text underline mx-6 py-3"
-          >Leases and financial ledger</a
+          >{$adkT("Leases and financial ledger")}</a
         >
         <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1">
           {#each navItems as item}
@@ -284,7 +284,7 @@
                 : 'text-stone-400 hover:bg-white/5 hover:text-white'}"
             >
               <svelte:component this={item.icon} class="h-5 w-5" />
-              {item.label}
+              {$adkT(item.label)}
             </button>
           {/each}
         </nav>
@@ -293,9 +293,7 @@
             href="/login?signout=1"
             class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors"
           >
-            <LogOut class="h-5 w-5" />
-            Sign Out
-          </a>
+            <LogOut class="h-5 w-5" /> {$adkT("Sign Out")} </a>
         </div>
       </aside>
     </div>
@@ -310,7 +308,7 @@
       <div class="flex items-center gap-2 min-w-0">
         <button
           class="md:hidden flex items-center justify-center w-11 h-11 -ml-2 flex-shrink-0 rounded-full text-stone-300 active:bg-white/10"
-          aria-label="Open menu"
+          aria-label={$adkT("Open menu")}
           on:click={() => (isMobileNavOpen = true)}
         >
           <Menu class="h-6 w-6" />
@@ -318,7 +316,7 @@
         <h2
           class="text-lg md:text-2xl font-semibold text-white capitalize truncate"
         >
-          {currentTab.replace("-", " ")}
+          {$adkT(currentTab.replace("-", " "))}
         </h2>
       </div>
 
@@ -327,9 +325,9 @@
           <Search
             class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400"
           />
-          <input
+          <input dir="auto"
             type="text"
-            placeholder="Search..."
+            placeholder={$adkT("Search...")}
             class="w-64 rounded-full border border-white/10 bg-white/5 py-2 pl-10 pr-4 text-sm focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
           />
         </div>
@@ -351,21 +349,21 @@
         <div in:fly={{ y: 10, duration: 220, delay: 80 }}>
           {#if workspaceTabs[currentTab]}<OperationsWorkspace
               kind={workspaceTabs[currentTab]}
-              title={currentTab.replace("-", " ")}
+              title={$adkT(currentTab.replace("-", " "))}
             />{:else if currentTab === "overview"}
             <!-- KPI Row -->
             <div
               class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
             >
               <StatCard
-                title="Total Properties"
+                title={$adkT("Total Properties")}
                 value={totalPropertiesCount ?? "—"}
                 change="Your managed listings"
                 changeType="up"
                 icon={Home}
               />
               <StatCard
-                title="Active leases"
+                title={$adkT("Active leases")}
                 value={$estateSummary?.activeLeases ?? "—"}
                 change="Current recorded lease status"
                 changeType="up"
@@ -373,9 +371,9 @@
                 iconBg="bg-blue-500/20"
               />
               <StatCard
-                title="Ledger expenses (12 months)"
+                title={$adkT("Ledger expenses (12 months)")}
                 value={$finances
-                  ? `₦${($estateSummary?.months.reduce((sum, row) => sum + row.expenses, 0) ?? 0).toLocaleString()}`
+                  ? `₦${($estateSummary?.months.reduce((sum, row) => sum + row.expenses, 0) ?? 0).toLocaleString($adkLocale === "ar" ? "ar-NG" : "en-NG")}`
                   : "—"}
                 change="Immutable ledger entries"
                 changeType="up"
@@ -383,7 +381,7 @@
                 iconBg="bg-emerald-500/20"
               />
               <StatCard
-                title="Pending Tasks"
+                title={$adkT("Pending Tasks")}
                 value={$finances?.workOrders ?? "—"}
                 change="Open work orders"
                 changeType="down"
@@ -402,23 +400,20 @@
               <div
                 class="lg:col-span-2 rounded-xl border border-white/5 bg-white/[0.02] p-6"
               >
-                <h3 class="text-lg font-semibold text-white mb-4">
-                  Top Performing Properties
-                </h3>
+                <h3 class="text-lg font-semibold text-white mb-4"> {$adkT("Top Performing Properties")} </h3>
                 <div class="space-y-4">
                   {#each MOCK_PROPERTIES.slice(0, 3) as prop}
                     <div
                       class="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/5 hover:border-emerald-500/30 transition-colors"
                     >
                       <div>
-                        <h4 class="font-medium text-white">{prop.title}</h4>
-                        <p class="text-sm text-stone-400">{prop.location}</p>
+                        <h4 class="font-medium text-white">{$adkT(prop.title)}</h4>
+                        <p class="text-sm text-stone-400">{$adkT(prop.location)}</p>
                       </div>
                       <div class="text-right">
                         <p class="font-medium text-emerald-400">
-                          ₦{(prop.price / 1000000).toFixed(1)}M
-                        </p>
-                        <p class="text-xs text-stone-500">{prop.status}</p>
+                          ₦{$adkT((prop.price / 1000000).toFixed(1))}{$adkT("M")} </p>
+                        <p class="text-xs text-stone-500">{$adkT(prop.status)}</p>
                       </div>
                     </div>
                   {/each}
@@ -432,7 +427,7 @@
           {:else if currentTab === "properties"}
             <MediaManager
               mode="property"
-              title="Upload estate and property images"
+              title={$adkT("Upload estate and property images")}
             />
             <PropertyTable properties={propertyRows} />
           {:else if currentTab === "tenants"}
@@ -442,46 +437,45 @@
               <div
                 class="p-6 border-b border-white/5 flex justify-between items-center"
               >
-                <h3 class="text-lg font-semibold text-white">Active Tenants</h3>
+                <h3 class="text-lg font-semibold text-white">{$adkT("Active Tenants")}</h3>
                 <button
                   class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
                 >
-                  <Filter class="w-4 h-4" /> Filter
-                </button>
+                  <Filter class="w-4 h-4" /> {$adkT("Filter")} </button>
               </div>
               <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
                   <thead class="bg-white/5 text-stone-400">
                     <tr>
-                      <th class="px-6 py-4">Tenant</th>
-                      <th class="px-6 py-4">Property</th>
-                      <th class="px-6 py-4">Rent Amount</th>
-                      <th class="px-6 py-4">Lease End</th>
-                      <th class="px-6 py-4">Status</th>
-                      <th class="px-6 py-4 text-right">Actions</th>
+                      <th class="px-6 py-4">{$adkT("Tenant")}</th>
+                      <th class="px-6 py-4">{$adkT("Property")}</th>
+                      <th class="px-6 py-4">{$adkT("Rent Amount")}</th>
+                      <th class="px-6 py-4">{$adkT("Lease End")}</th>
+                      <th class="px-6 py-4">{$adkT("Status")}</th>
+                      <th class="px-6 py-4 text-right">{$adkT("Actions")}</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-white/5">
                     {#each MOCK_TENANTS as t}
                       <tr class="hover:bg-white/5">
                         <td class="px-6 py-4">
-                          <div class="text-white font-medium">{t.name}</div>
+                          <div class="text-white font-medium">{$adkT(t.name)}</div>
                           <div class="text-xs text-stone-500">{t.email}</div>
                         </td>
-                        <td class="px-6 py-4 text-stone-300">{t.property}</td>
-                        <td class="px-6 py-4 text-white">{t.rent}</td>
-                        <td class="px-6 py-4 text-stone-400">{t.end}</td>
+                        <td class="px-6 py-4 text-stone-300">{$adkT(t.property)}</td>
+                        <td class="px-6 py-4 text-white">{$adkT(t.rent)}</td>
+                        <td class="px-6 py-4 text-stone-400">{$adkT(t.end)}</td>
                         <td class="px-6 py-4">
                           <span
                             class="px-2 py-1 rounded-full text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
                           >
-                            {t.status}
+                            {$adkT(t.status)}
                           </span>
                         </td>
                         <td class="px-6 py-4 text-right">
                           <button
                             class="text-stone-400 hover:text-white px-3 py-1 rounded border border-white/10"
-                            >View</button
+                            >{$adkT("View")}</button
                           >
                         </td>
                       </tr>
@@ -495,7 +489,7 @@
               class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
             >
               <StatCard
-                title="Open Work Orders"
+                title={$adkT("Open Work Orders")}
                 value="3"
                 change="1 high priority"
                 changeType="down"
@@ -503,7 +497,7 @@
                 iconBg="bg-rose-500/20"
               />
               <StatCard
-                title="Avg. Resolution Time"
+                title={$adkT("Avg. Resolution Time")}
                 value="2.4"
                 suffix=" days"
                 change="-0.6 vs last month"
@@ -512,14 +506,14 @@
                 iconBg="bg-blue-500/20"
               />
               <StatCard
-                title="Facilities Under Management"
+                title={$adkT("Facilities Under Management")}
                 value="47"
                 change="Across 6 states"
                 changeType="up"
                 icon={Home}
               />
               <StatCard
-                title="Active Vendor Contracts"
+                title={$adkT("Active Vendor Contracts")}
                 value="12"
                 change="+2 this quarter"
                 changeType="up"
@@ -535,47 +529,44 @@
                 <div
                   class="p-6 border-b border-white/5 flex justify-between items-center"
                 >
-                  <h3 class="text-lg font-semibold text-white">
-                    Maintenance Work Orders
-                  </h3>
+                  <h3 class="text-lg font-semibold text-white"> {$adkT("Maintenance Work Orders")} </h3>
                   <button
                     class="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-lg hover:bg-emerald-500"
                   >
-                    <Plus class="w-4 h-4" /> New Work Order
-                  </button>
+                    <Plus class="w-4 h-4" /> {$adkT("New Work Order")} </button>
                 </div>
                 <div class="overflow-x-auto">
                   <table class="w-full text-left text-sm">
                     <thead class="bg-white/5 text-stone-400">
                       <tr>
-                        <th class="px-6 py-4">Issue</th>
-                        <th class="px-6 py-4">Vendor</th>
-                        <th class="px-6 py-4">Priority</th>
-                        <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4">{$adkT("Issue")}</th>
+                        <th class="px-6 py-4">{$adkT("Vendor")}</th>
+                        <th class="px-6 py-4">{$adkT("Priority")}</th>
+                        <th class="px-6 py-4">{$adkT("Status")}</th>
                       </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5">
                       {#each MOCK_WORK_ORDERS as wo}
                         <tr class="hover:bg-white/5">
                           <td class="px-6 py-4">
-                            <div class="text-white font-medium">{wo.issue}</div>
+                            <div class="text-white font-medium">{$adkT(wo.issue)}</div>
                             <div class="text-xs text-stone-500">
-                              {wo.property} &middot; raised {wo.raised}
+                              {$adkT(wo.property)} {$adkT("· raised")} {$adkT(wo.raised)}
                             </div>
                           </td>
-                          <td class="px-6 py-4 text-stone-300">{wo.vendor}</td>
+                          <td class="px-6 py-4 text-stone-300">{$adkT(wo.vendor)}</td>
                           <td class="px-6 py-4">
                             <span
                               class="px-2 py-1 rounded-full text-xs border {PRIORITY_CLASSES[
                                 wo.priority
-                              ]}">{wo.priority}</span
+                              ]}">{$adkT(wo.priority)}</span
                             >
                           </td>
                           <td class="px-6 py-4">
                             <span
                               class="px-2 py-1 rounded-full text-xs border {STATUS_CLASSES[
                                 wo.status
-                              ]}">{wo.status}</span
+                              ]}">{$adkT(wo.status)}</span
                             >
                           </td>
                         </tr>
@@ -588,9 +579,7 @@
               <div
                 class="lg:col-span-1 rounded-xl border border-white/5 bg-white/[0.02] p-6"
               >
-                <h3 class="text-lg font-semibold text-white mb-4">
-                  Vendor Directory
-                </h3>
+                <h3 class="text-lg font-semibold text-white mb-4"> {$adkT("Vendor Directory")} </h3>
                 <div class="space-y-3">
                   {#each MOCK_VENDORS as vendor}
                     <div
@@ -598,17 +587,16 @@
                     >
                       <div>
                         <p class="text-sm font-medium text-white">
-                          {vendor.name}
+                          {$adkT(vendor.name)}
                         </p>
-                        <p class="text-xs text-stone-500">{vendor.category}</p>
+                        <p class="text-xs text-stone-500">{$adkT(vendor.category)}</p>
                       </div>
                       <div class="text-right">
                         <p class="text-xs text-emerald-400">
-                          &#9733; {vendor.rating}
+                          &#9733; {$adkT(vendor.rating)}
                         </p>
                         <p class="text-xs text-stone-500">
-                          {vendor.activeOrders} active
-                        </p>
+                          {$adkT(vendor.activeOrders)} {$adkT("active")} </p>
                       </div>
                     </div>
                   {/each}
@@ -616,48 +604,36 @@
               </div>
             </div>
           {:else if currentTab === "agents"}
-            <h3 class="text-lg font-medium text-white mb-4">
-              Agents assigned to your managed properties
-            </h3>
-            {#if $assignedAgents === undefined}<p>
-                Loading assignments…
-              </p>{:else if !$assignedAgents.page.length}<p>
-                No approved agent assignments on this page.
-              </p>{/if}
+            <h3 class="text-lg font-medium text-white mb-4"> {$adkT("Agents assigned to your managed properties")} </h3>
+            {#if $assignedAgents === undefined}<p> {$adkT("Loading assignments…")} </p>{:else if !$assignedAgents.page.length}<p> {$adkT("No approved agent assignments on this page.")} </p>{/if}
             {#each $assignedAgents?.page ?? [] as agent}<article
                 class="theme-surface theme-text border rounded-xl p-4 my-3"
               >
-                <p>{agent?.name}</p>
-                <p>{agent?.property}</p>
+                <p>{$adkT(agent?.name)}</p>
+                <p>{$adkT(agent?.property)}</p>
               </article>{/each}
             <button
               class="min-h-[44px] border rounded px-3"
               disabled={!$assignedAgents || $assignedAgents.isDone}
               on:click={() =>
                 (agentCursor = $assignedAgents?.continueCursor ?? null)}
-              >More assignments</button
+              >{$adkT("More assignments")}</button
             >
           {:else if currentTab === "reports"}
             <section
               class="theme-surface theme-text border rounded-xl p-5 space-y-4"
             >
-              <h3 class="text-xl font-semibold">
-                Recorded estate finance report
-              </h3>
-              <p>
-                Monthly income and expenses come from your immutable NGN ledger.
-                These are recorded transactions; bank settlement and statutory
-                accounting require finance review.
-              </p>
+              <h3 class="text-xl font-semibold"> {$adkT("Recorded estate finance report")} </h3>
+              <p> {$adkT("Monthly income and expenses come from your immutable NGN ledger. These are recorded transactions; bank settlement and statutory accounting require finance review.")} </p>
               <button
                 disabled={!$estateSummary}
                 on:click={downloadReport}
                 class="border rounded px-4 min-h-[44px]"
-                >Download monthly CSV</button
+                >{$adkT("Download monthly CSV")}</button
               >
               <RevenueChart data={REVENUE_DATA} type="bar" />
               <a href="/dashboard/operations" class="underline"
-                >Review leases and ledger entries</a
+                >{$adkT("Review leases and ledger entries")}</a
               >
             </section>
           {:else}
@@ -668,9 +644,7 @@
               >
                 <h3
                   class="text-lg font-medium text-white border-b border-white/10 pb-4"
-                >
-                  Profile Settings
-                </h3>
+                > {$adkT("Profile Settings")} </h3>
 
                 {#if $myProfile === undefined}
                   <div class="grid grid-cols-2 gap-4">
@@ -682,9 +656,9 @@
                   <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-2">
                       <label for="manager-name" class="text-sm text-stone-400"
-                        >Full Name</label
+                        >{$adkT("Full Name")}</label
                       >
-                      <input
+                      <input dir="auto"
                         id="manager-name"
                         type="text"
                         bind:value={profileName}
@@ -693,22 +667,22 @@
                     </div>
                     <div class="space-y-2">
                       <label for="manager-email" class="text-sm text-stone-400"
-                        >Email Address</label
+                        >{$adkT("Email Address")}</label
                       >
-                      <input
+                      <input dir="auto"
                         id="manager-email"
                         type="email"
                         value={$myProfile?.email ?? ""}
                         disabled
-                        title="Contact support to change your sign-in email"
+                        title={$adkT("Contact support to change your sign-in email")}
                         class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-stone-500 cursor-not-allowed"
                       />
                     </div>
                     <div class="space-y-2">
                       <label for="manager-phone" class="text-sm text-stone-400"
-                        >Phone</label
+                        >{$adkT("Phone")}</label
                       >
-                      <input
+                      <input dir="auto"
                         id="manager-phone"
                         type="tel"
                         inputmode="tel"
@@ -723,15 +697,13 @@
                   <p
                     class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300"
                   >
-                    {profileError}
+                    {$adkT(profileError)}
                   </p>
                 {/if}
                 {#if profileSaved}
                   <p
                     class="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-300"
-                  >
-                    Profile updated.
-                  </p>
+                  > {$adkT("Profile updated.")} </p>
                 {/if}
 
                 <div class="pt-4">
@@ -742,8 +714,7 @@
                   >
                     {#if savingProfile}<Loader2
                         class="h-4 w-4 animate-spin"
-                      />{/if} Save Changes
-                  </button>
+                      />{/if} {$adkT("Save Changes")} </button>
                 </div>
               </form>
             </div>

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { onMount } from 'svelte';
 
   export let type: 'bar' | 'area' | 'donut' | 'line' = 'bar';
@@ -14,14 +17,14 @@
   });
 
   $: maxValue = Math.max(...data.map(d => d.value), 1);
-  
+
   // Calculate paths for area/line
   $: points = data.map((d, i) => {
     const x = (i / (data.length - 1 || 1)) * 100;
     const y = 100 - (d.value / maxValue) * 100;
     return `${x},${y}`;
   });
-  
+
   $: linePath = `M ${points.join(' L ')}`;
   $: areaPath = `M ${points[0]?.split(',')[0]},100 L ${points.join(' L ')} L ${points[points.length-1]?.split(',')[0]},100 Z`;
 
@@ -30,7 +33,7 @@
   $: {
     totalDonut = data.reduce((acc, d) => acc + d.value, 0);
   }
-  
+
   function getDonutSegment(index: number) {
     const previousTotal = data.slice(0, index).reduce((acc, d) => acc + d.value, 0);
     const startAngle = (previousTotal / totalDonut) * 360;
@@ -48,10 +51,10 @@
         <div class="flex-1 flex flex-col items-center gap-2 h-full justify-end group relative">
           <!-- Tooltip -->
           <div class="absolute -top-8 bg-stone-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 shadow-lg pointer-events-none">
-            {item.label}: {item.value}
+            {$adkT(item.label)}: {$adkT(item.value)}
           </div>
           <!-- Bar -->
-          <div 
+          <div
             class="w-full rounded-t-sm transition-all duration-700 ease-out"
             style="height: {mounted ? (item.value / maxValue) * 100 : 0}%; background-color: {item.color || defaultColor}; opacity: 0.8;"
           ></div>
@@ -88,12 +91,12 @@
             class="transition-all duration-1000 ease-out origin-center -rotate-90 hover:stroke-width-4 cursor-pointer"
             style="opacity: {mounted ? 1 : 0};"
           >
-            <title>{item.label}: {item.value}</title>
+            <title>{$adkT(item.label)}: {$adkT(item.value)}</title>
           </circle>
         {/each}
       </svg>
       <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <span class="text-sm font-medium text-stone-300">{totalDonut}</span>
+        <span class="text-sm font-medium text-stone-300">{$adkT(totalDonut)}</span>
       </div>
     </div>
   {/if}
@@ -103,7 +106,7 @@
       {#each data as item}
         <div class="flex items-center gap-2 text-xs text-stone-400">
           <div class="w-3 h-3 rounded-full" style="background-color: {item.color || defaultColor};"></div>
-          {item.label}
+          {$adkT(item.label)}
         </div>
       {/each}
     </div>

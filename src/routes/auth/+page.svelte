@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { Shield, CheckCircle, Award } from "lucide-svelte";
   import { fade } from "svelte/transition";
   import { page } from "$app/stores";
@@ -19,7 +22,7 @@
         : "client";
 </script>
 
-<svelte:head><title>Sign in or register | Aliko Diamond Key</title></svelte:head
+<svelte:head><title>{$adkT("Sign in or register | Aliko Diamond Key")}</title></svelte:head
 >
 
 <div class="min-h-screen bg-[#050A0E] flex relative overflow-hidden">
@@ -37,41 +40,31 @@
       <div
         class="backdrop-blur-xl bg-white/10 border border-white/20 p-8 rounded-2xl shadow-2xl"
       >
-        <h2 class="text-4xl font-bold text-white mb-4 leading-tight">
-          Explore Nigerian Property and Services
-        </h2>
-        <p class="text-gray-300 text-lg mb-8">
-          Discover premium properties, connect with verified agents, and manage
-          your real estate portfolio with ease.
-        </p>
+        <h2 class="text-4xl font-bold text-white mb-4 leading-tight"> {$adkT("Explore Nigerian Property and Services")} </h2>
+        <p class="text-gray-300 text-lg mb-8"> {$adkT("Discover premium properties, connect with verified agents, and manage your real estate portfolio with ease.")} </p>
 
         <div class="space-y-4 mb-10">
           <div class="flex items-center text-emerald-400">
             <Shield class="h-6 w-6 mr-3" />
-            <span class="text-white font-medium">100% Secure Transactions</span>
+            <span class="text-white font-medium">{$adkT("100% Secure Transactions")}</span>
           </div>
           <div class="flex items-center text-emerald-400">
             <CheckCircle class="h-6 w-6 mr-3" />
             <span class="text-white font-medium"
-              >Verified Property Listings</span
+              >{$adkT("Verified Property Listings")}</span
             >
           </div>
           <div class="flex items-center text-emerald-400">
             <Award class="h-6 w-6 mr-3" />
             <span class="text-white font-medium"
-              >Certified Real Estate Professionals</span
+              >{$adkT("Certified Real Estate Professionals")}</span
             >
           </div>
         </div>
 
         <blockquote
           class="border-l-4 border-emerald-500 pl-4 italic text-gray-300"
-        >
-          "Aliko Diamond Key completely transformed how we buy properties in
-          Abuja. The verification process gives total peace of mind."
-          <footer class="text-emerald-400 font-semibold mt-2">
-            — Amina Bello, Investor
-          </footer>
+        > {$adkT("\"Aliko Diamond Key completely transformed how we buy properties in Abuja. The verification process gives total peace of mind.\"")} <footer class="text-emerald-400 font-semibold mt-2"> {$adkT("— Amina Bello, Investor")} </footer>
         </blockquote>
       </div>
     </div>
@@ -98,10 +91,8 @@
         >
           <Shield class="h-7 w-7 text-white" />
         </div>
-        <h1 class="text-3xl font-bold text-white tracking-tight">
-          Aliko Diamond Key
-        </h1>
-        <p class="text-gray-400 mt-2">Welcome back to premium real estate</p>
+        <h1 class="text-3xl font-bold text-white tracking-tight"> {$adkT("Aliko Diamond Key")} </h1>
+        <p class="text-gray-400 mt-2">{$adkT("Welcome back to premium real estate")}</p>
       </div>
 
       <div class="flex p-1 bg-black/40 rounded-xl mb-8">
@@ -111,18 +102,14 @@
             ? 'bg-emerald-500/20 text-emerald-400 shadow-sm'
             : 'text-gray-400 hover:text-white'}"
           on:click={() => (activeTab = "signin")}
-        >
-          Sign In
-        </button>
+        > {$adkT("Sign In")} </button>
         <button
           class="flex-1 py-2.5 text-sm font-medium rounded-lg transition-all {activeTab ===
           'signup'
             ? 'bg-emerald-500/20 text-emerald-400 shadow-sm'
             : 'text-gray-400 hover:text-white'}"
           on:click={() => (activeTab = "signup")}
-        >
-          Create Account
-        </button>
+        > {$adkT("Create Account")} </button>
       </div>
 
       <div class="relative min-h-[400px]">
@@ -147,7 +134,7 @@
                 on:click={() => (activeRole = "client")}
               >
                 <span class="text-xl mb-1">🏠</span>
-                <span class="text-xs font-medium">Buyer/Renter</span>
+                <span class="text-xs font-medium">{$adkT("Buyer/Renter")}</span>
               </button>
               <button
                 class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all {activeRole ===
@@ -157,7 +144,7 @@
                 on:click={() => (activeRole = "agent")}
               >
                 <span class="text-xl mb-1">🏆</span>
-                <span class="text-xs font-medium">Agent</span>
+                <span class="text-xs font-medium">{$adkT("Agent")}</span>
               </button>
               <button
                 class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all {activeRole ===
@@ -167,17 +154,12 @@
                 on:click={() => (activeRole = "manager")}
               >
                 <span class="text-xl mb-1">🏢</span>
-                <span class="text-xs font-medium">Manager</span>
+                <span class="text-xs font-medium">{$adkT("Manager")}</span>
               </button>
             </div>
 
             <p class="text-sm text-center text-gray-400">
-              {#if activeRole === "client"}Find your dream home or next
-                investment.
-              {:else if activeRole === "agent"}List properties, connect with
-                clients, and grow your business.
-              {:else}Manage estates, handle multiple properties and agents
-                efficiently.{/if}
+              {#if activeRole === "client"}{$adkT("Find your dream home or next investment.")}{:else if activeRole === "agent"}{$adkT("List properties, connect with clients, and grow your business.")}{:else}{$adkT("Manage estates, handle multiple properties and agents efficiently.")}{/if}
             </p>
 
             <div class="pt-2">

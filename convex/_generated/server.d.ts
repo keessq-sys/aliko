@@ -51,6 +51,7 @@ type Env = {
   readonly MEDIA_PROCESSOR_KEY: string | undefined;
   readonly MEDIA_PROCESSOR_URL: string | undefined;
   readonly MFA_ENCRYPTION_KEY: string | undefined;
+  readonly NIN_ENCRYPTION_KEY: string | undefined;
   readonly PAYSTACK_SECRET_KEY: string | undefined;
   readonly QOREID_CLIENT_ID: string | undefined;
   readonly QOREID_CLIENT_SECRET: string | undefined;

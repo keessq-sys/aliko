@@ -2,6 +2,7 @@ import { internal } from "./_generated/api";
 import { convexAuth } from "@convex-dev/auth/server";
 import { Password } from "@convex-dev/auth/providers/Password";
 import type { DataModel } from "./_generated/dataModel";
+import type { DatabaseWriter } from "./_generated/server";
 import { ResendOTPPasswordReset } from "./ResendOTPPasswordReset";
 import { publicSignupProfile } from "./lib/access";
 import { rateLimiter } from "./lib/rateLimits";
@@ -9,6 +10,7 @@ import { ConvexError } from "convex/values";
 import type { ConvexCredentialsUserConfig } from "@convex-dev/auth/providers/ConvexCredentials";
 
 import { passwordProblem } from "./lib/passwordPolicy";
+import { ninProblem, normalizeNin, protectNin } from "./lib/nin";
 
 const passwordProvider = Password<DataModel>({
   validatePasswordRequirements(password) {
@@ -54,6 +56,15 @@ passwordOptions.authorize = async (params, ctx) => {
       "This account is reserved. Use administrator sign in.",
     );
   try {
+    if (params.flow === "signUp") {
+      const problem = ninProblem(params.nin);
+      if (problem) throw new ConvexError(problem);
+      if (params.acceptKycConsent !== true)
+        throw new ConvexError("Accept the NIN verification consent before registration.");
+      const identity = await protectNin(normalizeNin(params.nin));
+      params = { ...params, registrationNinCipher: identity.cipher,
+        registrationNinHash: identity.fingerprint, registrationNinLastFour: identity.lastFour };
+    }
     return await authorizePassword(params, ctx);
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
@@ -92,6 +103,22 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
           args.profile.email?.trim().toLowerCase() ?? String(args.userId);
         await rateLimiter.limit(ctx, "registration", { key, throws: true });
         const user = await ctx.db.get(args.userId);
+        if (user?.registrationNinCipher) {
+          if (await (ctx.db as DatabaseWriter).query("identities").withIndex("by_fingerprint", q =>
+            q.eq("fingerprint", user.registrationNinHash!)).first())
+            throw new ConvexError("This NIN is already associated with an account. Contact support.");
+          const now = Date.now();
+          await ctx.db.insert("identities", {
+            userId: args.userId, ninCipher: user.registrationNinCipher,
+            fingerprint: user.registrationNinHash!, lastFour: user.registrationNinLastFour!,
+            status: "PENDING", consentVersion: "2026-10-03", consentedAt: now,
+            createdAt: now, updatedAt: now,
+          });
+          await ctx.db.patch(args.userId, { registrationNinCipher: undefined,
+            registrationNinHash: undefined, registrationNinLastFour: undefined });
+          await ctx.db.insert("policyAcceptances", { userId: args.userId,
+            policy: "KYC_CONSENT", version: "2026-10-03", acceptedAt: now });
+        }
         if (user?.registrationPolicyVersion)
           for (const policy of ["TERMS", "PRIVACY"] as const)
             await ctx.db.insert("policyAcceptances", {

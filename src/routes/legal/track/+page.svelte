@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { useQuery } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
   import { page } from "$app/stores";
@@ -39,7 +45,7 @@
 </script>
 
 <svelte:head>
-  <title>Track Legal Document — Aliko Diamond Key</title>
+  <title>{$adkT("Track Legal Document — Aliko Diamond Key")}</title>
 </svelte:head>
 
 <div style="background: var(--c-obsidian); min-height: 100vh">
@@ -47,8 +53,8 @@
   <div class="relative py-16 overflow-hidden" style="background: linear-gradient(180deg, rgba(6,78,59,0.18) 0%, transparent 100%)">
     <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center">
       <Shield class="w-12 h-12 text-emerald-500 mx-auto mb-4" />
-      <h1 class="font-serif text-display-md text-white mb-3" style="letter-spacing:-0.02em">Document Tracker</h1>
-      <p class="text-stone-400">Enter your reference code to view the status and audit trail of your legal document.</p>
+      <h1 class="font-serif text-display-md text-white mb-3" style="letter-spacing:-0.02em">{$adkT("Document Tracker")}</h1>
+      <p class="text-stone-400">{$adkT("Enter your reference code to view the status and audit trail of your legal document.")}</p>
     </div>
   </div>
 
@@ -58,9 +64,9 @@
       <div class="flex gap-3">
         <div class="flex-1 relative">
           <Search class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
-          <input
+          <input dir="auto"
             type="text"
-            placeholder="e.g. DOA-LX9F2K"
+            placeholder={$adkT("e.g. DOA-LX9F2K")}
             bind:value={refInput}
             on:keydown={e => e.key === "Enter" && search()}
             class="input-luxury pl-10 font-mono tracking-widest uppercase"
@@ -68,9 +74,7 @@
         </div>
         <button on:click={search}
                 class="px-6 py-2.5 rounded-xl font-bold text-sm text-white transition-all hover:scale-105 active:scale-95"
-                style="background: linear-gradient(135deg, #059669, #065f46)">
-          Track
-        </button>
+                style="background: linear-gradient(135deg, #059669, #065f46)"> {$adkT("Track")} </button>
       </div>
     </div>
 
@@ -83,8 +87,8 @@
       {:else if $docQuery === null}
         <div class="glass rounded-2xl p-8 text-center">
           <AlertCircle class="w-10 h-10 text-rose-400 mx-auto mb-3" />
-          <p class="text-white font-semibold mb-1">Reference not found</p>
-          <p class="text-stone-500 text-sm">Check the reference code and try again, or contact <a href="mailto:alikodiamondkey@gmail.com" class="text-emerald-400 underline">alikodiamondkey@gmail.com</a>.</p>
+          <p class="text-white font-semibold mb-1">{$adkT("Reference not found")}</p>
+          <p class="text-stone-500 text-sm">{$adkT("Check the reference code and try again, or contact")} <a href="mailto:alikodiamondkey@gmail.com" class="text-emerald-400 underline">{$adkT("alikodiamondkey@gmail.com")}</a>.</p>
         </div>
 
       {:else}
@@ -95,15 +99,14 @@
         <div class="rounded-2xl p-6 mb-6" style="background: #0A1628; border: 1px solid rgba(255,255,255,0.06)">
           <div class="flex items-start justify-between mb-6">
             <div>
-              <span class="text-xs font-bold uppercase tracking-widest text-stone-600">{doc.type.replace(/_/g, " ")}</span>
-              <h2 class="text-white font-bold text-xl mt-1 font-mono">{doc.referenceCode}</h2>
+              <span class="text-xs font-bold uppercase tracking-widest text-stone-600">{$adkT(doc.type.replace(/_/g, " "))}</span>
+              <h2 class="text-white font-bold text-xl mt-1 font-mono">{$adkT(doc.referenceCode)}</h2>
             </div>
             {#if doc.pdfUrl}
               <a href={doc.pdfUrl} target="_blank" download
                  class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white hover:opacity-80 transition-opacity"
                  style="background: rgba(5,150,105,0.15); border: 1px solid rgba(5,150,105,0.25)">
-                <Download class="w-4 h-4" /> Download PDF
-              </a>
+                <Download class="w-4 h-4" /> {$adkT("Download PDF")} </a>
             {/if}
           </div>
 
@@ -113,8 +116,8 @@
               <svelte:component this={statusInfo.icon} class="w-5 h-5" style="color: {statusInfo.color}" />
             </div>
             <div>
-              <p class="font-bold" style="color: {statusInfo.color}">{statusInfo.label}</p>
-              <p class="text-stone-500 text-xs mt-0.5">{statusInfo.note}</p>
+              <p class="font-bold" style="color: {statusInfo.color}">{$adkT(statusInfo.label)}</p>
+              <p class="text-stone-500 text-xs mt-0.5">{$adkT(statusInfo.note)}</p>
             </div>
           </div>
 
@@ -122,12 +125,12 @@
           {#if doc.plot}
             <div class="grid grid-cols-2 gap-3">
               <div class="p-3 rounded-xl" style="background: rgba(255,255,255,0.03)">
-                <p class="text-stone-600 text-xs">Plot</p>
-                <p class="text-white text-sm font-medium mt-0.5">Beacon {doc.plot.beaconNumber}</p>
+                <p class="text-stone-600 text-xs">{$adkT("Plot")}</p>
+                <p class="text-white text-sm font-medium mt-0.5">{$adkT("Beacon")} {$adkT(doc.plot.beaconNumber)}</p>
               </div>
               <div class="p-3 rounded-xl" style="background: rgba(255,255,255,0.03)">
-                <p class="text-stone-600 text-xs">Size</p>
-                <p class="text-white text-sm font-medium mt-0.5">{doc.plot.sizeSqm} sqm</p>
+                <p class="text-stone-600 text-xs">{$adkT("Size")}</p>
+                <p class="text-white text-sm font-medium mt-0.5">{$adkT(doc.plot.sizeSqm)} {$adkT("sqm")}</p>
               </div>
             </div>
           {/if}
@@ -136,7 +139,7 @@
         <!-- Audit trail -->
         <div class="rounded-2xl overflow-hidden" style="background: #0A1628; border: 1px solid rgba(255,255,255,0.06)">
           <div class="px-5 py-4" style="border-bottom: 1px solid rgba(255,255,255,0.06)">
-            <h3 class="font-semibold text-white text-sm">Document Timeline</h3>
+            <h3 class="font-semibold text-white text-sm">{$adkT("Document Timeline")}</h3>
           </div>
           <div class="p-5">
             <div class="relative">
@@ -149,11 +152,11 @@
                       <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
                     </div>
                     <div class="flex-1 pb-1">
-                      <p class="text-white text-sm font-medium">{ACTION_LABELS[entry.action] ?? entry.action}</p>
+                      <p class="text-white text-sm font-medium">{$adkT(ACTION_LABELS[entry.action] ?? entry.action)}</p>
                       <div class="flex items-center gap-3 mt-0.5">
-                        <span class="text-stone-600 text-xs">{formatDateTime(entry.createdAt)}</span>
+                        <span class="text-stone-600 text-xs">{$adkT(formatDateTime(entry.createdAt, $adkLocale))}</span>
                         {#if entry.actorRole}
-                          <span class="text-xs font-mono px-1.5 py-0.5 rounded" style="background:rgba(255,255,255,0.04);color:#64748b">{entry.actorRole}</span>
+                          <span class="text-xs font-mono px-1.5 py-0.5 rounded" style="background:rgba(255,255,255,0.04);color:#64748b">{$adkT(entry.actorRole)}</span>
                         {/if}
                       </div>
                     </div>

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import DiamondMark from "$lib/components/ui/DiamondMark.svelte";
   import { onMount } from "svelte";
   import { page } from "$app/stores";
@@ -24,7 +27,7 @@
   });
 </script>
 
-<svelte:head><title>Sign In — Aliko Diamond Key</title></svelte:head>
+<svelte:head><title>{$adkT("Sign In — Aliko Diamond Key")}</title></svelte:head>
 
 <div class="min-h-screen flex items-center justify-center px-4 py-12" style="background: var(--c-obsidian)">
   <!-- BG glow -->
@@ -37,12 +40,10 @@
            style="background: linear-gradient(135deg, #D97706, #92400E)">
         <DiamondMark size={28} />
       </div>
-      <h1 class="font-serif text-2xl text-white">Welcome back</h1>
-      <p class="text-stone-500 text-sm mt-1">Sign in to your Aliko Diamond Key account</p>
+      <h1 class="font-serif text-2xl text-white">{$adkT("Welcome back")}</h1>
+      <p class="text-stone-500 text-sm mt-1">{$adkT("Sign in to your Aliko Diamond Key account")}</p>
       {#if signedOut}
-        <p class="mt-3 inline-flex rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-300">
-          You've been signed out.
-        </p>
+        <p class="mt-3 inline-flex rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-300"> {$adkT("You've been signed out.")} </p>
       {/if}
     </div>
 
@@ -55,8 +56,7 @@
       {/if}
     </div>
 
-    <p class="text-center text-stone-700 text-xs mt-6">
-      Don't have an account? <a href="/auth?tab=signup" class="text-emerald-500 hover:text-emerald-400">Create one →</a>
+    <p class="text-center text-stone-700 text-xs mt-6"> {$adkT("Don't have an account?")} <a href="/auth?tab=signup" class="text-emerald-500 hover:text-emerald-400">{$adkT("Create one →")}</a>
     </p>
   </div>
 </div>

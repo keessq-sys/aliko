@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import { requireAdmin, requireUser } from "./lib/access";
 import { v } from "convex/values";
 import {
@@ -25,7 +26,7 @@ export const getMyProfile = query({
   },
 });
 
-export const updateMyProfile = mutation({
+export const updateMyProfile = auditedMutation("users:updateMyProfile")({
   args: {
     name: v.optional(v.string()),
     phone: v.optional(v.string()),
@@ -54,6 +55,7 @@ export const updateMyProfile = mutation({
       ...patch,
       lastActiveAt: Date.now(),
     });
+    await ctx.db.insert("adminAuditLog", { actorId: userId as Id<"users">, action: "PROFILE_UPDATED", entityType: "users", entityId: String(userId), createdAt: Date.now() });
   },
 });
 
@@ -75,13 +77,18 @@ export const listUsers = query({
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
     const limit = Math.min(Math.max(args.limit ?? 200, 1), 500);
-    return args.role
+    const users = await (args.role
       ? ctx.db
           .query("users")
           .withIndex("by_role_created", (q) => q.eq("role", args.role!))
           .order("desc")
           .take(limit)
-      : ctx.db.query("users").order("desc").take(limit);
+      : ctx.db.query("users").order("desc").take(limit));
+    return Promise.all(users.map(async user => {
+      const identity = await ctx.db.query("identities").withIndex("by_user", q => q.eq("userId", user._id)).unique();
+      return { ...user, maskedNin: identity ? `•••••••${identity.lastFour}` : null,
+        identityStatus: identity?.status ?? "NOT_SUBMITTED", verificationMethod: identity?.verificationMethod };
+    }));
   },
 });
 

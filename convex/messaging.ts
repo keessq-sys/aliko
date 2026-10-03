@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import type { Id } from "./_generated/dataModel";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
@@ -91,11 +92,14 @@ export const messages = query({
     };
   },
 });
-export const create = mutation({
-  args: { subject: v.string(), body: v.string() },
+export const create = auditedMutation("messaging:create")({
+  args: { subject: v.string(), body: v.string(), recipientId: v.optional(v.id("users")) },
   handler: async (ctx, args) => {
     const actor = await requireUser(ctx);
     if (actor.role === "ADMIN") await requireAdmin(ctx);
+    if (args.recipientId && actor.role !== "ADMIN") throw new Error("Forbidden");
+    const recipient = args.recipientId ? await ctx.db.get(args.recipientId) : null;
+    if (args.recipientId && (!recipient || recipient.accountStatus === "SUSPENDED")) throw new Error("Recipient not available");
     if (
       args.subject.trim().length < 3 ||
       args.subject.length > 180 ||
@@ -109,7 +113,8 @@ export const create = mutation({
     });
     const now = Date.now();
     const id = await ctx.db.insert("conversations", {
-      ownerId: actor._id,
+      ownerId: recipient?._id ?? actor._id,
+      assignedTo: actor.role === "ADMIN" ? actor._id : undefined,
       subject: args.subject.trim(),
       status: "OPEN",
       createdAt: now,
@@ -126,10 +131,12 @@ export const create = mutation({
     });
     if (actor.role !== "ADMIN")
       await notify(ctx, id, process.env.ADMIN_ALERT_EMAIL);
+    else if (recipient) await notify(ctx, id, recipient.email);
+    await ctx.db.insert("adminAuditLog", { actorId: actor._id, action: "CONVERSATION_CREATED", entityType: "conversations", entityId: String(id), createdAt: now });
     return id;
   },
 });
-export const reply = mutation({
+export const reply = auditedMutation("messaging:reply")({
   args: {
     conversationId: v.id("conversations"),
     body: v.string(),
@@ -170,6 +177,7 @@ export const reply = mutation({
       createdAt: now,
     });
     await ctx.db.patch(thread._id, { updatedAt: now });
+    await ctx.db.insert("adminAuditLog", { actorId: actor._id, action: "MESSAGE_SENT", entityType: "conversations", entityId: String(thread._id), createdAt: now });
     const recipient = await ctx.db.get(
       (actor._id === thread.ownerId
         ? (thread.assignedTo ?? thread.ownerId)
@@ -182,7 +190,7 @@ export const reply = mutation({
     return id;
   },
 });
-export const setStatus = mutation({
+export const setStatus = auditedMutation("messaging:setStatus")({
   args: {
     conversationId: v.id("conversations"),
     status: v.union(v.literal("OPEN"), v.literal("CLOSED")),

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   // src/lib/components/FAQSection.svelte
   // Generic, reusable, accessible FAQ accordion for any content page. Pass
   // the same FaqItem[] you build the FAQPage schema from (see
@@ -37,15 +40,15 @@
   );
 </script>
 
-<section aria-label={heading}>
+<section aria-label={$adkT(heading)}>
   {#if heading}
-    <h2 class="mb-6 font-serif text-2xl font-bold text-white sm:text-3xl">{heading}</h2>
+    <h2 class="mb-6 font-serif text-2xl font-bold text-white sm:text-3xl">{$adkT(heading)}</h2>
   {/if}
 
   {#each Object.entries(groups) as [category, items] (category || 'all')}
     <div class="mb-8 last:mb-0">
       {#if grouped && category}
-        <h3 class="mb-3 text-sm font-semibold uppercase tracking-[0.15em] text-emerald-400">{category}</h3>
+        <h3 class="mb-3 text-sm font-semibold uppercase tracking-[0.15em] text-emerald-400">{$adkT(category)}</h3>
       {/if}
       <div class="space-y-3">
         {#each items as item (item.id)}
@@ -57,14 +60,14 @@
               aria-expanded={openId === item.id}
               aria-controls={`${item.id}-answer`}
             >
-              <span class="text-sm font-semibold text-white sm:text-base">{item.q}</span>
+              <span class="text-sm font-semibold text-white sm:text-base">{$adkT(item.q)}</span>
               <span class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-white/5 text-emerald-400">
                 {#if openId === item.id}<Minus size={14} />{:else}<Plus size={14} />{/if}
               </span>
             </button>
             {#if openId === item.id}
               <div id={`${item.id}-answer`} class="px-5 pb-5">
-                <p class="text-sm leading-relaxed text-stone-400">{item.a}</p>
+                <p class="text-sm leading-relaxed text-stone-400">{$adkT(item.a)}</p>
               </div>
             {/if}
           </div>

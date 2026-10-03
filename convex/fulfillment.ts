@@ -1,3 +1,4 @@
+import { auditedMutation } from "./lib/auditedMutation";
 import type { WorkflowId } from "@convex-dev/workflow";
 import { requireAdmin } from "./lib/access";
 import { WorkflowManager } from "@convex-dev/workflow";
@@ -212,7 +213,7 @@ export const recordFailure = internalMutation({
       });
   },
 });
-export const restartFulfillment = mutation({
+export const restartFulfillment = auditedMutation("fulfillment:restartFulfillment")({
   args: { bookingId: v.id("bookings"), reason: v.string() },
   handler: async (ctx, args) => {
     const actorId = await requireAdmin(ctx, 5 * 60000),

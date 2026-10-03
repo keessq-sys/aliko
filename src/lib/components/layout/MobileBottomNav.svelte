@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { Home, Building2, Landmark, Wrench, User } from "lucide-svelte";
   import { page } from "$app/stores";
 
@@ -20,7 +23,7 @@
 <nav
   class="md:hidden fixed inset-x-0 bottom-0 z-30 flex items-stretch border-t border-white/10 theme-surface backdrop-blur-md"
   style="background: var(--surface); padding-bottom: env(safe-area-inset-bottom, 0px)"
-  aria-label="Primary"
+  aria-label={$adkT("Primary")}
 >
   {#each items as item}
     {@const active = isActive(item.href)}
@@ -36,7 +39,7 @@
         size={20}
         class={active ? "text-emerald-400" : "text-stone-500"}
       />
-      {item.label}
+      {$adkT(item.label)}
     </a>
   {/each}
 </nav>

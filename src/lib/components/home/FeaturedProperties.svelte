@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { MapPin, Bed, Bath, Square, ArrowRight } from "lucide-svelte";
   import { reveal } from "$lib/actions/reveal";
   import { useQuery } from "$lib/convex/queries";
@@ -34,17 +40,13 @@
       <div>
         <h4
           class="text-emerald-500 font-bold tracking-widest uppercase text-sm mb-2"
-        >
-          Prime Listings
-        </h4>
-        <h2 class="text-3xl md:text-5xl font-extrabold">Featured Properties</h2>
+        > {$adkT("Prime Listings")} </h4>
+        <h2 class="text-3xl md:text-5xl font-extrabold">{$adkT("Featured Properties")}</h2>
       </div>
       <a
         href="/properties"
         class="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-semibold group transition-colors"
-      >
-        View All Properties
-        <ArrowRight
+      > {$adkT("View All Properties")} <ArrowRight
           size={18}
           class="group-hover:translate-x-1 transition-transform"
         />
@@ -63,12 +65,9 @@
       <div
         class="theme-light-surface rounded-2xl border border-white/10 p-8 text-center"
       >
-        <p class="font-semibold">New featured listings are being prepared</p>
-        <p class="mt-2 text-stone-400">
-          Approved properties and their photographs appear here as soon as they
-          are published.
-        </p>
-        <a href="/properties" class="btn-primary mt-5">Browse properties</a>
+        <p class="font-semibold">{$adkT("New featured listings are being prepared")}</p>
+        <p class="mt-2 text-stone-400"> {$adkT("Approved properties and their photographs appear here as soon as they are published.")} </p>
+        <a href="/properties" class="btn-primary mt-5">{$adkT("Browse properties")}</a>
       </div>
     {:else}
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -81,14 +80,14 @@
             <div class="relative h-64 overflow-hidden">
               <PropertyCardImage
                 images={prop.images ?? []}
-                title={prop.title}
+                title={$adkT(prop.title)}
               />
               <div class="absolute bottom-3 right-3 z-10 flex -space-x-2">
                 {#each (prop.images ?? []).slice(1, 4) as image, i}
                   <img
                     use:hideFailedThumbnail
                     src={image}
-                    alt={`${prop.title} gallery ${i + 2}`}
+                    alt={$adkT(`${prop.title} gallery ${i + 2}`)}
                     class="h-10 w-10 rounded-lg border-2 border-[#050A0E] object-cover shadow-lg"
                     loading="lazy"
                     on:error={(event) => {
@@ -105,7 +104,7 @@
                 <span
                   class="bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold border border-white/10 uppercase tracking-wider text-amber-400"
                 >
-                  {prop.type}
+                  {$adkT(prop.type)}
                 </span>
               </div>
 
@@ -113,7 +112,7 @@
                 <span
                   class="featured-status bg-emerald-500/90 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg"
                 >
-                  {prop.status === "AVAILABLE" ? "Available" : prop.status}
+                  {$adkT(prop.status === "AVAILABLE" ? "Available" : prop.status)}
                 </span>
               </div>
             </div>
@@ -124,11 +123,11 @@
                 <h3
                   class="text-xl font-bold mb-2 group-hover:text-emerald-400 transition-colors"
                 >
-                  {prop.title}
+                  {$adkT(prop.title)}
                 </h3>
                 <p class="text-gray-400 text-sm flex items-center gap-1">
                   <MapPin size={16} class="text-gray-500" />
-                  {prop.location}, {prop.state}
+                  {$adkT(prop.location)}, {$adkT(prop.state)}
                 </p>
               </div>
 
@@ -139,31 +138,28 @@
                 {#if prop.bedrooms}
                   <div class="flex items-center gap-2">
                     <Bed size={16} class="text-gray-500" />
-                    {prop.bedrooms} Beds
-                  </div>
+                    {$adkT(prop.bedrooms)} {$adkT("Beds")} </div>
                 {/if}
                 {#if prop.bathrooms}
                   <div class="flex items-center gap-2">
                     <Bath size={16} class="text-gray-500" />
-                    {prop.bathrooms} Baths
-                  </div>
+                    {$adkT(prop.bathrooms)} {$adkT("Baths")} </div>
                 {/if}
                 {#if prop.sizeSqm}
                   <div class="flex items-center gap-2">
                     <Square size={16} class="text-gray-500" />
-                    {prop.sizeSqm} sqm
-                  </div>
+                    {$adkT(prop.sizeSqm)} {$adkT("sqm")} </div>
                 {/if}
               </div>
 
               <!-- Footer -->
               <div class="mt-auto flex items-center justify-between">
                 <div>
-                  <p class="text-xs text-gray-500 mb-1">Asking Price</p>
+                  <p class="text-xs text-gray-500 mb-1">{$adkT("Asking Price")}</p>
                   <p
                     class="featured-price text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300"
                   >
-                    {formatNaira(prop.price)}
+                    {$adkT(formatNaira(prop.price, $adkLocale))}
                   </p>
                 </div>
                 <span

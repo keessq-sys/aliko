@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { UploadCloud, File as FileIcon, X, Image as ImageIcon } from 'lucide-svelte';
   import { createEventDispatcher } from 'svelte';
 
@@ -16,7 +19,7 @@
   function handleDragEnter(e: DragEvent) { e.preventDefault(); isDragging = true; }
   function handleDragLeave(e: DragEvent) { e.preventDefault(); isDragging = false; }
   function handleDragOver(e: DragEvent) { e.preventDefault(); }
-  
+
   function handleDrop(e: DragEvent) {
     e.preventDefault();
     isDragging = false;
@@ -56,7 +59,7 @@
     } else {
       selectedFiles = newFiles;
     }
-    
+
     dispatch('files', { files: selectedFiles.map(f => f.file) });
   }
 
@@ -81,24 +84,24 @@
     on:click={() => fileInput.click()}
     on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), fileInput.click())}
   >
-    <input 
-      type="file" 
-      bind:this={fileInput} 
-      class="hidden" 
-      {accept} 
-      {multiple} 
+    <input dir="auto"
+      type="file"
+      bind:this={fileInput}
+      class="hidden"
+      {accept}
+      {multiple}
       on:change={handleFileInput}
     />
-    
+
     <div class="p-4 rounded-full bg-stone-800 mb-4 {isDragging ? 'text-emerald-400' : 'text-stone-400'}">
       <UploadCloud size={32} />
     </div>
-    
-    <p class="text-sm font-medium text-stone-200 mb-1">{label}</p>
-    <p class="text-xs text-stone-500">Max size: {maxSizeMB}MB</p>
-    
+
+    <p class="text-sm font-medium text-stone-200 mb-1">{$adkT(label)}</p>
+    <p class="text-xs text-stone-500">{$adkT("Max size:")} {$adkT(maxSizeMB)}{$adkT("MB")}</p>
+
     {#if errorMsg}
-      <p class="text-xs text-rose-500 mt-2">{errorMsg}</p>
+      <p class="text-xs text-rose-500 mt-2">{$adkT(errorMsg)}</p>
     {/if}
   </div>
 
@@ -108,7 +111,7 @@
         <div class="flex items-center justify-between p-3 rounded-lg bg-stone-800 border border-stone-700">
           <div class="flex items-center gap-3 overflow-hidden">
             {#if item.preview}
-              <img src={item.preview} alt="preview" class="w-10 h-10 object-cover rounded" />
+              <img src={item.preview} alt={$adkT("preview")} class="w-10 h-10 object-cover rounded" />
             {:else}
               <div class="w-10 h-10 rounded bg-stone-700 flex items-center justify-center text-stone-400">
                 <FileIcon size={20} />
@@ -116,11 +119,11 @@
             {/if}
             <div class="truncate text-sm">
               <p class="font-medium text-stone-200 truncate">{item.file.name}</p>
-              <p class="text-xs text-stone-500">{(item.file.size / 1024 / 1024).toFixed(2)} MB</p>
+              <p class="text-xs text-stone-500">{(item.file.size / 1024 / 1024).toFixed(2)} {$adkT("MB")}</p>
             </div>
           </div>
-          <button 
-            on:click={() => removeFile(i)} 
+          <button
+            on:click={() => removeFile(i)}
             class="p-2 rounded hover:bg-stone-700 text-stone-400 hover:text-rose-400 transition-colors"
           >
             <X size={16} />

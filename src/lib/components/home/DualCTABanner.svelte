@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import {
     Home,
     Trophy,
@@ -21,33 +24,23 @@
           <Home class="text-emerald-400" size={32} />
         </div>
 
-        <h3 class="text-3xl font-extrabold mb-4">Looking to Buy or Rent?</h3>
-        <p class="text-gray-400 mb-8 leading-relaxed">
-          Browse published properties and connect with the team for
-          availability, title review and transaction support.
-        </p>
+        <h3 class="text-3xl font-extrabold mb-4">{$adkT("Looking to Buy or Rent?")}</h3>
+        <p class="text-gray-400 mb-8 leading-relaxed"> {$adkT("Browse published properties and connect with the team for availability, title review and transaction support.")} </p>
 
         <ul class="space-y-3 mb-10 text-sm font-medium text-gray-300">
           <li class="flex items-center gap-3">
-            <CheckCircle2 size={18} class="text-emerald-500" /> Reviewed listings
-            titles
-          </li>
+            <CheckCircle2 size={18} class="text-emerald-500" /> {$adkT("Reviewed listings titles")} </li>
           <li class="flex items-center gap-3">
-            <CheckCircle2 size={18} class="text-emerald-500" /> Schedule physical/virtual
-            viewings
-          </li>
+            <CheckCircle2 size={18} class="text-emerald-500" /> {$adkT("Schedule physical/virtual viewings")} </li>
           <li class="flex items-center gap-3">
-            <CheckCircle2 size={18} class="text-emerald-500" /> Track documents via
-            portal
-          </li>
+            <CheckCircle2 size={18} class="text-emerald-500" /> {$adkT("Track documents via portal")} </li>
         </ul>
 
         <div class="mt-auto">
           <a
             href="/properties"
             class="inline-flex w-full md:w-auto items-center justify-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold transition-colors"
-          >
-            Start Searching <ArrowRight size={18} />
+          > {$adkT("Start Searching")} <ArrowRight size={18} />
           </a>
         </div>
       </div>
@@ -60,39 +53,28 @@
           <Trophy class="text-amber-400" size={32} />
         </div>
 
-        <h3 class="text-3xl font-extrabold mb-4">Are You a Professional?</h3>
-        <p class="text-gray-400 mb-8 leading-relaxed">
-          Join 86 verified agents generating over ₦2.4B in commissions. Access
-          premium leads and powerful management tools.
-        </p>
+        <h3 class="text-3xl font-extrabold mb-4">{$adkT("Are You a Professional?")}</h3>
+        <p class="text-gray-400 mb-8 leading-relaxed"> {$adkT("Join 86 verified agents generating over ₦2.4B in commissions. Access premium leads and powerful management tools.")} </p>
 
         <ul class="space-y-3 mb-10 text-sm font-medium text-gray-300">
           <li class="flex items-center gap-3">
-            <CheckCircle2 size={18} class="text-amber-500" /> List unlimited properties
-          </li>
+            <CheckCircle2 size={18} class="text-amber-500" /> {$adkT("List unlimited properties")} </li>
           <li class="flex items-center gap-3">
-            <CheckCircle2 size={18} class="text-amber-500" /> Manage leads in one
-            dashboard
-          </li>
+            <CheckCircle2 size={18} class="text-amber-500" /> {$adkT("Manage leads in one dashboard")} </li>
           <li class="flex items-center gap-3">
-            <CheckCircle2 size={18} class="text-amber-500" /> Earn industry-leading
-            commissions
-          </li>
+            <CheckCircle2 size={18} class="text-amber-500" /> {$adkT("Earn industry-leading commissions")} </li>
         </ul>
 
         <div class="mt-auto flex flex-col sm:flex-row gap-4">
           <a
             href="/register/agent"
             class="inline-flex flex-1 items-center justify-center gap-2 px-8 py-4 bg-amber-600 hover:bg-amber-500 rounded-xl font-bold transition-colors text-white"
-          >
-            Join as Agent <ArrowRight size={18} />
+          > {$adkT("Join as Agent")} <ArrowRight size={18} />
           </a>
           <a
             href="/register/manager"
             class="inline-flex flex-1 items-center justify-center gap-2 px-8 py-4 border border-white/20 hover:bg-white/10 rounded-xl font-bold transition-colors"
-          >
-            Register Manager
-          </a>
+          > {$adkT("Register Manager")} </a>
         </div>
       </div>
     </div>
@@ -100,9 +82,7 @@
     <div
       class="mt-10 flex max-w-6xl mx-auto items-center justify-center gap-3 rounded-2xl border border-[#25D366]/30 bg-[#25D366]/5 px-6 py-5 text-center sm:justify-between sm:text-left"
     >
-      <p class="text-sm text-gray-300">
-        Prefer to talk it through first? Our team is on WhatsApp right now.
-      </p>
+      <p class="text-sm text-gray-300"> {$adkT("Prefer to talk it through first? Our team is on WhatsApp right now.")} </p>
       <a
         href={whatsappHref(
           "Hi, I'd like to speak with someone at Aliko Diamond Key.",
@@ -111,8 +91,7 @@
         rel="noopener noreferrer"
         class="inline-flex flex-shrink-0 items-center gap-2 rounded-xl bg-[#25D366] px-5 py-2.5 text-sm font-bold text-black transition-transform hover:scale-105"
       >
-        <MessageCircle size={16} /> Chat on WhatsApp
-      </a>
+        <MessageCircle size={16} /> {$adkT("Chat on WhatsApp")} </a>
     </div>
   </div>
 </section>

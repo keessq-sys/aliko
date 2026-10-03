@@ -1,4 +1,11 @@
 <script lang="ts">
+  import { getI18n } from "$lib/i18n";
+  const { locale: adkLocale } = getI18n();
+
+  import IdentityStatus from "$lib/components/auth/IdentityStatus.svelte";
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import {
     Heart,
     Calendar,
@@ -76,7 +83,7 @@
     kycStarting = true;
     kycMessage = "";
     try {
-      await runMutation(api.kyc.acceptKycConsent, { version: "2026-09-30" });
+      await runMutation(api.kyc.acceptKycConsent, { version: "2026-10-03" });
       const session = await runAction(api.kyc.startQoreIdWorkflow, {
         type: "NIN",
       });
@@ -167,18 +174,18 @@
           <div
             class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center"
           >
-            <span class="text-white font-bold">C</span>
+            <span class="text-white font-bold">{$adkT("C")}</span>
           </div>
-          <h1 class="text-xl font-bold text-white">Client Portal</h1>
+          <h1 class="text-xl font-bold text-white">{$adkT("Client Portal")}</h1>
         </div>
         <div class="flex items-center gap-4">
           <button
             class="flex items-center justify-center w-11 h-11 rounded-full bg-white/10 border border-white/20"
-            aria-label="Account"
+            aria-label={$adkT("Account")}
           >
             <img
               src="https://picsum.photos/seed/client/100/100"
-              alt="Client"
+              alt={$adkT("Client")}
               class="w-8 h-8 rounded-full object-cover"
             />
           </button>
@@ -196,7 +203,7 @@
               : 'border-transparent text-stone-400 hover:text-white hover:border-white/20'}"
           >
             <svelte:component this={tab.icon} class="w-4 h-4" />
-            {tab.label}
+            {$adkT(tab.label)}
           </button>
         {/each}
       </nav>
@@ -209,12 +216,11 @@
       <div in:fly={{ y: 10, duration: 220, delay: 80 }}>
         {#if currentTab === "bookings"}
           <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-            <h2 class="text-xl font-semibold text-white">My Bookings</h2>
+            <h2 class="text-xl font-semibold text-white">{$adkT("My Bookings")}</h2>
             <a
               href="/plots"
               class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-500"
-            >
-              Browse Plots <ArrowRight class="h-4 w-4" />
+            > {$adkT("Browse Plots")} <ArrowRight class="h-4 w-4" />
             </a>
           </div>
 
@@ -229,12 +235,10 @@
               class="flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/[0.02] py-16 text-center"
             >
               <Landmark class="mb-3 h-12 w-12 text-stone-700" />
-              <p class="mb-1 font-medium text-white">No plot bookings yet</p>
-              <p class="mb-6 max-w-sm text-sm text-stone-400">
-                Reserve a verified land plot and track your payment status here.
-              </p>
+              <p class="mb-1 font-medium text-white">{$adkT("No plot bookings yet")}</p>
+              <p class="mb-6 max-w-sm text-sm text-stone-400"> {$adkT("Reserve a verified land plot and track your payment status here.")} </p>
               <a href="/plots" class="btn-primary px-6 py-2.5 text-sm"
-                >Browse Plots</a
+                >{$adkT("Browse Plots")}</a
               >
             </div>
           {:else}
@@ -249,30 +253,28 @@
                     <div>
                       <div class="flex items-center gap-3">
                         <h3 class="font-semibold text-white">
-                          {b.plot?.beaconNumber ?? "Plot"}
+                          {$adkT(b.plot?.beaconNumber ?? "Plot")}
                         </h3>
                         <span
                           class="rounded-full border px-2.5 py-0.5 text-[11px] font-bold {BOOKING_STATUS_META[
                             b.paymentStatus
                           ] ?? ''}"
                         >
-                          {b.paymentStatus}
+                          {$adkT(b.paymentStatus)}
                         </span>
                       </div>
                       <p class="mt-0.5 font-mono text-xs text-stone-600">
-                        {b.reference} · {b.project?.name ?? ""}
+                        {$adkT(b.reference)} · {$adkT(b.project?.name ?? "")}
                       </p>
                     </div>
                     <div class="text-right">
                       <p
                         class="text-[10px] uppercase tracking-wider text-stone-600"
-                      >
-                        Paid / Total
-                      </p>
+                      > {$adkT("Paid / Total")} </p>
                       <p class="font-bold text-amber-400">
-                        {formatNaira(b.paidAmount)}
+                        {$adkT(formatNaira(b.paidAmount, $adkLocale))}
                         <span class="text-xs text-stone-500"
-                          >/ {formatNaira(b.totalAmount)}</span
+                          >/ {$adkT(formatNaira(b.totalAmount, $adkLocale))}</span
                         >
                       </p>
                     </div>
@@ -282,19 +284,14 @@
                       href={`/checkout/${encodeURIComponent(b.reference)}`}
                       class="mt-3 inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/20 disabled:opacity-50"
                     >
-                      <CreditCard size={13} /> Pay with Flutterwave
-                    </a>
+                      <CreditCard size={13} /> {$adkT("Pay with Flutterwave")} </a>
                   {:else if b.paymentStatus === "PARTIAL"}
                     <a
                       href={`/plots/payment-callback?reference=${b.reference}`}
                       class="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:underline"
-                    >
-                      View payment status <ArrowRight class="h-3 w-3" />
+                    > {$adkT("View payment status")} <ArrowRight class="h-3 w-3" />
                     </a>
-                    <p class="mt-1 text-[11px] text-stone-600">
-                      Remaining-balance payment is arranged with your agent for
-                      installment plans.
-                    </p>
+                    <p class="mt-1 text-[11px] text-stone-600"> {$adkT("Remaining-balance payment is arranged with your agent for installment plans.")} </p>
                   {/if}
                 </div>
               {/each}
@@ -302,14 +299,11 @@
           {/if}
         {:else if currentTab === "requests"}
           <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-            <h2 class="text-xl font-semibold text-white">
-              My Service Requests
-            </h2>
+            <h2 class="text-xl font-semibold text-white"> {$adkT("My Service Requests")} </h2>
             <a
               href="/services"
               class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-500"
-            >
-              New Request <ArrowRight class="h-4 w-4" />
+            > {$adkT("New Request")} <ArrowRight class="h-4 w-4" />
             </a>
           </div>
 
@@ -324,13 +318,10 @@
               class="flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/[0.02] py-16 text-center"
             >
               <Inbox class="mb-3 h-12 w-12 text-stone-700" />
-              <p class="mb-1 font-medium text-white">No requests yet</p>
-              <p class="mb-6 max-w-sm text-sm text-stone-400">
-                Submit a request for interior design, Turkish tiles, smart
-                homes, construction or any of our eight services.
-              </p>
+              <p class="mb-1 font-medium text-white">{$adkT("No requests yet")}</p>
+              <p class="mb-6 max-w-sm text-sm text-stone-400"> {$adkT("Submit a request for interior design, Turkish tiles, smart homes, construction or any of our eight services.")} </p>
               <a href="/services" class="btn-primary px-6 py-2.5 text-sm"
-                >Browse Services</a
+                >{$adkT("Browse Services")}</a
               >
             </div>
           {:else}
@@ -345,29 +336,27 @@
                     <div>
                       <div class="flex items-center gap-3">
                         <h3 class="font-semibold text-white">
-                          {req.requestType.replace(/_/g, " ")}
+                          {$adkT(req.requestType.replace(/_/g, " "))}
                         </h3>
                         <span
                           class="rounded-full px-2.5 py-0.5 text-[11px] font-bold {REQUEST_STATUS_META[
                             req.status
                           ]?.classes ?? ''}"
                         >
-                          {REQUEST_STATUS_META[req.status]?.label ?? req.status}
+                          {$adkT(REQUEST_STATUS_META[req.status]?.label ?? req.status)}
                         </span>
                       </div>
                       <p class="mt-0.5 font-mono text-xs text-stone-600">
-                        {req.reference} · {req.serviceSlug}
+                        {$adkT(req.reference)} · {$adkT(req.serviceSlug)}
                       </p>
                     </div>
                     {#if req.quoteAmount}
                       <div class="text-right">
                         <p
                           class="text-[10px] uppercase tracking-wider text-stone-600"
-                        >
-                          Quote
-                        </p>
+                        > {$adkT("Quote")} </p>
                         <p class="font-bold text-amber-400">
-                          {formatNaira(req.quoteAmount)}
+                          {$adkT(formatNaira(req.quoteAmount, $adkLocale))}
                         </p>
                       </div>
                     {/if}
@@ -378,17 +367,14 @@
                     >
                       <p
                         class="text-[10px] font-bold uppercase tracking-wider text-emerald-500"
-                      >
-                        ADK Response
-                      </p>
+                      > {$adkT("ADK Response")} </p>
                       <p class="mt-1 text-sm text-emerald-100">
-                        {req.adminResponse}
+                        {$adkT(req.adminResponse)}
                       </p>
                     </div>
                   {:else}
-                    <p class="mt-3 text-xs text-stone-500">
-                      Our admin desk responds within 48 hours of submission.
-                    </p>
+                    <IdentityStatus />
+              <p class="mt-3 text-xs text-stone-500"> {$adkT("Our admin desk responds within 48 hours of submission.")} </p>
                   {/if}
                 </div>
               {/each}
@@ -396,9 +382,7 @@
           {/if}
         {:else if currentTab === "saved"}
           <div class="mb-6 flex justify-between items-center">
-            <h2 class="text-xl font-semibold text-white">
-              Your Wishlist ({$savedProperties?.length ?? 0} properties)
-            </h2>
+            <h2 class="text-xl font-semibold text-white"> {$adkT("Your Wishlist (")}{$adkT($savedProperties?.length ?? 0)} {$adkT("properties)")} </h2>
           </div>
           {#if $savedProperties === undefined}<div
               class="skeleton h-48 rounded-xl"
@@ -406,9 +390,9 @@
           {:else if $savedProperties.length === 0}
             <div class="rounded-2xl border border-white/5 py-16 text-center">
               <Heart class="mx-auto mb-3 h-10 w-10 text-stone-700" />
-              <p class="text-white">No saved properties</p>
+              <p class="text-white">{$adkT("No saved properties")}</p>
               <a href="/properties" class="mt-4 inline-block text-emerald-400"
-                >Browse verified listings</a
+                >{$adkT("Browse verified listings")}</a
               >
             </div>
           {:else}
@@ -421,53 +405,51 @@
                   <div class="relative h-48 w-full overflow-hidden">
                     <img
                       src={prop.images?.[0] ?? "/logo.png"}
-                      alt={prop.title}
+                      alt={$adkT(prop.title)}
                       class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <button
                       on:click={() => removeSaved(prop._id)}
                       class="absolute top-3 right-3 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-black/50 text-emerald-400 hover:bg-rose-500/80 hover:text-white transition-colors backdrop-blur-md"
-                      aria-label="Remove from saved properties"
+                      aria-label={$adkT("Remove from saved properties")}
                     >
                       <Heart class="w-4 h-4 fill-current" />
                     </button>
                     <div
                       class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-xs text-white"
-                    >
-                      Saved {new Date(saved.createdAt).toLocaleDateString()}
+                    > {$adkT("Saved")} {$adkT(new Date(saved.createdAt).toLocaleDateString($adkLocale === "ar" ? "ar-NG" : "en-NG"))}
                     </div>
                   </div>
                   <div class="p-5">
                     <h3 class="text-lg font-semibold text-white truncate">
-                      {prop.title}
+                      {$adkT(prop.title)}
                     </h3>
                     <p class="text-emerald-400 font-bold mt-1">
-                      ₦{(prop.price / 1000000).toFixed(1)}M
-                    </p>
+                      ₦{$adkT((prop.price / 1000000).toFixed(1))}{$adkT("M")} </p>
 
                     <div
                       class="flex items-center gap-4 mt-3 text-sm text-stone-400"
                     >
                       <span class="flex items-center gap-1"
                         ><Bed class="w-4 h-4" />
-                        {prop.bedrooms ?? "—"} Beds</span
+                        {$adkT(prop.bedrooms ?? "—")} {$adkT("Beds")}</span
                       >
                       <span class="flex items-center gap-1"
                         ><Bath class="w-4 h-4" />
-                        {prop.bathrooms ?? "—"} Baths</span
+                        {$adkT(prop.bathrooms ?? "—")} {$adkT("Baths")}</span
                       >
                     </div>
                     <p
                       class="flex items-center gap-1 mt-2 text-sm text-stone-500 truncate"
                     >
                       <MapPin class="w-4 h-4" />
-                      {prop.location}
+                      {$adkT(prop.location)}
                     </p>
 
                     <a
                       href={`/properties/${prop.slug}`}
                       class="block w-full mt-4 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-500/20 py-2 rounded-lg font-medium text-center transition-colors"
-                      >View property</a
+                      >{$adkT("View property")}</a
                     >
                   </div>
                 </div>
@@ -476,12 +458,11 @@
           {/if}
         {:else if currentTab === "viewings"}
           <div class="mb-6 flex justify-between items-center">
-            <h2 class="text-xl font-semibold text-white">Upcoming Viewings</h2>
+            <h2 class="text-xl font-semibold text-white">{$adkT("Upcoming Viewings")}</h2>
             <button
               class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
             >
-              <CalendarPlus class="w-4 h-4" /> Schedule New
-            </button>
+              <CalendarPlus class="w-4 h-4" /> {$adkT("Schedule New")} </button>
           </div>
 
           {#if $mySiteVisits === undefined}<div
@@ -489,9 +470,7 @@
             ></div>
           {:else if $mySiteVisits.length === 0}<div
               class="rounded-2xl border border-white/5 py-16 text-center text-stone-400"
-            >
-              No site visits have been scheduled.
-            </div>
+            > {$adkT("No site visits have been scheduled.")} </div>
           {:else}<div class="space-y-4">
               {#each $mySiteVisits as view (view._id)}
                 <div
@@ -499,37 +478,37 @@
                 >
                   <img
                     src={view.property?.images?.[0] ?? "/logo.png"}
-                    alt="Property"
+                    alt={$adkT("Property")}
                     class="w-24 h-24 rounded-lg object-cover"
                   />
                   <div class="flex-1">
                     <div class="flex justify-between items-start">
                       <div>
                         <h3 class="text-lg font-medium text-white">
-                          {view.property?.title ??
+                          {$adkT(view.property?.title ??
                             view.project?.name ??
-                            "Site visit"}
+                            "Site visit")}
                         </h3>
                         <p class="text-emerald-400 font-medium mt-1">
-                          {new Date(view.requestedAt).toLocaleDateString()} at {view.preferredTime}
+                          {$adkT(new Date(view.requestedAt).toLocaleDateString($adkLocale === "ar" ? "ar-NG" : "en-NG"))} {$adkT("at")} {$adkT(view.preferredTime)}
                         </p>
                       </div>
                       <span
                         class="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
                       >
-                        {view.status.replace(/_/g, " ")}
+                        {$adkT(view.status.replace(/_/g, " "))}
                       </span>
                     </div>
                     <div class="mt-4 flex flex-wrap gap-4 text-sm">
                       <span class="flex items-center gap-1 text-stone-400"
-                        ><User class="w-4 h-4" /> Agent: {view.agent?.name ??
-                          "To be assigned"}</span
+                        ><User class="w-4 h-4" /> {$adkT("Agent:")} {$adkT(view.agent?.name ??
+                          "To be assigned")}</span
                       >
                       <span class="flex items-center gap-1 text-stone-400"
                         ><MapPin class="w-4 h-4" />
-                        {view.property?.location ??
+                        {$adkT(view.property?.location ??
                           view.project?.location ??
-                          "Location pending"}</span
+                          "Location pending")}</span
                       >
                     </div>
                   </div>
@@ -539,22 +518,20 @@
                     {#if view.status !== "COMPLETED" && view.status !== "CANCELLED"}<button
                         on:click={() => cancelVisit(view._id)}
                         class="flex-1 sm:flex-none px-4 py-2 border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 rounded-lg text-sm"
-                        >Cancel</button
+                        >{$adkT("Cancel")}</button
                       >{/if}
                   </div>
                 </div>
               {/each}
             </div>{/if}
         {:else if currentTab === "documents"}
-          <h2 class="text-xl font-semibold text-white mb-6">My Documents</h2>
+          <h2 class="text-xl font-semibold text-white mb-6">{$adkT("My Documents")}</h2>
           {#if $myDocuments === undefined}<div
               class="skeleton h-32 rounded-xl"
             ></div>
           {:else if $myDocuments.length === 0}<div
               class="rounded-2xl border border-white/5 py-16 text-center text-stone-400"
-            >
-              No legal documents are available yet.
-            </div>
+            > {$adkT("No legal documents are available yet.")} </div>
           {:else}<div
               class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
@@ -567,22 +544,22 @@
                   </div>
                   <div class="flex-1">
                     <h4 class="text-sm font-medium text-white mb-1">
-                      {doc.type.replace(/_/g, " ")}
+                      {$adkT(doc.type.replace(/_/g, " "))}
                     </h4>
-                    <p class="text-xs text-stone-400">{doc.referenceCode}</p>
+                    <p class="text-xs text-stone-400">{$adkT(doc.referenceCode)}</p>
                     <div
                       class="mt-2 flex justify-between items-center text-xs text-stone-500"
                     >
-                      <span>{new Date(doc.createdAt).toLocaleDateString()}</span
+                      <span>{$adkT(new Date(doc.createdAt).toLocaleDateString($adkLocale === "ar" ? "ar-NG" : "en-NG"))}</span
                       >
-                      <span>{doc.status}</span>
+                      <span>{$adkT(doc.status)}</span>
                     </div>
                   </div>
                   <a
                     href={doc.pdfUrl ??
                       `/legal/track?reference=${encodeURIComponent(doc.referenceCode)}`}
                     class="min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-white/10 rounded-full text-stone-400 hover:text-white"
-                    aria-label="Open document"
+                    aria-label={$adkT("Open document")}
                   >
                     <Download class="w-4 h-4" />
                   </a>
@@ -597,25 +574,23 @@
             >
               <h2
                 class="text-xl font-semibold text-white mb-6 border-b border-white/10 pb-4"
-              >
-                Personal Information
-              </h2>
+              > {$adkT("Personal Information")} </h2>
               <form class="space-y-6" on:submit={saveProfile}>
                 <div class="flex items-center gap-4 mb-8">
                   <img
                     src={$myProfile?.avatarUrl??'/logo.png'}
-                    alt="Profile"
+                    alt={$adkT("Profile")}
                     class="w-20 h-20 rounded-full border-2 border-emerald-500/50"
                   />
                   <button
                     type="button"
                     disabled={photoUploading}
                     on:click={()=>photoInput.click()}
-                    title="Upload a profile image for security scanning"
+                    title={$adkT("Upload a profile image for security scanning")}
                     class="px-4 py-2 bg-white/5 rounded-lg text-sm text-stone-500 cursor-not-allowed"
-                    >{photoUploading?'Uploading…':'Change Photo'}</button
+                    >{$adkT(photoUploading?'Uploading…':'Change Photo')}</button
                   >
-                  <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" bind:this={photoInput} on:change={uploadPhoto} class="hidden" aria-label="Choose profile photo"/>
+                  <input dir="auto" type="file" accept="image/jpeg,image/png,image/webp,image/avif" bind:this={photoInput} on:change={uploadPhoto} class="hidden" aria-label={$adkT("Choose profile photo")}/>
                 </div>
 
                 {#if $myProfile === undefined}
@@ -628,9 +603,9 @@
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div class="space-y-2">
                       <label for="client-name" class="text-sm text-stone-400"
-                        >Full Name</label
+                        >{$adkT("Full Name")}</label
                       >
-                      <input
+                      <input dir="auto"
                         id="client-name"
                         type="text"
                         bind:value={profileName}
@@ -639,22 +614,22 @@
                     </div>
                     <div class="space-y-2">
                       <label for="client-email" class="text-sm text-stone-400"
-                        >Email</label
+                        >{$adkT("Email")}</label
                       >
-                      <input
+                      <input dir="auto"
                         id="client-email"
                         type="email"
                         value={$myProfile?.email ?? ""}
                         disabled
-                        title="Contact support to change your sign-in email"
+                        title={$adkT("Contact support to change your sign-in email")}
                         class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-stone-500 outline-none cursor-not-allowed"
                       />
                     </div>
                     <div class="space-y-2">
                       <label for="client-phone" class="text-sm text-stone-400"
-                        >Phone</label
+                        >{$adkT("Phone")}</label
                       >
-                      <input
+                      <input dir="auto"
                         id="client-phone"
                         type="tel"
                         inputmode="tel"
@@ -662,13 +637,13 @@
                         class="w-full min-h-[44px] bg-[#050A0E] border border-white/10 rounded-lg p-2.5 text-white focus:border-emerald-500 outline-none"
                       />
                       <label for="client-address" class="text-sm text-stone-400"
-                        >Legal address</label
-                      ><textarea
+                        >{$adkT("Legal address")}</label
+                      ><textarea dir="auto"
                         id="client-address"
                         bind:value={profileAddress}
                         maxlength="500"
                         class="theme-input w-full rounded-lg border p-3"
-                        placeholder="Complete address for your legal documents"
+                        placeholder={$adkT("Complete address for your legal documents")}
                       ></textarea>
                     </div>
                   </div>
@@ -678,15 +653,13 @@
                   <p
                     class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300"
                   >
-                    {profileError}
+                    {$adkT(profileError)}
                   </p>
                 {/if}
                 {#if profileSaved}
                   <p
                     class="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-300"
-                  >
-                    Profile updated.
-                  </p>
+                  > {$adkT("Profile updated.")} </p>
                 {/if}
 
                 <div class="pt-4 flex justify-end">
@@ -697,8 +670,7 @@
                   >
                     {#if savingProfile}<Loader2
                         class="h-4 w-4 animate-spin"
-                      />{/if} Save Changes
-                  </button>
+                      />{/if} {$adkT("Save Changes")} </button>
                 </div>
               </form>
             </div>
@@ -708,13 +680,8 @@
             >
               <div class="flex flex-wrap items-center justify-between gap-4">
                 <div>
-                  <h2 class="text-lg font-semibold text-white">
-                    Identity verification
-                  </h2>
-                  <p class="mt-1 text-sm text-stone-400">
-                    QoreID verifies your identity in its secure flow. ADK stores
-                    the result and reference, not your raw NIN.
-                  </p>
+                  <h2 class="text-lg font-semibold text-white"> {$adkT("Identity verification")} </h2>
+                  <p class="mt-1 text-sm text-stone-400"> {$adkT("QoreID verifies your identity in its secure flow. ADK stores the result and reference. Your registration NIN is encrypted and accessible only to the super administrator for verification.")} </p>
                   {#if $myKyc?.[0]}
                     <p
                       class="mt-3 text-sm font-semibold {$myKyc[0].status ===
@@ -723,8 +690,7 @@
                         : $myKyc[0].status === 'FAILED'
                           ? 'text-rose-400'
                           : 'text-amber-400'}"
-                    >
-                      Status: {$myKyc[0].status}
+                    > {$adkT("Status:")} {$adkT($myKyc[0].status)}
                     </p>
                   {/if}
                 </div>
@@ -735,21 +701,20 @@
                   class="flex min-h-[44px] items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
                 >
                   {#if kycStarting}<Loader2 class="h-4 w-4 animate-spin" />{/if}
-                  {$myKyc?.[0]?.status === "VERIFIED"
+                  {$adkT($myKyc?.[0]?.status === "VERIFIED"
                     ? "Identity verified"
-                    : "Start verification"}
+                    : "Start verification")}
                 </button>
               </div>
-              <p class="mt-3 text-xs text-stone-500">
-                By continuing, you accept the <a
+              <p class="mt-3 text-xs text-stone-500"> {$adkT("By continuing, you accept the")} <a
                   href="/legal/kyc-consent"
-                  class="text-emerald-400 hover:underline">KYC consent notice</a
+                  class="text-emerald-400 hover:underline">{$adkT("KYC consent notice")}</a
                 >.
               </p>
               {#if kycMessage}<p
                   class="mt-3 rounded-lg border border-white/10 px-4 py-3 text-sm text-stone-300"
                 >
-                  {kycMessage}
+                  {$adkT(kycMessage)}
                 </p>{/if}
             </div>
 
@@ -758,19 +723,13 @@
                 href="/login?signout=1"
                 class="flex items-center gap-2 min-h-[44px] px-4 text-sm font-medium text-rose-400 hover:text-rose-300"
               >
-                <LogOut class="h-4 w-4" /> Sign Out
-              </a>
+                <LogOut class="h-4 w-4" /> {$adkT("Sign Out")} </a>
             </div>
           </div>
         {:else if currentTab === "messages"}
           <div class="mx-auto max-w-3xl">
-            <h2 class="mb-2 text-xl font-semibold text-white">
-              Messages with Support
-            </h2>
-            <p class="mb-6 text-sm text-stone-400">
-              Each conversation stays linked to its service request and updates
-              in real time.
-            </p>
+            <h2 class="mb-2 text-xl font-semibold text-white"> {$adkT("Messages with Support")} </h2>
+            <p class="mb-6 text-sm text-stone-400"> {$adkT("Each conversation stays linked to its service request and updates in real time.")} </p>
             {#if $myRequests === undefined}<div
                 class="skeleton h-40 rounded-2xl"
               ></div>
@@ -778,7 +737,7 @@
                 class="rounded-2xl border border-white/10 py-16 text-center text-stone-500"
               >
                 <MessageSquare class="mx-auto mb-3 h-10 w-10 opacity-30" />
-                <p>Submit a service request to start a conversation.</p>
+                <p>{$adkT("Submit a service request to start a conversation.")}</p>
               </div>
             {:else}<div class="space-y-5">
                 {#each $myRequests as request (request._id)}<ServiceConversation
@@ -787,9 +746,7 @@
               </div>{/if}
           </div>
         {:else}
-          <div class="py-20 text-center text-stone-500">
-            This area is being prepared.
-          </div>
+          <div class="py-20 text-center text-stone-500"> {$adkT("This area is being prepared.")} </div>
         {/if}
       </div>
     {/key}

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-svelte";
   import { goto } from "$app/navigation";
   import { api } from "$lib/convex/_generated/api";
@@ -95,7 +98,7 @@
 <form on:submit={handleLogin} class="space-y-6">
   <div>
     <label for="email" class="block text-sm font-medium text-gray-300 mb-1"
-      >Email Address</label
+      >{$adkT("Email Address")}</label
     >
     <div class="relative">
       <div
@@ -103,7 +106,7 @@
       >
         <Mail class="h-5 w-5 text-gray-400" />
       </div>
-      <input
+      <input dir="auto"
         type="email"
         id="email"
         inputmode="email"
@@ -112,7 +115,7 @@
         class="block w-full min-h-[44px] pl-10 pr-3 py-2.5 bg-black/20 border {errors.email
           ? 'border-red-500 focus:ring-red-500'
           : 'border-white/10 focus:ring-emerald-500'} rounded-lg text-white placeholder-gray-400 backdrop-blur-sm transition-all"
-        placeholder="you@example.com"
+        placeholder={$adkT("you@example.com")}
       />
     </div>
     {#if errors.email}
@@ -122,7 +125,7 @@
 
   <div>
     <label for="password" class="block text-sm font-medium text-gray-300 mb-1"
-      >Password</label
+      >{$adkT("Password")}</label
     >
     <div class="relative">
       <div
@@ -130,7 +133,7 @@
       >
         <Lock class="h-5 w-5 text-gray-400" />
       </div>
-      <input
+      <input dir="auto"
         type={showPassword ? "text" : "password"}
         id="password"
         autocomplete="current-password"
@@ -166,7 +169,7 @@
     <p
       class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-300"
     >
-      {errorMessage}
+      {$adkT(errorMessage)}
     </p>
   {/if}
 
@@ -176,7 +179,7 @@
         type="button"
         on:click={() => dispatch("forgotPassword")}
         class="font-medium text-emerald-400 hover:text-emerald-300"
-        >Forgot password?</button
+        >{$adkT("Forgot password?")}</button
       >
     </div>
   </div>
@@ -187,10 +190,6 @@
     class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-emerald-600 to-emerald-400 hover:from-emerald-500 hover:to-emerald-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transform transition hover:scale-[1.02] active:scale-95 shadow-[0_0_15px_rgba(16,185,129,0.3)] disabled:opacity-70 disabled:cursor-not-allowed"
   >
     {#if loading}
-      <Loader2 class="animate-spin h-5 w-5 mr-2" />
-      Signing in...
-    {:else}
-      Sign In
-    {/if}
+      <Loader2 class="animate-spin h-5 w-5 mr-2" /> {$adkT("Signing in...")}{:else}{$adkT("Sign In")}{/if}
   </button>
 </form>

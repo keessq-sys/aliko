@@ -1,11 +1,14 @@
 <script lang="ts">
+  import { getTranslation } from "$lib/i18n";
+  const adkT = getTranslation();
+
   import { X } from 'lucide-svelte';
   import { fade, scale } from 'svelte/transition';
-  
+
   export let open = false;
   export let title = '';
   export let size: 'sm' | 'md' | 'lg' | 'xl' | 'full' = 'md';
-  
+
   const sizeClasses = {
     'sm': 'max-w-sm',
     'md': 'max-w-md',
@@ -39,17 +42,17 @@
     >
       <!-- Header -->
       <div class="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/5">
-        <h3 class="text-xl font-serif text-white">{title}</h3>
-        <button on:click={close} aria-label="Close" class="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full text-stone-400 hover:text-white hover:bg-white/10 transition-colors">
+        <h3 class="text-xl font-serif text-white">{$adkT(title)}</h3>
+        <button on:click={close} aria-label={$adkT("Close")} class="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full text-stone-400 hover:text-white hover:bg-white/10 transition-colors">
           <X size={20} />
         </button>
       </div>
-      
+
       <!-- Body -->
       <div class="p-6 overflow-y-auto">
         <slot />
       </div>
-      
+
       <!-- Footer -->
       {#if $$slots.footer}
         <div class="px-6 py-4 border-t border-white/10 bg-stone-900/50 flex justify-end gap-3">
