@@ -3,6 +3,7 @@ import type { RequestHandler } from "./$types";
 import { ConvexHttpClient } from "convex/browser";
 import { makeFunctionReference } from "convex/server";
 import { env } from "$env/dynamic/public";
+import { authClient } from "$lib/server/auth-session";
 import { scanFile, decodeImage } from "../../../../../convex/lib/mediaSecurity";
 import { sanitizeImage } from "$lib/server/imageSanitizer";
 import { api } from "$lib/convex/_generated/api";
@@ -61,7 +62,7 @@ export const POST: RequestHandler = async ({
   }
   const bucket = platform?.env?.MEDIA;
   if (locals.user.role === "ESTATE_MANAGER") {
-    const client = new ConvexHttpClient(env.PUBLIC_CONVEX_URL);
+    const client = authClient();
     const token = cookies.get("__convexAuthJWT");
     if (!token) return json({ error: "Unauthorized" }, { status: 401 });
     client.setAuth(token);
@@ -182,7 +183,7 @@ export const POST: RequestHandler = async ({
     const token = cookies.get("__convexAuthJWT");
     if (!token || !env.PUBLIC_CONVEX_URL)
       throw new Error("Missing authenticated Convex session");
-    const client = new ConvexHttpClient(env.PUBLIC_CONVEX_URL);
+    const client = authClient();
     client.setAuth(token);
     await client.mutation(
       makeFunctionReference<"mutation">("r2Assets:register"),
