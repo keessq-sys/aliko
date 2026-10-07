@@ -16,7 +16,7 @@ This release improves the application and verified infrastructure. It does **not
 ## Verified operations
 
 - Convex functions and schema deployed successfully to gallant-husky-352.
-- Cloudflare setup completed: R2 buckets/bindings, temporary/quarantine lifecycle controls, sensitive-path WAF controls and authentication/upload rate controls. A narrowly scoped exception prevents the existing Under Attack challenge from blocking application authentication and private routes; it does not skip the rate controls or managed WAF.
+- Cloudflare setup completed: R2 buckets/bindings, temporary/quarantine lifecycle controls, sensitive-path WAF controls and authentication/upload rate controls. A narrowly scoped exception prevents the existing Under Attack challenge from blocking application authentication, private routes and static JavaScript/image/font assets; it does not skip the rate controls or managed WAF.
 - The replacement credentials were stored in protected local operator storage and the appropriate provider runtime environments, without adding them to Git. The Convex deployment key is not stored in the Convex runtime.
 - The Resend sending domain is verified. Resend reported delivery of both the owner verification email and password recovery email, independently of API acceptance. Evidence references: `01a1105b-5cf6-7e9c-9cec-e375f04d2840` and `01a1105b-613d-7e9d-8e24-0048c9661933`.
 - Administrator sign-in and session retrieval returned HTTP 200 with the trusted ADMIN role. The Admin Console returned HTTP 200.
@@ -38,3 +38,7 @@ This release improves the application and verified infrastructure. It does **not
 9. The owner must personally open the delivered verification link; sending and delivery do not prove that the owner completed verification.
 
 Production release approval must be based on these recorded checks and provider certifications, not an estimated completion percentage.
+
+## Release follow-up
+
+GitHub CI identified an optional-public-environment typing error in the media upload route; the route now uses the guarded server authentication client. CI passed on commit fa18089. Live browser testing also identified HTTP 403 HTML challenges on JavaScript modules; the Cloudflare exception was extended to static assets while retaining WAF and rate controls.

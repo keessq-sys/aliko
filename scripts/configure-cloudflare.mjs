@@ -184,7 +184,7 @@ async function ensureZoneRules(zone) {
   }
 
   const ratePhase = "http_ratelimit";
-  // HTML challenges cannot be answered by JSON fetch requests. Keep rate
+  // HTML challenges cannot be answered by JSON fetches or module/image requests. Keep rate
   // limiting and WAF inspection; skip only legacy interactive challenge products.
   const apiDescription = "[ADK] Keep JSON APIs free of HTML challenges";
   const refreshedCustom = await cf(
@@ -202,7 +202,7 @@ async function ensureZoneRules(zone) {
         action: "skip",
         enabled: true,
         expression:
-          'starts_with(http.request.uri.path, "/api/") or (http.request.uri.path in {"/auth" "/admin" "/admin-login"}) or starts_with(http.request.uri.path, "/auth/") or starts_with(http.request.uri.path, "/admin/") or starts_with(http.request.uri.path, "/dashboard/") or starts_with(http.request.uri.path, "/checkout/")',
+          'starts_with(http.request.uri.path, "/api/") or (http.request.uri.path in {"/auth" "/admin" "/admin-login"}) or starts_with(http.request.uri.path, "/auth/") or starts_with(http.request.uri.path, "/admin/") or starts_with(http.request.uri.path, "/dashboard/") or starts_with(http.request.uri.path, "/checkout/") or ((http.request.method in {"GET" "HEAD"}) and (starts_with(http.request.uri.path, "/_app/") or starts_with(http.request.uri.path, "/images/") or starts_with(http.request.uri.path, "/fonts/") or starts_with(http.request.uri.path, "/icons/") or starts_with(http.request.uri.path, "/og/") or starts_with(http.request.uri.path, "/Frontend UI Images/") or starts_with(http.request.uri.path, "/Frontend%20UI%20Images/") or http.request.uri.path in {"/adk-logo.png" "/logo.png" "/favicon.svg" "/apple-touch-icon.png" "/sw.js" "/favicon.png" "/favicon.ico" "/manifest.webmanifest" "/service-worker.js"}))',
         action_parameters: { products: ["securityLevel", "bic"] },
         logging: { enabled: true },
       }),
