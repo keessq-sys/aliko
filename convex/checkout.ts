@@ -286,7 +286,8 @@ export const prepare = internalMutation({
     if (pending && pending._id !== order._id)
       throw new Error("Another payment is pending for this item.");
     const provider = args.provider ?? "FLUTTERWAVE";
-    const reference = `${order.reference}-${provider === "KORAPAY" ? "KPY" : "FLW"}-${crypto.randomUUID()}`;
+    // Korapay requires at most 50 characters; order ownership lives in the attempt row.
+    const reference = `ADK-${provider === "KORAPAY" ? "KPY" : "FLW"}-${crypto.randomUUID()}`;
     await ctx.db.patch(order._id, {
       ...current,
       status: "PENDING",

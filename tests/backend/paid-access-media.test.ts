@@ -1,5 +1,6 @@
 import { convexTest } from "convex-test";
 import { describe, expect, it, vi } from "vitest";
+import rateLimiter from "@convex-dev/rate-limiter/test";
 import schema from "../../convex/schema";
 import { api, internal } from "../../convex/_generated/api";
 import { assertCheckoutEnvironment } from "../../convex/lib/checkoutReadiness";
@@ -95,6 +96,21 @@ async function fixture() {
   };
 }
 describe("paid manager access and listing media", () => {
+  it("creates unique provider references within Korapay's 50-character limit", async () => {
+    const { t, ids, client } = await fixture();
+    rateLimiter.register(t);
+    await t.run(async (ctx) => {
+      await ctx.db.patch(ids.userId, { address: "12 Test Street, Lagos" });
+      await ctx.db.patch(ids.managerId, { paidThrough: 0 });
+      await ctx.db.patch(ids.orderId, { status: "DRAFT" });
+    });
+    const first = await client.mutation(internal.checkout.prepare, { reference: "ADK-ORDER-TEST", expectedAmount: 25000, provider: "KORAPAY" });
+    expect(first.reference.length).toBeLessThanOrEqual(50);
+    expect(first.reference).toMatch(/^ADK-KPY-/);
+    await t.run((ctx) => ctx.db.patch(ids.orderId, { status: "DRAFT" }));
+    const second = await client.mutation(internal.checkout.prepare, { reference: "ADK-ORDER-TEST", expectedAmount: 25000, provider: "KORAPAY" });
+    expect(second.reference).not.toBe(first.reference);
+  });
   it("verifies email ownership using an expiring single-use link without granting a role", async () => {
     const { t, ids } = await fixture(),
       token = "a".repeat(64);

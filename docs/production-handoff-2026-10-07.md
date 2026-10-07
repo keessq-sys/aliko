@@ -23,7 +23,7 @@ This release improves the application and verified infrastructure. It does **not
 - Cloudmersive scanned a synthetic clean file successfully (HTTP 200, CleanResult true). No customer identity documents were submitted to VirusTotal.
 - Workers AI model access returned HTTP 200.
 - Korapay accepted a sandbox hosted checkout and returned test-checkout.korapay.com. No payment was made or customer order fulfilled by this probe.
-- `npm test`: 120 browser tests passed, 7 skipped; check returned zero Svelte errors/warnings. The expanded backend suite subsequently passed 75 tests. Final checks and build are recorded in the operator logs.
+- `npm test`: 120 browser tests passed, 7 skipped; check returned zero Svelte errors/warnings. The expanded backend suite subsequently passed 76 tests. Final checks and build are recorded in the operator logs.
 
 ## Remaining work before unrestricted live transactions
 
@@ -42,3 +42,5 @@ Production release approval must be based on these recorded checks and provider 
 ## Release follow-up
 
 GitHub CI identified an optional-public-environment typing error in the media upload route; the route now uses the guarded server authentication client. CI passed on commit fa18089. Live browser testing also identified HTTP 403 HTML challenges on JavaScript modules; the Cloudflare exception was extended to static assets while retaining WAF and rate controls.
+
+The final live browser check passed administrator login, session retrieval, health evidence, both subscription pages, profile fields, mobile sidebar and logout with zero browser exceptions. Korapay callback initialization succeeded after correcting the 50-character provider reference limit; a regression test protects this contract. The frontend release is available at https://53e1dbfc.aliko-3f9.pages.dev and the primary domain.
