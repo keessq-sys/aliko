@@ -63,15 +63,14 @@ export const ResendOTPPasswordReset = {
         // MANUAL STEP: replace with a domain verified in the Resend
         // dashboard once one exists; Resend's shared onboarding sender
         // works for testing but will not reliably deliver in production.
-        from: `${SITE_NAME} <noreply@${SITE_HOSTNAME}>`,
+        from: process.env.RESEND_FROM_EMAIL ?? `${SITE_NAME} <noreply@${SITE_HOSTNAME}>`,
         to: [email],
         subject: `Your ${SITE_NAME} password reset code`,
         text: `Your password reset code is ${token}. It expires in 15 minutes. If you didn't request this, you can ignore this email.`,
       }),
     });
     if (!res.ok) {
-      const body = await res.text();
-      throw new Error(`Failed to send password reset email: ${body}`);
+      throw new Error("Password recovery email could not be sent. Please contact support.");
     }
   },
 };

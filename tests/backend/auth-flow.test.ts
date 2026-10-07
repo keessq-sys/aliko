@@ -22,6 +22,7 @@ function setup() {
   return t;
 }
 const credentials = {
+  operatingState: "Lagos", operatingLga: "Ikeja", whatsapp: "+2348000000000",
   nin: "12345678901",
   acceptKycConsent: true,
   email: "buyer@example.com",

@@ -11,6 +11,7 @@ import {
 import { getAuthUserId, invalidateSessions } from "@convex-dev/auth/server";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
+import { assertNigeriaLocation } from "./lib/nigeriaLocations";
 
 // ── Self-service: the signed-in user's own profile ──────────────────────
 export const getMyProfile = query({
@@ -33,9 +34,18 @@ export const updateMyProfile = auditedMutation("users:updateMyProfile")({
     country: v.optional(v.string()),
     occupation: v.optional(v.string()),
     address: v.optional(v.string()),
+    whatsapp: v.optional(v.string()),
+    operatingState: v.optional(v.string()),
+    operatingLga: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     await requireUser(ctx);
+    if (args.whatsapp !== undefined && !/^\+?[0-9]{10,15}$/.test(args.whatsapp.replace(/[\s()-]/g, "")))
+      throw new Error("Provide a valid WhatsApp phone number.");
+    if (args.operatingState !== undefined || args.operatingLga !== undefined) {
+      const current = await requireUser(ctx);
+      assertNigeriaLocation(args.operatingState ?? current.operatingState ?? "", args.operatingLga ?? current.operatingLga ?? "");
+    }
     if (
       Object.values(args).some(
         (value) => value !== undefined && value.length > 500,

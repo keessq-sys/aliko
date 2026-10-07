@@ -7,6 +7,7 @@ import { paginationOptsValidator } from "convex/server";
 import { validateAttachments } from "./lib/attachments";
 import { managementAggregate } from "./aggregates";
 import { internalMutation } from "./_generated/server";
+import { requireManagerSubscription } from "./lib/managerPlans";
 const kind = v.union(
   v.literal("TENANT"),
   v.literal("WORK_ORDER"),
@@ -64,6 +65,11 @@ export const saveRecord = auditedMutation("management:saveRecord")({
     const actor = await requireUser(ctx);
     if (!["ADMIN", "AGENT", "ESTATE_MANAGER"].includes(actor.role))
       throw new Error("Forbidden");
+    if (
+      actor.role === "ESTATE_MANAGER" &&
+      (!args.id || !["COMPLETED", "CANCELLED"].includes(args.status))
+    )
+      await requireManagerSubscription(ctx, actor);
     if (actor.role === "ADMIN") await requireAdmin(ctx);
     if (
       args.title.trim().length < 3 ||

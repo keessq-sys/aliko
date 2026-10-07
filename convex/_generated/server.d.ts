@@ -43,6 +43,10 @@ type Env = {
   readonly GOOGLE_MAPS_API_KEY: string | undefined;
   readonly JWKS: string | undefined;
   readonly JWT_PRIVATE_KEY: string | undefined;
+  readonly KORAPAY_CLIENT_ID: string | undefined;
+  readonly KORAPAY_ENCRYPTION_KEY: string | undefined;
+  readonly KORAPAY_PUBLIC_KEY: string | undefined;
+  readonly KORAPAY_SECRET_KEY: string | undefined;
   readonly LIVE_TRANSACTIONS_ENABLED: string | undefined;
   readonly LIVE_TRANSACTION_APPROVAL_REFERENCE: string | undefined;
   readonly MALWARE_SCANNER_API_KEY: string | undefined;

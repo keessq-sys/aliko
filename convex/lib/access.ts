@@ -68,7 +68,6 @@ export function publicSignupProfile(params: Record<string, unknown>) {
     throw new Error("Provide a valid name and email");
   if (
     params.flow === "signUp" &&
-    ["AGENT", "ESTATE_MANAGER"].includes(String(params.role)) &&
     (!params.operatingState || !params.operatingLga)
   )
     throw new Error("Select your operating state and LGA.");
@@ -77,7 +76,18 @@ export function publicSignupProfile(params: Record<string, unknown>) {
       String(params.operatingState ?? ""),
       String(params.operatingLga ?? ""),
     );
+  if (
+    params.flow === "signUp" &&
+    !/^\+?[0-9]{10,15}$/.test(
+      String(params.whatsapp ?? "").replace(/[\s()-]/g, ""),
+    )
+  )
+    throw new Error("Provide a valid WhatsApp phone number.");
   return {
+    whatsapp:
+      params.flow === "signUp"
+        ? String(params.whatsapp).replace(/[\s()-]/g, "")
+        : undefined,
     operatingState:
       typeof params.operatingState === "string"
         ? params.operatingState

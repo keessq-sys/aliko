@@ -8,6 +8,7 @@
   import NigeriaLocationFields from "$lib/components/ui/NigeriaLocationFields.svelte";
   let operatingState = "",
     operatingLga = "";
+  let whatsapp = "";
   let nin = "",
     acceptKycConsent = false;
   import PasswordField from "$lib/components/auth/PasswordField.svelte";
@@ -49,6 +50,10 @@
     if (ninProblem(nin)) errors.nin = ninProblem(nin)!;
     if (!acceptKycConsent)
       errors.nin = "Accept the NIN verification consent before registration.";
+    if (!/^\+?[0-9]{10,15}$/.test(whatsapp.replace(/[\s()-]/g, "")))
+      errors.whatsapp = "Provide a valid WhatsApp phone number.";
+    if (!operatingState || !operatingLga)
+      errors.location = "Select your state and LGA.";
     if (!terms) errors.terms = "You must accept the terms";
     return Object.keys(errors).length === 0;
   };
@@ -63,6 +68,7 @@
         params: {
           flow: "signUp",
           nin,
+          whatsapp,
           acceptKycConsent,
           operatingState,
           operatingLga,
@@ -103,6 +109,14 @@
     {#if errors.location}<p role="alert" class="text-rose-400">
         {$adkT(errors.location)}
       </p>{/if}
+    <label class="block theme-text text-sm"
+      >{$adkT("WhatsApp contact")}<input
+        type="tel"
+        required
+        bind:value={whatsapp}
+        class="theme-input block w-full min-h-[44px] rounded-lg border p-3"
+      /></label
+    >
     <NinField
       bind:nin
       bind:consent={acceptKycConsent}

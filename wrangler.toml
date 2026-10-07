@@ -13,11 +13,13 @@ bucket_name = "aliko-diamond-key-media"
 NODE_VERSION = "22"
 NODE_ENV = "production"
 PUBLIC_CONVEX_URL = "https://gallant-husky-352.eu-west-1.convex.cloud"
+CONVEX_HTTP_ACTIONS_URL = "https://gallant-husky-352.eu-west-1.convex.site"
 
 [env.preview.vars]
 NODE_VERSION = "22"
 NODE_ENV = "production"
-PUBLIC_CONVEX_URL = "https://preview-placeholder.convex.cloud"
+PUBLIC_CONVEX_URL = "https://gallant-husky-352.eu-west-1.convex.cloud"
+CONVEX_HTTP_ACTIONS_URL = "https://gallant-husky-352.eu-west-1.convex.site"
 
 [[env.preview.r2_buckets]]
 binding = "MEDIA"
@@ -27,6 +29,7 @@ bucket_name = "aliko-diamond-key-media-preview"
 NODE_VERSION = "22"
 NODE_ENV = "production"
 PUBLIC_CONVEX_URL = "https://gallant-husky-352.eu-west-1.convex.cloud"
+CONVEX_HTTP_ACTIONS_URL = "https://gallant-husky-352.eu-west-1.convex.site"
 
 [[env.production.r2_buckets]]
 binding = "MEDIA"

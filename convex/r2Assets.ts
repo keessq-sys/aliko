@@ -4,6 +4,7 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 import { requireUser, requireAdmin } from "./lib/access";
+import { requireManagerSubscription } from "./lib/managerPlans";
 
 async function user(ctx: any) {
   const value = await requireUser(ctx);
@@ -33,6 +34,7 @@ export const register = auditedMutation("r2Assets:register")({
   handler: async (ctx, args) => {
     requireMaintenanceSecret(args.secret);
     const actor = await user(ctx);
+    if (actor.role === "ESTATE_MANAGER") await requireManagerSubscription(ctx, actor);
     if (!["ADMIN", "AGENT", "ESTATE_MANAGER"].includes(actor.role))
       throw new Error("Forbidden");
     if (

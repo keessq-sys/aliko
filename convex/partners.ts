@@ -19,7 +19,7 @@ export const myEnrolments = query({
     const user = await requireUser(ctx);
     const managers = await ctx.db
       .query("estateManagers")
-      .withIndex("by_email", (q) => q.eq("email", user.email))
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
       .order("desc")
       .take(50);
     const agents = await ctx.db

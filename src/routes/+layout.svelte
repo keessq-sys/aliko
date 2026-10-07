@@ -107,6 +107,11 @@
   $: accountLinks = [
     { id: "dashboard", label: "Dashboard", href: roleDashboard },
     { id: "account", label: "My profile", href: "/dashboard/account" },
+    {
+      id: "subscriptions",
+      label: "Manage subscription",
+      href: "/dashboard/subscriptions",
+    },
     { id: "payments", label: "My payments", href: "/dashboard/payments" },
     {
       id: "messages",

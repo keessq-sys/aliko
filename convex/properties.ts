@@ -6,6 +6,8 @@ import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import type { Id } from "./_generated/dataModel";
+import { assertListingImageCount } from "./lib/listingMedia";
+import { requireManagerSubscription } from "./lib/managerPlans";
 
 // ── Self-service: how many listings are assigned to the signed-in agent ──
 // Note: nothing in the admin UI currently assigns an agentId to a property
@@ -29,6 +31,8 @@ async function requirePropertyManager(ctx: any) {
   const user = await requireUser(ctx);
   if (!user || !["ADMIN", "AGENT", "ESTATE_MANAGER"].includes(user.role))
     throw new Error("Forbidden — property team only");
+  if (user.role === "ESTATE_MANAGER")
+    await requireManagerSubscription(ctx, user);
   return user;
 }
 
@@ -158,8 +162,19 @@ export const addPropertyMedia = auditedMutation("properties:addPropertyMedia")({
       throw new Error("You can only edit your managed listings");
     if (args.storageIds.length + (args.urls?.length ?? 0) < 1)
       throw new Error("Select at least one image");
-    if ((property.imageStorageIds?.length ?? 0) + args.storageIds.length > 30)
-      throw new Error("A property can contain at most 30 stored images");
+    if (
+      new Set(args.storageIds).size !== args.storageIds.length ||
+      new Set(args.urls ?? []).size !== (args.urls?.length ?? 0) ||
+      args.storageIds.some((id) => property.imageStorageIds?.includes(id)) ||
+      args.urls?.some((url) => property.images.includes(url))
+    )
+      throw new Error("An image is already in this gallery.");
+    assertListingImageCount(
+      (property.imageStorageIds?.length ?? 0) +
+        property.images.length +
+        args.storageIds.length +
+        (args.urls?.length ?? 0),
+    );
     for (const storageId of args.storageIds) {
       const asset = await ctx.db
         .query("storedAssets")
@@ -185,6 +200,7 @@ export const addPropertyMedia = auditedMutation("properties:addPropertyMedia")({
       if (
         !asset ||
         asset.status !== "ACTIVE" ||
+        asset.collection !== "property" ||
         (asset.ownerId !== user._id && user.role !== "ADMIN")
       )
         throw new Error("Image is not ready or belongs to another account");
@@ -194,7 +210,7 @@ export const addPropertyMedia = auditedMutation("properties:addPropertyMedia")({
         ...(property.imageStorageIds ?? []),
         ...args.storageIds,
       ],
-      images: [...property.images, ...safeUrls].slice(0, 30),
+      images: [...property.images, ...safeUrls],
       updatedAt: Date.now(),
     });
     await ctx.db.insert("adminAuditLog", {
@@ -234,6 +250,20 @@ export const createProperty = auditedMutation("properties:createProperty")({
   handler: async (ctx, args) => {
     const user = await requirePropertyManager(ctx);
     assertNigeriaLocation(args.state, args.lga);
+    if (user.role === "ESTATE_MANAGER") {
+      const access = await requireManagerSubscription(ctx, user);
+      const listings = await ctx.db
+        .query("properties")
+        .withIndex("by_manager", (q) => q.eq("managerId", user._id))
+        .take(access.propertyLimit + 1);
+      if (listings.length >= access.propertyLimit)
+        throw new Error("Your plan's property limit has been reached.");
+    }
+    assertListingImageCount(args.images.length);
+    if (args.images.length)
+      throw new Error(
+        "Create a draft, then use the registered gallery upload.",
+      );
     const now = Date.now();
     if (
       !Number.isFinite(args.price) ||
@@ -311,6 +341,7 @@ export const upsertProperty = auditedMutation("properties:upsertProperty")({
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
+    assertListingImageCount(args.images.length);
     const now = Date.now();
     const existing = await ctx.db
       .query("properties")
@@ -342,10 +373,12 @@ export const reviewProperty = auditedMutation("properties:reviewProperty")({
     const reviewer = await requireAdmin(ctx);
     const property = await ctx.db.get(args.propertyId);
     if (!property) throw new Error("Listing not found");
-    if (
-      args.approve &&
-      (args.reference.trim().length < 8 || property.images.length === 0)
-    )
+    if (args.approve)
+      assertListingImageCount(
+        property.images.length + (property.imageStorageIds?.length ?? 0),
+        true,
+      );
+    if (args.approve && args.reference.trim().length < 8)
       throw new Error(
         "A title-review reference and gallery image are required",
       );

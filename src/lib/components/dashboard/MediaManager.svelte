@@ -55,6 +55,8 @@
     description: "",
   };
   $: rows = mode === "property" ? ($properties ?? []) : ($services ?? []);
+  $: existingImages =
+    rows.find((row) => row._id === selectedId)?.images.length ?? 0;
 
   async function createListing() {
     error = "";
@@ -108,6 +110,9 @@
     success = "";
     if (!selectedId) return (error = `Choose a ${mode} first.`);
     if (files.length === 0) return (error = "Choose at least one image.");
+    if (mode === "property" && existingImages + files.length > 7)
+      return (error =
+        "Each listing can contain between 1 and 7 images. Choose fewer files.");
     uploading = true;
     try {
       const storageIds: string[] = [];
@@ -273,6 +278,7 @@
       accept="image/jpeg,image/png,image/webp,image/avif"
       multiple
       maxSizeMB={15}
+      maxFiles={mode === "property" ? Math.max(0, 7 - existingImages) : 30}
       label={$adkT("Choose gallery images")}
       on:files={(event) => (files = event.detail.files)}
     />

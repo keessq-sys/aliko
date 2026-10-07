@@ -102,6 +102,17 @@ async function bindPagesProject() {
       deployment_configs: {
         production: {
           r2_buckets: { ...production.r2_buckets, MEDIA: { name: bucketName } },
+          env_vars: {
+            ...production.env_vars,
+            PUBLIC_CONVEX_URL: {
+              type: "plain_text",
+              value: "https://gallant-husky-352.eu-west-1.convex.cloud",
+            },
+            CONVEX_HTTP_ACTIONS_URL: {
+              type: "plain_text",
+              value: "https://gallant-husky-352.eu-west-1.convex.site",
+            },
+          },
         },
         preview: {
           r2_buckets: {
@@ -114,7 +125,13 @@ async function bindPagesProject() {
               type: "plain_text",
               value:
                 process.env.CONVEX_STAGING_URL ||
-                "https://preview-placeholder.convex.cloud",
+                "https://gallant-husky-352.eu-west-1.convex.cloud",
+            },
+            CONVEX_HTTP_ACTIONS_URL: {
+              type: "plain_text",
+              value:
+                process.env.CONVEX_STAGING_HTTP_URL ||
+                "https://gallant-husky-352.eu-west-1.convex.site",
             },
           },
         },
@@ -167,6 +184,30 @@ async function ensureZoneRules(zone) {
   }
 
   const ratePhase = "http_ratelimit";
+  // HTML challenges cannot be answered by JSON fetch requests. Keep rate
+  // limiting and WAF inspection; skip only legacy interactive challenge products.
+  const apiDescription = "[ADK] Keep JSON APIs free of HTML challenges";
+  const refreshedCustom = await cf(
+    `/zones/${zone.id}/rulesets/phases/${customPhase}/entrypoint`,
+  );
+  const existingApiRule = refreshedCustom.rules?.find(
+    (rule) => rule.description === apiDescription,
+  );
+  await cf(
+    `/zones/${zone.id}/rulesets/${refreshedCustom.id}/rules${existingApiRule ? `/${existingApiRule.id}` : ""}`,
+    {
+      method: existingApiRule ? "PATCH" : "POST",
+      body: JSON.stringify({
+        description: apiDescription,
+        action: "skip",
+        enabled: true,
+        expression:
+          'starts_with(http.request.uri.path, "/api/") or (http.request.uri.path in {"/auth" "/admin" "/admin-login"}) or starts_with(http.request.uri.path, "/auth/") or starts_with(http.request.uri.path, "/admin/") or starts_with(http.request.uri.path, "/dashboard/") or starts_with(http.request.uri.path, "/checkout/")',
+        action_parameters: { products: ["securityLevel", "bic"] },
+        logging: { enabled: true },
+      }),
+    },
+  );
   let rate;
   try {
     rate = await cf(

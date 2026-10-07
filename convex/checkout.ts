@@ -14,13 +14,43 @@ import { requireUser, requireAdmin, requireVerifiedNin } from "./lib/access";
 import { auditedMutation } from "./lib/auditedMutation";
 import { rateLimiter } from "./lib/rateLimits";
 import { assertCheckoutEnvironment } from "./lib/checkoutReadiness";
+import { MANAGER_PLANS } from "./lib/managerPlans";
 const kind = v.union(
   v.literal("PROPERTY"),
   v.literal("SERVICE"),
   v.literal("MANAGER"),
 );
 type Kind = "PROPERTY" | "SERVICE" | "MANAGER";
-const planPrices = { STARTER: 25000, PROFESSIONAL: 75000 };
+const planPrices = {
+  STARTER: MANAGER_PLANS.STARTER.monthlyFeeNgn,
+  PROFESSIONAL: MANAGER_PLANS.PROFESSIONAL.monthlyFeeNgn,
+};
+export const providers = query({
+  args: {},
+  handler: async () => {
+    function status(provider: "KORAPAY" | "FLUTTERWAVE", secret?: string) {
+      let available = false;
+      if (secret) {
+        try {
+          assertCheckoutEnvironment(provider, secret);
+          available = true;
+        } catch {}
+      }
+      return {
+        configured: Boolean(secret),
+        available,
+        sandbox:
+          provider === "KORAPAY"
+            ? (secret?.startsWith("sk_test_") ?? false)
+            : /TEST/i.test(secret ?? ""),
+      };
+    }
+    return {
+      korapay: status("KORAPAY", process.env.KORAPAY_SECRET_KEY),
+      flutterwave: status("FLUTTERWAVE", process.env.FLUTTERWAVE_SECRET_KEY),
+    };
+  },
+});
 export const managerPlans = query({
   args: {},
   handler: async () => planPrices,
@@ -105,7 +135,7 @@ export const create = auditedMutation("checkout:create")({
     if (pending && pending.ownerId !== user._id)
       throw new Error("A payment is already pending for this item.");
     const own = existing.find(
-      (o) => o.ownerId === user._id && o.status !== "PAID",
+      (o) => o.ownerId === user._id && ["DRAFT", "PENDING"].includes(o.status),
     );
     if (own) return { reference: own.reference };
     const reference = `ADK-ORDER-${crypto.randomUUID()}`;
@@ -204,11 +234,20 @@ export const setManagerFee = auditedMutation("checkout:setManagerFee")({
   },
 });
 export const prepare = internalMutation({
-  args: { reference: v.string(), expectedAmount: v.number() },
+  args: {
+    reference: v.string(),
+    expectedAmount: v.number(),
+    provider: v.optional(
+      v.union(v.literal("FLUTTERWAVE"), v.literal("KORAPAY")),
+    ),
+  },
   handler: async (ctx, args) => {
     const user = await requireUser(ctx);
-    await requireVerifiedNin(ctx, user._id);
-    if (!user.kycVerified || (user.address?.trim().length ?? 0) < 10)
+    if (user.role !== "ADMIN") await requireVerifiedNin(ctx, user._id);
+    if (
+      user.role !== "ADMIN" &&
+      (!user.kycVerified || (user.address?.trim().length ?? 0) < 10)
+    )
       throw new Error(
         "Complete identity verification and legal address before checkout.",
       );
@@ -246,7 +285,8 @@ export const prepare = internalMutation({
       .first();
     if (pending && pending._id !== order._id)
       throw new Error("Another payment is pending for this item.");
-    const reference = `${order.reference}-FLW-${crypto.randomUUID()}`;
+    const provider = args.provider ?? "FLUTTERWAVE";
+    const reference = `${order.reference}-${provider === "KORAPAY" ? "KPY" : "FLW"}-${crypto.randomUUID()}`;
     await ctx.db.patch(order._id, {
       ...current,
       status: "PENDING",
@@ -254,6 +294,11 @@ export const prepare = internalMutation({
     });
     await ctx.db.insert("checkoutAttempts", {
       orderId: order._id,
+      provider,
+      testMode:
+        provider === "KORAPAY"
+          ? (process.env.KORAPAY_SECRET_KEY?.startsWith("sk_test_") ?? false)
+          : /TEST/i.test(process.env.FLUTTERWAVE_SECRET_KEY ?? ""),
       reference,
       amount: current.amount,
       currency: "NGN",
@@ -320,6 +365,9 @@ export const settle = internalMutation({
     providerId: v.string(),
     amount: v.number(),
     currency: v.string(),
+    provider: v.optional(
+      v.union(v.literal("FLUTTERWAVE"), v.literal("KORAPAY")),
+    ),
   },
   handler: async (ctx, args) => {
     const attempt = await ctx.db
@@ -327,6 +375,15 @@ export const settle = internalMutation({
       .withIndex("by_reference", (q) => q.eq("reference", args.reference))
       .unique();
     if (!attempt) throw new Error("Unknown payment reference.");
+    if (
+      (attempt.provider ?? "FLUTTERWAVE") !== (args.provider ?? "FLUTTERWAVE")
+    )
+      throw new Error("Payment provider mismatch.");
+    if (
+      attempt.testMode &&
+      (process.env.DEPLOYMENT_ENVIRONMENT ?? "production") === "production"
+    )
+      throw new Error("Sandbox payments cannot fulfil production orders.");
     const order = await ctx.db.get(attempt.orderId);
     if (!order) throw new Error("Order not found.");
     if (
@@ -365,11 +422,35 @@ export const settle = internalMutation({
         paidAmount: attempt.amount,
         updatedAt: Date.now(),
       });
-    if (order.kind === "MANAGER")
+    if (order.kind === "MANAGER") {
+      const manager = await ctx.db.get(order.targetId as Id<"estateManagers">);
+      if (
+        !manager ||
+        manager.userId !== order.ownerId ||
+        manager.plan === "ENTERPRISE"
+      )
+        throw new Error("Invalid subscription beneficiary.");
+      const startsAt = Date.now(),
+        endsAt = startsAt + 30 * 86400000;
+      const subscriptionId = await ctx.db.insert("managerSubscriptions", {
+        ownerId: order.ownerId,
+        managerId: manager._id,
+        orderId: order._id,
+        plan: manager.plan,
+        amount: attempt.amount,
+        startsAt,
+        endsAt,
+        cancelAtPeriodEnd: false,
+        status: "ACTIVE",
+        createdAt: startsAt,
+        updatedAt: startsAt,
+      });
+      await ctx.scheduler.runAt(endsAt, internal.subscriptions.expireOne, { id: subscriptionId });
       await ctx.db.patch(order.targetId as Id<"estateManagers">, {
-        paidThrough: Date.now() + 30 * 86400000,
+        paidThrough: endsAt,
         updatedAt: Date.now(),
       });
+    }
     const owner = await ctx.db.get(order.ownerId);
     await ctx.db.insert("notificationLog", {
       channel: "EMAIL",

@@ -10,15 +10,22 @@
   $: order = useQuery(api.checkout.get, { reference });
   let error = "",
     busy = false;
+  const providers = useQuery(api.checkout.providers, {});
+  let provider: "FLUTTERWAVE" | "KORAPAY" = "KORAPAY";
   async function pay() {
     if (!$order) return;
     busy = true;
     error = "";
     try {
-      const result = await runAction(api.checkout.initialize, {
-        reference,
-        expectedAmount: $order.amount,
-      });
+      const result = await runAction(
+        provider === "KORAPAY"
+          ? api.korapay.initialize
+          : api.checkout.initialize,
+        {
+          reference,
+          expectedAmount: $order.amount,
+        },
+      );
       window.location.assign(result.checkoutUrl);
     } catch (e) {
       error =
@@ -31,6 +38,25 @@
     const params = $page.url.searchParams,
       transactionId = params.get("transaction_id"),
       tx = params.get("tx_ref");
+    const korapayReference = params.get("reference");
+    if (korapayReference) {
+      busy = true;
+      try {
+        await runAction(api.korapay.verifyPayment, {
+          reference: korapayReference,
+        });
+        history.replaceState(
+          {},
+          "",
+          `/checkout/${encodeURIComponent(reference)}`,
+        );
+      } catch (e) {
+        error = e instanceof Error ? e.message : "Payment verification failed.";
+      } finally {
+        busy = false;
+      }
+      return;
+    }
     if (transactionId && tx) {
       busy = true;
       try {
@@ -76,7 +102,8 @@
           </dd>
         </div>
       </dl>
-      {#if $order.status === "PAID"}<p role="status">
+      {#if $order.status === "REFUNDED"}<p role="status">{$adkT("This payment was refunded. Paid access from this order is no longer active.")}</p>
+      {:else if $order.status === "PAID"}<p role="status">
           {$adkT(
             "Payment confirmed. Your payment has been recorded in your account.",
           )}
@@ -93,15 +120,40 @@
         </p>
       {:else}<p>
           {$adkT(
-            "This amount reflects the current approved price. A price change requires another review before payment. Your card details stay with Flutterwave.",
+            "This amount reflects the current approved price. A price change requires another review before payment. Your card details stay with the payment provider.",
           )}
         </p>
+        <label for="payment-provider">{$adkT("Payment provider")}</label>
+        <select
+          id="payment-provider"
+          bind:value={provider}
+          class="theme-input block min-h-[44px] w-full rounded-lg border px-3"
+        >
+          <option value="KORAPAY"
+            >Korapay {$providers?.korapay.sandbox ? "(test mode)" : ""}</option
+          >
+          <option value="FLUTTERWAVE">Flutterwave</option>
+        </select>
+        {#if $providers && !$providers[provider === "KORAPAY" ? "korapay" : "flutterwave"].available}
+          <p role="status">
+            {$adkT(
+              "This payment provider is not available for production payments. Contact support.",
+            )}
+          </p>
+        {/if}
         <button
           class="btn-primary w-full min-h-[52px]"
-          disabled={busy}
+          disabled={busy ||
+            !$providers ||
+            !$providers[provider === "KORAPAY" ? "korapay" : "flutterwave"]
+              .available}
           on:click={pay}
           >{$adkT(
-            busy ? "Verifying…" : "Pay securely with Flutterwave",
+            busy
+              ? "Verifying…"
+              : provider === "KORAPAY"
+                ? "Pay securely with Korapay"
+                : "Pay securely with Flutterwave",
           )}</button
         >
       {/if}

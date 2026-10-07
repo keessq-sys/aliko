@@ -78,6 +78,42 @@ function errorMessage(error: unknown) {
 const http = httpRouter();
 auth.addHttpRoutes(http);
 
+http.route({
+  path: "/webhooks/korapay", method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const secret = process.env.KORAPAY_SECRET_KEY;
+    if (!secret) return new Response("Webhook not configured", { status: 503 });
+    let raw: string;
+    try { raw = await readWebhookBody(req); }
+    catch { return new Response("Payload too large", { status: 413 }); }
+    let event: { event?: string; data?: { reference?: string; status?: string } };
+    try { event = JSON.parse(raw); }
+    catch { return new Response("Invalid JSON", { status: 400 }); }
+    if (!event.data || typeof event.data !== "object") return new Response("Invalid payload", { status: 400 });
+    const signature = req.headers.get("x-korapay-signature");
+    const expected = await hmacHex("SHA-256", secret, JSON.stringify(event.data));
+    if (!signature || !constantTimeEqual(signature, expected)) return new Response("Invalid signature", { status: 401 });
+    if (event.event !== "charge.success") return new Response("ok");
+    const reference = event.data.reference;
+    if (!reference || reference.length > 200) return new Response("Invalid reference", { status: 400 });
+    const claim = await ctx.runMutation(internal.operations.claimWebhookEvent, {
+      provider: "KORAPAY", eventId: `${event.event}:${reference}`, eventType: event.event,
+      reference, payloadDigest: await sha256Hex(raw),
+    });
+    if (!claim.claimed) return new Response("ok");
+    try {
+      await ctx.runAction(internal.korapay.processWebhook, { reference });
+      await ctx.runMutation(internal.operations.finishWebhookEvent, { eventId: claim.eventId, status: "PROCESSED" });
+      return new Response("ok");
+    } catch {
+      await ctx.runMutation(internal.operations.finishWebhookEvent, {
+        eventId: claim.eventId, status: "FAILED", error: "Korapay verification or settlement failed",
+      });
+      return new Response("Verification failed", { status: 400 });
+    }
+  }),
+});
+
 // ── Flutterwave Webhook ───────────────────────────────────────────────────
 // Flutterwave signs webhook deliveries with the secret hash configured in
 // Dashboard > Settings > Webhooks. A signed event is still only a signal: we

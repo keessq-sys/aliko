@@ -3,6 +3,34 @@ import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  integrationChecks: defineTable({
+    check: v.string(), passed: v.boolean(), evidenceReference: v.string(), checkedAt: v.number(),
+  }).index("by_check", ["check", "checkedAt"]),
+  accountVerifications: defineTable({
+    userId: v.id("users"), email: v.string(), tokenHash: v.string(), expiresAt: v.number(),
+    verifiedAt: v.optional(v.number()), providerId: v.optional(v.string()), createdAt: v.number(),
+  }).index("by_hash", ["tokenHash"]).index("by_user", ["userId", "createdAt"]),
+  managerSubscriptions: defineTable({
+    ownerId: v.id("users"),
+    managerId: v.id("estateManagers"),
+    orderId: v.id("checkoutOrders"),
+    plan: v.union(v.literal("STARTER"), v.literal("PROFESSIONAL")),
+    amount: v.number(),
+    startsAt: v.number(),
+    endsAt: v.number(),
+    cancelAtPeriodEnd: v.boolean(),
+    status: v.union(
+      v.literal("ACTIVE"),
+      v.literal("EXPIRED"),
+      v.literal("REVOKED"),
+    ),
+    reason: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_owner", ["ownerId", "createdAt"])
+    .index("by_order", ["orderId"])
+    .index("by_status_end", ["status", "endsAt"]),
   checkoutOrders: defineTable({
     reference: v.string(),
     ownerId: v.id("users"),
@@ -19,6 +47,7 @@ export default defineSchema({
       v.literal("DRAFT"),
       v.literal("PENDING"),
       v.literal("PAID"),
+      v.literal("REFUNDED"),
     ),
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -30,6 +59,10 @@ export default defineSchema({
     .index("by_target_status", ["kind", "targetId", "status"])
     .index("by_status", ["status", "createdAt"]),
   checkoutAttempts: defineTable({
+    provider: v.optional(
+      v.union(v.literal("FLUTTERWAVE"), v.literal("KORAPAY")),
+    ),
+    testMode: v.optional(v.boolean()),
     orderId: v.id("checkoutOrders"),
     reference: v.string(),
     amount: v.number(),
@@ -40,6 +73,7 @@ export default defineSchema({
       v.literal("PENDING"),
       v.literal("SUCCESS"),
       v.literal("FAILED"),
+      v.literal("REFUNDED"),
     ),
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -190,6 +224,7 @@ export default defineSchema({
 
   // ── Users & Roles ─────────────────────────────────────────────────────────
   users: defineTable({
+    whatsapp: v.optional(v.string()),
     operatingState: v.optional(v.string()),
     operatingLga: v.optional(v.string()),
     name: v.string(),
@@ -881,6 +916,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index("by_user", ["userId"])
     .index("by_status", ["status"])
     .index("by_email", ["email"]),
 
@@ -937,6 +973,7 @@ export default defineSchema({
       v.literal("DROPBOX_SIGN"),
       v.literal("RESEND"),
       v.literal("QOREID"),
+      v.literal("KORAPAY"),
     ),
     eventId: v.string(),
     eventType: v.string(),

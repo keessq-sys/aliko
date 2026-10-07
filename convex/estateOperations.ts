@@ -7,10 +7,12 @@ import { mutation, query } from "./_generated/server";
 import { requireUser, requireAdmin } from "./lib/access";
 import { validateAttachments } from "./lib/attachments";
 import { rateLimiter } from "./lib/rateLimits";
+import { requireManagerSubscription } from "./lib/managerPlans";
 export const resolveTenant = auditedMutation("estateOperations:resolveTenant")({
   args: { email: v.string() },
   handler: async (ctx, args) => {
     const user = await actor(ctx);
+    await requireManagerSubscription(ctx, user);
     await rateLimiter.limit(ctx, "serviceMessage", {
       key: `tenant:${user._id}`,
       throws: true,
@@ -68,6 +70,8 @@ export const saveLease = auditedMutation("estateOperations:saveLease")({
     const user = await actor(ctx),
       property = await ctx.db.get(args.propertyId),
       tenant = await ctx.db.get(args.tenantId);
+    if (!args.id || args.status !== "ENDED")
+      await requireManagerSubscription(ctx, user);
     if (
       !property ||
       (user.role !== "ADMIN" && property.managerId !== user._id) ||
@@ -295,6 +299,9 @@ export const assignedAgents = query({
   args: { paginationOpts: paginationOptsValidator },
   handler: async (ctx, args) => {
     const user = await actor(ctx);
+    const access = await requireManagerSubscription(ctx, user);
+    if (user.role !== "ADMIN" && access.plan !== "PROFESSIONAL")
+      throw new Error("Agent management requires the Professional plan.");
     const result = await ctx.db
       .query("properties")
       .withIndex("by_manager", (q) => q.eq("managerId", user._id))

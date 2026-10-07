@@ -13,6 +13,7 @@ const provider = v.union(
   v.literal("DROPBOX_SIGN"),
   v.literal("RESEND"),
   v.literal("QOREID"),
+  v.literal("KORAPAY"),
 );
 
 export const integrationWorkpool = new Workpool(

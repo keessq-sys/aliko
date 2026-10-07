@@ -65,6 +65,7 @@
           { href: "/admin/properties", label: "Properties" },
           { href: "/admin/services", label: "Services" },
           { href: "/admin/finance", label: "Reconciliation" },
+          { href: "/admin/subscriptions", label: "Subscriptions" },
           { href: "/admin/messages", label: "Conversations" },
         ]
       : (sections[role] ?? sections.CLIENT).map(([id, label]) => ({
@@ -155,7 +156,7 @@
       {#each sectionLinks as item}<a href={item.href}>{$adkT(item.label)}</a
         >{/each}
       <hr />
-      {#each [{ href: "/dashboard/account", label: "My profile" }, { href: "/dashboard/payments", label: "My payments" }, { href: "/dashboard/messages", label: "Company conversations" }, { href: "/properties", label: "Properties" }, { href: "/services", label: "Services" }, { href: "/", label: "Website home" }] as item}
+      {#each [{ href: "/dashboard/account", label: "My profile" }, { href: "/dashboard/subscriptions", label: "Manage subscription" }, { href: "/dashboard/subscriptions", label: "Manage subscription" }, { href: "/dashboard/payments", label: "My payments" }, { href: "/dashboard/messages", label: "Company conversations" }, { href: "/properties", label: "Properties" }, { href: "/services", label: "Services" }, { href: "/", label: "Website home" }] as item}
         <a href={item.href}>{$adkT(item.label)}</a>
       {/each}
       <button type="button" on:click={logout} disabled={busy}

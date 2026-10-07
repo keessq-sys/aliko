@@ -84,7 +84,7 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
     Boolean(event.request.headers.get("authorization"));
   // The maintenance handler validates its service secret independently.
   if (
-    pathname.startsWith("/admin") ||
+    (pathname.startsWith("/admin") && pathname !== "/admin-login") ||
     pathname.startsWith("/dashboard/") ||
     pathname.startsWith("/checkout/") ||
     (pathname.startsWith("/api/media/") &&
@@ -131,8 +131,12 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
         !["ADMIN", "ESTATE_MANAGER"].includes(profile.role)
       )
         throw redirect(303, "/unauthorized");
-      if (requiredRole && profile.role !== requiredRole)
+      if (requiredRole && profile.role !== requiredRole && profile.role !== "ADMIN")
         throw redirect(303, "/unauthorized");
+      if (profile.role === "ESTATE_MANAGER" && (pathname.startsWith("/dashboard/manager") || pathname.startsWith("/dashboard/operations"))) {
+        const entitlement = await client.query(makeFunctionReference<"query">("subscriptions:mine"), {});
+        if (!entitlement.access.allowed) throw redirect(303, "/dashboard/subscriptions");
+      }
       if (
         pathname.startsWith("/api/media/") &&
         !["ADMIN", "AGENT", "ESTATE_MANAGER"].includes(profile.role)

@@ -5,6 +5,7 @@ import { makeFunctionReference } from "convex/server";
 import { env } from "$env/dynamic/public";
 import { scanFile, decodeImage } from "../../../../../convex/lib/mediaSecurity";
 import { sanitizeImage } from "$lib/server/imageSanitizer";
+import { api } from "$lib/convex/_generated/api";
 
 const ALLOWED = new Set([
   "image/jpeg",
@@ -59,6 +60,15 @@ export const POST: RequestHandler = async ({
     return json({ error: "Unauthorized" }, { status: 401 });
   }
   const bucket = platform?.env?.MEDIA;
+  if (locals.user.role === "ESTATE_MANAGER") {
+    const client = new ConvexHttpClient(env.PUBLIC_CONVEX_URL);
+    const token = cookies.get("__convexAuthJWT");
+    if (!token) return json({ error: "Unauthorized" }, { status: 401 });
+    client.setAuth(token);
+    const subscription = await client.query(api.subscriptions.mine, {});
+    if (!subscription.access.allowed)
+      return json({ error: subscription.access.reason }, { status: 403 });
+  }
   if (!bucket)
     return json(
       { error: "R2 media binding is not configured" },

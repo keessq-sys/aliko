@@ -24,6 +24,7 @@
     Menu,
     X,
     DollarSign,
+    CreditCard,
     Home,
   } from "lucide-svelte";
   import DiamondMark from "$lib/components/ui/DiamondMark.svelte";
@@ -181,6 +182,12 @@
           href: "/admin/content",
           icon: FileText,
           label: "Content Review",
+          badge: null,
+        },
+        {
+          href: "/admin/subscriptions",
+          icon: CreditCard,
+          label: "Subscriptions",
           badge: null,
         },
         {

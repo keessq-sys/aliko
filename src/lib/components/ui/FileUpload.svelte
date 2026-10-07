@@ -2,23 +2,37 @@
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
 
-  import { UploadCloud, File as FileIcon, X, Image as ImageIcon } from 'lucide-svelte';
-  import { createEventDispatcher } from 'svelte';
+  import {
+    UploadCloud,
+    File as FileIcon,
+    X,
+    Image as ImageIcon,
+  } from "lucide-svelte";
+  import { createEventDispatcher } from "svelte";
 
-  export let accept: string = '*/*';
+  export let accept: string = "*/*";
   export let multiple: boolean = false;
   export let maxSizeMB: number = 5;
-  export let label: string = 'Drop files here or click to upload';
+  export let maxFiles: number = Infinity;
+  export let label: string = "Drop files here or click to upload";
 
   const dispatch = createEventDispatcher();
   let isDragging = false;
   let fileInput: HTMLInputElement;
-  let selectedFiles: {file: File, preview: string | null}[] = [];
-  let errorMsg = '';
+  let selectedFiles: { file: File; preview: string | null }[] = [];
+  let errorMsg = "";
 
-  function handleDragEnter(e: DragEvent) { e.preventDefault(); isDragging = true; }
-  function handleDragLeave(e: DragEvent) { e.preventDefault(); isDragging = false; }
-  function handleDragOver(e: DragEvent) { e.preventDefault(); }
+  function handleDragEnter(e: DragEvent) {
+    e.preventDefault();
+    isDragging = true;
+  }
+  function handleDragLeave(e: DragEvent) {
+    e.preventDefault();
+    isDragging = false;
+  }
+  function handleDragOver(e: DragEvent) {
+    e.preventDefault();
+  }
 
   function handleDrop(e: DragEvent) {
     e.preventDefault();
@@ -36,8 +50,12 @@
   }
 
   function processFiles(files: File[]) {
-    errorMsg = '';
-    const validFiles = files.filter(f => {
+    errorMsg = "";
+    if ((multiple ? selectedFiles.length : 0) + files.length > maxFiles) {
+      errorMsg = `Choose at most ${maxFiles} files.`;
+      return;
+    }
+    const validFiles = files.filter((f) => {
       if (f.size > maxSizeMB * 1024 * 1024) {
         errorMsg = `Some files exceed ${maxSizeMB}MB limit`;
         return false;
@@ -49,9 +67,9 @@
       validFiles.splice(1);
     }
 
-    const newFiles = validFiles.map(f => ({
+    const newFiles = validFiles.map((f) => ({
       file: f,
-      preview: f.type.startsWith('image/') ? URL.createObjectURL(f) : null
+      preview: f.type.startsWith("image/") ? URL.createObjectURL(f) : null,
     }));
 
     if (multiple) {
@@ -60,7 +78,7 @@
       selectedFiles = newFiles;
     }
 
-    dispatch('files', { files: selectedFiles.map(f => f.file) });
+    dispatch("files", { files: selectedFiles.map((f) => f.file) });
   }
 
   function removeFile(index: number) {
@@ -68,13 +86,15 @@
       URL.revokeObjectURL(selectedFiles[index].preview!);
     }
     selectedFiles = selectedFiles.filter((_, i) => i !== index);
-    dispatch('files', { files: selectedFiles.map(f => f.file) });
+    dispatch("files", { files: selectedFiles.map((f) => f.file) });
   }
 </script>
 
 <div class="w-full">
   <div
-    class="relative w-full p-8 border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer overflow-hidden {isDragging ? 'border-emerald-500 bg-emerald-900/20' : 'border-stone-700 bg-stone-900 hover:border-emerald-500/50 hover:bg-stone-800'}"
+    class="relative w-full p-8 border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer overflow-hidden {isDragging
+      ? 'border-emerald-500 bg-emerald-900/20'
+      : 'border-stone-700 bg-stone-900 hover:border-emerald-500/50 hover:bg-stone-800'}"
     role="button"
     tabindex="0"
     on:dragenter={handleDragEnter}
@@ -82,9 +102,12 @@
     on:dragover={handleDragOver}
     on:drop={handleDrop}
     on:click={() => fileInput.click()}
-    on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), fileInput.click())}
+    on:keydown={(e) =>
+      (e.key === "Enter" || e.key === " ") &&
+      (e.preventDefault(), fileInput.click())}
   >
-    <input dir="auto"
+    <input
+      dir="auto"
       type="file"
       bind:this={fileInput}
       class="hidden"
@@ -93,12 +116,19 @@
       on:change={handleFileInput}
     />
 
-    <div class="p-4 rounded-full bg-stone-800 mb-4 {isDragging ? 'text-emerald-400' : 'text-stone-400'}">
+    <div
+      class="p-4 rounded-full bg-stone-800 mb-4 {isDragging
+        ? 'text-emerald-400'
+        : 'text-stone-400'}"
+    >
       <UploadCloud size={32} />
     </div>
 
     <p class="text-sm font-medium text-stone-200 mb-1">{$adkT(label)}</p>
-    <p class="text-xs text-stone-500">{$adkT("Max size:")} {$adkT(maxSizeMB)}{$adkT("MB")}</p>
+    <p class="text-xs text-stone-500">
+      {$adkT("Max size:")}
+      {$adkT(maxSizeMB)}{$adkT("MB")}
+    </p>
 
     {#if errorMsg}
       <p class="text-xs text-rose-500 mt-2">{$adkT(errorMsg)}</p>
@@ -108,18 +138,31 @@
   {#if selectedFiles.length > 0}
     <div class="mt-4 flex flex-col gap-2">
       {#each selectedFiles as item, i}
-        <div class="flex items-center justify-between p-3 rounded-lg bg-stone-800 border border-stone-700">
+        <div
+          class="flex items-center justify-between p-3 rounded-lg bg-stone-800 border border-stone-700"
+        >
           <div class="flex items-center gap-3 overflow-hidden">
             {#if item.preview}
-              <img src={item.preview} alt={$adkT("preview")} class="w-10 h-10 object-cover rounded" />
+              <img
+                src={item.preview}
+                alt={$adkT("preview")}
+                class="w-10 h-10 object-cover rounded"
+              />
             {:else}
-              <div class="w-10 h-10 rounded bg-stone-700 flex items-center justify-center text-stone-400">
+              <div
+                class="w-10 h-10 rounded bg-stone-700 flex items-center justify-center text-stone-400"
+              >
                 <FileIcon size={20} />
               </div>
             {/if}
             <div class="truncate text-sm">
-              <p class="font-medium text-stone-200 truncate">{item.file.name}</p>
-              <p class="text-xs text-stone-500">{(item.file.size / 1024 / 1024).toFixed(2)} {$adkT("MB")}</p>
+              <p class="font-medium text-stone-200 truncate">
+                {item.file.name}
+              </p>
+              <p class="text-xs text-stone-500">
+                {(item.file.size / 1024 / 1024).toFixed(2)}
+                {$adkT("MB")}
+              </p>
             </div>
           </div>
           <button

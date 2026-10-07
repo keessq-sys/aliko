@@ -30,13 +30,82 @@ async function user(
       createdAt: Date.now(),
     }),
   );
-  await t.run(ctx => ctx.db.insert("identities", { userId: id, ninCipher: "test-fixture", fingerprint: String(id), lastFour: "8901", status: "VERIFIED", consentVersion: "2026-10-03", consentedAt: Date.now(), createdAt: Date.now(), updatedAt: Date.now() }));
+  await t.run((ctx) =>
+    ctx.db.insert("identities", {
+      userId: id,
+      ninCipher: "test-fixture",
+      fingerprint: String(id),
+      lastFour: "8901",
+      status: "VERIFIED",
+      consentVersion: "2026-10-03",
+      consentedAt: Date.now(),
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    }),
+  );
   const sessionId = await t.run((ctx) =>
     ctx.db.insert("authSessions", {
       userId: id,
       expirationTime: Date.now() + 3600000,
     }),
   );
+  if (role === "ESTATE_MANAGER")
+    await t.run(async (ctx) => {
+      const account = (await ctx.db.get(id))!,
+        now = Date.now();
+      await ctx.db.patch(id, {
+        operatingState: "Lagos",
+        operatingLga: "Ikeja",
+        whatsapp: "+2348000000000",
+      });
+      const managerId = await ctx.db.insert("estateManagers", {
+        userId: id,
+        companyName: "Test",
+        contactName: account.name,
+        email: account.email,
+        phone: "08000000000",
+        statesOfOperation: ["Lagos"],
+        plan: "PROFESSIONAL",
+        status: "APPROVED",
+        createdAt: now,
+        updatedAt: now,
+      });
+      const orderId = await ctx.db.insert("checkoutOrders", {
+        reference: crypto.randomUUID(),
+        ownerId: id,
+        kind: "MANAGER",
+        targetId: managerId,
+        title: "Professional",
+        amount: 75000,
+        currency: "NGN",
+        status: "PAID",
+        createdAt: now,
+        updatedAt: now,
+      });
+      await ctx.db.insert("checkoutAttempts", {
+        orderId,
+        reference: crypto.randomUUID(),
+        providerId: crypto.randomUUID(),
+        amount: 75000,
+        currency: "NGN",
+        status: "SUCCESS",
+        createdAt: now,
+        updatedAt: now,
+      });
+      await ctx.db.insert("managerSubscriptions", {
+        ownerId: id,
+        managerId,
+        orderId,
+        plan: "PROFESSIONAL",
+        amount: 75000,
+        startsAt: now - 1000,
+        endsAt: now + 86400000,
+        status: "ACTIVE",
+        cancelAtPeriodEnd: false,
+        createdAt: now,
+        updatedAt: now,
+      });
+    });
   return {
     id,
     sessionId,
@@ -390,6 +459,9 @@ describe("registration and account re-verification", () => {
   it("requires versioned policy acceptance during signup", () => {
     expect(() =>
       publicSignupProfile({
+        operatingState: "Lagos",
+        operatingLga: "Ikeja",
+        whatsapp: "+2348000000000",
         flow: "signUp",
         name: "Test",
         email: "test@example.com",
@@ -397,6 +469,9 @@ describe("registration and account re-verification", () => {
     ).toThrow("Accept");
     expect(
       publicSignupProfile({
+        operatingState: "Lagos",
+        operatingLga: "Ikeja",
+        whatsapp: "+2348000000000",
         flow: "signUp",
         name: "Test",
         email: "test@example.com",

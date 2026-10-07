@@ -1,0 +1,59 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 150785a..d34ce27 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -23,6 +23,7 @@ jobs:
+           cache: npm
+       - run: npm ci
+       - run: npm run lint
++      - run: npm run test:backend
+       - run: npm run build
+       - name: Install browser
+         run: npx playwright install --with-deps chromium
+diff --git a/.github/workflows/deploy-preview.yml b/.github/workflows/deploy-preview.yml
+index 5d03d64..26c87cf 100644
+--- a/.github/workflows/deploy-preview.yml
++++ b/.github/workflows/deploy-preview.yml
+@@ -23,7 +23,7 @@ jobs:
+           cache: npm
+       - run: npm ci
+       - name: Create isolated Convex preview and build
+-        run: npx convex deploy --preview-name "pr-${{ github.event.number }}" --cmd "npm run build" --cmd-url-env-var-name PUBLIC_CONVEX_URL --message "PR ${{ github.event.number }} at ${GITHUB_SHA}"
++        run: npx convex deploy --preview-name "pr-${{ github.event.number }}" --cmd "npm run build" --cmd-url-env-var-name PUBLIC_CONVEX_URL
+         env:
+           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_PREVIEW_DEPLOY_KEY }}
+       - name: Publish Cloudflare preview
+diff --git a/.github/workflows/deploy-production.yml b/.github/workflows/deploy-production.yml
+index b4eecab..58ceed5 100644
+--- a/.github/workflows/deploy-production.yml
++++ b/.github/workflows/deploy-production.yml
+@@ -10,7 +10,6 @@ on:
+         type: choice
+         options:
+           - production
+-          - preview
+       version:
+         description: "Version tag (optional)"
+         required: false
+@@ -37,7 +36,7 @@ jobs:
+         run: npm ci
+ 
+       - name: Deploy Convex and build against the deployed backend
+-        run: npx convex deploy --cmd "npm run build" --cmd-url-env-var-name PUBLIC_CONVEX_URL --message "GitHub ${GITHUB_SHA}"
++        run: npx convex deploy --cmd "npm run build" --cmd-url-env-var-name PUBLIC_CONVEX_URL
+         env:
+           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+ 
+diff --git a/.github/workflows/deploy-staging.yml b/.github/workflows/deploy-staging.yml
+index 8a1555e..9a51703 100644
+--- a/.github/workflows/deploy-staging.yml
++++ b/.github/workflows/deploy-staging.yml
+@@ -24,7 +24,7 @@ jobs:
+           cache: npm
+       - run: npm ci
+       - name: Deploy isolated staging backend and build
+-        run: npx convex deploy --cmd "npm run build" --cmd-url-env-var-name PUBLIC_CONVEX_URL --message "Staging ${GITHUB_SHA}"
++        run: npx convex deploy --cmd "npm run build" --cmd-url-env-var-name PUBLIC_CONVEX_URL
+         env:
+           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_STAGING_DEPLOY_KEY }}
+       - name: Publish Cloudflare staging branch

@@ -2,6 +2,7 @@ import { cronJobs } from "convex/server";
 import { internal } from "./_generated/api";
 
 const crons = cronJobs();
+crons.interval("expire manager subscriptions", { minutes: 15 }, internal.subscriptions.expire, {});
 crons.interval(
   "reconcile pending provider refunds",
   { minutes: 15 },

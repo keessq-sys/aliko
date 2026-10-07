@@ -41,7 +41,20 @@
       paginationOpts: { cursor, numItems: 30 },
     } as any,
   );
-  async function reconcileOrder(reference: string) {
+  async function reconcileOrder(reference: string, provider?: string) {
+    if (provider === "KORAPAY") {
+      busy = true;
+      error = "";
+      try {
+        await runAction(api.korapay.reconcile, { reference });
+        message = "Provider transaction checked.";
+      } catch (e) {
+        error = e instanceof Error ? e.message : "Verification failed";
+      } finally {
+        busy = false;
+      }
+      return;
+    }
     const transactionId = prompt("Flutterwave transaction ID to verify:");
     if (!transactionId) return;
     try {
@@ -328,7 +341,8 @@
       {#if order.attempt}<p class="break-all">{order.attempt.reference}</p>
         <button
           class="underline min-h-[44px]"
-          on:click={() => reconcileOrder(order.attempt!.reference)}
+          on:click={() =>
+            reconcileOrder(order.attempt!.reference, order.attempt!.provider)}
           >{$adkT("Verify provider transaction")}</button
         >{/if}
     </div>{/each}

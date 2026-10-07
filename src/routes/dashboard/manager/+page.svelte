@@ -67,10 +67,17 @@
     agent: property.agentId ? "Assigned agent" : "Unassigned",
   }));
   const estateSummary = useQuery(api.estateOperations.summary, {});
+  const subscription = useQuery(api.subscriptions.mine, {});
   let agentCursor: string | null = null;
-  $: assignedAgents = useQuery(api.estateOperations.assignedAgents, {
-    paginationOpts: { cursor: agentCursor, numItems: 20 },
-  });
+  $: assignedAgents = useQuery(
+    $myProfile?.role === "ADMIN" ||
+      $subscription?.access.plan === "PROFESSIONAL"
+      ? api.estateOperations.assignedAgents
+      : null,
+    {
+      paginationOpts: { cursor: agentCursor, numItems: 20 },
+    },
+  );
   const finances = useQuery(api.management.myFinancialSummary, {});
   const myProfile = useQuery(api.users.getMyProfile, {});
   let profileName = "";
