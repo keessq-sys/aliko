@@ -112,7 +112,7 @@ describe("payment and allocation integrity", () => {
     };
     await expect(
       t.mutation(internal.fulfillment.allocateSignedBooking, args),
-    ).rejects.toThrow("provider-signed");
+    ).rejects.toThrow("administrator-reviewed");
     await t.run((ctx) =>
       ctx.db.patch(fixture.documentId, { status: "SIGNED" }),
     );
@@ -140,7 +140,7 @@ describe("payment and allocation integrity", () => {
         bookingId: fixture.bookingId,
         documentId: fixture.documentId,
       }),
-    ).rejects.toThrow("Verified payment");
+    ).rejects.toThrow("Settled payment");
   });
   it("applies a confirmed refund to the booking only once", async () => {
     const t = setup(),
@@ -227,7 +227,7 @@ describe("production authorization", () => {
         ninCipher: "test-fixture",
         fingerprint: String(applicant.id),
         lastFour: "8901",
-        status: "PENDING",
+        status: "FAILED",
         consentVersion: "2026-10-03",
         consentedAt: Date.now(),
         createdAt: Date.now(),
@@ -249,7 +249,7 @@ describe("production authorization", () => {
         id: result.id,
         status: "APPROVED",
       }),
-    ).rejects.toThrow(/NIN verification/);
+    ).rejects.toThrow(/11-digit NIN/);
     await t.run((ctx) => ctx.db.patch(identityId, { status: "VERIFIED" }));
     await admin.session.mutation(api.partners.reviewAgentApplication, {
       id: result.id,

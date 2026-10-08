@@ -10,7 +10,7 @@ import {
 import type { MutationCtx, QueryCtx, ActionCtx } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 import { api, internal } from "./_generated/api";
-import { requireUser, requireAdmin, requireVerifiedNin } from "./lib/access";
+import { requireUser, requireAdmin, requireSubmittedNin } from "./lib/access";
 import { auditedMutation } from "./lib/auditedMutation";
 import { rateLimiter } from "./lib/rateLimits";
 import { assertCheckoutEnvironment } from "./lib/checkoutReadiness";
@@ -243,11 +243,8 @@ export const prepare = internalMutation({
   },
   handler: async (ctx, args) => {
     const user = await requireUser(ctx);
-    if (user.role !== "ADMIN") await requireVerifiedNin(ctx, user._id);
-    if (
-      user.role !== "ADMIN" &&
-      (!user.kycVerified || (user.address?.trim().length ?? 0) < 10)
-    )
+    if (user.role !== "ADMIN") await requireSubmittedNin(ctx, user._id);
+    if (user.role !== "ADMIN" && (user.address?.trim().length ?? 0) < 10)
       throw new Error(
         "Complete identity verification and legal address before checkout.",
       );
@@ -446,7 +443,9 @@ export const settle = internalMutation({
         createdAt: startsAt,
         updatedAt: startsAt,
       });
-      await ctx.scheduler.runAt(endsAt, internal.subscriptions.expireOne, { id: subscriptionId });
+      await ctx.scheduler.runAt(endsAt, internal.subscriptions.expireOne, {
+        id: subscriptionId,
+      });
       await ctx.db.patch(order.targetId as Id<"estateManagers">, {
         paidThrough: endsAt,
         updatedAt: Date.now(),

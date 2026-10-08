@@ -1,3 +1,4 @@
+import { ConvexError } from "convex/values";
 import { assertNigeriaLocation } from "./nigeriaLocations";
 import { getAuthUserId, getAuthSessionId } from "@convex-dev/auth/server";
 
@@ -137,11 +138,16 @@ export function publicSignupProfile(params: Record<string, unknown>) {
   };
 }
 
-export async function requireVerifiedNin(ctx: any, userId: any) {
+export async function requireSubmittedNin(ctx: any, userId: any) {
   const identity = await ctx.db
     .query("identities")
     .withIndex("by_user", (q: any) => q.eq("userId", userId))
     .unique();
-  if (identity?.status !== "VERIFIED")
-    throw new Error("Complete NIN verification before this action.");
+  if (
+    !identity ||
+    identity.status === "FAILED" ||
+    !identity.ninCipher ||
+    !/^\d{4}$/.test(identity.lastFour)
+  )
+    throw new ConvexError("Submit your 11-digit NIN before this action.");
 }

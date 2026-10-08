@@ -272,7 +272,7 @@ describe("dynamic checkout", () => {
         ...order,
         expectedAmount: 10000,
       }),
-    ).rejects.toThrow(/NIN verification/);
+    ).rejects.toThrow(/11-digit NIN/);
   });
   it("uses the approved service quote and denies non-owners", async () => {
     const t = setup(),

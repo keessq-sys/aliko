@@ -79,35 +79,60 @@ const http = httpRouter();
 auth.addHttpRoutes(http);
 
 http.route({
-  path: "/webhooks/korapay", method: "POST",
+  path: "/webhooks/korapay",
+  method: "POST",
   handler: httpAction(async (ctx, req) => {
     const secret = process.env.KORAPAY_SECRET_KEY;
     if (!secret) return new Response("Webhook not configured", { status: 503 });
     let raw: string;
-    try { raw = await readWebhookBody(req); }
-    catch { return new Response("Payload too large", { status: 413 }); }
-    let event: { event?: string; data?: { reference?: string; status?: string } };
-    try { event = JSON.parse(raw); }
-    catch { return new Response("Invalid JSON", { status: 400 }); }
-    if (!event.data || typeof event.data !== "object") return new Response("Invalid payload", { status: 400 });
+    try {
+      raw = await readWebhookBody(req);
+    } catch {
+      return new Response("Payload too large", { status: 413 });
+    }
+    let event: {
+      event?: string;
+      data?: { reference?: string; status?: string };
+    };
+    try {
+      event = JSON.parse(raw);
+    } catch {
+      return new Response("Invalid JSON", { status: 400 });
+    }
+    if (!event.data || typeof event.data !== "object")
+      return new Response("Invalid payload", { status: 400 });
     const signature = req.headers.get("x-korapay-signature");
-    const expected = await hmacHex("SHA-256", secret, JSON.stringify(event.data));
-    if (!signature || !constantTimeEqual(signature, expected)) return new Response("Invalid signature", { status: 401 });
+    const expected = await hmacHex(
+      "SHA-256",
+      secret,
+      JSON.stringify(event.data),
+    );
+    if (!signature || !constantTimeEqual(signature, expected))
+      return new Response("Invalid signature", { status: 401 });
     if (event.event !== "charge.success") return new Response("ok");
     const reference = event.data.reference;
-    if (!reference || reference.length > 200) return new Response("Invalid reference", { status: 400 });
+    if (!reference || reference.length > 200)
+      return new Response("Invalid reference", { status: 400 });
     const claim = await ctx.runMutation(internal.operations.claimWebhookEvent, {
-      provider: "KORAPAY", eventId: `${event.event}:${reference}`, eventType: event.event,
-      reference, payloadDigest: await sha256Hex(raw),
+      provider: "KORAPAY",
+      eventId: `${event.event}:${reference}`,
+      eventType: event.event,
+      reference,
+      payloadDigest: await sha256Hex(raw),
     });
     if (!claim.claimed) return new Response("ok");
     try {
       await ctx.runAction(internal.korapay.processWebhook, { reference });
-      await ctx.runMutation(internal.operations.finishWebhookEvent, { eventId: claim.eventId, status: "PROCESSED" });
+      await ctx.runMutation(internal.operations.finishWebhookEvent, {
+        eventId: claim.eventId,
+        status: "PROCESSED",
+      });
       return new Response("ok");
     } catch {
       await ctx.runMutation(internal.operations.finishWebhookEvent, {
-        eventId: claim.eventId, status: "FAILED", error: "Korapay verification or settlement failed",
+        eventId: claim.eventId,
+        status: "FAILED",
+        error: "Korapay verification or settlement failed",
       });
       return new Response("Verification failed", { status: 400 });
     }
@@ -261,91 +286,6 @@ http.route({
   }),
 });
 
-// ── Dropbox Sign (e-signature) Webhook ────────────────────────────────────
-http.route({
-  path: "/webhooks/esign",
-  method: "POST",
-  handler: httpAction(async (ctx, req) => {
-    const secret = process.env.DROPBOX_SIGN_API_KEY;
-    if (!secret) return new Response("Webhook not configured", { status: 503 });
-    const declared = Number(req.headers.get("content-length") ?? 0);
-    if (declared > MAX_WEBHOOK_BYTES)
-      return new Response("Payload too large", { status: 413 });
-    let json: string;
-    try {
-      const form = await req.formData();
-      const field = form.get("json");
-      if (typeof field !== "string") throw new Error("Missing json field");
-      json = field;
-    } catch {
-      return new Response("Invalid callback payload", { status: 400 });
-    }
-    const signature = req.headers.get("content-sha256");
-    const expected = await hmacBase64(secret, json);
-    if (!signature || !constantTimeEqual(signature, expected)) {
-      return new Response("Invalid signature", { status: 401 });
-    }
-    const payload = JSON.parse(json) as {
-      event: { event_type: string; event_time?: string; event_hash?: string };
-      signature_request: {
-        signature_request_id: string;
-        test_mode?: boolean;
-        metadata: { referenceCode: string };
-      };
-    };
-
-    const referenceCode = payload.signature_request?.metadata?.referenceCode;
-    const claim = await ctx.runMutation(internal.operations.claimWebhookEvent, {
-      provider: "DROPBOX_SIGN",
-      eventId:
-        payload.event.event_hash ??
-        `${payload.event.event_type}:${payload.event.event_time ?? (await sha256Hex(json))}`,
-      eventType: payload.event.event_type,
-      reference: referenceCode,
-      payloadDigest: await sha256Hex(json),
-    });
-    if (!claim.claimed)
-      return new Response("Hello API Event Received", { status: 200 });
-
-    try {
-      const signatureOutcome: Record<
-        string,
-        "SIGNED" | "REJECTED" | "EXPIRED"
-      > = {
-        signature_request_all_signed: "SIGNED",
-        signature_request_declined: "REJECTED",
-        signature_request_expired: "EXPIRED",
-      };
-      const outcome = signatureOutcome[payload.event.event_type];
-      if (outcome) {
-        if (!referenceCode || !payload.signature_request?.signature_request_id)
-          throw new Error("Missing registered signature request");
-        await ctx.runMutation(internal.legalDocuments.updateDocumentStatus, {
-          referenceCode,
-          status: outcome,
-          actorRole: "CLIENT",
-          providerRequestId: payload.signature_request.signature_request_id,
-          testMode: Boolean(payload.signature_request.test_mode),
-        });
-      }
-      await ctx.runMutation(internal.operations.finishWebhookEvent, {
-        eventId: claim.eventId,
-        status: outcome ? "PROCESSED" : "IGNORED",
-      });
-    } catch (error) {
-      await ctx.runMutation(internal.operations.finishWebhookEvent, {
-        eventId: claim.eventId,
-        status: "FAILED",
-        error: errorMessage(error),
-      });
-      return new Response("Processing failed", { status: 500 });
-    }
-
-    // Dropbox Sign requires this exact response
-    return new Response("Hello API Event Received", { status: 200 });
-  }),
-});
-
 // ── Resend delivery events ────────────────────────────────────────────────
 http.route({
   path: "/webhooks/resend",
@@ -479,105 +419,6 @@ http.route({
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
-  }),
-});
-
-// ── QoreID identity verification webhook ──────────────────────────────────
-// QoreID signs the exact raw JSON with HMAC-SHA512 in x-verifyme-signature.
-// Store only the workflow reference and normalized outcome; identity payloads
-// can contain NIN/BVN and must not be copied into application logs or tables.
-http.route({
-  path: "/webhooks/qoreid",
-  method: "POST",
-  handler: httpAction(async (ctx, req) => {
-    const secret = process.env.QOREID_WEBHOOK_SECRET;
-    if (!secret) return new Response("Webhook not configured", { status: 503 });
-    let raw = "";
-    try {
-      raw = await readWebhookBody(req);
-    } catch {
-      return new Response("Payload too large", { status: 413 });
-    }
-    const signature = req.headers.get("x-verifyme-signature");
-    const expected = await hmacHex("SHA-512", secret, raw);
-    if (!signature || !constantTimeEqual(signature.toLowerCase(), expected))
-      return new Response("Invalid signature", { status: 401 });
-
-    let payload: {
-      id?: string;
-      reference?: string;
-      status?: string;
-      state?: string;
-      data?: {
-        id?: string;
-        reference?: string;
-        status?: string;
-        state?: string;
-      };
-    };
-    try {
-      payload = JSON.parse(raw);
-    } catch {
-      return new Response("Invalid JSON", { status: 400 });
-    }
-    const reference = String(
-      payload.reference ??
-        payload.id ??
-        payload.data?.reference ??
-        payload.data?.id ??
-        "",
-    );
-    const providerStatus = String(
-      payload.status ??
-        payload.state ??
-        payload.data?.status ??
-        payload.data?.state ??
-        "unknown",
-    ).toLowerCase();
-    if (!reference || reference.length > 160)
-      return new Response("Missing verification reference", { status: 400 });
-    const eventId = `${reference}:${providerStatus}:${await sha256Hex(raw)}`;
-    const claim = await ctx.runMutation(internal.operations.claimWebhookEvent, {
-      provider: "QOREID",
-      eventId,
-      eventType: providerStatus,
-      reference,
-      payloadDigest: await sha256Hex(raw),
-    });
-    if (!claim.claimed) return new Response("ok");
-    const verified = [
-      "verified",
-      "successful",
-      "success",
-      "complete",
-      "completed",
-    ].includes(providerStatus);
-    const pending = ["pending", "in_progress", "processing"].includes(
-      providerStatus,
-    );
-    try {
-      const result = await ctx.runMutation(internal.kyc.applyQoreIdResult, {
-        providerReference: reference,
-        providerStatus,
-        status: verified ? "VERIFIED" : pending ? "PENDING" : "FAILED",
-        failureReason:
-          verified || pending
-            ? undefined
-            : "Identity provider could not verify the submitted record",
-      });
-      await ctx.runMutation(internal.operations.finishWebhookEvent, {
-        eventId: claim.eventId,
-        status: result.matched ? "PROCESSED" : "IGNORED",
-      });
-      return new Response("ok");
-    } catch (error) {
-      await ctx.runMutation(internal.operations.finishWebhookEvent, {
-        eventId: claim.eventId,
-        status: "FAILED",
-        error: errorMessage(error),
-      });
-      return new Response("Processing failed", { status: 500 });
-    }
   }),
 });
 

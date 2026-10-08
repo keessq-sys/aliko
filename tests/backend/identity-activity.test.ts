@@ -70,6 +70,7 @@ describe("private NIN and administrator conversations", () => {
     expect(await a.session.query(api.identity.status, {})).toEqual({
       status: "PENDING",
       maskedNin: "•••••••8901",
+      formatValid: true,
     });
     const profile = await a.session.query(api.users.getMyProfile, {});
     expect(JSON.stringify(profile)).not.toMatch(

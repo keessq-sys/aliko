@@ -12,7 +12,7 @@
 import { writable, type Writable } from "svelte/store";
 import { getConvexClient } from "convex-svelte";
 import { getFunctionName } from "convex/server";
-import { synchronizeSession } from "./session";
+import { synchronizeSession, fetchSessionToken } from "./session";
 import { browser } from "$app/environment";
 import type {
   FunctionReference,
@@ -31,7 +31,11 @@ export function useQuery<Query extends FunctionReference<"query">>(
       console.warn("[convex query]", error.message);
       window.dispatchEvent(
         new CustomEvent("adk-query-error", {
-          detail: "Could not load current data. Please refresh or try again.",
+          detail: /exceeded.*free|deployments.*disabled|plan limits/i.test(
+            error.message,
+          )
+            ? "The database provider has paused this deployment. The administrator must restore the Convex account; refreshing will not fix it."
+            : "Connection interrupted. Your changes have not been saved. Please try again when the connection returns.",
         }),
       );
     });
@@ -68,7 +72,13 @@ export async function runAction<Action extends FunctionReference<"action">>(
         client.setAuth(async () => null);
         localStorage.removeItem("adk-role");
       } else if (result.signedIn) {
-        await synchronizeSession(client);
+        // Cookies and role have already been verified on the server. Navigation must not wait for a WebSocket handshake.
+        void synchronizeSession(client).catch(() => {
+          client.setAuth(fetchSessionToken);
+          console.warn(
+            "Realtime connection is reconnecting; authenticated session is established.",
+          );
+        });
       } else if (
         ["signUp", "signIn", "reset-verification"].includes(
           (args as any).params?.flow,

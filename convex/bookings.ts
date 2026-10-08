@@ -1,7 +1,7 @@
 import { auditedMutation } from "./lib/auditedMutation";
 import { bookingBalance } from "./lib/bookingBalance";
 import { v } from "convex/values";
-import { requireAdmin, requireUser, requireVerifiedNin } from "./lib/access";
+import { requireAdmin, requireUser, requireSubmittedNin } from "./lib/access";
 import {
   query,
   mutation,
@@ -125,12 +125,8 @@ export const createBooking = auditedMutation("bookings:createBooking")({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Unauthorized — please sign in to book");
     const client = await requireUser(ctx);
-    await requireVerifiedNin(ctx, client._id);
-    if (
-      !client.kycVerified ||
-      !client.address ||
-      client.address.trim().length < 10
-    )
+    await requireSubmittedNin(ctx, client._id);
+    if (!client.address || client.address.trim().length < 10)
       throw new Error(
         "Complete identity verification and save your legal address in your profile before reserving land",
       );
@@ -323,14 +319,9 @@ export const initializePaystackPayment = action({
     if (!userId) throw new Error("Unauthorized");
     const profile = await ctx.runQuery(api.users.getMyProfile, {});
     const identity = await ctx.runQuery(api.identity.status, {});
-    if (identity?.status !== "VERIFIED")
+    if (!identity || identity.status === "FAILED")
       throw new Error("Complete NIN verification before checkout.");
-    if (
-      !profile ||
-      !profile.kycVerified ||
-      !profile.address ||
-      profile.address.trim().length < 10
-    )
+    if (!profile || !profile.address || profile.address.trim().length < 10)
       throw new Error(
         "Complete current identity verification and legal address before checkout",
       );
@@ -630,14 +621,9 @@ export const initializeFlutterwavePayment = action({
     if (!userId) throw new Error("Unauthorized");
     const profile = await ctx.runQuery(api.users.getMyProfile, {});
     const identity = await ctx.runQuery(api.identity.status, {});
-    if (identity?.status !== "VERIFIED")
+    if (!identity || identity.status === "FAILED")
       throw new Error("Complete NIN verification before checkout.");
-    if (
-      !profile ||
-      !profile.kycVerified ||
-      !profile.address ||
-      profile.address.trim().length < 10
-    )
+    if (!profile || !profile.address || profile.address.trim().length < 10)
       throw new Error(
         "Complete current identity verification and legal address before checkout",
       );

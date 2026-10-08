@@ -23,6 +23,8 @@ export const status = query({
     return record
       ? {
           status: record.status,
+          formatValid:
+            record.status !== "FAILED" && /^\d{4}$/.test(record.lastFour),
           maskedNin: `•••••••${record.lastFour}`,
           reviewReason: record.reviewReason,
         }

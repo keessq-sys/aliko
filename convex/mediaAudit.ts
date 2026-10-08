@@ -18,7 +18,11 @@ async function inspect(ctx: any, input: any) {
       scannedAt: asset.scannedAt,
       needsReview:
         asset.status === "ACTIVE" &&
-        asset.securityVersion !== "2026-10-01-decode-scan-v1",
+        ![
+          "2026-10-01-decode-scan-v1",
+          "2026-10-08-local-image-validation-v1",
+          "2026-10-08-upload-metadata-v1",
+        ].includes(asset.securityVersion),
     })),
   };
 }

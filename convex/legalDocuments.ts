@@ -1,8 +1,8 @@
 import { auditedMutation } from "./lib/auditedMutation";
-import { requireAdmin, requireUser } from "./lib/access";
+import { requireAdmin, requireUser, requireSubmittedNin } from "./lib/access";
 import { workflow } from "./fulfillment";
 import type { WorkflowId } from "@convex-dev/workflow";
-import { v } from "convex/values";
+import { v, ConvexError } from "convex/values";
 import {
   query,
   mutation,
@@ -68,7 +68,7 @@ export const getMyDocuments = query({
 export const getPendingDocuments = query({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Unauthorized");
+    if (!userId) throw new ConvexError("Unauthorized");
     const user = await ctx.db.get(userId as Id<"users">);
     await requireAdmin(ctx);
     const docs = await ctx.db
@@ -143,7 +143,7 @@ export const generateDeedOfAssignment = internalAction({
       }),
     ]);
     if (!client || !plot || !plot.project || !booking)
-      throw new Error("Missing data for document generation");
+      throw new ConvexError("Missing data for document generation");
 
     if (
       booking.clientId !== args.clientId ||
@@ -152,7 +152,7 @@ export const generateDeedOfAssignment = internalAction({
       booking.paidAmount < booking.totalAmount ||
       args.considerationAmount !== booking.totalAmount
     )
-      throw new Error("Deed must match the fully paid booking");
+      throw new ConvexError("Deed must match the fully paid booking");
     const { PDFDocument, rgb, StandardFonts } = await import("pdf-lib");
     const QRCode = await import("qrcode");
 
@@ -216,7 +216,7 @@ export const generateDeedOfAssignment = internalAction({
     const safeBody = body.replace(/\n+/g, " ");
     const supported = new Set(helvetica.getCharacterSet());
     if ([...safeBody].some((char) => !supported.has(char.codePointAt(0)!)))
-      throw new Error(
+      throw new ConvexError(
         "Legal names/address need a supported Unicode deed template; review required",
       );
     const words = safeBody.replace(/\n+/g, " ").split(/\s+/);
@@ -228,7 +228,7 @@ export const generateDeedOfAssignment = internalAction({
       const testWidth = helvetica.widthOfTextAtSize(testLine, 10);
       if (testWidth > maxWidth && line) {
         if (y < 200)
-          throw new Error(
+          throw new ConvexError(
             "Deed content exceeds template; legal review required",
           );
         page.drawText(line.trim(), {
@@ -336,7 +336,7 @@ export const generateDeedOfAssignment = internalAction({
       internal.legalDocuments.getDocumentByBookingInternal,
       { bookingId: args.bookingId },
     );
-    if (!saved) throw new Error("Deed record was not saved");
+    if (!saved) throw new ConvexError("Deed record was not saved");
     return {
       referenceCode: saved.referenceCode,
       storageId: saved.pdfStorageId,
@@ -423,18 +423,18 @@ export const updateDocumentStatus = internalMutation({
         q.eq("referenceCode", args.referenceCode),
       )
       .unique();
-    if (!doc) throw new Error(`Document ${args.referenceCode} not found`);
+    if (!doc) throw new ConvexError(`Document ${args.referenceCode} not found`);
     if (
       args.providerRequestId &&
       (doc.externalSignatureId !== args.providerRequestId ||
         Boolean(doc.signatureTestMode) !== Boolean(args.testMode))
     )
-      throw new Error(
+      throw new ConvexError(
         "Signature callback does not match the registered request",
       );
     if (doc.status === args.status) return;
     if (["SIGNED", "VERIFIED", "REJECTED", "EXPIRED"].includes(doc.status))
-      throw new Error("Terminal document outcome requires legal review");
+      throw new ConvexError("Terminal document outcome requires legal review");
 
     await ctx.db.patch(doc._id, {
       status: args.status,
@@ -468,9 +468,9 @@ export const getDocumentForSignature = internalQuery({
   args: { documentId: v.id("legalDocuments") },
   handler: async (ctx, { documentId }) => {
     const document = await ctx.db.get(documentId);
-    if (!document) throw new Error("Document not found");
+    if (!document) throw new ConvexError("Document not found");
     const client = await ctx.db.get(document.clientId);
-    if (!client) throw new Error("Document client not found");
+    if (!client) throw new ConvexError("Document client not found");
     const pdfUrl = document.pdfStorageId
       ? await ctx.storage.getUrl(document.pdfStorageId)
       : null;
@@ -487,12 +487,12 @@ export const recordSignatureRequest = internalMutation({
   },
   handler: async (ctx, args) => {
     const document = await ctx.db.get(args.documentId);
-    if (!document) throw new Error("Document not found");
+    if (!document) throw new ConvexError("Document not found");
     if (
       document.externalSignatureId &&
       document.externalSignatureId !== args.requestId
     )
-      throw new Error("Document already has another provider request");
+      throw new ConvexError("Document already has another provider request");
     await ctx.db.patch(document._id, {
       externalSignatureId: args.requestId,
       signatureDispatchState: "SENT",
@@ -515,13 +515,90 @@ export const recordSignatureRequest = internalMutation({
   },
 });
 
-export const sendDropboxSignatureRequest = action({
+export const requestTypedConsent = auditedMutation(
+  "legalDocuments:requestTypedConsent",
+)({
   args: { documentId: v.id("legalDocuments") },
-  handler: async (ctx, args): Promise<{ requestId: string }> => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Unauthorized");
-    await ctx.runQuery(internal.paymentOperations.requireAdmin, { userId });
-    return ctx.runAction(internal.legalDocuments.dispatchSignature, args);
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const document = await ctx.db.get(args.documentId);
+    if (!document || !["DRAFT", "PENDING_SIGNATURE"].includes(document.status))
+      throw new ConvexError("Document is not eligible for consent");
+    await ctx.db.patch(document._id, {
+      status: "PENDING_SIGNATURE",
+      signatureMethod: "TYPED_CONSENT",
+      updatedAt: Date.now(),
+    });
+    await ctx.db.insert("documentAuditLog", {
+      documentId: document._id,
+      action: "CONSENT_REQUESTED",
+      actorRole: "ADMIN",
+      createdAt: Date.now(),
+    });
+  },
+});
+export const submitTypedConsent = auditedMutation(
+  "legalDocuments:submitTypedConsent",
+)({
+  args: {
+    documentId: v.id("legalDocuments"),
+    fullName: v.string(),
+    consent: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const user = await requireUser(ctx),
+      document = await ctx.db.get(args.documentId);
+    if (!document || document.clientId !== user._id)
+      throw new ConvexError("Forbidden");
+    const normalize = (name: string) =>
+      name.normalize("NFKC").trim().replace(/\s+/g, " ").toLowerCase();
+    if (
+      !args.consent ||
+      args.fullName.trim().length < 2 ||
+      args.fullName.length > 160 ||
+      normalize(args.fullName) !== normalize(user.name ?? "")
+    )
+      throw new ConvexError(
+        "Type your profile's full name and accept the consent declaration.",
+      );
+    if (
+      document.signatureMethod === "TYPED_CONSENT" &&
+      ["SIGNED", "VERIFIED"].includes(document.status)
+    )
+      return;
+    if (
+      document.status !== "PENDING_SIGNATURE" ||
+      (document.expiresAt && document.expiresAt <= Date.now())
+    )
+      throw new ConvexError("Document is not available for consent");
+    const now = Date.now();
+    await ctx.db.patch(document._id, {
+      status: "SIGNED",
+      signatureMethod: "TYPED_CONSENT",
+      typedConsentName: args.fullName.trim(),
+      typedConsentBy: user._id,
+      typedConsentAt: now,
+      typedConsentPdfStorageId: document.pdfStorageId,
+      signedAt: now,
+      updatedAt: now,
+    });
+    await ctx.db.insert("policyAcceptances", {
+      userId: user._id,
+      policy: "E_SIGNATURE",
+      version: "2026-10-08",
+      acceptedAt: now,
+    });
+    await ctx.db.insert("documentAuditLog", {
+      documentId: document._id,
+      action: "TYPED_CONSENT_RECORDED",
+      actorId: user._id,
+      actorRole: user.role,
+      metadata: {
+        consentVersion: "2026-10-08",
+        sourceStorageId: document.pdfStorageId,
+      },
+      createdAt: now,
+    });
   },
 });
 export const claimSignatureDispatch = internalMutation({
@@ -529,7 +606,7 @@ export const claimSignatureDispatch = internalMutation({
   handler: async (ctx, args) => {
     const doc = await ctx.db.get(args.documentId);
     if (!doc || doc.externalSignatureId || doc.signatureDispatchState)
-      throw new Error(
+      throw new ConvexError(
         "Signature dispatch already sent or requires provider reconciliation",
       );
     if (doc.bookingId) {
@@ -540,11 +617,11 @@ export const claimSignatureDispatch = internalMutation({
         booking.clientId !== doc.clientId ||
         booking.paymentStatus !== "SUCCESS" ||
         booking.paidAmount < booking.totalAmount ||
-        !client?.kycVerified ||
+        !client ||
         !client.address ||
         client.accountStatus === "SUSPENDED"
       )
-        throw new Error(
+        throw new ConvexError(
           "Verified payment and current identity/address are required",
         );
     }
@@ -565,60 +642,6 @@ export const signatureDispatchUncertain = internalMutation({
       });
   },
 });
-export const reconcileSignatureRequest = action({
-  args: { documentId: v.id("legalDocuments"), requestId: v.string() },
-  handler: async (ctx, args): Promise<void> => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Unauthorized");
-    await ctx.runQuery(internal.paymentOperations.requireAdmin, { userId });
-    const key = process.env.DROPBOX_SIGN_API_KEY;
-    if (!key) throw new Error("Dropbox Sign is not configured");
-    const { document, client } = await ctx.runQuery(
-      internal.legalDocuments.getDocumentForSignature,
-      { documentId: args.documentId },
-    );
-    if (!/^[a-zA-Z0-9_-]{8,100}$/.test(args.requestId))
-      throw new Error("Invalid provider request ID");
-    if (
-      document.externalSignatureId &&
-      document.externalSignatureId !== args.requestId
-    )
-      throw new Error("Document already has another provider request");
-    const response = await fetch(
-      `https://api.hellosign.com/v3/signature_request/${encodeURIComponent(args.requestId)}`,
-      {
-        signal: AbortSignal.timeout(20000),
-        headers: { Authorization: `Basic ${btoa(`${key}:`)}` },
-      },
-    );
-    const body = (await response.json()) as any,
-      request = body.signature_request;
-    if (
-      !response.ok ||
-      request?.signature_request_id !== args.requestId ||
-      request.metadata?.referenceCode !== document.referenceCode ||
-      !Array.isArray(request.signatures) ||
-      request.signatures.length !== 1 ||
-      request.signatures[0].signer_email_address?.toLowerCase() !==
-        client.email.toLowerCase()
-    )
-      throw new Error(
-        "Provider request does not match the document and signer",
-      );
-    await ctx.runMutation(internal.legalDocuments.recordSignatureRequest, {
-      documentId: args.documentId,
-      requestId: args.requestId,
-      actorId: userId,
-      testMode: Boolean(request.test_mode),
-    });
-    if (request.is_complete)
-      await ctx.runMutation(internal.legalDocuments.updateDocumentStatus, {
-        referenceCode: document.referenceCode,
-        status: "SIGNED",
-        actorRole: "SYSTEM",
-      });
-  },
-});
 export const dispatchBookingSignature = internalAction({
   args: { bookingId: v.id("bookings") },
   handler: async (ctx, args): Promise<{ requestId: string }> => {
@@ -626,94 +649,37 @@ export const dispatchBookingSignature = internalAction({
       internal.legalDocuments.getDocumentByBookingInternal,
       args,
     );
-    if (!doc) throw new Error("Deed not found");
+    if (!doc) throw new ConvexError("Deed not found");
     return ctx.runAction(internal.legalDocuments.dispatchSignature, {
       documentId: doc._id,
     });
   },
 });
+export const prepareTypedConsent = internalMutation({
+  args: { documentId: v.id("legalDocuments") },
+  handler: async (ctx, { documentId }) => {
+    const document = await ctx.db.get(documentId);
+    if (!document) throw new ConvexError("Document not found");
+    if (!["DRAFT", "PENDING_SIGNATURE"].includes(document.status)) return;
+    await ctx.db.patch(documentId, {
+      status: "PENDING_SIGNATURE",
+      signatureMethod: "TYPED_CONSENT",
+      signatureDispatchState: "SENT",
+      updatedAt: Date.now(),
+    });
+    await ctx.db.insert("documentAuditLog", {
+      documentId,
+      action: "CONSENT_REQUESTED",
+      actorRole: "SYSTEM",
+      createdAt: Date.now(),
+    });
+  },
+});
 export const dispatchSignature = internalAction({
   args: { documentId: v.id("legalDocuments") },
-  handler: async (ctx, { documentId }): Promise<{ requestId: string }> => {
-    const apiKey = process.env.DROPBOX_SIGN_API_KEY;
-    if (!apiKey) throw new Error("Dropbox Sign is not configured");
-    const { document, client, pdfUrl } = await ctx.runQuery(
-      internal.legalDocuments.getDocumentForSignature,
-      { documentId },
-    );
-    if (!pdfUrl) throw new Error("Document PDF is unavailable");
-    if (
-      document.externalSignatureId &&
-      ["SIGNED", "VERIFIED"].includes(document.status)
-    )
-      return { requestId: document.externalSignatureId };
-    if (!["DRAFT", "PENDING_SIGNATURE"].includes(document.status))
-      throw new Error("Document is not eligible for signature");
-    if (document.externalSignatureId)
-      return { requestId: document.externalSignatureId };
-    await ctx.runMutation(internal.legalDocuments.claimSignatureDispatch, {
-      documentId,
-    });
-    try {
-      const pdfResponse = await fetch(pdfUrl, {
-        signal: AbortSignal.timeout(20000),
-      });
-      if (!pdfResponse.ok) throw new Error("Could not read document PDF");
-      const form = new FormData();
-      form.append(
-        "title",
-        `Aliko Diamond Key document ${document.referenceCode}`,
-      );
-      form.append("subject", "Document ready for your signature");
-      form.append(
-        "message",
-        "Please review and sign your Aliko Diamond Key document.",
-      );
-      form.append("signers[0][email_address]", client.email);
-      form.append("signers[0][name]", client.name);
-      form.append("metadata[referenceCode]", document.referenceCode);
-      form.append(
-        "test_mode",
-        process.env.DROPBOX_SIGN_TEST_MODE === "true" ? "1" : "0",
-      );
-      form.append(
-        "files[0]",
-        await pdfResponse.blob(),
-        `${document.referenceCode}.pdf`,
-      );
-      const auth = btoa(`${apiKey}:`);
-      const response = await fetch(
-        "https://api.hellosign.com/v3/signature_request/send",
-        {
-          signal: AbortSignal.timeout(20000),
-          method: "POST",
-          headers: { Authorization: `Basic ${auth}` },
-          body: form,
-        },
-      );
-      const body = (await response.json()) as {
-        signature_request?: { signature_request_id?: string };
-        error?: { error_msg?: string };
-      };
-      const requestId = body.signature_request?.signature_request_id;
-      if (!response.ok || !requestId)
-        throw new Error(
-          body.error?.error_msg ??
-            "Dropbox Sign rejected the signature request",
-        );
-      await ctx.runMutation(internal.legalDocuments.recordSignatureRequest, {
-        documentId,
-        requestId,
-        testMode: process.env.DROPBOX_SIGN_TEST_MODE === "true",
-      });
-      return { requestId };
-    } catch (error) {
-      await ctx.runMutation(
-        internal.legalDocuments.signatureDispatchUncertain,
-        { documentId },
-      );
-      throw error;
-    }
+  handler: async (ctx, args): Promise<{ requestId: string }> => {
+    await ctx.runMutation(internal.legalDocuments.prepareTypedConsent, args);
+    return { requestId: `LOCAL-CONSENT:${args.documentId}` };
   },
 });
 
@@ -726,24 +692,30 @@ export const reviewDocument = auditedMutation("legalDocuments:reviewDocument")({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Unauthorized");
+    if (!userId) throw new ConvexError("Unauthorized");
     const user = await ctx.db.get(userId as Id<"users">);
     await requireAdmin(ctx, 5 * 60000);
     const document = await ctx.db.get(args.documentId);
-    if (!document) throw new Error("Document not found");
+    if (!document) throw new ConvexError("Document not found");
     if (
       args.decision === "VERIFIED" &&
       (!["SIGNED", "VERIFIED"].includes(document.status) ||
         !document.signedAt ||
-        !document.externalSignatureId)
+        !(
+          document.externalSignatureId ||
+          (document.typedConsentBy === document.clientId &&
+            document.typedConsentAt &&
+            document.typedConsentName &&
+            document.typedConsentPdfStorageId === document.pdfStorageId)
+        ))
     )
-      throw new Error(
-        "Provider signature must complete before legal verification",
+      throw new ConvexError(
+        "Client consent must be recorded before legal verification",
       );
     if (args.decision === "REJECTED" && document.bookingId) {
       const booking = await ctx.db.get(document.bookingId);
       if (booking?.allocatedAt)
-        throw new Error(
+        throw new ConvexError(
           "Allocated title requires a separate legal reversal procedure",
         );
       if (booking?.fulfillmentWorkflowId)
@@ -751,6 +723,19 @@ export const reviewDocument = auditedMutation("legalDocuments:reviewDocument")({
           workflowId: booking.fulfillmentWorkflowId as WorkflowId,
           name: "signature",
           value: { documentId: document._id, status: "REJECTED" },
+        });
+    }
+    if (
+      args.decision === "VERIFIED" &&
+      document.signatureMethod === "TYPED_CONSENT" &&
+      document.bookingId
+    ) {
+      const booking = await ctx.db.get(document.bookingId);
+      if (booking?.fulfillmentWorkflowId)
+        await workflow.sendEvent(ctx, {
+          workflowId: booking.fulfillmentWorkflowId as WorkflowId,
+          name: "signature",
+          value: { documentId: document._id, status: "SIGNED" },
         });
     }
     const now = Date.now();

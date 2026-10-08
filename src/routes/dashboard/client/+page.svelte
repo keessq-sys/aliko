@@ -53,7 +53,6 @@
 
   // ── Profile ───────────────────────────────────────────────────────────
   const myProfile = useQuery(api.users.getMyProfile, {});
-  const myKyc = useQuery(api.kyc.getMyVerifications, {});
 
   let profileName = "";
   let profilePhone = "";
@@ -108,46 +107,6 @@
   let profileError = "";
   let kycStarting = false;
   let kycMessage = "";
-
-  async function startKyc() {
-    if (!$myProfile) return;
-    kycStarting = true;
-    kycMessage = "";
-    try {
-      await runMutation(api.kyc.acceptKycConsent, { version: "2026-10-03" });
-      const session = await runAction(api.kyc.startQoreIdWorkflow, {
-        type: "NIN",
-      });
-      const { default: QoreID } = await import("@qore-id/web-sdk");
-      const names = ($myProfile.name || "ADK Customer").trim().split(/\s+/);
-      await QoreID.init();
-      QoreID.once("success", () => {
-        kycMessage =
-          "Verification submitted. Your status will update after QoreID confirms the result.";
-      });
-      QoreID.once("error", () => {
-        kycMessage =
-          "Verification could not be completed. Please try again or contact support.";
-      });
-      await QoreID.start({
-        token: session.sdkSessionToken,
-        customerReference: session.reference,
-        applicantData: {
-          firstname: names[0],
-          lastname: names.slice(1).join(" ") || names[0],
-          email: $myProfile.email,
-          phone: $myProfile.phone || undefined,
-        },
-      });
-    } catch (error) {
-      kycMessage =
-        error instanceof Error
-          ? error.message
-          : "Identity verification is unavailable.";
-    } finally {
-      kycStarting = false;
-    }
-  }
 
   async function saveProfile(e: Event) {
     e.preventDefault();
@@ -810,63 +769,7 @@
                 </form>
               </div>
 
-              <div
-                class="mt-6 rounded-xl border border-white/5 bg-white/[0.02] p-6 sm:p-8"
-              >
-                <div class="flex flex-wrap items-center justify-between gap-4">
-                  <div>
-                    <h2 class="text-lg font-semibold text-white">
-                      {$adkT("Identity verification")}
-                    </h2>
-                    <p class="mt-1 text-sm text-stone-400">
-                      {$adkT(
-                        "QoreID verifies your identity in its secure flow. ADK stores the result and reference. Your registration NIN is encrypted and accessible only to the super administrator for verification.",
-                      )}
-                    </p>
-                    {#if $myKyc?.[0]}
-                      <p
-                        class="mt-3 text-sm font-semibold {$myKyc[0].status ===
-                        'VERIFIED'
-                          ? 'text-emerald-400'
-                          : $myKyc[0].status === 'FAILED'
-                            ? 'text-rose-400'
-                            : 'text-amber-400'}"
-                      >
-                        {$adkT("Status:")}
-                        {$adkT($myKyc[0].status)}
-                      </p>
-                    {/if}
-                  </div>
-                  <button
-                    type="button"
-                    on:click={startKyc}
-                    disabled={kycStarting || $myKyc?.[0]?.status === "VERIFIED"}
-                    class="flex min-h-[44px] items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
-                  >
-                    {#if kycStarting}<Loader2
-                        class="h-4 w-4 animate-spin"
-                      />{/if}
-                    {$adkT(
-                      $myKyc?.[0]?.status === "VERIFIED"
-                        ? "Identity verified"
-                        : "Start verification",
-                    )}
-                  </button>
-                </div>
-                <p class="mt-3 text-xs text-stone-500">
-                  {$adkT("By continuing, you accept the")}
-                  <a
-                    href="/legal/kyc-consent"
-                    class="text-emerald-400 hover:underline"
-                    >{$adkT("KYC consent notice")}</a
-                  >.
-                </p>
-                {#if kycMessage}<p
-                    class="mt-3 rounded-lg border border-white/10 px-4 py-3 text-sm text-stone-300"
-                  >
-                    {$adkT(kycMessage)}
-                  </p>{/if}
-              </div>
+              <IdentityStatus />
 
               <div class="mt-6 flex justify-center">
                 <a

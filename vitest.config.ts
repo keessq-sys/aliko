@@ -5,6 +5,7 @@ export default defineConfig({
     alias: { $lib: fileURLToPath(new URL("./src/lib", import.meta.url)) },
   },
   test: {
+    maxWorkers: 2,
     include: ["tests/backend/**/*.test.ts"],
     environment: "edge-runtime",
     server: {

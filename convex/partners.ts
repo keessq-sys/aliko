@@ -1,8 +1,8 @@
 import { auditedMutation } from "./lib/auditedMutation";
-import { v } from "convex/values";
+import { v, ConvexError } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { requireAdmin, requireUser, requireVerifiedNin } from "./lib/access";
+import { requireAdmin, requireUser, requireSubmittedNin } from "./lib/access";
 import { rateLimiter, contactRateKey } from "./lib/rateLimits";
 
 import { assertNigeriaLocation, normalizeState } from "./lib/nigeriaLocations";
@@ -67,17 +67,17 @@ export const submitAgentApplication = auditedMutation(
     const applicant = await requireUser(ctx);
     const userId = applicant._id;
     if (args.email.trim().toLowerCase() !== applicant.email.toLowerCase())
-      throw new Error("Use your account email");
+      throw new ConvexError("Use your account email");
     const identity = await ctx.db
       .query("identities")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .unique();
     if (!identity)
-      throw new Error(
+      throw new ConvexError(
         "Submit your NIN and consent before professional enrolment.",
       );
     if (!args.operatingState || !args.operatingLga)
-      throw new Error("Select your operating state and LGA.");
+      throw new ConvexError("Select your operating state and LGA.");
     assertNigeriaLocation(args.operatingState, args.operatingLga);
     for (const state of args.statesOfOperation ?? [])
       assertNigeriaLocation(state);
@@ -125,17 +125,17 @@ export const submitManagerApplication = auditedMutation(
     const applicant = await requireUser(ctx);
     const userId = applicant._id;
     if (args.email.trim().toLowerCase() !== applicant.email.toLowerCase())
-      throw new Error("Use your account email");
+      throw new ConvexError("Use your account email");
     const identity = await ctx.db
       .query("identities")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .unique();
     if (!identity)
-      throw new Error(
+      throw new ConvexError(
         "Submit your NIN and consent before professional enrolment.",
       );
     if (!args.operatingState || !args.operatingLga)
-      throw new Error("Select your operating state and LGA.");
+      throw new ConvexError("Select your operating state and LGA.");
     assertNigeriaLocation(args.operatingState, args.operatingLga);
     for (const state of args.statesOfOperation ?? [])
       assertNigeriaLocation(state);
@@ -222,12 +222,14 @@ export const reviewAgentApplication = auditedMutation(
     const reviewerId = await requireAdmin(ctx);
     const application = await ctx.db.get(id);
     if (!application?.userId)
-      throw new Error("Link the application to an authenticated account first");
+      throw new ConvexError(
+        "Link the application to an authenticated account first",
+      );
     const account = await ctx.db.get(application.userId);
     if (!account || account.role === "ADMIN")
-      throw new Error("Invalid applicant account");
+      throw new ConvexError("Invalid applicant account");
     if (status === "APPROVED")
-      await requireVerifiedNin(ctx, application.userId);
+      await requireSubmittedNin(ctx, application.userId);
     await ctx.db.patch(application.userId, {
       role: status === "APPROVED" ? "AGENT" : "CLIENT",
     });
@@ -284,12 +286,14 @@ export const reviewManagerApplication = auditedMutation(
     const reviewerId = await requireAdmin(ctx);
     const application = await ctx.db.get(id);
     if (!application?.userId)
-      throw new Error("Link the application to an authenticated account first");
+      throw new ConvexError(
+        "Link the application to an authenticated account first",
+      );
     const account = await ctx.db.get(application.userId);
     if (!account || account.role === "ADMIN")
-      throw new Error("Invalid applicant account");
+      throw new ConvexError("Invalid applicant account");
     if (status === "APPROVED")
-      await requireVerifiedNin(ctx, application.userId);
+      await requireSubmittedNin(ctx, application.userId);
     await ctx.db.patch(application.userId, {
       role: status === "APPROVED" ? "ESTATE_MANAGER" : "CLIENT",
     });

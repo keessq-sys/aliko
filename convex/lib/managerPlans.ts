@@ -80,8 +80,9 @@ export async function managerEntitlement(ctx: any, user: any) {
     .withIndex("by_user", (q: any) => q.eq("userId", user._id))
     .unique();
   if (
-    identity?.status !== "VERIFIED" ||
-    !user.kycVerified ||
+    !identity ||
+    identity.status === "FAILED" ||
+    !identity.ninCipher ||
     !user.operatingState ||
     !user.operatingLga ||
     !user.whatsapp ||

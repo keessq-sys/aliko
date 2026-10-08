@@ -31,8 +31,8 @@ export const getIntegrationStatus = query({
         isSet("WHATSAPP_PHONE_NUMBER_ID") &&
         isSet("WHATSAPP_VERIFY_TOKEN") &&
         isSet("WHATSAPP_APP_SECRET"),
-      dropboxSign: isSet("DROPBOX_SIGN_API_KEY"),
-      qoreId: isSet("QOREID_CLIENT_ID"),
+      typedConsent: true,
+      ninSubmission: true,
       resend:
         (isSet("RESEND_API_KEY") || isSet("AUTH_RESEND_KEY")) &&
         isSet("RESEND_FROM_EMAIL"),
@@ -78,7 +78,11 @@ export const health = query({
           process.env.LIVE_TRANSACTIONS_ENABLED === "true",
       },
       storage: {
-        malwareScannerConfigured: Boolean(process.env.MALWARE_SCANNER_API_KEY),
+        imageExternalScanning: false,
+        imageUploadMode: "DIRECT_WITH_LOCAL_VALIDATION",
+        privateDocumentScannerConfigured: Boolean(
+          process.env.MALWARE_SCANNER_API_KEY,
+        ),
       },
       checks,
     };

@@ -5,18 +5,53 @@
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
 
-  import { useQuery } from "$lib/convex/queries";
+  import { useQuery, runMutation } from "$lib/convex/queries";
   import { api } from "$lib/convex/_generated/api";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
-  import { Shield, FileText, CheckCircle, Clock, AlertCircle, Download, Search } from "lucide-svelte";
+  import {
+    Shield,
+    FileText,
+    CheckCircle,
+    Clock,
+    AlertCircle,
+    Download,
+    Search,
+  } from "lucide-svelte";
   import { formatDateTime } from "$lib/utils/format";
 
   let refInput = ($page.url.searchParams.get("ref") ?? "").toUpperCase();
+  let fullName = "",
+    consent = false,
+    consentBusy = false,
+    consentError = "";
+  async function submitConsent(documentId: any) {
+    consentBusy = true;
+    consentError = "";
+    try {
+      await runMutation(api.legalDocuments.submitTypedConsent, {
+        documentId,
+        fullName,
+        consent,
+      });
+      fullName = "";
+      consent = false;
+    } catch (error) {
+      consentError =
+        error instanceof Error
+          ? error.message
+          : "Consent could not be recorded.";
+    } finally {
+      consentBusy = false;
+    }
+  }
   let submitted = !!refInput;
   let currentRef = refInput;
 
-  $: docQuery = useQuery(submitted ? api.legalDocuments.getDocumentByReference : null, { referenceCode: currentRef });
+  $: docQuery = useQuery(
+    submitted ? api.legalDocuments.getDocumentByReference : null,
+    { referenceCode: currentRef },
+  );
 
   function search() {
     if (!refInput.trim()) return;
@@ -25,22 +60,55 @@
     goto(`/legal/track?ref=${currentRef}`, { replaceState: true });
   }
 
-  const STATUS_MAP: Record<string, { label: string; color: string; icon: typeof CheckCircle; note: string }> = {
-    DRAFT:             { label: "Under Review",       color: "#94a3b8", icon: Clock,         note: "Our legal team is reviewing and preparing your document." },
-    PENDING_SIGNATURE: { label: "Awaiting Signature",  color: "#f59e0b", icon: AlertCircle,   note: "Your document has been sent for e-signature. Please check your email." },
-    SIGNED:            { label: "Signed",              color: "#60a5fa", icon: CheckCircle,   note: "All parties have signed. Awaiting admin verification." },
-    VERIFIED:          { label: "Verified & Complete", color: "#34d399", icon: CheckCircle,   note: "Your document is fully verified and legally binding." },
-    REJECTED:          { label: "Rejected",            color: "#f87171", icon: AlertCircle,   note: "There was an issue. Contact alikodiamondkey@gmail.com." },
-    EXPIRED:           { label: "Expired",             color: "#94a3b8", icon: AlertCircle,   note: "This document has expired. Please contact us to renew." },
+  const STATUS_MAP: Record<
+    string,
+    { label: string; color: string; icon: typeof CheckCircle; note: string }
+  > = {
+    DRAFT: {
+      label: "Under Review",
+      color: "#94a3b8",
+      icon: Clock,
+      note: "Our legal team is reviewing and preparing your document.",
+    },
+    PENDING_SIGNATURE: {
+      label: "Awaiting Signature",
+      color: "#f59e0b",
+      icon: AlertCircle,
+      note: "Review the document and type your full name below to record your consent.",
+    },
+    SIGNED: {
+      label: "Signed",
+      color: "#60a5fa",
+      icon: CheckCircle,
+      note: "All parties have signed. Awaiting admin verification.",
+    },
+    VERIFIED: {
+      label: "Verified & Complete",
+      color: "#34d399",
+      icon: CheckCircle,
+      note: "The administrator has completed the document review.",
+    },
+    REJECTED: {
+      label: "Rejected",
+      color: "#f87171",
+      icon: AlertCircle,
+      note: "There was an issue. Contact alikodiamondkey@gmail.com.",
+    },
+    EXPIRED: {
+      label: "Expired",
+      color: "#94a3b8",
+      icon: AlertCircle,
+      note: "This document has expired. Please contact us to renew.",
+    },
   };
 
   const ACTION_LABELS: Record<string, string> = {
-    CREATED:            "Document created",
-    DRAFT:              "Under review",
-    PENDING_SIGNATURE:  "Sent for e-signature",
-    SIGNED:             "Signed by all parties",
-    VERIFIED:           "Verified by ADK admin",
-    REJECTED:           "Rejected",
+    CREATED: "Document created",
+    DRAFT: "Under review",
+    PENDING_SIGNATURE: "Sent for e-signature",
+    SIGNED: "Signed by all parties",
+    VERIFIED: "Verified by ADK admin",
+    REJECTED: "Rejected",
   };
 </script>
 
@@ -50,11 +118,23 @@
 
 <div style="background: var(--c-obsidian); min-height: 100vh">
   <!-- Header -->
-  <div class="relative py-16 overflow-hidden" style="background: linear-gradient(180deg, rgba(6,78,59,0.18) 0%, transparent 100%)">
+  <div
+    class="relative py-16 overflow-hidden"
+    style="background: linear-gradient(180deg, rgba(6,78,59,0.18) 0%, transparent 100%)"
+  >
     <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center">
       <Shield class="w-12 h-12 text-emerald-500 mx-auto mb-4" />
-      <h1 class="font-serif text-display-md text-white mb-3" style="letter-spacing:-0.02em">{$adkT("Document Tracker")}</h1>
-      <p class="text-stone-400">{$adkT("Enter your reference code to view the status and audit trail of your legal document.")}</p>
+      <h1
+        class="font-serif text-display-md text-white mb-3"
+        style="letter-spacing:-0.02em"
+      >
+        {$adkT("Document Tracker")}
+      </h1>
+      <p class="text-stone-400">
+        {$adkT(
+          "Enter your reference code to view the status and audit trail of your legal document.",
+        )}
+      </p>
     </div>
   </div>
 
@@ -63,100 +143,222 @@
     <div class="glass rounded-2xl p-4 mb-8">
       <div class="flex gap-3">
         <div class="flex-1 relative">
-          <Search class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
-          <input dir="auto"
+          <Search
+            class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500"
+          />
+          <input
+            dir="auto"
             type="text"
             placeholder={$adkT("e.g. DOA-LX9F2K")}
             bind:value={refInput}
-            on:keydown={e => e.key === "Enter" && search()}
+            on:keydown={(e) => e.key === "Enter" && search()}
             class="input-luxury pl-10 font-mono tracking-widest uppercase"
           />
         </div>
-        <button on:click={search}
-                class="px-6 py-2.5 rounded-xl font-bold text-sm text-white transition-all hover:scale-105 active:scale-95"
-                style="background: linear-gradient(135deg, #059669, #065f46)"> {$adkT("Track")} </button>
+        <button
+          on:click={search}
+          class="px-6 py-2.5 rounded-xl font-bold text-sm text-white transition-all hover:scale-105 active:scale-95"
+          style="background: linear-gradient(135deg, #059669, #065f46)"
+        >
+          {$adkT("Track")}
+        </button>
       </div>
     </div>
 
     {#if submitted}
       {#if $docQuery === undefined}
         <div class="space-y-3">
-          {#each Array(4) as _}<div class="skeleton h-14 rounded-2xl"></div>{/each}
+          {#each Array(4) as _}<div
+              class="skeleton h-14 rounded-2xl"
+            ></div>{/each}
         </div>
-
       {:else if $docQuery === null}
         <div class="glass rounded-2xl p-8 text-center">
           <AlertCircle class="w-10 h-10 text-rose-400 mx-auto mb-3" />
-          <p class="text-white font-semibold mb-1">{$adkT("Reference not found")}</p>
-          <p class="text-stone-500 text-sm">{$adkT("Check the reference code and try again, or contact")} <a href="mailto:alikodiamondkey@gmail.com" class="text-emerald-400 underline">{$adkT("alikodiamondkey@gmail.com")}</a>.</p>
+          <p class="text-white font-semibold mb-1">
+            {$adkT("Reference not found")}
+          </p>
+          <p class="text-stone-500 text-sm">
+            {$adkT("Check the reference code and try again, or contact")}
+            <a
+              href="mailto:alikodiamondkey@gmail.com"
+              class="text-emerald-400 underline"
+              >{$adkT("alikodiamondkey@gmail.com")}</a
+            >.
+          </p>
         </div>
-
       {:else}
         {@const doc = $docQuery}
         {@const statusInfo = STATUS_MAP[doc.status]}
 
+        {#if doc.status === "PENDING_SIGNATURE"}
+          <form
+            on:submit|preventDefault={() => submitConsent(doc._id)}
+            class="theme-surface theme-text mb-6 space-y-4 rounded-xl border p-5"
+          >
+            <h2 class="text-xl font-semibold">{$adkT("Document consent")}</h2>
+            <p>
+              {$adkT(
+                "Read the document before consenting. This records your agreement and will be reviewed by the administrator.",
+              )}
+            </p>
+            <label class="block"
+              >{$adkT("Full name as shown in your profile")}<input
+                dir="auto"
+                required
+                maxlength="160"
+                bind:value={fullName}
+                class="theme-input mt-2 block w-full rounded-lg border p-3"
+              /></label
+            >
+            <label class="flex gap-3"
+              ><input type="checkbox" required bind:checked={consent} /><span
+                >{$adkT(
+                  "I have read this document and agree to record my consent using my typed full name.",
+                )}</span
+              ></label
+            >
+            {#if consentError}<p
+                role="alert"
+                class="text-rose-600 dark:text-rose-300"
+              >
+                {$adkT(consentError)}
+              </p>{/if}
+            <button class="btn-primary" disabled={consentBusy}
+              >{$adkT(consentBusy ? "Saving…" : "Record consent")}</button
+            >
+          </form>
+        {:else if doc.typedConsentAt}<p class="theme-text mb-6">
+            {$adkT("Consent recorded by")} <bdi>{doc.typedConsentName}</bdi> · {formatDateTime(
+              doc.typedConsentAt,
+            )}
+          </p>{/if}
+
         <!-- Status card -->
-        <div class="rounded-2xl p-6 mb-6" style="background: #0A1628; border: 1px solid rgba(255,255,255,0.06)">
+        <div
+          class="rounded-2xl p-6 mb-6"
+          style="background: #0A1628; border: 1px solid rgba(255,255,255,0.06)"
+        >
           <div class="flex items-start justify-between mb-6">
             <div>
-              <span class="text-xs font-bold uppercase tracking-widest text-stone-600">{$adkT(doc.type.replace(/_/g, " "))}</span>
-              <h2 class="text-white font-bold text-xl mt-1 font-mono">{$adkT(doc.referenceCode)}</h2>
+              <span
+                class="text-xs font-bold uppercase tracking-widest text-stone-600"
+                >{$adkT(doc.type.replace(/_/g, " "))}</span
+              >
+              <h2 class="text-white font-bold text-xl mt-1 font-mono">
+                {$adkT(doc.referenceCode)}
+              </h2>
             </div>
             {#if doc.pdfUrl}
-              <a href={doc.pdfUrl} target="_blank" download
-                 class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white hover:opacity-80 transition-opacity"
-                 style="background: rgba(5,150,105,0.15); border: 1px solid rgba(5,150,105,0.25)">
-                <Download class="w-4 h-4" /> {$adkT("Download PDF")} </a>
+              <a
+                href={doc.pdfUrl}
+                target="_blank"
+                download
+                class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white hover:opacity-80 transition-opacity"
+                style="background: rgba(5,150,105,0.15); border: 1px solid rgba(5,150,105,0.25)"
+              >
+                <Download class="w-4 h-4" />
+                {$adkT("Download PDF")}
+              </a>
             {/if}
           </div>
 
           <!-- Status pill -->
-          <div class="flex items-center gap-3 p-4 rounded-xl mb-4" style="background: rgba(255,255,255,0.03)">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: {statusInfo.color}18">
-              <svelte:component this={statusInfo.icon} class="w-5 h-5" style="color: {statusInfo.color}" />
+          <div
+            class="flex items-center gap-3 p-4 rounded-xl mb-4"
+            style="background: rgba(255,255,255,0.03)"
+          >
+            <div
+              class="w-10 h-10 rounded-xl flex items-center justify-center"
+              style="background: {statusInfo.color}18"
+            >
+              <svelte:component
+                this={statusInfo.icon}
+                class="w-5 h-5"
+                style="color: {statusInfo.color}"
+              />
             </div>
             <div>
-              <p class="font-bold" style="color: {statusInfo.color}">{$adkT(statusInfo.label)}</p>
-              <p class="text-stone-500 text-xs mt-0.5">{$adkT(statusInfo.note)}</p>
+              <p class="font-bold" style="color: {statusInfo.color}">
+                {$adkT(statusInfo.label)}
+              </p>
+              <p class="text-stone-500 text-xs mt-0.5">
+                {$adkT(statusInfo.note)}
+              </p>
             </div>
           </div>
 
           <!-- Property info -->
           {#if doc.plot}
             <div class="grid grid-cols-2 gap-3">
-              <div class="p-3 rounded-xl" style="background: rgba(255,255,255,0.03)">
+              <div
+                class="p-3 rounded-xl"
+                style="background: rgba(255,255,255,0.03)"
+              >
                 <p class="text-stone-600 text-xs">{$adkT("Plot")}</p>
-                <p class="text-white text-sm font-medium mt-0.5">{$adkT("Beacon")} {$adkT(doc.plot.beaconNumber)}</p>
+                <p class="text-white text-sm font-medium mt-0.5">
+                  {$adkT("Beacon")}
+                  {$adkT(doc.plot.beaconNumber)}
+                </p>
               </div>
-              <div class="p-3 rounded-xl" style="background: rgba(255,255,255,0.03)">
+              <div
+                class="p-3 rounded-xl"
+                style="background: rgba(255,255,255,0.03)"
+              >
                 <p class="text-stone-600 text-xs">{$adkT("Size")}</p>
-                <p class="text-white text-sm font-medium mt-0.5">{$adkT(doc.plot.sizeSqm)} {$adkT("sqm")}</p>
+                <p class="text-white text-sm font-medium mt-0.5">
+                  {$adkT(doc.plot.sizeSqm)}
+                  {$adkT("sqm")}
+                </p>
               </div>
             </div>
           {/if}
         </div>
 
         <!-- Audit trail -->
-        <div class="rounded-2xl overflow-hidden" style="background: #0A1628; border: 1px solid rgba(255,255,255,0.06)">
-          <div class="px-5 py-4" style="border-bottom: 1px solid rgba(255,255,255,0.06)">
-            <h3 class="font-semibold text-white text-sm">{$adkT("Document Timeline")}</h3>
+        <div
+          class="rounded-2xl overflow-hidden"
+          style="background: #0A1628; border: 1px solid rgba(255,255,255,0.06)"
+        >
+          <div
+            class="px-5 py-4"
+            style="border-bottom: 1px solid rgba(255,255,255,0.06)"
+          >
+            <h3 class="font-semibold text-white text-sm">
+              {$adkT("Document Timeline")}
+            </h3>
           </div>
           <div class="p-5">
             <div class="relative">
-              <div class="absolute left-3.5 top-0 bottom-0 w-px" style="background: rgba(255,255,255,0.06)"></div>
+              <div
+                class="absolute left-3.5 top-0 bottom-0 w-px"
+                style="background: rgba(255,255,255,0.06)"
+              ></div>
               <div class="space-y-4">
                 {#each doc.auditLog as entry}
                   <div class="flex items-start gap-4 relative">
-                    <div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 relative z-10"
-                         style="background: #0A1628; border: 2px solid rgba(5,150,105,0.4)">
+                    <div
+                      class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 relative z-10"
+                      style="background: #0A1628; border: 2px solid rgba(5,150,105,0.4)"
+                    >
                       <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
                     </div>
                     <div class="flex-1 pb-1">
-                      <p class="text-white text-sm font-medium">{$adkT(ACTION_LABELS[entry.action] ?? entry.action)}</p>
+                      <p class="text-white text-sm font-medium">
+                        {$adkT(ACTION_LABELS[entry.action] ?? entry.action)}
+                      </p>
                       <div class="flex items-center gap-3 mt-0.5">
-                        <span class="text-stone-600 text-xs">{$adkT(formatDateTime(entry.createdAt, $adkLocale))}</span>
+                        <span class="text-stone-600 text-xs"
+                          >{$adkT(
+                            formatDateTime(entry.createdAt, $adkLocale),
+                          )}</span
+                        >
                         {#if entry.actorRole}
-                          <span class="text-xs font-mono px-1.5 py-0.5 rounded" style="background:rgba(255,255,255,0.04);color:#64748b">{$adkT(entry.actorRole)}</span>
+                          <span
+                            class="text-xs font-mono px-1.5 py-0.5 rounded"
+                            style="background:rgba(255,255,255,0.04);color:#64748b"
+                            >{$adkT(entry.actorRole)}</span
+                          >
                         {/if}
                       </div>
                     </div>

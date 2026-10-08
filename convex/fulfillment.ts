@@ -1,6 +1,6 @@
 import { auditedMutation } from "./lib/auditedMutation";
 import type { WorkflowId } from "@convex-dev/workflow";
-import { requireAdmin } from "./lib/access";
+import { requireAdmin, requireSubmittedNin } from "./lib/access";
 import { WorkflowManager } from "@convex-dev/workflow";
 import { v } from "convex/values";
 import { components, internal } from "./_generated/api";
@@ -14,7 +14,8 @@ export const deedContext = internalQuery({
       throw new Error(
         "Client must save a complete legal address before deed generation",
       );
-    if (!client.kycVerified || client.accountStatus === "SUSPENDED")
+    await requireSubmittedNin(ctx, client._id);
+    if (client.accountStatus === "SUSPENDED")
       throw new Error("Current client identity verification is required");
     return { address: client.address };
   },
@@ -65,7 +66,10 @@ export const paymentFulfillment = workflow
         { bookingId: args.bookingId },
       );
       const result =
-        signed && ["SIGNED", "VERIFIED"].includes(signed.status)
+        signed &&
+        (signed.signatureMethod === "TYPED_CONSENT"
+          ? signed.status === "VERIFIED"
+          : ["SIGNED", "VERIFIED"].includes(signed.status))
           ? { documentId: signed._id, status: "SIGNED" }
           : await step.awaitEvent({
               name: "signature",
@@ -103,16 +107,25 @@ export const allocateSignedBooking = internalMutation({
       document.clientId !== booking.clientId ||
       !["SIGNED", "VERIFIED"].includes(document.status) ||
       (document.status === "VERIFIED" && !document.signedAt) ||
-      !document.externalSignatureId ||
+      !(
+        document.externalSignatureId ||
+        (document.signatureMethod === "TYPED_CONSENT" &&
+          document.status === "VERIFIED" &&
+          document.typedConsentBy === document.clientId &&
+          document.typedConsentAt)
+      ) ||
       (document.signatureTestMode &&
         process.env.DEPLOYMENT_ENVIRONMENT !== "staging") ||
       booking.paymentStatus !== "SUCCESS" ||
       booking.paidAmount < booking.totalAmount
     )
-      throw new Error("Verified payment and provider-signed deed are required");
+      throw new Error(
+        "Settled payment and administrator-reviewed consent are required",
+      );
     const client = await ctx.db.get(booking.clientId);
-    if (!client?.kycVerified || client.accountStatus === "SUSPENDED")
+    if (!client || client.accountStatus === "SUSPENDED")
       throw new Error("Current identity verification is required");
+    await requireSubmittedNin(ctx, client._id);
     if (booking.allocatedAt) return;
     const pendingRefund = await ctx.db
       .query("paymentRefunds")
@@ -213,7 +226,9 @@ export const recordFailure = internalMutation({
       });
   },
 });
-export const restartFulfillment = auditedMutation("fulfillment:restartFulfillment")({
+export const restartFulfillment = auditedMutation(
+  "fulfillment:restartFulfillment",
+)({
   args: { bookingId: v.id("bookings"), reason: v.string() },
   handler: async (ctx, args) => {
     const actorId = await requireAdmin(ctx, 5 * 60000),

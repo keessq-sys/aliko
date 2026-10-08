@@ -62,7 +62,6 @@
     "@convex-dev/rate-limiter": "^0.4.0",
     "@convex-dev/workflow": "^0.4.8",
     "@convex-dev/workpool": "^0.4.12",
-    "@qore-id/web-sdk": "^2.0.3",
     "@sentry/sveltekit": "^11.1.0",
     "@types/qrcode": "^1.5.5",
     "@types/three": "^0.166.0",

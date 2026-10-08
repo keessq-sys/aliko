@@ -1,10 +1,8 @@
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import { ConvexHttpClient } from "convex/browser";
 import { makeFunctionReference } from "convex/server";
 import { env } from "$env/dynamic/public";
 import { authClient } from "$lib/server/auth-session";
-import { scanFile, decodeImage } from "../../../../../convex/lib/mediaSecurity";
 import { sanitizeImage } from "$lib/server/imageSanitizer";
 import { api } from "$lib/convex/_generated/api";
 
@@ -110,67 +108,17 @@ export const POST: RequestHandler = async ({
       { status: 400 },
     );
   }
-  const extension = "webp";
-  const scannerUrl = platform?.env?.MALWARE_SCANNER_URL,
-    scannerKey = platform?.env?.MALWARE_SCANNER_API_KEY;
-  if (
-    (!scannerUrl &&
-      platform?.env?.MALWARE_SCANNER_PROVIDER !== "CLOUDMERSIVE") ||
-    !scannerKey
-  )
-    return json(
-      {
-        error:
-          "Secure image scanning is not configured. Please contact the administrator.",
-      },
-      { status: 503 },
-    );
-  try {
-    const originalScan = await scanFile(
-      new Blob([new Uint8Array(data).buffer], { type: actualType }),
-      file.name,
-      {
-        provider: platform?.env?.MALWARE_SCANNER_PROVIDER,
-        url: scannerUrl,
-        key: scannerKey,
-      },
-    );
-    if (!originalScan.clean)
-      return json(
-        { error: "This image did not pass the security scan." },
-        { status: 422 },
-      );
-    const decoded = await decodeImage(
-      new Blob([new Uint8Array(sanitized).buffer], { type: actualType }),
-      {
-        url: platform?.env?.MEDIA_PROCESSOR_URL,
-        key: platform?.env?.MEDIA_PROCESSOR_KEY,
-      },
-    );
-    sanitized = new Uint8Array(await decoded.arrayBuffer());
-    const result = await scanFile(decoded, file.name, {
-      provider: platform?.env?.MALWARE_SCANNER_PROVIDER,
-      url: scannerUrl,
-      key: scannerKey,
-    });
-    if (!result.clean)
-      return json(
-        { error: "This image did not pass the security scan." },
-        { status: 422 },
-      );
-  } catch {
-    return json(
-      {
-        error:
-          "Image scanning is temporarily unavailable. No image has been published.",
-      },
-      { status: 503 },
-    );
-  }
+  const extension =
+    {
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp",
+      "image/avif": "avif",
+    }[actualType] ?? "bin";
   const key = `${collection}/${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}.${extension}`;
   await bucket.put(key, sanitized.buffer as ArrayBuffer, {
     httpMetadata: {
-      contentType: "image/webp",
+      contentType: actualType,
       cacheControl: "private, no-store",
     },
     customMetadata: {
@@ -191,7 +139,7 @@ export const POST: RequestHandler = async ({
         key,
         collection,
         fileName: file.name.slice(0, 180),
-        mimeType: "image/webp",
+        mimeType: actualType,
         size: sanitized.byteLength,
         secret: platform?.env?.MEDIA_MAINTENANCE_SECRET,
       },

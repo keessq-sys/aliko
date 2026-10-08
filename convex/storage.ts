@@ -145,7 +145,7 @@ export const registerUpload = auditedMutation("storage:registerUpload")({
       await ctx.storage.delete(args.storageId);
       throw new Error("Forbidden for this upload purpose");
     }
-    const requiresScan = true;
+    const requiresScan = !actualMime.toLowerCase().startsWith("image/");
     const now = Date.now();
     const assetId = await ctx.db.insert("storedAssets", {
       storageId: args.storageId,
@@ -155,6 +155,9 @@ export const registerUpload = auditedMutation("storage:registerUpload")({
       mimeType: actualMime,
       size: metadata.size,
       status: requiresScan ? "PENDING_SCAN" : "ACTIVE",
+      securityVersion: requiresScan
+        ? undefined
+        : "2026-10-08-upload-metadata-v1",
       expiresAt:
         args.purpose === "SERVICE_ATTACHMENT"
           ? now + 365 * 24 * 60 * 60 * 1000
@@ -163,7 +166,10 @@ export const registerUpload = auditedMutation("storage:registerUpload")({
       updatedAt: now,
     });
     if (args.purpose === "AVATAR_IMAGE")
-      await ctx.db.patch(user._id, { avatarStorageId: args.storageId });
+      await ctx.db.patch(user._id, {
+        avatarStorageId: args.storageId,
+        avatarUrl: (await ctx.storage.getUrl(args.storageId)) ?? undefined,
+      });
     if (
       requiresScan &&
       (process.env.MALWARE_SCANNER_URL ||
@@ -226,6 +232,34 @@ export const completeAssetScan = internalMutation({
   },
 });
 
+export const releaseImageWithoutExternalScan = internalMutation({
+  args: { assetId: v.id("storedAssets") },
+  handler: async (ctx, args) => {
+    const asset = await ctx.db.get(args.assetId);
+    if (
+      !asset ||
+      asset.status !== "PENDING_SCAN" ||
+      !IMAGE_MIMES.has(asset.mimeType)
+    )
+      return;
+    await ctx.db.patch(asset._id, {
+      status: "ACTIVE",
+      securityVersion: "2026-10-08-upload-metadata-v1",
+      updatedAt: Date.now(),
+    });
+    await ctx.db.insert("adminAuditLog", {
+      actorId: asset.ownerId,
+      action: "IMAGE_RELEASED_WITHOUT_EXTERNAL_SCAN",
+      entityType: "storedAssets",
+      entityId: String(asset._id),
+      createdAt: Date.now(),
+    });
+    if (asset.purpose === "AVATAR_IMAGE")
+      await ctx.db.patch(asset.ownerId, {
+        avatarUrl: (await ctx.storage.getUrl(asset.storageId)) ?? undefined,
+      });
+  },
+});
 /** Provider-neutral scanner contract: multipart `file`; JSON `{ clean, threat? }`. */
 export const scanAsset = internalAction({
   args: { assetId: v.id("storedAssets") },
@@ -234,6 +268,12 @@ export const scanAsset = internalAction({
       assetId,
     });
     if (!value) return;
+    if (IMAGE_MIMES.has(value.asset.mimeType)) {
+      await ctx.runMutation(internal.storage.releaseImageWithoutExternalScan, {
+        assetId,
+      });
+      return;
+    }
     const endpoint = process.env.MALWARE_SCANNER_URL;
     const apiKey = process.env.MALWARE_SCANNER_API_KEY;
     if (

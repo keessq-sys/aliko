@@ -22,7 +22,9 @@ function setup() {
   return t;
 }
 const credentials = {
-  operatingState: "Lagos", operatingLga: "Ikeja", whatsapp: "+2348000000000",
+  operatingState: "Lagos",
+  operatingLga: "Ikeja",
+  whatsapp: "+2348000000000",
   nin: "12345678901",
   acceptKycConsent: true,
   email: "buyer@example.com",
@@ -377,5 +379,193 @@ describe("designated administrator and account isolation", () => {
       delete process.env.SUPER_ADMIN_EMAIL;
       delete process.env.SUPER_ADMIN_PASSWORD;
     }
+  });
+});
+
+describe("provider-independent onboarding and document consent", () => {
+  async function admin(t: ReturnType<typeof setup>) {
+    const id = await t.run((ctx) =>
+      ctx.db.insert("users", {
+        name: "Administrator",
+        email: process.env.SUPER_ADMIN_EMAIL ?? "admin@example.invalid",
+        role: "ADMIN",
+        isDiaspora: false,
+        kycVerified: false,
+        createdAt: Date.now(),
+      }),
+    );
+    const sessionId = await t.run((ctx) =>
+      ctx.db.insert("authSessions", {
+        userId: id,
+        expirationTime: Date.now() + 3600000,
+      }),
+    );
+    return t.withIdentity({ subject: `${id}|${sessionId}` });
+  }
+  it("stores signup and permits professional review with a submitted NIN without claiming verified identity", async () => {
+    const t = setup(),
+      result = await signup(t),
+      client = t.withIdentity({
+        subject: decodeJwt(result.tokens!.token).sub!,
+      }),
+      operator = await admin(t);
+    const agent = await client.mutation(api.partners.submitAgentApplication, {
+      fullName: "Test Buyer",
+      email: credentials.email,
+      phone: "08000000000",
+      operatingState: "Lagos",
+      operatingLga: "Ikeja",
+    });
+    await operator.mutation(api.partners.reviewAgentApplication, {
+      id: agent.id,
+      status: "APPROVED",
+    });
+    expect((await client.query(api.users.getMyProfile, {}))?.role).toBe(
+      "AGENT",
+    );
+    await operator.mutation(api.partners.reviewAgentApplication, {
+      id: agent.id,
+      status: "REJECTED",
+    });
+    expect((await client.query(api.users.getMyProfile, {}))?.role).toBe(
+      "CLIENT",
+    );
+    const manager = await client.mutation(
+      api.partners.submitManagerApplication,
+      {
+        companyName: "Test company",
+        contactName: "Test Buyer",
+        email: credentials.email,
+        phone: "08000000000",
+        operatingState: "Lagos",
+        operatingLga: "Ikeja",
+        statesOfOperation: ["Lagos"],
+        plan: "STARTER",
+      },
+    );
+    await operator.mutation(api.partners.reviewManagerApplication, {
+      id: manager.id,
+      status: "APPROVED",
+    });
+    const profile = await client.query(api.users.getMyProfile, {});
+    expect(profile?.role).toBe("ESTATE_MANAGER");
+    expect(profile?.kycVerified).toBe(false);
+    expect(await client.query(api.identity.status, {})).toMatchObject({
+      status: "PENDING",
+      formatValid: true,
+    });
+    await expect(
+      client.mutation(api.partners.reviewManagerApplication, {
+        id: manager.id,
+        status: "APPROVED",
+      }),
+    ).rejects.toThrow(/ADMIN/);
+    await operator.mutation(api.partners.reviewManagerApplication, {
+      id: manager.id,
+      status: "SUSPENDED",
+    });
+    expect((await client.query(api.users.getMyProfile, {}))?.role).toBe(
+      "CLIENT",
+    );
+  });
+  it("activates an owned image upload without configuring an external scanner", async () => {
+    const t = setup(),
+      operator = await admin(t);
+    const bytes = Uint8Array.from(
+      atob(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aFv8AAAAASUVORK5CYII=",
+      ),
+      (ch) => ch.charCodeAt(0),
+    );
+    const storageId = await t.run((ctx) =>
+      ctx.storage.store(new Blob([bytes], { type: "image/png" })),
+    );
+    const assetId = await operator.mutation(api.storage.registerUpload, {
+      storageId,
+      purpose: "PROPERTY_IMAGE",
+      fileName: "test.png",
+      mimeType: "image/png",
+      size: bytes.length,
+    });
+    expect(await t.run((ctx) => ctx.db.get(assetId))).toMatchObject({
+      status: "ACTIVE",
+      securityVersion: "2026-10-08-upload-metadata-v1",
+    });
+    expect(
+      await operator.query(api.storage.getAssetUrl, { assetId }),
+    ).toBeTruthy();
+  });
+  it("records owned typed consent and requires administrator review without a provider", async () => {
+    const t = setup(),
+      result = await signup(t),
+      client = t.withIdentity({
+        subject: decodeJwt(result.tokens!.token).sub!,
+      }),
+      operator = await admin(t);
+    const profile = await client.query(api.users.getMyProfile, {});
+    const id = await t.run((ctx) =>
+      ctx.db.insert("legalDocuments", {
+        type: "OFFER_LETTER",
+        clientId: profile!._id,
+        referenceCode: "CONSENT-TEST",
+        status: "DRAFT",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }),
+    );
+    await operator.mutation(api.legalDocuments.requestTypedConsent, {
+      documentId: id,
+    });
+    await expect(
+      operator.mutation(api.legalDocuments.submitTypedConsent, {
+        documentId: id,
+        fullName: "Test Buyer",
+        consent: true,
+      }),
+    ).rejects.toThrow(/Forbidden/);
+    await expect(
+      client.mutation(api.legalDocuments.submitTypedConsent, {
+        documentId: id,
+        fullName: "Someone else",
+        consent: true,
+      }),
+    ).rejects.toThrow(/full name/);
+    await client.mutation(api.legalDocuments.submitTypedConsent, {
+      documentId: id,
+      fullName: "Test Buyer",
+      consent: true,
+    });
+    await client.mutation(api.legalDocuments.submitTypedConsent, {
+      documentId: id,
+      fullName: "Test Buyer",
+      consent: true,
+    });
+    const doc = await t.run((ctx) => ctx.db.get(id));
+    expect(doc).toMatchObject({
+      status: "SIGNED",
+      signatureMethod: "TYPED_CONSENT",
+      typedConsentName: "Test Buyer",
+      typedConsentBy: profile!._id,
+    });
+    expect(doc?.externalSignatureId).toBeUndefined();
+    expect(
+      await t.run((ctx) =>
+        ctx.db
+          .query("policyAcceptances")
+          .filter((q) => q.eq(q.field("policy"), "E_SIGNATURE"))
+          .collect(),
+      ),
+    ).toHaveLength(1);
+    await expect(
+      client.mutation(api.legalDocuments.reviewDocument, {
+        documentId: id,
+        decision: "VERIFIED",
+      }),
+    ).rejects.toThrow(/ADMIN/);
+    await operator.mutation(api.legalDocuments.reviewDocument, {
+      documentId: id,
+      decision: "VERIFIED",
+    });
+    expect((await t.run((ctx) => ctx.db.get(id)))?.status).toBe("VERIFIED");
   });
 });

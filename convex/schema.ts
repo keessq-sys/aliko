@@ -4,12 +4,22 @@ import { v } from "convex/values";
 
 export default defineSchema({
   integrationChecks: defineTable({
-    check: v.string(), passed: v.boolean(), evidenceReference: v.string(), checkedAt: v.number(),
+    check: v.string(),
+    passed: v.boolean(),
+    evidenceReference: v.string(),
+    checkedAt: v.number(),
   }).index("by_check", ["check", "checkedAt"]),
   accountVerifications: defineTable({
-    userId: v.id("users"), email: v.string(), tokenHash: v.string(), expiresAt: v.number(),
-    verifiedAt: v.optional(v.number()), providerId: v.optional(v.string()), createdAt: v.number(),
-  }).index("by_hash", ["tokenHash"]).index("by_user", ["userId", "createdAt"]),
+    userId: v.id("users"),
+    email: v.string(),
+    tokenHash: v.string(),
+    expiresAt: v.number(),
+    verifiedAt: v.optional(v.number()),
+    providerId: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index("by_hash", ["tokenHash"])
+    .index("by_user", ["userId", "createdAt"]),
   managerSubscriptions: defineTable({
     ownerId: v.id("users"),
     managerId: v.id("estateManagers"),
@@ -508,7 +518,14 @@ export default defineSchema({
     plotId: v.optional(v.id("plots")),
     bookingId: v.optional(v.id("bookings")),
     pdfStorageId: v.optional(v.id("_storage")),
-    externalSignatureId: v.optional(v.string()), // Dropbox Sign request ID
+    signatureMethod: v.optional(
+      v.union(v.literal("TYPED_CONSENT"), v.literal("PROVIDER")),
+    ),
+    typedConsentName: v.optional(v.string()),
+    typedConsentBy: v.optional(v.id("users")),
+    typedConsentAt: v.optional(v.number()),
+    typedConsentPdfStorageId: v.optional(v.id("_storage")),
+    externalSignatureId: v.optional(v.string()), // Historical provider request ID
     signatureDispatchState: v.optional(
       v.union(v.literal("SENDING"), v.literal("SENT"), v.literal("REVIEW")),
     ),

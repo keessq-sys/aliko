@@ -81,6 +81,14 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
         : error instanceof Error
           ? error.message
           : "";
+    if (/exceeded.*free|deployments.*disabled|plan limits/i.test(message))
+      return json(
+        {
+          error:
+            "The database provider has paused this deployment. Please contact the administrator.",
+        },
+        { status: 503, headers },
+      );
     const safeMessage =
       /InvalidAccountId|InvalidSecret|Invalid credentials/i.test(message)
         ? "Email or password is incorrect."
@@ -99,6 +107,8 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
       "The recovery code is invalid or expired.",
       "This account is suspended. Contact support.",
       "Provide a valid name and email",
+      "Provide a valid WhatsApp phone number.",
+      "Select your operating state and LGA.",
       "Sign out before signing in or creating another account.",
       "This account is reserved. Use administrator sign in.",
       "Use 12–128 characters with uppercase, lowercase, a number and a symbol.",
@@ -143,7 +153,11 @@ export const DELETE: RequestHandler = async ({ request, cookies, url }) => {
       if (token) {
         const client = authClient();
         client.setAuth(token);
-        await client.mutation(makeFunctionReference<"mutation">("activity:record"), { kind: "SIGN_OUT_REQUESTED" }).catch(() => {});
+        await client
+          .mutation(makeFunctionReference<"mutation">("activity:record"), {
+            kind: "SIGN_OUT_REQUESTED",
+          })
+          .catch(() => {});
         await client.action(
           makeFunctionReference<"action">("auth:signOut"),
           {},

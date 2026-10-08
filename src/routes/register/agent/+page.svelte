@@ -390,7 +390,7 @@
               <div>
                 <p class="text-sm text-stone-400">
                   {$adkT(
-                    "Identity verification is completed through the secure KYC flow in your account.",
+                    "Submit your 11-digit NIN in your account. The format check does not perform government identity verification.",
                   )}
                 </p>
               </div>

@@ -34,7 +34,8 @@ export const register = auditedMutation("r2Assets:register")({
   handler: async (ctx, args) => {
     requireMaintenanceSecret(args.secret);
     const actor = await user(ctx);
-    if (actor.role === "ESTATE_MANAGER") await requireManagerSubscription(ctx, actor);
+    if (actor.role === "ESTATE_MANAGER")
+      await requireManagerSubscription(ctx, actor);
     if (!["ADMIN", "AGENT", "ESTATE_MANAGER"].includes(actor.role))
       throw new Error("Forbidden");
     if (
@@ -53,8 +54,7 @@ export const register = auditedMutation("r2Assets:register")({
     return ctx.db.insert("r2Assets", {
       ...metadata,
       ownerId: actor._id,
-      securityVersion: "2026-10-01-decode-scan-v1",
-      scannedAt: now,
+      securityVersion: "2026-10-08-local-image-validation-v1",
       status: "ACTIVE",
       createdAt: now,
       updatedAt: now,
@@ -126,7 +126,9 @@ export const findRegisteredKeys = query({
   },
 });
 
-export const recordOrphanCleanup = auditedMutation("r2Assets:recordOrphanCleanup")({
+export const recordOrphanCleanup = auditedMutation(
+  "r2Assets:recordOrphanCleanup",
+)({
   args: { keys: v.array(v.string()) },
   handler: async (ctx, { keys }) => {
     const actor = await user(ctx);
@@ -167,7 +169,9 @@ export const findRegisteredKeysForMaintenance = query({
   },
 });
 
-export const recordScheduledOrphanCleanup = auditedMutation("r2Assets:recordScheduledOrphanCleanup")({
+export const recordScheduledOrphanCleanup = auditedMutation(
+  "r2Assets:recordScheduledOrphanCleanup",
+)({
   args: { keys: v.array(v.string()), secret: v.string() },
   handler: async (ctx, { keys, secret }) => {
     requireMaintenanceSecret(secret);

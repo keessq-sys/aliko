@@ -26,11 +26,12 @@
   import { onMount } from "svelte";
   import { addToast } from "$lib/stores/ui";
   onMount(() => {
-    const showError = () =>
+    const showError = (event: Event) =>
       addToast({
         type: "error",
         message:
-          "Current data could not be loaded. Refresh the page to try again.",
+          (event as CustomEvent<string>).detail ||
+          "Connection interrupted. Your changes have not been saved. Please try again when the connection returns.",
         duration: 8000,
       });
     const sessionChanged = (event: StorageEvent) => {

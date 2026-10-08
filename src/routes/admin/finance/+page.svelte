@@ -152,12 +152,9 @@
     busy = true;
     error = "";
     try {
-      await runAction(api.legalDocuments.reconcileSignatureRequest, {
-        documentId,
-        requestId,
-      });
+      await runMutation(api.legalDocuments.requestTypedConsent, { documentId });
       message =
-        "Provider signature identity verified. Restart the booking workflow if it remains in review.";
+        "The document is ready for client consent. The client can type their full name on its tracking page.";
     } catch (e) {
       error = e instanceof Error ? e.message : "Could not reconcile signature";
     } finally {
@@ -280,7 +277,7 @@
     on:click={() => (refundCursor = $refundRecords?.continueCursor ?? null)}
     >{$adkT("Older refunds")}</button
   >
-  <h2 class="text-xl">{$adkT("Signature request reconciliation")}</h2>
+  <h2 class="text-xl">{$adkT("Document consent requests")}</h2>
   <form on:submit|preventDefault={reconcileSignature} class="grid gap-3">
     <label
       >{$adkT("Document")}<select
@@ -294,15 +291,8 @@
             )}</option
           >{/each}</select
       ></label
-    ><label
-      >{$adkT("Existing Dropbox Sign request ID")}<input
-        dir="auto"
-        required
-        bind:value={requestId}
-        class="theme-input block border rounded p-3"
-      /></label
     ><button disabled={busy} class="min-h-[44px] border rounded p-3"
-      >{$adkT("Verify provider request")}</button
+      >{$adkT("Request client consent")}</button
     >
   </form>
   <button
