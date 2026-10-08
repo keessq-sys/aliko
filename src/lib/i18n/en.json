@@ -2912,5 +2912,14 @@
   "Request consent": "Request consent",
   "Request client consent": "Request client consent",
   "Document consent requests": "Document consent requests",
-  "Connection interrupted. Your changes have not been saved. Please try again when the connection returns.": "Connection interrupted. Your changes have not been saved. Please try again when the connection returns."
+  "Connection interrupted. Your changes have not been saved. Please try again when the connection returns.": "Connection interrupted. Your changes have not been saved. Please try again when the connection returns.",
+  "Account access": "Account access",
+  "Your enrolment details also create your account. You do not need to complete another signup form.": "Your enrolment details also create your account. You do not need to complete another signup form.",
+  "I already have an account": "I already have an account",
+  "Complete your account and professional enrolment in one form.": "Complete your account and professional enrolment in one form.",
+  "Your phone number will also be used as your WhatsApp contact.": "Your phone number will also be used as your WhatsApp contact.",
+  "Company / legal address": "Company / legal address",
+  "Provide your full legal address before checkout.": "Provide your full legal address before checkout.",
+  "Accept the terms and NIN consent before registration.": "Accept the terms and NIN consent before registration.",
+  "Accept the application terms.": "Accept the application terms."
 }

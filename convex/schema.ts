@@ -907,10 +907,12 @@ export default defineSchema({
   // ── Estate Manager Profiles ──────────────────────────────────────────────
   estateManagers: defineTable({
     userId: v.optional(v.id("users")),
+    submissionKey: v.optional(v.string()),
     companyName: v.string(),
     contactName: v.string(),
     email: v.string(),
     phone: v.string(),
+    address: v.optional(v.string()),
     cacRcNumber: v.optional(v.string()),
     operatingState: v.optional(v.string()),
     operatingLga: v.optional(v.string()),
@@ -935,12 +937,14 @@ export default defineSchema({
   })
     .index("by_user", ["userId"])
     .index("by_status", ["status"])
-    .index("by_email", ["email"]),
+    .index("by_email", ["email"])
+    .index("by_submission", ["userId", "submissionKey"]),
 
   // ── Agent Applications (from the 5-step wizard) ──────────────────────────
   agentApplications: defineTable({
     reference: v.string(), // e.g. ADK-AGT-2026-0001
     userId: v.optional(v.id("users")),
+    submissionKey: v.optional(v.string()),
     fullName: v.string(),
     email: v.string(),
     phone: v.string(),
@@ -979,7 +983,8 @@ export default defineSchema({
   })
     .index("by_reference", ["reference"])
     .index("by_status", ["status"])
-    .index("by_email", ["email"]),
+    .index("by_email", ["email"])
+    .index("by_submission", ["userId", "submissionKey"]),
 
   // ── Webhook replay protection and operational audit ────────────────────
   webhookEvents: defineTable({

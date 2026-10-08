@@ -755,7 +755,9 @@ html[data-theme="light"] .theme-contrast-dark .search-glass select {
   appearance: auto;
 }
 html .theme-contrast-dark .search-glass label,
-html[data-theme="light"] .theme-contrast-dark .search-glass label {
+html[data-theme="light"] .theme-contrast-dark .search-glass label,
+html .theme-contrast-dark .search-glass label .theme-text,
+html[data-theme="light"] .theme-contrast-dark .search-glass label .theme-text {
   color: #e5edf3 !important;
 }
 html .theme-contrast-dark .hero-actions a,

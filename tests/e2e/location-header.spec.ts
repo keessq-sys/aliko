@@ -6,8 +6,16 @@ test("logo stays left and all utility controls stay right in English and Arabic"
   await page.goto("/");
   for (const language of ["en", "ar"]) {
     await page
+      .locator("header")
+      .getByRole("button", { name: /Open menu|فتح القائمة/, exact: true })
+      .click();
+    await page
       .getByRole("combobox", { name: "Language / اللغة" })
       .selectOption(language);
+    await page
+      .locator("header")
+      .getByRole("button", { name: /Close menu|أغلق القائمة/, exact: true })
+      .click();
     const logo = await page.locator("header img").boundingBox(),
       menu = await page
         .locator("header")
@@ -48,6 +56,13 @@ test("professional signup uses required state, LGA and NIN fields on mobile", as
   await page.setViewportSize({ width: 390, height: 844 });
   for (const role of ["agent", "manager"]) {
     await page.goto(`/auth?tab=signup&role=${role}`);
+    await expect(page).toHaveURL(new RegExp(`/register/${role}$`));
+    if (role === "agent") {
+      await page.locator("#agent-fullname").fill("Agent Applicant");
+      await page.getByRole("button", { name: "Continue", exact: true }).click();
+      await page.locator("#agent-agency-name").fill("Test Agency");
+      await page.getByRole("button", { name: "Continue", exact: true }).click();
+    }
     await expect(
       page.getByRole("combobox", { name: "State / Abuja FCT", exact: true }),
     ).toHaveAttribute("required", "");

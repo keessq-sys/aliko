@@ -4,6 +4,23 @@
   import { NIGERIAN_STATES } from "../../../../convex/lib/nigeriaLocations";
   import NigeriaLocationFields from "$lib/components/ui/NigeriaLocationFields.svelte";
   import IdentityStatus from "$lib/components/auth/IdentityStatus.svelte";
+  import EnrolmentAccountFields from "$lib/components/auth/EnrolmentAccountFields.svelte";
+  import { completeEnrolment } from "$lib/auth/enrolment";
+  import { passwordProblem } from "../../../../convex/lib/passwordPolicy";
+  import { ninProblem } from "../../../../convex/lib/nin";
+  import { onMount } from "svelte";
+  let ready = false,
+    submissionKey = "",
+    accountReady = false;
+  let password = "",
+    nin = "",
+    consent = false,
+    terms = false,
+    existingAccount = false;
+  onMount(() => {
+    submissionKey = crypto.randomUUID();
+    ready = true;
+  });
   const identity = useQuery(api.identity.status, {});
   let operationState = "",
     operationLga = "";
@@ -23,7 +40,6 @@
   } from "lucide-svelte";
   import { fade } from "svelte/transition";
   import { api } from "$lib/convex/_generated/api";
-  import { runMutation } from "$lib/convex/queries";
 
   let currentStep = 1;
   const totalSteps = 5;
@@ -82,19 +98,16 @@
   let submitting = false;
   let submitted = false;
   $: if ($account && !seededAccount) {
-    formData.fullName = $account.name;
-    formData.email = $account.email;
-    formData.phone = $account.phone ?? "";
-    formData.agencyName = $account.agencyName ?? "";
-    operationState = $account.operatingState ?? "";
-    operationLga = $account.operatingLga ?? "";
+    formData.fullName ||= $account.name;
+    formData.email ||= $account.email;
+    formData.phone ||= $account.phone ?? $account.whatsapp ?? "";
+    formData.agencyName ||= $account.agencyName ?? "";
+    operationState ||= $account.operatingState ?? "";
+    operationLga ||= $account.operatingLga ?? "";
     seededAccount = true;
   }
   let reference = "";
   let submitError = "";
-
-  const submitApplication = async (args: any) =>
-    runMutation(api.partners.submitAgentApplication, args);
 
   const toggleSpec = (s: string) => {
     if (formData.specializations.includes(s)) {
@@ -115,16 +128,12 @@
 
   const submitForm = async () => {
     submitError = "";
-    if (!$account) {
-      await goto("/auth?tab=signup&role=agent");
-      return;
-    }
     if (!formData.fullName || !formData.email || !formData.phone) {
       submitError =
         "Name, email and phone are required. Please review earlier steps.";
       return;
     }
-    if (!$identity) {
+    if ($account && $identity === null) {
       submitError =
         "Submit your NIN and consent before professional enrolment.";
       return;
@@ -133,9 +142,28 @@
       submitError = "Select your operating state and LGA.";
       return;
     }
+    if (!formData.termsAccepted) {
+      submitError = "Accept the application terms.";
+      return;
+    }
+    if (!$account && !accountReady) {
+      const problem = existingAccount
+        ? !password
+          ? "Password is required"
+          : ""
+        : passwordProblem(password) ||
+          ninProblem(nin) ||
+          (!consent || !terms
+            ? "Accept the terms and NIN consent before registration."
+            : "");
+      if (problem) {
+        submitError = problem;
+        return;
+      }
+    }
     submitting = true;
     try {
-      const result = await submitApplication({
+      const application = {
         fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone,
@@ -159,8 +187,26 @@
         address: formData.address || undefined,
         expectedListings: formData.expectedListings,
         primaryLgas: operationLga,
+      };
+      const result = await completeEnrolment({
+        kind: "AGENT",
+        submissionKey,
+        application,
+        registration: {
+          flow: existingAccount ? "signIn" : "signUp",
+          password,
+          nin,
+          acceptKycConsent: consent,
+          acceptPolicies: terms,
+        },
       });
-      reference = result?.reference ?? "";
+      if (result.accountReady) {
+        accountReady = true;
+        password = "";
+        nin = "";
+      }
+      if (!result.ok) throw new Error(result.error);
+      reference = result.reference;
       submitted = true;
     } catch (err: any) {
       submitError = err?.message ?? "Submission failed. Please try again.";
@@ -301,11 +347,15 @@
       <div
         class="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl"
       >
-        {#if $account}<IdentityStatus />{:else}<a
-            class="btn-primary mb-6"
-            href="/auth?tab=signup&role=agent"
-            >{$adkT("Create Agent Account")}</a
-          >{/if}
+        {#if $account || accountReady}<IdentityStatus />{:else}
+          <EnrolmentAccountFields
+            bind:password
+            bind:nin
+            bind:consent
+            bind:terms
+            bind:existingAccount
+          />
+        {/if}
         {#if currentStep === 1}
           <div in:fade>
             <h2 class="text-2xl font-bold text-amber-400 mb-6">
@@ -825,7 +875,7 @@
           {:else}
             <button
               class="flex items-center gap-2 min-h-[44px] px-8 py-3 rounded-lg bg-gradient-to-r from-amber-600 to-amber-400 hover:from-amber-500 hover:to-amber-300 text-white font-medium transition-transform hover:scale-105 shadow-[0_0_20px_rgba(245,158,11,0.4)] disabled:opacity-50"
-              disabled={!formData.termsAccepted || submitting}
+              disabled={!formData.termsAccepted || submitting || !ready}
               on:click={submitForm}
             >
               {#if submitting}

@@ -5,14 +5,14 @@ test("language switch translates navigation, persists and restores English", asy
 }) => {
   await page.goto("/");
   await page
+    .locator("header")
+    .getByRole("button", { name: "Open menu", exact: true })
+    .click();
+  await page
     .getByRole("combobox", { name: "Language / اللغة" })
     .selectOption("ar");
   await expect(page.locator("html")).toHaveAttribute("lang", "ar");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-  const menu = page
-    .locator("header")
-    .getByRole("button", { name: /فتح القائمة|افتح القائمة/ });
-  await menu.click();
   await expect(
     page.locator("header").getByRole("link", { name: "العقارات", exact: true }),
   ).toBeVisible();
@@ -23,6 +23,10 @@ test("language switch translates navigation, persists and restores English", asy
   await expect(page).toHaveURL(/\/properties$/);
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  await page
+    .locator("header")
+    .getByRole("button", { name: /فتح القائمة|افتح القائمة/ })
+    .click();
   await page
     .getByRole("combobox", { name: "Language / اللغة" })
     .selectOption("en");
@@ -106,8 +110,16 @@ test("Arabic mobile forms fit the viewport and preserve the language choice", as
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/auth?tab=signup");
   await page
+    .locator("header")
+    .getByRole("button", { name: "Open menu", exact: true })
+    .click();
+  await page
     .getByRole("combobox", { name: "Language / اللغة" })
     .selectOption("ar");
+  await page
+    .locator("header")
+    .getByRole("button", { name: /إغلاق القائمة|أغلق القائمة/ })
+    .click();
   await page.locator('input[autocomplete="name"]').fill("فاطمة أحمد");
   expect(
     await page.evaluate(

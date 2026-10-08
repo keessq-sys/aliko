@@ -40,6 +40,7 @@ export const submitAgentApplication = auditedMutation(
 )({
   args: {
     fullName: v.string(),
+    submissionKey: v.optional(v.string()),
     email: v.string(),
     phone: v.string(),
     operatingState: v.optional(v.string()),
@@ -68,6 +69,23 @@ export const submitAgentApplication = auditedMutation(
     const userId = applicant._id;
     if (args.email.trim().toLowerCase() !== applicant.email.toLowerCase())
       throw new ConvexError("Use your account email");
+    if (
+      args.fullName.trim().length < 2 ||
+      args.fullName.length > 120 ||
+      !/^\+?[0-9]{10,15}$/.test(args.phone.replace(/[\s()-]/g, ""))
+    )
+      throw new ConvexError("Provide a valid name and phone number.");
+    if (args.submissionKey) {
+      if (!/^[a-zA-Z0-9-]{16,80}$/.test(args.submissionKey))
+        throw new ConvexError("Invalid enrolment request");
+      const saved = await ctx.db
+        .query("agentApplications")
+        .withIndex("by_submission", (q) =>
+          q.eq("userId", userId).eq("submissionKey", args.submissionKey),
+        )
+        .unique();
+      if (saved) return { id: saved._id, reference: saved.reference };
+    }
     const identity = await ctx.db
       .query("identities")
       .withIndex("by_user", (q) => q.eq("userId", userId))
@@ -87,6 +105,11 @@ export const submitAgentApplication = auditedMutation(
     });
     await ctx.db.patch(userId, {
       phone: args.phone.trim(),
+      agencyName: args.agencyName,
+      operatingState: normalizeState(args.operatingState),
+      operatingLga: args.operatingLga,
+      whatsapp: (args.whatsapp || args.phone).replace(/[\s()-]/g, ""),
+      requestedAccountType: "AGENT",
       ...(args.address && args.address.trim().length >= 10
         ? { address: args.address.trim() }
         : {}),
@@ -111,9 +134,11 @@ export const submitManagerApplication = auditedMutation(
 )({
   args: {
     companyName: v.string(),
+    submissionKey: v.optional(v.string()),
     contactName: v.string(),
     email: v.string(),
     phone: v.string(),
+    address: v.optional(v.string()),
     operatingState: v.optional(v.string()),
     operatingLga: v.optional(v.string()),
     cacRcNumber: v.optional(v.string()),
@@ -126,6 +151,33 @@ export const submitManagerApplication = auditedMutation(
     const userId = applicant._id;
     if (args.email.trim().toLowerCase() !== applicant.email.toLowerCase())
       throw new ConvexError("Use your account email");
+    if (
+      args.companyName.trim().length < 2 ||
+      args.companyName.length > 160 ||
+      args.contactName.trim().length < 2 ||
+      args.contactName.length > 120 ||
+      !/^\+?[0-9]{10,15}$/.test(args.phone.replace(/[\s()-]/g, ""))
+    )
+      throw new ConvexError(
+        "Provide a valid company, contact name and phone number.",
+      );
+    if (args.submissionKey) {
+      if (!/^[a-zA-Z0-9-]{16,80}$/.test(args.submissionKey))
+        throw new ConvexError("Invalid enrolment request");
+      const saved = await ctx.db
+        .query("estateManagers")
+        .withIndex("by_submission", (q) =>
+          q.eq("userId", userId).eq("submissionKey", args.submissionKey),
+        )
+        .unique();
+      if (saved) {
+        if (saved.plan !== args.plan)
+          throw new ConvexError(
+            "Your application was saved with a different plan. Review My payments before changing plans.",
+          );
+        return { id: saved._id };
+      }
+    }
     const identity = await ctx.db
       .query("identities")
       .withIndex("by_user", (q) => q.eq("userId", userId))
@@ -143,7 +195,17 @@ export const submitManagerApplication = auditedMutation(
       key: String(userId),
       throws: true,
     });
-    await ctx.db.patch(userId, { phone: args.phone.trim() });
+    if (args.address !== undefined && args.address.trim().length < 10)
+      throw new ConvexError("Provide your full legal address before checkout.");
+    await ctx.db.patch(userId, {
+      phone: args.phone.trim(),
+      companyName: args.companyName.trim(),
+      requestedAccountType: "ESTATE_MANAGER",
+      whatsapp: args.phone.replace(/[\s()-]/g, ""),
+      operatingState: normalizeState(args.operatingState),
+      operatingLga: args.operatingLga,
+      ...(args.address ? { address: args.address.trim() } : {}),
+    });
     const now = Date.now();
     const id = await ctx.db.insert("estateManagers", {
       userId,
