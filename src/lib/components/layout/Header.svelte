@@ -190,13 +190,13 @@
       </a>
 
       <div class="ml-auto flex items-center gap-2 sm:gap-3" dir="ltr">
-        <LanguageSwitcher />
         <ThemeToggle />
         <!-- Mobile Menu Button -->
         <button
           class="flex items-center justify-center min-h-[44px] min-w-[44px] text-stone-300 hover:text-white"
           aria-label={$adkT(isMobileMenuOpen ? "Close menu" : "Open menu")}
           aria-expanded={isMobileMenuOpen}
+          aria-controls="public-navigation-menu"
           on:click={toggleMobileMenu}
         >
           {#if isMobileMenuOpen}
@@ -212,6 +212,7 @@
   <!-- Mobile Menu Drawer -->
   {#if isMobileMenuOpen}
     <div
+      id="public-navigation-menu"
       class="mobile-dropdown absolute top-[calc(100%+8px)] right-3 sm:right-6 w-[min(22rem,calc(100vw-24px))] z-50 bg-[#071018] border border-white/15 rounded-2xl shadow-2xl"
       transition:slide={{ duration: 100 }}
     >
@@ -219,6 +220,12 @@
         class="flex flex-col dropdown-scroll p-3 gap-1 max-h-[min(70dvh,640px)] overflow-y-auto overscroll-contain"
         dir={$page.data.locale === "ar" ? "rtl" : "ltr"}
       >
+        <div
+          class="flex items-center justify-between gap-3 px-4 py-2 border-b border-white/10 mb-2"
+        >
+          <span class="text-sm font-medium theme-text">Language / اللغة</span>
+          <LanguageSwitcher />
+        </div>
         <div class="flex gap-2">
           <button
             aria-label={$adkT("Go back")}
