@@ -169,7 +169,7 @@
           />
         </label>
         <div class="sm:col-span-2">
-          <NigeriaLocationFields bind:state bind:lga />
+          <NigeriaLocationFields bind:state bind:lga variant="request" />
         </div>
         <label class="block sm:col-span-2">
           <span class="mb-1 block text-sm text-stone-400"
