@@ -34,19 +34,17 @@
     aria-valuemin="0"
     aria-valuemax="11"
     aria-valuenow={progress}
-    class="h-2 overflow-hidden rounded-full bg-stone-200"
+    class="h-2 overflow-hidden rounded-full theme-meter-track"
   >
     <div
-      class="h-full bg-emerald-600 transition-all"
+      class="h-full theme-meter-fill transition-all"
       style:width={`${(progress / 11) * 100}%`}
     ></div>
   </div>
-  {#if valid}<p
-      class="text-emerald-700 dark:text-emerald-300 text-sm font-semibold"
-    >
+  {#if valid}<p class="theme-form-success text-sm font-semibold">
       ✓ {$adkT("11-digit format complete")}
     </p>{/if}
-  <p id="nin-help" class="text-xs theme-text">
+  <p id="nin-help" class="text-xs theme-field-muted">
     {$adkT(
       "Your NIN is encrypted. The green tick confirms 11 digits only; it does not verify your identity with a government authority.",
     )}
@@ -68,7 +66,7 @@
       >.</span
     >
   </label>
-  {#if error}<p role="alert" class="text-sm text-rose-500">
+  {#if error}<p role="alert" class="text-sm theme-form-error">
       {$adkT(error)}
     </p>{/if}
 </div>

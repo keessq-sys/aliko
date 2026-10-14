@@ -14,6 +14,15 @@
     --text-main: #f5f5f4;
     --text-muted: #a8a29e;
     --border-soft: rgba(255, 255, 255, 0.1);
+    --field-bg: #0b1821;
+    --field-text: #f5f5f4;
+    --field-muted: #bdc9d2;
+    --field-border: #748995;
+    --field-focus: #6ee7b7;
+    --form-success: #6ee7b7;
+    --form-error: #fda4af;
+    --form-warning: #fcd34d;
+    --meter-track: #364957;
   }
   body {
     background-color: var(--page-bg);
@@ -41,6 +50,15 @@ html[data-theme="light"] {
   --text-main: #15201b;
   --text-muted: #57534e;
   --border-soft: rgba(21, 32, 27, 0.14);
+  --field-bg: #ffffff;
+  --field-text: #15201b;
+  --field-muted: #57534e;
+  --field-border: #6b756f;
+  --field-focus: #065f46;
+  --form-success: #065f46;
+  --form-error: #9f1239;
+  --form-warning: #713f12;
+  --meter-track: #cbd5d1;
 }
 
 html[data-theme="light"] body,
@@ -175,10 +193,78 @@ html[data-theme="light"]
   ) {
   border-color: var(--border-soft) !important;
 }
+/* Shared form controls use explicit colours in both themes. Hero search
+   retains its scoped dark-panel overrides further below. */
+html .theme-text {
+  color: var(--text-main);
+}
+html .theme-field-muted {
+  color: var(--field-muted) !important;
+}
+html
+  :is(
+    .theme-input,
+    input:where(:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="hidden"], [type="submit"], [type="button"], [type="image"], [type="color"])),
+    textarea,
+    select
+  ) {
+  background-color: var(--field-bg) !important;
+  color: var(--field-text) !important;
+  border-color: var(--field-border) !important;
+}
+html :is(input, textarea)::placeholder {
+  color: var(--field-muted);
+  opacity: 1;
+}
+html select option {
+  background-color: var(--field-bg);
+  color: var(--field-text);
+}
+html :is(input, textarea, select):disabled {
+  opacity: 1;
+}
+html :is(input[type="checkbox"], input[type="radio"]) {
+  accent-color: var(--field-focus);
+  flex-shrink: 0;
+}
+html :is(input, textarea, select, .theme-password-toggle):focus-visible {
+  outline: 3px solid var(--field-focus);
+  outline-offset: 3px;
+}
+html .theme-form-success {
+  color: var(--form-success) !important;
+}
+html .theme-form-error {
+  color: var(--form-error) !important;
+}
+.theme-meter-track {
+  background-color: var(--meter-track);
+}
+.theme-meter-fill {
+  background-color: var(--form-success);
+}
+.theme-strength-meter {
+  background: var(--meter-track);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.theme-strength-meter::-webkit-meter-bar {
+  background: var(--meter-track);
+  border: 0;
+  border-radius: 999px;
+}
+.theme-strength-meter::-webkit-meter-optimum-value,
+.theme-strength-meter::-webkit-meter-suboptimum-value,
+.theme-strength-meter::-webkit-meter-even-less-good-value {
+  background: var(--meter-fill);
+}
+.theme-strength-meter::-moz-meter-bar {
+  background: var(--meter-fill);
+}
 html[data-theme="light"] :is(input, textarea, select, .theme-input) {
   background-color: #fff !important;
   color: #15201b !important;
-  border-color: rgba(21, 32, 27, 0.18) !important;
+  border-color: var(--field-border) !important;
 }
 html[data-theme="light"] .theme-toggle {
   background: #fff;

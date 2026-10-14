@@ -12,7 +12,7 @@
 
 <section class="my-6 space-y-4 rounded-xl border border-white/10 p-4">
   <h2 class="font-semibold theme-text">{$adkT("Account access")}</h2>
-  <p class="text-sm text-stone-400">
+  <p class="text-sm theme-field-muted">
     {$adkT(
       "Your enrolment details also create your account. You do not need to complete another signup form.",
     )}

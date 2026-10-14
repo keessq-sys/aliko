@@ -14,7 +14,8 @@
 </script>
 
 <div class="relative">
-  <input dir="auto"
+  <input
+    dir="auto"
     {...$$restProps}
     type={visible ? "text" : "password"}
     bind:value
@@ -23,7 +24,7 @@
   />
   <button
     type="button"
-    class="absolute right-1 top-1/2 flex min-h-[44px] min-w-[44px] -translate-y-1/2 items-center justify-center text-stone-400"
+    class="absolute right-1 top-1/2 flex min-h-[44px] min-w-[44px] -translate-y-1/2 items-center justify-center theme-field-muted theme-password-toggle"
     aria-label={visible ? "Hide password" : "Show password"}
     aria-pressed={visible}
     on:click={() => (visible = !visible)}
@@ -33,13 +34,18 @@
 </div>
 {#if strength}
   <meter
-    class="mt-2 h-2 w-full"
+    class="theme-strength-meter mt-2 h-2 w-full"
+    style:--meter-fill={score < 3
+      ? "var(--form-error)"
+      : score < 5
+        ? "var(--form-warning)"
+        : "var(--form-success)"}
     min="0"
     max="5"
     value={score}
     aria-label={$adkT("Password strength")}
   ></meter>
-  <p class="mt-1 text-xs text-stone-400" aria-live="polite">
+  <p class="mt-1 text-xs theme-field-muted" aria-live="polite">
     {value && !passwordProblem(value)
       ? "Strong password"
       : "Use at least 12 characters: uppercase, lowercase, a number and a symbol."}
