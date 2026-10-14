@@ -4,8 +4,6 @@
 
   import LanguageSwitcher from "$lib/components/ui/LanguageSwitcher.svelte";
   import {
-    ArrowLeft,
-    ArrowRight,
     Menu,
     X,
     Bell,
@@ -51,7 +49,6 @@
 
   let headerElement: HTMLElement;
   let isMobileMenuOpen = false;
-  let isProfileMenuOpen = false;
 
   $: isLoggedIn = !!session?.user;
   $: userRole = (session?.user?.role ?? "client").toLowerCase();
@@ -68,7 +65,6 @@
       });
       return;
     }
-    isProfileMenuOpen = false;
     isMobileMenuOpen = false;
     await goto("/", { invalidateAll: true });
   }
@@ -153,10 +149,6 @@
   function toggleMobileMenu() {
     isMobileMenuOpen = !isMobileMenuOpen;
   }
-
-  function toggleProfileMenu() {
-    isProfileMenuOpen = !isProfileMenuOpen;
-  }
 </script>
 
 <svelte:window
@@ -225,19 +217,6 @@
         >
           <span class="text-sm font-medium theme-text">Language / اللغة</span>
           <LanguageSwitcher />
-        </div>
-        <div class="flex gap-2">
-          <button
-            aria-label={$adkT("Go back")}
-            class="min-h-[44px] min-w-[44px]"
-            on:click={() => window.history.back()}
-            ><ArrowLeft size={18} /></button
-          ><button
-            aria-label={$adkT("Go forward")}
-            class="min-h-[44px] min-w-[44px]"
-            on:click={() => window.history.forward()}
-            ><ArrowRight size={18} /></button
-          >
         </div>
         {#each navLinks as link}
           <a

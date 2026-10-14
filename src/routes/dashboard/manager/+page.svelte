@@ -135,7 +135,6 @@
   let currentTab = "overview";
   // Mobile drawer — desktop sidebar below is hidden md:flex; on mobile the
   // same navItems render inside this slide-in drawer.
-  let isMobileNavOpen = false;
 
   const MOCK_AGENTS: any[] = [];
 
@@ -188,7 +187,7 @@
 </script>
 
 <div
-  class="flex h-[calc(100dvh-58px)] w-full bg-[#050A0E] text-stone-300 font-sans overflow-hidden"
+  class="flex h-[calc(100dvh-64px)] w-full bg-[#050A0E] text-stone-300 font-sans overflow-hidden"
 >
   <!-- Sidebar -->
   <aside
@@ -255,113 +254,18 @@
     </div>
   </aside>
 
-  <!-- Mobile drawer -->
-  {#if isMobileNavOpen}
-    <div class="fixed inset-x-0 top-[58px] bottom-0 z-50 md:hidden">
-      <div
-        class="absolute inset-0 bg-black/70 backdrop-blur-sm"
-        role="presentation"
-        on:click={() => (isMobileNavOpen = false)}
-      ></div>
-      <aside
-        class="absolute inset-y-0 left-0 w-[85%] max-w-xs bg-[#0A0F14] border-r border-white/5 flex flex-col overflow-y-auto"
-      >
-        <div
-          class="flex items-center justify-between p-6 border-b border-white/5"
-        >
-          <h1
-            class="text-lg font-bold tracking-tight text-white flex items-center gap-2"
-          >
-            <div
-              class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center"
-            >
-              <span class="text-white font-bold">{$adkT("A")}</span>
-            </div>
-            {$adkT("ADK Manager")}
-          </h1>
-          <button
-            class="flex items-center justify-center w-11 h-11 rounded-xl text-stone-400 active:bg-white/10"
-            aria-label={$adkT("Close sidebar")}
-            on:click={() => (isMobileNavOpen = false)}
-          >
-            <X class="w-5 h-5" />
-          </button>
-        </div>
-        <a href="/dashboard/operations" class="theme-text underline mx-6 py-3"
-          >{$adkT("Leases and financial ledger")}</a
-        >
-        <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1">
-          {#each navItems as item}
-            <button
-              on:click={() => {
-                currentTab = item.id;
-                isMobileNavOpen = false;
-              }}
-              class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium transition-all {currentTab ===
-              item.id
-                ? 'bg-emerald-500/10 text-emerald-400 border-l-2 border-emerald-500'
-                : 'text-stone-400 hover:bg-white/5 hover:text-white'}"
-            >
-              <svelte:component this={item.icon} class="h-5 w-5" />
-              {$adkT(item.label)}
-            </button>
-          {/each}
-        </nav>
-        <div class="p-4 border-t border-white/5">
-          <a
-            href="/login?signout=1"
-            class="w-full flex items-center gap-3 rounded-lg px-4 py-3 min-h-[44px] text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors"
-          >
-            <LogOut class="h-5 w-5" />
-            {$adkT("Sign Out")}
-          </a>
-        </div>
-      </aside>
-    </div>
-  {/if}
-
   <!-- Main Content -->
-  <main class="flex-1 flex flex-col h-[calc(100dvh-58px)] overflow-hidden">
+  <main class="flex-1 flex flex-col h-[calc(100dvh-64px)] overflow-hidden">
     <!-- Header -->
     <header
       class="h-20 flex-shrink-0 border-b border-white/5 bg-[#050A0E]/80 backdrop-blur-md flex items-center justify-between px-4 md:px-8 z-10 gap-2"
     >
       <div class="flex items-center gap-2 min-w-0">
-        <button
-          class="md:hidden flex items-center justify-center w-11 h-11 -ml-2 flex-shrink-0 rounded-full text-stone-300 active:bg-white/10"
-          aria-label={$adkT("Open sidebar")}
-          on:click={() => (isMobileNavOpen = true)}
-        >
-          <Menu class="h-6 w-6" />
-        </button>
         <h2
           class="text-lg md:text-2xl font-semibold text-white capitalize truncate"
         >
           {$adkT(currentTab.replace("-", " "))}
         </h2>
-      </div>
-
-      <div class="flex items-center gap-3 md:gap-6">
-        <div class="relative hidden sm:block">
-          <Search
-            class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400"
-          />
-          <input
-            dir="auto"
-            type="text"
-            placeholder={$adkT("Search...")}
-            class="w-64 rounded-full border border-white/10 bg-white/5 py-2 pl-10 pr-4 text-sm focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
-          />
-        </div>
-
-        <button
-          class="relative rounded-full p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-400 hover:bg-white/10 transition-colors"
-        >
-          <Bell class="h-5 w-5" />
-          <span
-            class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-[#050A0E]"
-          ></span>
-        </button>
       </div>
     </header>
 

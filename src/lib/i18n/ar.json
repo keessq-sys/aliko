@@ -2921,5 +2921,18 @@
   "Company / legal address": "عنوان الشركة / العنوان القانوني",
   "Provide your full legal address before checkout.": "أدخل عنوانك القانوني الكامل قبل الدفع.",
   "Accept the terms and NIN consent before registration.": "وافق على الشروط وموافقة جمع رقم الهوية الوطنية قبل التسجيل.",
-  "Accept the application terms.": "وافق على شروط تقديم الطلب."
+  "Accept the application terms.": "وافق على شروط تقديم الطلب.",
+  "Workspace navigation": "التنقل في مساحة العمل",
+  "Explore Aliko": "استكشف أليكو",
+  "Property catalogue": "كتالوج العقارات",
+  "Admin navigation": "التنقل الإداري",
+  "Authenticated workspace": "مساحة عمل مصادق عليها",
+  "Your operations, at a glance": "عملياتك في لمحة",
+  "Review incoming requests, manage your property catalogue and keep every customer journey moving.": "راجع الطلبات الواردة وأدر كتالوج عقاراتك وتابع رحلة كل عميل.",
+  "awaiting review": "بانتظار المراجعة",
+  "Support conversations": "محادثات الدعم",
+  "Open a chat to respond, then resolve it when support is complete.": "افتح المحادثة للرد ثم أغلق الطلب عند اكتمال الدعم.",
+  "Loading conversations": "جارٍ تحميل المحادثات",
+  "Queue clear": "لا توجد طلبات معلقة",
+  "This conversation could not be resolved. Please retry.": "تعذر إنهاء هذه المحادثة. يرجى المحاولة مجددًا."
 }

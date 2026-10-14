@@ -2921,5 +2921,18 @@
   "Company / legal address": "Company / legal address",
   "Provide your full legal address before checkout.": "Provide your full legal address before checkout.",
   "Accept the terms and NIN consent before registration.": "Accept the terms and NIN consent before registration.",
-  "Accept the application terms.": "Accept the application terms."
+  "Accept the application terms.": "Accept the application terms.",
+  "Workspace navigation": "Workspace navigation",
+  "Explore Aliko": "Explore Aliko",
+  "Property catalogue": "Property catalogue",
+  "Admin navigation": "Admin navigation",
+  "Authenticated workspace": "Authenticated workspace",
+  "Your operations, at a glance": "Your operations, at a glance",
+  "Review incoming requests, manage your property catalogue and keep every customer journey moving.": "Review incoming requests, manage your property catalogue and keep every customer journey moving.",
+  "awaiting review": "awaiting review",
+  "Support conversations": "Support conversations",
+  "Open a chat to respond, then resolve it when support is complete.": "Open a chat to respond, then resolve it when support is complete.",
+  "Loading conversations": "Loading conversations",
+  "Queue clear": "Queue clear",
+  "This conversation could not be resolved. Please retry.": "This conversation could not be resolved. Please retry."
 }

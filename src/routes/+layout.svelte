@@ -1,5 +1,6 @@
 <script lang="ts">
   import "../app.css";
+  import "$lib/styles/workspace.css";
   import { provideI18n } from "$lib/i18n";
   import { afterNavigate } from "$app/navigation";
   import { api } from "$lib/convex/_generated/api";
