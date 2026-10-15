@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PlatformBanner from "$lib/components/home/PlatformBanner.svelte";
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
 
@@ -38,6 +39,7 @@
   </p>
   <HeroSection />
   <StatsStrip />
+  <PlatformBanner />
   <SignatureDevelopments />
   <FeaturedProperties />
   <PropertyTypes />

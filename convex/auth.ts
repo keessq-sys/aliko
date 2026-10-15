@@ -1,3 +1,4 @@
+import { emitAlert } from "./lib/alerts";
 import { internal } from "./_generated/api";
 import { convexAuth } from "@convex-dev/auth/server";
 import { Password } from "@convex-dev/auth/providers/Password";
@@ -60,10 +61,16 @@ passwordOptions.authorize = async (params, ctx) => {
       const problem = ninProblem(params.nin);
       if (problem) throw new ConvexError(problem);
       if (params.acceptKycConsent !== true)
-        throw new ConvexError("Accept the NIN verification consent before registration.");
+        throw new ConvexError(
+          "Accept the NIN verification consent before registration.",
+        );
       const identity = await protectNin(normalizeNin(params.nin));
-      params = { ...params, registrationNinCipher: identity.cipher,
-        registrationNinHash: identity.fingerprint, registrationNinLastFour: identity.lastFour };
+      params = {
+        ...params,
+        registrationNinCipher: identity.cipher,
+        registrationNinHash: identity.fingerprint,
+        registrationNinLastFour: identity.lastFour,
+      };
     }
     return await authorizePassword(params, ctx);
   } catch (error) {
@@ -104,20 +111,40 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         await rateLimiter.limit(ctx, "registration", { key, throws: true });
         const user = await ctx.db.get(args.userId);
         if (user?.registrationNinCipher) {
-          if (await (ctx.db as DatabaseWriter).query("identities").withIndex("by_fingerprint", q =>
-            q.eq("fingerprint", user.registrationNinHash!)).first())
-            throw new ConvexError("This NIN is already associated with an account. Contact support.");
+          if (
+            await (ctx.db as DatabaseWriter)
+              .query("identities")
+              .withIndex("by_fingerprint", (q) =>
+                q.eq("fingerprint", user.registrationNinHash!),
+              )
+              .first()
+          )
+            throw new ConvexError(
+              "This NIN is already associated with an account. Contact support.",
+            );
           const now = Date.now();
           await ctx.db.insert("identities", {
-            userId: args.userId, ninCipher: user.registrationNinCipher,
-            fingerprint: user.registrationNinHash!, lastFour: user.registrationNinLastFour!,
-            status: "PENDING", consentVersion: "2026-10-03", consentedAt: now,
-            createdAt: now, updatedAt: now,
+            userId: args.userId,
+            ninCipher: user.registrationNinCipher,
+            fingerprint: user.registrationNinHash!,
+            lastFour: user.registrationNinLastFour!,
+            status: "PENDING",
+            consentVersion: "2026-10-03",
+            consentedAt: now,
+            createdAt: now,
+            updatedAt: now,
           });
-          await ctx.db.patch(args.userId, { registrationNinCipher: undefined,
-            registrationNinHash: undefined, registrationNinLastFour: undefined });
-          await ctx.db.insert("policyAcceptances", { userId: args.userId,
-            policy: "KYC_CONSENT", version: "2026-10-03", acceptedAt: now });
+          await ctx.db.patch(args.userId, {
+            registrationNinCipher: undefined,
+            registrationNinHash: undefined,
+            registrationNinLastFour: undefined,
+          });
+          await ctx.db.insert("policyAcceptances", {
+            userId: args.userId,
+            policy: "KYC_CONSENT",
+            version: "2026-10-03",
+            acceptedAt: now,
+          });
         }
         if (user?.registrationPolicyVersion)
           for (const policy of ["TERMS", "PRIVACY"] as const)
@@ -152,6 +179,15 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
           "Administrator access is restricted to the designated account.",
         );
       await ctx.db.patch(userId, { lastActiveAt: Date.now() });
+      await emitAlert(ctx, {
+        userId,
+        eventKey: `signin:${crypto.randomUUID()}`,
+        title: "Account signed in",
+        message:
+          "A new account session was created. Contact support if this was not you.",
+        href: "/dashboard/account",
+        category: "SECURITY",
+      });
       await ctx.db.insert("adminAuditLog", {
         actorId: userId,
         actorEmail: user.email,

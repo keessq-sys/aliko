@@ -1,3 +1,4 @@
+import { emitAlert } from "./lib/alerts";
 import { v } from "convex/values";
 import { query, internalMutation, internalAction } from "./_generated/server";
 import { internal } from "./_generated/api";
@@ -33,12 +34,39 @@ export const claimQueued = internalMutation({
           (row.attempts ?? 0) < 5,
       )
       .slice(0, 10);
-    for (const row of ready)
+    const permitted = [];
+    for (const row of ready) {
+      if (row.relatedType === "userAlert" && row.relatedId) {
+        const alert = await ctx.db.get(
+          row.relatedId as import("./_generated/dataModel").Id<"userAlerts">,
+        );
+        const prefs = alert
+          ? await ctx.db
+              .query("alertPreferences")
+              .withIndex("by_user", (q) => q.eq("userId", alert.userId))
+              .unique()
+          : null;
+        const user = alert ? await ctx.db.get(alert.userId) : null;
+        if (
+          !prefs?.email ||
+          !user ||
+          user.accountStatus === "SUSPENDED" ||
+          (alert?.category === "BROADCAST" && !prefs.broadcasts)
+        ) {
+          await ctx.db.patch(row._id, {
+            status: "FAILED",
+            lastError: "Email permission withdrawn or account unavailable",
+          });
+          continue;
+        }
+      }
       await ctx.db.patch(row._id, {
         attempts: (row.attempts ?? 0) + 1,
         leaseUntil: now + 120000,
       });
-    return ready.map((row) => ({
+      permitted.push(row);
+    }
+    return permitted.map((row) => ({
       ...row,
       attempts: (row.attempts ?? 0) + 1,
       leaseUntil: now + 120000,
@@ -56,6 +84,29 @@ export const finishQueued = internalMutation({
     const row = await ctx.db.get(args.id);
     if (!row || row.status !== "QUEUED" || row.leaseUntil !== args.leaseUntil)
       return;
+    if (args.providerId && row.relatedType !== "userAlert") {
+      const email =
+        row.recipient === "admin"
+          ? process.env.ADMIN_ALERT_EMAIL
+          : row.recipient;
+      if (email) {
+        const user = await ctx.db
+          .query("users")
+          .withIndex("by_email", (q) => q.eq("email", email.toLowerCase()))
+          .unique();
+        if (user)
+          await emitAlert(ctx, {
+            userId: user._id,
+            eventKey: `channel:${row._id}`,
+            title: row.subject ?? "Account update",
+            message:
+              "An update was recorded for your account. Open the relevant workspace for details.",
+            href: "/dashboard/notifications",
+            category: "WORKFLOW",
+            email: false,
+          });
+      }
+    }
     await ctx.db.patch(row._id, {
       status: args.providerId
         ? "SENT"

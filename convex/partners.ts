@@ -1,3 +1,4 @@
+import { emitAlert } from "./lib/alerts";
 import { auditedMutation } from "./lib/auditedMutation";
 import { v, ConvexError } from "convex/values";
 import { query, mutation } from "./_generated/server";
@@ -306,6 +307,14 @@ export const reviewAgentApplication = auditedMutation(
     const patch: Record<string, unknown> = { status, updatedAt: Date.now() };
     if (reviewNotes !== undefined) patch.reviewNotes = reviewNotes;
     await ctx.db.patch(id, patch);
+    await emitAlert(ctx, {
+      userId: application.userId,
+      eventKey: `application:${id}:${status}:${Date.now()}`,
+      title: "Professional application updated",
+      message: `Your application status is now ${status}. Sign in to review your account and next steps.`,
+      href: "/dashboard/account",
+      category: "APPLICATION",
+    });
   },
 });
 
@@ -370,5 +379,13 @@ export const reviewManagerApplication = auditedMutation(
     const patch: Record<string, unknown> = { status, updatedAt: Date.now() };
     if (status === "APPROVED") patch.approvedAt = Date.now();
     await ctx.db.patch(id, patch);
+    await emitAlert(ctx, {
+      userId: application.userId,
+      eventKey: `application:${id}:${status}:${Date.now()}`,
+      title: "Professional application updated",
+      message: `Your application status is now ${status}. Sign in to review your account and next steps.`,
+      href: "/dashboard/account",
+      category: "APPLICATION",
+    });
   },
 });

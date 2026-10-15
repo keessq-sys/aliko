@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InstallApp from "$lib/components/ui/InstallApp.svelte";
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
 
@@ -218,6 +219,7 @@
           <span class="text-sm font-medium theme-text">Language / اللغة</span>
           <LanguageSwitcher />
         </div>
+        <InstallApp />
         {#each navLinks as link}
           <a
             href={link.href}

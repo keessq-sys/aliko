@@ -3,6 +3,70 @@ import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  alertPreferences: defineTable({
+    userId: v.id("users"),
+    email: v.boolean(),
+    device: v.boolean(),
+    broadcasts: v.boolean(),
+    updatedAt: v.number(),
+  }).index("by_user", ["userId"]),
+  userAlerts: defineTable({
+    userId: v.id("users"),
+    eventKey: v.string(),
+    title: v.string(),
+    message: v.string(),
+    href: v.string(),
+    category: v.string(),
+    readAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId", "createdAt"])
+    .index("by_event", ["userId", "eventKey"])
+    .index("by_unread", ["userId", "readAt", "createdAt"]),
+  pushSubscriptions: defineTable({
+    userId: v.id("users"),
+    endpoint: v.string(),
+    p256dh: v.string(),
+    auth: v.string(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_endpoint", ["endpoint"]),
+  pushJobs: defineTable({
+    subscriptionId: v.id("pushSubscriptions"),
+    alertId: v.id("userAlerts"),
+    status: v.union(
+      v.literal("QUEUED"),
+      v.literal("SENT"),
+      v.literal("FAILED"),
+    ),
+    attempts: v.number(),
+    nextAttemptAt: v.number(),
+    leaseUntil: v.optional(v.number()),
+    lastError: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index("by_status", ["status", "nextAttemptAt"]),
+  broadcasts: defineTable({
+    cursor: v.optional(v.union(v.string(), v.null())),
+    authorId: v.id("users"),
+    reviewedBy: v.optional(v.id("users")),
+    title: v.string(),
+    message: v.string(),
+    audience: v.string(),
+    email: v.boolean(),
+    device: v.boolean(),
+    status: v.union(
+      v.literal("DRAFT"),
+      v.literal("APPROVED"),
+      v.literal("SENDING"),
+      v.literal("SENT"),
+      v.literal("CANCELLED"),
+    ),
+    recipients: v.number(),
+    createdAt: v.number(),
+    reviewedAt: v.optional(v.number()),
+    completedAt: v.optional(v.number()),
+  }).index("by_date", ["createdAt"]),
   integrationChecks: defineTable({
     check: v.string(),
     passed: v.boolean(),

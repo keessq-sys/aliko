@@ -1,7 +1,7 @@
 {
   "name": "Aliko Diamond Key",
   "short_name": "Diamond Key",
-  "description": "Nigeria's government-verified real estate, land and property-services marketplace.",
+  "description": "Nigerian property listings, land and professional property services.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -19,6 +19,26 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    }
+  ],
+  "id": "/",
+  "lang": "en-NG",
+  "categories": [
+    "business",
+    "lifestyle"
+  ],
+  "shortcuts": [
+    {
+      "name": "Property catalogue",
+      "url": "/properties"
+    },
+    {
+      "name": "My account",
+      "url": "/dashboard/account"
+    },
+    {
+      "name": "Notifications",
+      "url": "/dashboard/notifications"
     }
   ]
 }

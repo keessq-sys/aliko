@@ -5,5 +5,7 @@
   import MessageDesk from "$lib/components/dashboard/MessageDesk.svelte";
 </script>
 
-<svelte:head><title>{$adkT("Conversations | Aliko Diamond Key")}</title></svelte:head>
-<main class="container mx-auto pt-28 pb-12 px-4"><MessageDesk /></main>
+<svelte:head
+  ><title>{$adkT("Conversations | Aliko Diamond Key")}</title></svelte:head
+>
+<main class="mx-auto p-4 md:p-8"><MessageDesk /></main>

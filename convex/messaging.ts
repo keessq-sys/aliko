@@ -1,3 +1,4 @@
+import { emitAlert } from "./lib/alerts";
 import { auditedMutation } from "./lib/auditedMutation";
 import type { Id } from "./_generated/dataModel";
 import { v } from "convex/values";
@@ -45,17 +46,19 @@ export const thread = query({
 });
 async function notify(ctx: any, id: any, recipient: string | undefined) {
   if (!recipient) return;
-  await ctx.db.insert("notificationLog", {
-    channel: "EMAIL",
-    recipient,
-    subject: "New message in your Aliko Diamond Key account",
-    message:
-      "Sign in to read and reply to your conversation. Message contents are not included in this email.",
-    status: "QUEUED",
-    relatedType: "conversation",
-    relatedId: String(id),
-    createdAt: Date.now(),
-  });
+  const recipientUser = await ctx.db
+    .query("users")
+    .withIndex("by_email", (q: any) => q.eq("email", recipient.toLowerCase()))
+    .unique();
+  if (recipientUser)
+    await emitAlert(ctx, {
+      userId: recipientUser._id,
+      eventKey: `message:${id}:${crypto.randomUUID()}`,
+      title: "New private message",
+      message: "Sign in to read and reply to your conversation.",
+      href: "/dashboard/messages",
+      category: "MESSAGE",
+    });
 }
 export const messages = query({
   args: {
@@ -93,13 +96,24 @@ export const messages = query({
   },
 });
 export const create = auditedMutation("messaging:create")({
-  args: { subject: v.string(), body: v.string(), recipientId: v.optional(v.id("users")) },
+  args: {
+    subject: v.string(),
+    body: v.string(),
+    recipientId: v.optional(v.id("users")),
+  },
   handler: async (ctx, args) => {
     const actor = await requireUser(ctx);
     if (actor.role === "ADMIN") await requireAdmin(ctx);
-    if (args.recipientId && actor.role !== "ADMIN") throw new Error("Forbidden");
-    const recipient = args.recipientId ? await ctx.db.get(args.recipientId) : null;
-    if (args.recipientId && (!recipient || recipient.accountStatus === "SUSPENDED")) throw new Error("Recipient not available");
+    if (args.recipientId && actor.role !== "ADMIN")
+      throw new Error("Forbidden");
+    const recipient = args.recipientId
+      ? await ctx.db.get(args.recipientId)
+      : null;
+    if (
+      args.recipientId &&
+      (!recipient || recipient.accountStatus === "SUSPENDED")
+    )
+      throw new Error("Recipient not available");
     if (
       args.subject.trim().length < 3 ||
       args.subject.length > 180 ||
@@ -132,7 +146,13 @@ export const create = auditedMutation("messaging:create")({
     if (actor.role !== "ADMIN")
       await notify(ctx, id, process.env.ADMIN_ALERT_EMAIL);
     else if (recipient) await notify(ctx, id, recipient.email);
-    await ctx.db.insert("adminAuditLog", { actorId: actor._id, action: "CONVERSATION_CREATED", entityType: "conversations", entityId: String(id), createdAt: now });
+    await ctx.db.insert("adminAuditLog", {
+      actorId: actor._id,
+      action: "CONVERSATION_CREATED",
+      entityType: "conversations",
+      entityId: String(id),
+      createdAt: now,
+    });
     return id;
   },
 });
@@ -177,7 +197,13 @@ export const reply = auditedMutation("messaging:reply")({
       createdAt: now,
     });
     await ctx.db.patch(thread._id, { updatedAt: now });
-    await ctx.db.insert("adminAuditLog", { actorId: actor._id, action: "MESSAGE_SENT", entityType: "conversations", entityId: String(thread._id), createdAt: now });
+    await ctx.db.insert("adminAuditLog", {
+      actorId: actor._id,
+      action: "MESSAGE_SENT",
+      entityType: "conversations",
+      entityId: String(thread._id),
+      createdAt: now,
+    });
     const recipient = await ctx.db.get(
       (actor._id === thread.ownerId
         ? (thread.assignedTo ?? thread.ownerId)

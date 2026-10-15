@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InstallApp from "$lib/components/ui/InstallApp.svelte";
   import { getTranslation } from "$lib/i18n";
   import LanguageSwitcher from "$lib/components/ui/LanguageSwitcher.svelte";
   import ThemeToggle from "$lib/components/ui/ThemeToggle.svelte";
@@ -14,6 +15,7 @@
   } from "$lib/navigation/workspace";
   const adkT = getTranslation();
   export let role = "CLIENT";
+  const unread = useQuery(api.engagement.unread, {});
   const profile = useQuery(api.users.getMyProfile, {});
   let open = false,
     busy = false;
@@ -111,6 +113,15 @@
       <div class="workspace-language">
         <span>Language / اللغة</span><LanguageSwitcher />
       </div>
+      <InstallApp />
+      <a
+        class="workspace-alert-link"
+        href="/dashboard/notifications"
+        on:click={() => (open = false)}
+        ><span aria-hidden="true">🔔</span>
+        {$adkT("My notifications")}
+        <strong>{$unread ? ($unread >= 100 ? "99+" : $unread) : ""}</strong></a
+      >
       {#each groups as group}
         <section class="workspace-menu-group">
           <h2>{$adkT(group.label)}</h2>

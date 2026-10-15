@@ -511,3 +511,21 @@ html[dir="rtl"] .workspace-navigation .workspace-menu {
     display: none;
   }
 }
+
+.workspace-alert-link {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 12px;
+  min-height: 46px;
+  background: var(--workspace-tint);
+  color: var(--workspace-accent);
+  font-weight: 650;
+}
+.workspace-alert-link strong {
+  margin-left: auto;
+}
+.install-app .workspace-action {
+  width: 100%;
+}

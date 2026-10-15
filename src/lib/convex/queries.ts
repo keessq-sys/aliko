@@ -23,11 +23,13 @@ import type {
 export function useQuery<Query extends FunctionReference<"query">>(
   query: Query | null | undefined,
   args: Query extends FunctionReference<"query"> ? FunctionArgs<Query> : never,
+  onError?: (error: Error) => void,
 ): Writable<FunctionReturnType<Query> | undefined> {
   const client = getConvexClient();
   return writable<FunctionReturnType<Query> | undefined>(undefined, (set) => {
     if (!query || !browser) return;
     return client.onUpdate(query, args, set, (error) => {
+      onError?.(error);
       console.warn("[convex query]", error.message);
       window.dispatchEvent(
         new CustomEvent("adk-query-error", {

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+  import { initialiseInstallation } from "$lib/stores/install";
+  onMount(initialiseInstallation);
   import "../app.css";
   import "$lib/styles/workspace.css";
   import { provideI18n } from "$lib/i18n";
@@ -24,7 +27,6 @@
   import DashboardSidebar from "$lib/components/layout/DashboardSidebar.svelte";
   import WorkspaceNavigation from "$lib/components/layout/WorkspaceNavigation.svelte";
   import { invalidateAll } from "$app/navigation";
-  import { onMount } from "svelte";
   import { addToast } from "$lib/stores/ui";
   onMount(() => {
     const showError = (event: Event) =>
@@ -108,6 +110,11 @@
           : "/dashboard/client";
   $: accountLinks = [
     { id: "dashboard", label: "Dashboard", href: roleDashboard },
+    {
+      id: "notifications",
+      label: "My notifications",
+      href: "/dashboard/notifications",
+    },
     { id: "account", label: "My profile", href: "/dashboard/account" },
     {
       id: "subscriptions",

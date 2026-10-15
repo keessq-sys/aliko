@@ -1,13 +1,7 @@
-// static/sw.js
-// Minimal stub service worker. This app doesn't register a service worker
-// itself (no `navigator.serviceWorker.register()` call anywhere in src/) —
-// this file only exists so a browser or devtools probe for /sw.js at the
-// root scope gets a real (empty) response instead of a 404. It installs
-// and activates immediately, claims no clients, and intercepts nothing.
-self.addEventListener('install', () => {
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
-});
+const CACHE='adk-public-shell-v1';
+self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(['/offline.html','/adk-logo.png','/icons/icon-192.png','/icons/icon-512.png'])));self.skipWaiting();});
+self.addEventListener('activate',event=>{event.waitUntil(Promise.all([caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('adk-public-shell-')&&key!==CACHE).map(key=>caches.delete(key)))),self.clients.claim()]));});
+// Never cache API responses, authenticated HTML, payment pages, or personal data.
+self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;const url=new URL(event.request.url);if(url.origin!==self.location.origin)return;if(event.request.mode==='navigate'){event.respondWith(fetch(event.request).catch(()=>caches.match('/offline.html')));return;}if(['/offline.html','/adk-logo.png','/icons/icon-192.png','/icons/icon-512.png'].includes(url.pathname))event.respondWith(caches.match(event.request).then(cached=>cached||fetch(event.request)));});
+self.addEventListener('push',event=>{let data={};try{data=event.data?.json()||{};}catch{}event.waitUntil(self.registration.showNotification('Aliko Diamond Key',{body:'You have a private account update. Open your notification centre.',icon:'/icons/icon-192.png',badge:'/icons/icon-192.png',tag:typeof data.tag==='string'?data.tag.slice(0,100):'adk-account',data:{url:'/dashboard/notifications'}}));});
+self.addEventListener('notificationclick',event=>{event.notification.close();event.waitUntil((async()=>{const target=new URL('/dashboard/notifications',self.location.origin).href;const tabs=await self.clients.matchAll({type:'window',includeUncontrolled:true});for(const tab of tabs){if(new URL(tab.url).origin===self.location.origin){await tab.navigate(target);return tab.focus();}}return self.clients.openWindow(target);})());});
