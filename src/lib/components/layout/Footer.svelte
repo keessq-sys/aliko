@@ -3,10 +3,8 @@
   const adkT = getTranslation();
 
   import {
-    Twitter,
-    Linkedin,
+    Facebook,
     Instagram,
-    Youtube,
     Mail,
     MapPin,
     Phone,
@@ -20,7 +18,7 @@
     Landmark,
   } from "lucide-svelte";
   import DiamondMark from "$lib/components/ui/DiamondMark.svelte";
-  import { BUSINESS_WHATSAPP_NUMBER, whatsappHref } from "$lib/data/contact";
+  import { BUSINESS_EMAIL, whatsappHref } from "$lib/data/contact";
 </script>
 
 <footer
@@ -46,23 +44,15 @@
           > {$adkT("Aliko Diamond Key")} </span>
         </a>
         <p class="text-sm text-stone-400 leading-relaxed"> {$adkT("Nigeria's premier real estate, interior design and construction ecosystem. Verified titles, elite agents and turnkey building services.")} </p>
-        <div class="flex items-center gap-4">
-          <span
-            class="p-2 rounded-full bg-white/5 text-stone-500"
-            title={$adkT("Social links coming soon")}><Twitter size={18} /></span
-          >
-          <span
-            class="p-2 rounded-full bg-white/5 text-stone-500"
-            title={$adkT("Social links coming soon")}><Linkedin size={18} /></span
-          >
-          <span
-            class="p-2 rounded-full bg-white/5 text-stone-500"
-            title={$adkT("Social links coming soon")}><Instagram size={18} /></span
-          >
-          <span
-            class="p-2 rounded-full bg-white/5 text-stone-500"
-            title={$adkT("Social links coming soon")}><Youtube size={18} /></span
-          >
+        <div class="flex items-center gap-3" aria-label="Social media">
+          <a href="https://x.com/alikodiamondkey?s=11" target="_blank" rel="noopener noreferrer" aria-label="Aliko Diamond Key on X" class="social-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.64 7.584H.47l8.6-9.835L0 1.154h7.594l5.243 6.932zM17.61 20.644h2.039L6.486 3.24H4.298z" /></svg>
+          </a>
+          <a href="https://www.instagram.com/invites/contact/?utm_content=d6eqlyb&amp;vrfl=1pgi6tbi52em9" target="_blank" rel="noopener noreferrer" aria-label="Aliko Diamond Key on Instagram" class="social-link"><Instagram size={18} aria-hidden="true" /></a>
+          <a href="https://www.facebook.com/share/1EkcaGaa3u/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" aria-label="Aliko Diamond Key on Facebook" class="social-link"><Facebook size={18} aria-hidden="true" /></a>
+          <a href="https://www.tiktok.com/@alikodiamondkey?_r=1&amp;_t=ZS-9AfJbKLQSzB" target="_blank" rel="noopener noreferrer" aria-label="Aliko Diamond Key on TikTok" class="social-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.9 2.9 0 1 1-2.5-2.87V9.3a6.36 6.36 0 1 0 5.95 6.37V8.68a8.2 8.2 0 0 0 4.79 1.53V6.79a4.85 4.85 0 0 1-1.02-.1z" /></svg>
+          </a>
         </div>
       </div>
 
@@ -183,7 +173,7 @@
         <h4 class="text-white font-serif text-lg mb-2">{$adkT("Contact & Newsletter")}</h4>
         <div class="flex flex-col gap-2 text-sm text-stone-400">
           <span class="flex items-center gap-2"
-            ><MapPin size={16} class="text-emerald-500" /> {$adkT("Abuja FCT & Lagos, Nigeria")}</span
+            ><MapPin size={16} class="text-emerald-500" /> {$adkT("Abuja FCT, Lagos & Kano, Nigeria")}</span
           >
           <a
             href={whatsappHref(
@@ -194,9 +184,9 @@
             class="flex items-center gap-2 hover:text-emerald-400 transition-colors"
           >
             <Phone size={16} class="text-emerald-500" />
-            {$adkT(BUSINESS_WHATSAPP_NUMBER)} {$adkT("(WhatsApp)")} </a>
-          <span class="flex items-center gap-2"
-            ><Mail size={16} class="text-emerald-500" /> {$adkT("alikodiamondkey@gmail.com")}</span
+            09033333909 {$adkT("(WhatsApp)")} </a>
+          <a href={`mailto:${BUSINESS_EMAIL}`} class="flex items-center gap-2 hover:text-emerald-400 transition-colors"
+            ><Mail size={16} class="text-emerald-500" /> {BUSINESS_EMAIL}</a
           >
         </div>
 
@@ -252,3 +242,20 @@
     </div>
   </div>
 </footer>
+
+<style>
+  .social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.08);
+    color: inherit;
+    transition: color 150ms, background-color 150ms;
+  }
+  .social-link:hover { background: rgb(16 185 129 / 0.2); }
+  .social-link:focus-visible { outline: 2px solid #10b981; outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { .social-link { transition: none; } }
+</style>

@@ -1,5 +1,5 @@
 /** Single source of truth for the company's real contact touchpoints. */
-export const BUSINESS_WHATSAPP_NUMBER = "+2347047669943";
+export const BUSINESS_WHATSAPP_NUMBER = "+2349033333909";
 
 /** All customer enquiries go through the company support desk. */
 export function whatsappHref(

@@ -254,7 +254,7 @@
               <!-- Actions -->
               <div class="grid grid-cols-2 gap-2 mt-auto">
                 <a
-                  href={`tel:${"+2347047669943"}`}
+                  href={`tel:${"+2349033333909"}`}
                   class="flex min-h-[44px] items-center justify-center gap-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs text-white transition-colors"
                 >
                   <Phone class="w-3 h-3" />
@@ -263,7 +263,7 @@
                 <a
                   href={whatsappHref(
                     `Hi ${agent.fullName}, I found your profile on Aliko Diamond Key and would like to talk about a property.`,
-                    "+2347047669943",
+                    "+2349033333909",
                   )}
                   target="_blank"
                   rel="noopener noreferrer"

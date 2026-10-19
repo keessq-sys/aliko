@@ -14,7 +14,7 @@ import { SITE_URL } from "$lib/data/organization";
 const FALLBACK_AGENT: Agent = {
   id: "adk-house",
   name: "Aliko Diamond Key",
-  phone: "+2347047669943",
+  phone: "+2349033333909",
   email: "alikodiamondkey@gmail.com",
   avatar: `${SITE_URL}/logo.png`,
   agency: "Aliko Diamond Key Realtors Ltd",

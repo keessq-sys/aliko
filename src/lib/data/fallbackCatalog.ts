@@ -23,12 +23,12 @@ export const FALLBACK_PROPERTIES = propertySeed.map((p, i) => ({
 }));
 
 export const FALLBACK_AGENTS = [
-  ['Adaeze Okonkwo', 'ADK Premium Estates', '+2347047669943', ['Luxury Homes', 'Investment Advisory'], ['Lagos', 'FCT Abuja']],
-  ['Ibrahim Musa', 'Northern Keys Realty', '+2347047669943', ['Verified Land', 'New Developments'], ['FCT Abuja', 'Kano']],
-  ['Amaka Nwosu', 'Diamond City Partners', '+2347047669943', ['Residential Sales', 'Diaspora Clients'], ['Enugu', 'Rivers']],
-  ['Tunde Adebayo', 'Coastal Property Desk', '+2347047669943', ['Commercial Property', 'Property Management'], ['Lagos', 'Oyo']]
+  ['Adaeze Okonkwo', 'ADK Premium Estates', '+2349033333909', ['Luxury Homes', 'Investment Advisory'], ['Lagos', 'FCT Abuja']],
+  ['Ibrahim Musa', 'Northern Keys Realty', '+2349033333909', ['Verified Land', 'New Developments'], ['FCT Abuja', 'Kano']],
+  ['Amaka Nwosu', 'Diamond City Partners', '+2349033333909', ['Residential Sales', 'Diaspora Clients'], ['Enugu', 'Rivers']],
+  ['Tunde Adebayo', 'Coastal Property Desk', '+2349033333909', ['Commercial Property', 'Property Management'], ['Lagos', 'Oyo']]
 ].map((a, i) => ({
-  _id: `demo-agent-${i + 1}`, fullName: a[0], agencyName: a[1], phone: "+2347047669943",
+  _id: `demo-agent-${i + 1}`, fullName: a[0], agencyName: a[1], phone: "+2349033333909",
   specializations: a[3], statesOfOperation: a[4], experience: `${8 + i * 2} years`, status: 'APPROVED'
 }));
 

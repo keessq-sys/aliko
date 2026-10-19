@@ -710,7 +710,7 @@
             <!-- Contact Aliko Diamond Key -->
             <div class="grid grid-cols-3 gap-2 mb-6">
               <a
-                href="tel:+2347047669943"
+                href="tel:+2349033333909"
                 class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-white/5 hover:bg-emerald-900/30 border border-white/10 text-xs font-medium text-stone-300 hover:text-emerald-400 transition-colors"
               >
                 <Phone size={16} class="mb-1 text-emerald-400" />

@@ -19,7 +19,7 @@ export const ORGANIZATION = {
   // MANUAL STEP: confirm this is the correct public-facing support address
   // for alikodiamondkey.com (currently copied from the live footer).
   email: 'alikodiamondkey@gmail.com',
-  telephone: '+2347047669943',
+  telephone: '+2349033333909',
   address: {
     addressLocality: 'Abuja',
     addressRegion: 'FCT',
