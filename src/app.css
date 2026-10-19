@@ -204,7 +204,19 @@ html .theme-field-muted {
 html
   :is(
     .theme-input,
-    input:where(:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="hidden"], [type="submit"], [type="button"], [type="image"], [type="color"])),
+    input:where(
+      :not(
+        [type="checkbox"],
+        [type="radio"],
+        [type="range"],
+        [type="file"],
+        [type="hidden"],
+        [type="submit"],
+        [type="button"],
+        [type="image"],
+        [type="color"]
+      )
+    ),
     textarea,
     select
   ) {
@@ -933,4 +945,15 @@ html[dir="rtl"] .private-workspace aside.fixed {
 
 .private-workspace {
   min-height: calc(100dvh - 58px) !important;
+}
+
+/* A fixed navigation blur repaints the scrolled page on touch GPUs. */
+@media (hover: none) {
+  header.glass-l2 {
+    backdrop-filter: none;
+    background: var(--surface);
+  }
+  .home-content .grid-floor {
+    display: none;
+  }
 }

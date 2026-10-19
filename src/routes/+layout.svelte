@@ -53,6 +53,7 @@
 
   export let data: {
     locale?: "en" | "ar";
+    translationCatalog?: Record<string, string>;
     session?: {
       user?: {
         name?: string | null;
@@ -68,7 +69,12 @@
     globalSchemaJson?: string;
   };
 
-  const { locale, t: adkT } = provideI18n(data.locale ?? "en");
+  const {
+    locale,
+    t: adkT,
+    setCatalog,
+  } = provideI18n(data.locale ?? "en", data.translationCatalog);
+  $: setCatalog(data.translationCatalog ?? {});
   $: locale.set(data.locale ?? "en");
   afterNavigate(() => {
     if (data.session?.user?.id)

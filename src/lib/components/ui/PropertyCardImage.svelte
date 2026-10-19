@@ -25,6 +25,8 @@
     <img
       use:recoverFailedImage
       src={source}
+      loading="lazy"
+      decoding="async"
       alt={$adkT(title)}
       class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
       on:error={() => markFailed(source)}

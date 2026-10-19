@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { preloadVisibleRoutes } from "$lib/actions/preloadVisibleRoutes";
   import InstallApp from "$lib/components/ui/InstallApp.svelte";
   import { getTranslation } from "$lib/i18n";
   import LanguageSwitcher from "$lib/components/ui/LanguageSwitcher.svelte";
@@ -82,6 +83,7 @@
   </div>
   {#if open}
     <nav
+      use:preloadVisibleRoutes
       id="workspace-navigation-menu"
       class="workspace-menu"
       aria-label={$adkT("Workspace navigation")}
@@ -127,6 +129,7 @@
           <h2>{$adkT(group.label)}</h2>
           {#each group.items as item}<a
               href={item.href}
+              data-sveltekit-preload-code="viewport"
               class:active={isWorkspaceActive(item.href, $page.url)}
               aria-current={isWorkspaceActive(item.href, $page.url)
                 ? "page"

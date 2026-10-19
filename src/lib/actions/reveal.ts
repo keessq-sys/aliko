@@ -7,7 +7,7 @@ export function reveal(
   node: HTMLElement,
   options: { delay?: number; y?: number; threshold?: number } = {},
 ) {
-  const { delay = 0, y = 28, threshold = 0.15 } = options;
+  const { delay = 0, y = 12, threshold = 0.15 } = options;
 
   if (typeof IntersectionObserver === "undefined") return {};
   if (
@@ -18,8 +18,8 @@ export function reveal(
 
   node.style.opacity = "0";
   node.style.transform = `translateY(${y}px)`;
-  node.style.transition = `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${delay}ms, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${delay}ms`;
-  node.style.willChange = "opacity, transform";
+  node.style.transition = `opacity 0.18s cubic-bezier(0.16,1,0.3,1) ${Math.min(delay, 60)}ms, transform 0.18s cubic-bezier(0.16,1,0.3,1) ${Math.min(delay, 60)}ms`;
+  // Avoid retaining compositor layers for every section after its reveal.
 
   const observer = new IntersectionObserver(
     (entries) => {
@@ -55,7 +55,7 @@ export function revealStagger(
   node: HTMLElement,
   options: { selector?: string; step?: number; y?: number } = {},
 ) {
-  const { selector = ":scope > *", step = 80, y = 24 } = options;
+  const { selector = ":scope > *", step = 30, y = 12 } = options;
 
   if (typeof IntersectionObserver === "undefined") return {};
   if (
@@ -68,7 +68,7 @@ export function revealStagger(
   children.forEach((child, i) => {
     child.style.opacity = "0";
     child.style.transform = `translateY(${y}px)`;
-    child.style.transition = `opacity 0.6s cubic-bezier(0.16,1,0.3,1) ${i * step}ms, transform 0.6s cubic-bezier(0.16,1,0.3,1) ${i * step}ms`;
+    child.style.transition = `opacity 0.18s cubic-bezier(0.16,1,0.3,1) ${Math.min(i * step, 90)}ms, transform 0.18s cubic-bezier(0.16,1,0.3,1) ${Math.min(i * step, 90)}ms`;
   });
 
   const observer = new IntersectionObserver(

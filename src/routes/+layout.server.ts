@@ -25,6 +25,11 @@ export const load: LayoutServerLoad = async ({ cookies, locals, url }) => {
   const seoBase = {
     locale:
       cookies.get("adk-language") === "ar" ? ("ar" as const) : ("en" as const),
+    // English visits do not download or parse the Arabic catalogue.
+    translationCatalog:
+      cookies.get("adk-language") === "ar"
+        ? (await import("$lib/i18n/ar.json")).default
+        : {},
     seo: defaultSEO,
     globalSchemaJson: buildPageGraph(globalSchema),
   };

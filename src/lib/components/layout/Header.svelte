@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { preloadVisibleRoutes } from "$lib/actions/preloadVisibleRoutes";
   import InstallApp from "$lib/components/ui/InstallApp.svelte";
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
@@ -206,6 +207,7 @@
   {#if isMobileMenuOpen}
     <div
       id="public-navigation-menu"
+      use:preloadVisibleRoutes
       class="mobile-dropdown absolute top-[calc(100%+8px)] right-3 sm:right-6 w-[min(22rem,calc(100vw-24px))] z-50 bg-[#071018] border border-white/15 rounded-2xl shadow-2xl"
       transition:slide={{ duration: 100 }}
     >
@@ -223,6 +225,7 @@
         {#each navLinks as link}
           <a
             href={link.href}
+            data-sveltekit-preload-code="viewport"
             class="px-4 py-3 rounded-lg text-base font-medium {$page.url
               .pathname === link.href
               ? 'bg-emerald-900/30 text-emerald-400 border border-emerald-500/20'
