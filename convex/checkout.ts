@@ -15,12 +15,16 @@ import { auditedMutation } from "./lib/auditedMutation";
 import { rateLimiter } from "./lib/rateLimits";
 import { assertCheckoutEnvironment } from "./lib/checkoutReadiness";
 import { MANAGER_PLANS } from "./lib/managerPlans";
+import { bookingBalance } from "./lib/bookingBalance";
+import { bookingAggregate, paymentAggregate } from "./aggregates";
+import { start } from "@convex-dev/workflow";
 const kind = v.union(
+  v.literal("LAND"),
   v.literal("PROPERTY"),
   v.literal("SERVICE"),
   v.literal("MANAGER"),
 );
-type Kind = "PROPERTY" | "SERVICE" | "MANAGER";
+type Kind = "PROPERTY" | "SERVICE" | "MANAGER" | "LAND";
 const planPrices = {
   STARTER: MANAGER_PLANS.STARTER.monthlyFeeNgn,
   PROFESSIONAL: MANAGER_PLANS.PROFESSIONAL.monthlyFeeNgn,
@@ -64,7 +68,17 @@ async function resolve(
   owner: Id<"users">,
 ): Promise<{ amount: number; title: string }> {
   let result: { amount: number; title: string };
-  if (type === "PROPERTY") {
+  if (type === "LAND") {
+    const row = await ctx.db.get(targetId as Id<"bookings">);
+    if (!row || row.clientId !== owner) throw new Error("Booking does not belong to your account.");
+    const plot = await ctx.db.get(row.plotId);
+    const project = plot ? await ctx.db.get(plot.projectId) : null;
+    if (!plot?.titleVerified || !project?.isActive || plot.status !== "RESERVED")
+      throw new Error("Land booking is not available for payment.");
+    const pending = await ctx.db.query("payments").withIndex("by_booking", q => q.eq("bookingId", row._id)).filter(q => q.eq(q.field("status"), "PENDING")).first();
+    if (pending) throw new Error("An earlier payment needs reconciliation before another checkout.");
+    result = { amount: bookingBalance(row), title: `${project.name} — Plot ${plot.plotNumber} (outstanding balance)` };
+  } else if (type === "PROPERTY") {
     const row = await ctx.db.get(targetId as Id<"properties">);
     if (
       !row ||
@@ -183,7 +197,7 @@ export const get = query({
       available: true,
       reason: "",
       checkoutUrl:
-        latest?.status === "PENDING" ? latest.checkoutUrl : undefined,
+        latest?.status === "PENDING" && (!process.env.ACTIVE_PAYMENT_PROVIDER || (latest.provider ?? "FLUTTERWAVE") === process.env.ACTIVE_PAYMENT_PROVIDER) ? latest.checkoutUrl : undefined,
     };
   },
 });
@@ -283,6 +297,8 @@ export const prepare = internalMutation({
     if (pending && pending._id !== order._id)
       throw new Error("Another payment is pending for this item.");
     const provider = args.provider ?? "FLUTTERWAVE";
+    if (process.env.ACTIVE_PAYMENT_PROVIDER && provider !== process.env.ACTIVE_PAYMENT_PROVIDER)
+      throw new Error("This payment provider is suspended. Use Korapay checkout.");
     // Korapay requires at most 50 characters; order ownership lives in the attempt row.
     const reference = `ADK-${provider === "KORAPAY" ? "KPY" : "FLW"}-${crypto.randomUUID()}`;
     await ctx.db.patch(order._id, {
@@ -410,6 +426,21 @@ export const settle = internalMutation({
       paidAt: Date.now(),
       updatedAt: Date.now(),
     });
+    if (order.kind === "LAND") {
+      const booking = await ctx.db.get(order.targetId as Id<"bookings">);
+      if (!booking || booking.clientId !== order.ownerId || Math.abs(bookingBalance(booking) - attempt.amount) > 0.001)
+        throw new Error("Land balance changed; administrator reconciliation is required.");
+      const now = Date.now();
+      const paymentId = await ctx.db.insert("payments", { bookingId: booking._id, provider: args.provider ?? "FLUTTERWAVE", reference: attempt.reference, providerReference: args.providerId, amount: attempt.amount, currency: attempt.currency, status: "SUCCESS", createdAt: now, updatedAt: now });
+      const payment = await ctx.db.get(paymentId);
+      if (payment) await paymentAggregate.insertIfDoesNotExist(ctx, payment);
+      await ctx.db.patch(booking._id, { paidAmount: booking.totalAmount, paymentStatus: "SUCCESS", updatedAt: now });
+      const updated = await ctx.db.get(booking._id);
+      if (updated) await bookingAggregate.replaceOrInsert(ctx, booking, updated);
+      await ctx.db.patch(booking.plotId, { status: "RESERVED", updatedAt: now });
+      const workflowId = await start(ctx, internal.fulfillment.paymentFulfillment, { bookingId: booking._id, clientId: booking.clientId, plotId: booking.plotId, considerationAmount: booking.totalAmount }, { startAsync: true });
+      await ctx.db.patch(booking._id, { fulfillmentWorkflowId: workflowId });
+    }
     if (order.kind === "PROPERTY")
       await ctx.db.patch(order.targetId as Id<"properties">, {
         status: "RESERVED",
@@ -425,7 +456,8 @@ export const settle = internalMutation({
       if (
         !manager ||
         manager.userId !== order.ownerId ||
-        manager.plan === "ENTERPRISE"
+        manager.plan === "ENTERPRISE" ||
+        !order.title.startsWith(`${manager.plan} — `)
       )
         throw new Error("Invalid subscription beneficiary.");
       const startsAt = Date.now(),

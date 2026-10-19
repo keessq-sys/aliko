@@ -109,7 +109,7 @@ http.route({
     );
     if (!signature || !constantTimeEqual(signature, expected))
       return new Response("Invalid signature", { status: 401 });
-    if (event.event !== "charge.success") return new Response("ok");
+    if (event.event !== "charge.success" && event.event !== "charge.failed") return new Response("ok");
     const reference = event.data.reference;
     if (!reference || reference.length > 200)
       return new Response("Invalid reference", { status: 400 });

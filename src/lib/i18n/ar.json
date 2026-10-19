@@ -3013,5 +3013,10 @@
   "Broadcast records could not be loaded. Please try again later.": "تعذر تحميل سجلات الإعلانات. حاول لاحقًا.",
   "Conversation data could not be loaded. Please try again later.": "تعذر تحميل المحادثات. حاول لاحقًا.",
   "Recorded channel activity. SENT means provider acceptance, not confirmed recipient delivery.": "نشاط القنوات المسجل. تعني SENT قبول المزود ولا تؤكد التسليم للمستلم.",
-  "Abuja FCT, Lagos & Kano, Nigeria": "أبوجا العاصمة الاتحادية ولاغوس وكانو، نيجيريا"
+  "Abuja FCT, Lagos & Kano, Nigeria": "أبوجا العاصمة الاتحادية ولاغوس وكانو، نيجيريا",
+  "Pay with Korapay": "الدفع عبر كوراباي",
+  "You'll review the order before continuing to Korapay's secure checkout for": "ستراجع الطلب قبل المتابعة إلى صفحة الدفع الآمنة لدى كوراباي بمبلغ",
+  "Card details stay on Korapay's secure checkout": "تبقى بيانات البطاقة في صفحة الدفع الآمنة لدى كوراباي",
+  "New payments use Korapay; historical reconciliation retained": "تستخدم المدفوعات الجديدة كوراباي مع الاحتفاظ بتسوية السجلات السابقة",
+  "Flutterwave (historical only)": "فلتر ويف (السجلات السابقة فقط)"
 }

@@ -44,6 +44,7 @@ const app = defineApp({
     MEDIA_PROCESSOR_KEY: v.optional(v.string()),
     DROPBOX_SIGN_TEST_MODE: v.optional(v.string()),
     DEPLOYMENT_ENVIRONMENT: v.optional(v.string()),
+    ACTIVE_PAYMENT_PROVIDER: v.optional(v.string()),
     LIVE_TRANSACTIONS_ENABLED: v.optional(v.string()),
     LIVE_TRANSACTION_APPROVAL_REFERENCE: v.optional(v.string()),
     QOREID_CLIENT_ID: v.optional(v.string()),

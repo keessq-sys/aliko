@@ -8,14 +8,6 @@
     Mail,
     MapPin,
     Phone,
-    Lamp,
-    Cpu,
-    Building,
-    Hammer,
-    DraftingCompass,
-    LayoutGrid,
-    Building2,
-    Landmark,
   } from "lucide-svelte";
   import DiamondMark from "$lib/components/ui/DiamondMark.svelte";
   import { BUSINESS_EMAIL, whatsappHref } from "$lib/data/contact";
@@ -30,7 +22,7 @@
   ></div>
 
   <div class="container mx-auto px-4 lg:px-8 pt-16 pb-8">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-12 mb-16">
       <!-- Brand Col -->
       <div class="flex flex-col gap-6 lg:col-span-1">
         <a href="/" class="flex items-center gap-3">
@@ -53,118 +45,6 @@
           <a href="https://www.tiktok.com/@alikodiamondkey?_r=1&amp;_t=ZS-9AfJbKLQSzB" target="_blank" rel="noopener noreferrer" aria-label="Aliko Diamond Key on TikTok" class="social-link">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.9 2.9 0 1 1-2.5-2.87V9.3a6.36 6.36 0 1 0 5.95 6.37V8.68a8.2 8.2 0 0 0 4.79 1.53V6.79a4.85 4.85 0 0 1-1.02-.1z" /></svg>
           </a>
-        </div>
-      </div>
-
-      <!-- Properties Col -->
-      <div class="flex flex-col gap-4">
-        <h4 class="text-white font-serif text-lg mb-2">{$adkT("Properties")}</h4>
-        <a
-          href="/properties"
-          class="text-sm text-stone-400 hover:text-white transition-colors"
-          >{$adkT("All Listings")}</a
-        >
-        <a
-          href="/properties?type=residential"
-          class="text-sm text-stone-400 hover:text-white transition-colors"
-          >{$adkT("Residential")}</a
-        >
-        <a
-          href="/properties?type=commercial"
-          class="text-sm text-stone-400 hover:text-white transition-colors"
-          >{$adkT("Commercial")}</a
-        >
-        <a
-          href="/plots"
-          class="text-sm text-stone-400 hover:text-white transition-colors"
-          >{$adkT("Land & Plots (Live Registry)")}</a
-        >
-        <a
-          href="/map"
-          class="text-sm text-stone-400 hover:text-white transition-colors"
-          >{$adkT("Map Search")}</a
-        >
-      </div>
-
-      <!-- Services Col -->
-      <div class="flex flex-col gap-3">
-        <h4 class="text-white font-serif text-lg mb-2">{$adkT("Services")}</h4>
-        <a
-          href="/services/interior-design"
-          class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"
-          ><Lamp size={14} /> {$adkT("Interior Design")}</a
-        >
-        <a
-          href="/services/renovation-refurbishment"
-          class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"
-          ><Hammer size={14} class="text-emerald-400/80" /> {$adkT("Renovation & Refurbishing")}</a
-        >
-        <a
-          href="/services/architectural-design"
-          class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"
-          ><DraftingCompass size={14} class="text-sky-400/80" /> {$adkT("Architectural Design")}</a
-        >
-        <a
-          href="/services/space-planning"
-          class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"
-          ><LayoutGrid size={14} class="text-sky-400/80" /> {$adkT("Space Planning")}</a
-        >
-        <a
-          href="/services/smart-home-installation"
-          class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"
-          ><Cpu size={14} class="text-purple-400/80" /> {$adkT("Smart Homes")}</a
-        >
-        <a
-          href="/services/construction-services"
-          class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"
-          ><Building size={14} class="text-emerald-400/80" /> {$adkT("Construction")}</a
-        >
-        <a
-          href="/services/property-development"
-          class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"
-          ><Building2 size={14} class="text-yellow-400/80" /> {$adkT("Property & Facility Mgmt")}</a
-        >
-        <a
-          href="/services/land-real-estate-brokerage"
-          class="flex items-center gap-2 text-sm text-stone-400 hover:text-emerald-400 transition-colors"
-          ><Landmark size={14} class="text-yellow-400/80" /> {$adkT("Land & Real Estate Brokerage")}</a
-        >
-        <a
-          href="/services"
-          class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 mt-1"
-          >{$adkT("View all services →")}</a
-        >
-      </div>
-
-      <!-- Company Col -->
-      <div class="flex flex-col gap-4">
-        <h4 class="text-white font-serif text-lg mb-2">{$adkT("Company")}</h4>
-        <a
-          href="/agents"
-          class="text-sm text-stone-400 hover:text-white transition-colors"
-          >{$adkT("Our Agents")}</a
-        >
-        <a
-          href="/register/agent"
-          class="text-sm text-stone-400 hover:text-white transition-colors"
-          >{$adkT("Careers — Join as Agent")}</a
-        >
-        <a
-          href="/legal/track"
-          class="text-sm text-stone-400 hover:text-white transition-colors"
-          >{$adkT("Document Tracking")}</a
-        >
-        <div class="mt-2 flex flex-col gap-2">
-          <a
-            href="/register/agent"
-            class="btn-primary text-xs py-1.5 w-full text-center"
-            >{$adkT("Join as Agent")}</a
-          >
-          <a
-            href="/register/manager"
-            class="btn-secondary text-xs py-1.5 w-full text-center"
-            >{$adkT("Become a Manager")}</a
-          >
         </div>
       </div>
 
@@ -218,25 +98,7 @@
     >
       <p class="text-xs text-stone-500">
         &copy; {$adkT(new Date().getFullYear())} {$adkT("Aliko Diamond Key. All rights reserved.")} </p>
-      <div class="flex items-center gap-4 text-xs text-stone-500">
-        <a href="/legal/terms" class="hover:text-white transition-colors"
-          >{$adkT("Terms")}</a
-        >
-        <a href="/legal/privacy" class="hover:text-white transition-colors"
-          >{$adkT("Privacy")}</a
-        >
-        <a
-          href="/legal/payments-refunds"
-          class="hover:text-white transition-colors">{$adkT("Payments & Refunds")}</a
-        >
-        <a href="/legal/track" class="hover:text-white transition-colors"
-          >{$adkT("Track a Document")}</a
-        >
-        <a
-          href="/services/general-contracts"
-          class="hover:text-white transition-colors">{$adkT("Contract Proposals")}</a
-        >
-      </div>
+
       <p class="text-xs font-mono text-stone-400 flex items-center gap-1"> {$adkT("Powered by")} <span class="text-emerald-400">{$adkT("ADK Platform")}</span>
       </p>
     </div>

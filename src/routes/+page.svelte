@@ -49,10 +49,10 @@
   <MapPreview />
   <VisionBanner />
   <ServicesSection />
-  <TrustBanner />
-  <ROICalculator />
-  <FAQSection />
   <DualCTABanner />
+  <ROICalculator />
+  <TrustBanner />
+  <FAQSection />
   <WhatsAppFloatButton
     message="Hi, I'd like to know more about properties and services on Aliko Diamond Key."
   />

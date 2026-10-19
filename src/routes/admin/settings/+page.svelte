@@ -61,9 +61,9 @@
     },
     {
       icon: CreditCard,
-      name: "Flutterwave Payments",
+      name: "Flutterwave (historical only)",
       env: "FLUTTERWAVE_SECRET_KEY + FLUTTERWAVE_SECRET_HASH",
-      desc: "Hosted checkout, transaction verification and payment webhooks",
+      desc: "New payments use Korapay; historical reconciliation retained",
       done: $status?.flutterwave ?? false,
     },
     {

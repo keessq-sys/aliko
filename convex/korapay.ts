@@ -33,6 +33,7 @@ export const initialize = action({
         reference: prepared.reference,
         amount: prepared.order.amount,
         currency: "NGN",
+        merchant_bears_cost: true,
         customer: {
           email: prepared.customer.email,
           name: prepared.customer.name,
@@ -69,7 +70,7 @@ export const initialize = action({
   },
 });
 
-async function verify(ctx: ActionCtx, reference: string) {
+async function verify(ctx: ActionCtx, reference: string, webhook = false) {
   const row = await ctx.runQuery(internal.checkout.attempt, { reference });
   if (!row || row.attempt.provider !== "KORAPAY")
     throw new Error("Unknown Korapay payment.");
@@ -83,6 +84,7 @@ async function verify(ctx: ActionCtx, reference: string) {
     throw new Error("Korapay payment verification failed.");
   if (["failed", "cancelled"].includes(tx.status)) {
     await ctx.runMutation(internal.checkout.failed, { reference });
+    if (webhook) return { reference: row.order!.reference, newlyConfirmed: false };
     throw new Error("Payment failed or was cancelled. You can retry checkout.");
   }
   if (tx.status !== "success")
@@ -115,7 +117,7 @@ export const processWebhook = internalAction({
     ctx,
     { reference },
   ): Promise<{ reference: string; newlyConfirmed: boolean }> =>
-    verify(ctx, reference),
+    verify(ctx, reference, true),
 });
 export const reconcile = action({
   args: { reference: v.string() },

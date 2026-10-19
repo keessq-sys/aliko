@@ -276,6 +276,8 @@ export const cancelBooking = auditedMutation("bookings:cancelBooking")({
       if (!user || !["ADMIN", "AGENT"].includes(user.role))
         throw new Error("Forbidden — not your booking");
     }
+    const pendingOrder = await ctx.db.query("checkoutOrders").withIndex("by_target_status", q => q.eq("kind", "LAND").eq("targetId", String(booking._id)).eq("status", "PENDING")).first();
+    if (pendingOrder) throw new Error("Checkout is in progress — reconcile the payment before cancelling");
     if (booking.paidAmount > 0)
       throw new Error("Cannot cancel a paid booking — contact support");
     const recentPendingPayment = await ctx.db

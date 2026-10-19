@@ -66,7 +66,7 @@
   let booking = false;
   let bookingError = "";
   let bookingResult: { bookingId: string; reference: string } | null = null;
-  // Outright purchases continue to the dedicated Flutterwave checkout page.
+  // Outright purchases continue to the dedicated Korapay checkout page.
   // Installment bookings remain a manual schedule until deposit percentages
   // and due-date rules are explicitly configured by the business.
   async function reserve() {
@@ -80,7 +80,8 @@
       });
 
       if (installmentPlan === "OUTRIGHT") {
-        window.location.href = `/checkout/${encodeURIComponent(bookingResult!.reference)}`;
+        const order = await runMutation(api.checkout.create, { kind: "LAND", targetId: bookingResult!.bookingId });
+        window.location.href = `/checkout/${encodeURIComponent(order.reference)}`;
       }
     } catch (err: any) {
       bookingError = err?.message?.includes("Unauthorized")
@@ -329,7 +330,7 @@
             : "Reserve This Plot")}
         </button>
         {#if installmentPlan === "OUTRIGHT"}
-          <p class="mt-3 text-center text-[11px] text-stone-600"> {$adkT("You'll review the order before continuing to Flutterwave's secure checkout for")} {$adkT(formatNaira(selectedPlot.price, $adkLocale))}.
+          <p class="mt-3 text-center text-[11px] text-stone-600"> {$adkT("You'll review the order before continuing to Korapay's secure checkout for")} {$adkT(formatNaira(selectedPlot.price, $adkLocale))}.
           </p>
         {:else}
           <p class="mt-3 text-center text-[11px] text-stone-600"> {$adkT("This reserves the plot. Our team will contact you with the")} {$adkT(installmentPlan)} {$adkT("payment schedule.")} </p>

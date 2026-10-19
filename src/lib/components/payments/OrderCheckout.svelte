@@ -11,16 +11,13 @@
   let error = "",
     busy = false;
   const providers = useQuery(api.checkout.providers, {});
-  let provider: "FLUTTERWAVE" | "KORAPAY" = "KORAPAY";
   async function pay() {
     if (!$order) return;
     busy = true;
     error = "";
     try {
       const result = await runAction(
-        provider === "KORAPAY"
-          ? api.korapay.initialize
-          : api.checkout.initialize,
+        api.korapay.initialize,
         {
           reference,
           expectedAmount: $order.amount,
@@ -123,18 +120,8 @@
             "This amount reflects the current approved price. A price change requires another review before payment. Your card details stay with the payment provider.",
           )}
         </p>
-        <label for="payment-provider">{$adkT("Payment provider")}</label>
-        <select
-          id="payment-provider"
-          bind:value={provider}
-          class="theme-input block min-h-[44px] w-full rounded-lg border px-3"
-        >
-          <option value="KORAPAY"
-            >Korapay {$providers?.korapay.sandbox ? "(test mode)" : ""}</option
-          >
-          <option value="FLUTTERWAVE">Flutterwave</option>
-        </select>
-        {#if $providers && !$providers[provider === "KORAPAY" ? "korapay" : "flutterwave"].available}
+        <p class="font-semibold">Korapay · NGN</p>
+        {#if $providers && !$providers.korapay.available}
           <p role="status">
             {$adkT(
               "This payment provider is not available for production payments. Contact support.",
@@ -145,15 +132,13 @@
           class="btn-primary w-full min-h-[52px]"
           disabled={busy ||
             !$providers ||
-            !$providers[provider === "KORAPAY" ? "korapay" : "flutterwave"]
+            !$providers.korapay
               .available}
           on:click={pay}
           >{$adkT(
             busy
               ? "Verifying…"
-              : provider === "KORAPAY"
-                ? "Pay securely with Korapay"
-                : "Pay securely with Flutterwave",
+              : "Pay securely with Korapay",
           )}</button
         >
       {/if}

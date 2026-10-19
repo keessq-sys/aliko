@@ -2,6 +2,9 @@ export function assertCheckoutEnvironment(
   provider: "FLUTTERWAVE" | "PAYSTACK" | "KORAPAY",
   secret: string,
 ) {
+  const active = process.env.ACTIVE_PAYMENT_PROVIDER;
+  if (active && provider !== active)
+    throw new Error(`${provider} payments are suspended. Use Korapay checkout.`);
   const environment = process.env.DEPLOYMENT_ENVIRONMENT ?? "production";
   const sandbox =
     provider === "PAYSTACK" || provider === "KORAPAY"

@@ -3013,5 +3013,10 @@
   "Broadcast records could not be loaded. Please try again later.": "Broadcast records could not be loaded. Please try again later.",
   "Conversation data could not be loaded. Please try again later.": "Conversation data could not be loaded. Please try again later.",
   "Recorded channel activity. SENT means provider acceptance, not confirmed recipient delivery.": "Recorded channel activity. SENT means provider acceptance, not confirmed recipient delivery.",
-  "Abuja FCT, Lagos & Kano, Nigeria": "Abuja FCT, Lagos & Kano, Nigeria"
+  "Abuja FCT, Lagos & Kano, Nigeria": "Abuja FCT, Lagos & Kano, Nigeria",
+  "Pay with Korapay": "Pay with Korapay",
+  "You'll review the order before continuing to Korapay's secure checkout for": "You'll review the order before continuing to Korapay's secure checkout for",
+  "Card details stay on Korapay's secure checkout": "Card details stay on Korapay's secure checkout",
+  "New payments use Korapay; historical reconciliation retained": "New payments use Korapay; historical reconciliation retained",
+  "Flutterwave (historical only)": "Flutterwave (historical only)"
 }

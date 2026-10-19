@@ -109,6 +109,7 @@ export default defineSchema({
     reference: v.string(),
     ownerId: v.id("users"),
     kind: v.union(
+      v.literal("LAND"),
       v.literal("PROPERTY"),
       v.literal("SERVICE"),
       v.literal("MANAGER"),
@@ -495,6 +496,7 @@ export default defineSchema({
   payments: defineTable({
     bookingId: v.id("bookings"),
     provider: v.union(
+      v.literal("KORAPAY"),
       v.literal("PAYSTACK"),
       v.literal("FLUTTERWAVE"),
       v.literal("BANK_TRANSFER"),

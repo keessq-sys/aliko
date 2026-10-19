@@ -1,5 +1,7 @@
 import { convexTest } from "convex-test";
 import { describe, it, expect, vi, afterEach } from "vitest";
+import aggregate from "@convex-dev/aggregate/test";
+import workflow from "@convex-dev/workflow/test";
 import rateLimiter from "@convex-dev/rate-limiter/test";
 import schema from "../../convex/schema";
 import { api, internal } from "../../convex/_generated/api";
@@ -17,6 +19,9 @@ afterEach(() => {
 function setup() {
   const t = convexTest(schema, modules);
   rateLimiter.register(t);
+  aggregate.register(t, "paymentAggregate");
+  aggregate.register(t, "bookingAggregate");
+  workflow.register(t);
   return t;
 }
 async function user(t: ReturnType<typeof setup>, verified = true) {
@@ -88,6 +93,46 @@ describe("Nigeria location catalogue", () => {
   });
 });
 describe("dynamic checkout", () => {
+  it("uses Korapay server amounts, rejects mismatches and duplicate settlements", async () => {
+    const t=setup(), buyer=await user(t), id=await property(t);
+    vi.stubEnv("KORAPAY_SECRET_KEY","sk_live_fixture");
+    vi.stubEnv("ACTIVE_PAYMENT_PROVIDER","KORAPAY");
+    vi.stubEnv("LIVE_TRANSACTIONS_ENABLED","true");
+    vi.stubEnv("LIVE_TRANSACTION_APPROVAL_REFERENCE","owner-test-approval");
+    vi.stubEnv("CONVEX_HTTP_ACTIONS_URL","https://test.convex.site");
+    vi.stubEnv("FLUTTERWAVE_SECRET_KEY","FLWSECK_LIVE_FIXTURE");
+    expect((await buyer.session.query(api.checkout.providers,{})).flutterwave.available).toBe(false);
+    const order=await buyer.session.mutation(api.checkout.create,{kind:"PROPERTY",targetId:id});
+    const provider=vi.fn().mockResolvedValueOnce(new Response(JSON.stringify({status:true,data:{checkout_url:"https://checkout.korapay.com/fixture/pay"}})));
+    vi.stubGlobal("fetch",provider);
+    await expect(buyer.session.action(api.checkout.initialize,{...order,expectedAmount:10000})).rejects.toThrow(/suspended/);
+    await buyer.session.action(api.korapay.initialize,{...order,expectedAmount:10000});
+    const body=JSON.parse(provider.mock.calls[0][1].body);
+    expect(body).toMatchObject({amount:10000,currency:"NGN",merchant_bears_cost:true,notification_url:"https://test.convex.site/webhooks/korapay"});
+    const settle={reference:body.reference,providerId:`KORAPAY:${body.reference}`,provider:"KORAPAY" as const,amount:1,currency:"NGN"};
+    await expect(t.mutation(internal.checkout.settle,settle)).rejects.toThrow(/amount/);
+    expect((await t.mutation(internal.checkout.settle,{...settle,amount:10000})).newlyConfirmed).toBe(true);
+    expect((await t.mutation(internal.checkout.settle,{...settle,amount:10000})).newlyConfirmed).toBe(false);
+  });
+  it("collects a land booking's outstanding balance and protects in-flight cancellation", async () => {
+    const t=setup(), buyer=await user(t), other=await user(t), now=Date.now();
+    const bookingId=await t.run(async ctx=>{
+      const projectId=await ctx.db.insert("projects",{name:"Test estate",slug:"test",location:"Kano",lga:"Dala",state:"Kano",description:"Test",amenities:[],infrastructure:[],isActive:true,isFeatured:false,totalPlots:1,availablePlots:0,createdAt:now,updatedAt:now});
+      const plotId=await ctx.db.insert("plots",{projectId,beaconNumber:"TEST-1",plotNumber:"1",sizeSqm:500,price:100000,status:"RESERVED",titleType:"C_OF_O",titleVerified:true,isCornerPlot:false,isPrimeLocation:false,isFeatured:false,createdAt:now,updatedAt:now});
+      return ctx.db.insert("bookings",{clientId:buyer.id,plotId,reference:"TEST-LAND",totalAmount:100000,paidAmount:35000,paymentStatus:"PARTIAL",createdAt:now,updatedAt:now});
+    });
+    await expect(other.session.mutation(api.checkout.create,{kind:"LAND",targetId:bookingId})).rejects.toThrow(/belong/);
+    const order=await buyer.session.mutation(api.checkout.create,{kind:"LAND",targetId:bookingId});
+    expect((await buyer.session.query(api.checkout.get,order))?.amount).toBe(65000);
+    const prepared=await buyer.session.mutation(internal.checkout.prepare,{...order,expectedAmount:65000,provider:"KORAPAY"});
+    await expect(buyer.session.mutation(api.bookings.cancelBooking,{bookingId})).rejects.toThrow(/Checkout is in progress/);
+    const payment={reference:prepared.reference,provider:"KORAPAY" as const,providerId:"KORAPAY:land-test",amount:65000,currency:"NGN"};
+    expect((await t.mutation(internal.checkout.settle,payment)).newlyConfirmed).toBe(true);
+    expect((await t.mutation(internal.checkout.settle,payment)).newlyConfirmed).toBe(false);
+    expect(await t.run(ctx=>ctx.db.get(bookingId))).toMatchObject({paymentStatus:"SUCCESS",paidAmount:100000});
+    expect(await t.run(ctx=>ctx.db.query("payments").collect())).toHaveLength(1);
+  });
+
   it("calculates only the remaining contracted land balance and rejects settled orders", () => {
     expect(
       bookingBalance({

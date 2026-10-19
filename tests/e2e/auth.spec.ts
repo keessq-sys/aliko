@@ -16,8 +16,9 @@ test.describe('Authentication', () => {
   });
 
   test('should navigate to register page', async ({ page }) => {
-    await page.click('a[href*="register"]');
-    await expect(page).toHaveURL(/.*register/);
+    await page.locator('header').getByRole('button', { name: 'Open menu', exact: true }).click();
+    await page.locator('header').getByRole('link', { name: 'Register', exact: true }).click();
+    await expect(page).toHaveURL(/auth\?tab=signup/);
   });
 
   test('should navigate to forgot password', async ({ page }) => {

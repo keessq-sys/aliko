@@ -33,7 +33,7 @@
 
   <div class="mt-6 grid gap-3 text-xs text-stone-400">
     <p class="flex items-center gap-2"><ShieldCheck size={15} class="text-emerald-400" /> {$adkT("Server-verified payment before allocation")}</p>
-    <p class="flex items-center gap-2"><LockKeyhole size={15} class="text-emerald-400" /> {$adkT("Card details stay on Flutterwave's secure checkout")}</p>
+    <p class="flex items-center gap-2"><LockKeyhole size={15} class="text-emerald-400" /> {$adkT("Card details stay on Korapay's secure checkout")}</p>
     <p class="flex items-center gap-2"><ReceiptText size={15} class="text-emerald-400" /> {$adkT("Payment recorded against your account")}</p>
     <p class="flex items-center gap-2"><CheckCircle2 size={15} class="text-emerald-400" /> {$adkT("Realtime booking and plot status updates")}</p>
   </div>
