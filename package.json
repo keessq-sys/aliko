@@ -44,7 +44,7 @@
     "convex-test": "^0.0.60",
     "esbuild": "0.28.1",
     "eslint": "^9.15.0",
-    "eslint-plugin-svelte": "^2.46.0",
+    "eslint-plugin-svelte": "^3.23.1",
     "postcss": "^8.4.49",
     "prettier": "^3.4.1",
     "prettier-plugin-svelte": "^3.3.2",

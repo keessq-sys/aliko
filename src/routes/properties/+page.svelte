@@ -31,18 +31,89 @@
   // page's filtering/sorting logic and PropertyCard/PropertyListItem/
   // PropertyMapView already expect (see $lib/utils/propertyAdapter.ts) —
   // this file previously read from a hardcoded 12-item mock store.
-  const liveProperties = useQuery(api.properties.listProperties, {
-    activeOnly: true,
-    limit: 200,
-  });
+  let catalogCursor: string | null = null;
+  let catalogPages: any[] = [];
+  let lastCursor: string | null | undefined = undefined;
+  let catalogError = "",
+    retry = 0,
+    filterKey = "";
+  $: backendFilters = {
+    search: filters.search.trim() || undefined,
+    type: (filters.type === "All" ? undefined : filters.type.toUpperCase()) as
+      | "RESIDENTIAL"
+      | "COMMERCIAL"
+      | "LAND"
+      | "APARTMENT"
+      | "DUPLEX"
+      | "PENTHOUSE"
+      | undefined,
+    bedrooms:
+      filters.bedrooms === "Any" ? undefined : parseInt(filters.bedrooms),
+    bedroomsExact: !filters.bedrooms.includes("+"),
+    bathrooms:
+      filters.bathrooms === "Any" ? undefined : parseInt(filters.bathrooms),
+    bathroomsExact: !filters.bathrooms.includes("+"),
+    state: filters.state || undefined,
+    lga: filters.lga || undefined,
+    minPrice: filters.minPrice,
+    maxPrice: filters.maxPrice,
+    status: filters.status === "All" ? undefined : filters.status.toUpperCase(),
+    sort: (filters.search.trim()
+      ? "NEWEST"
+      : filters.sortBy === "Price: Low to High"
+        ? "PRICE_ASC"
+        : filters.sortBy === "Price: High to Low"
+          ? "PRICE_DESC"
+          : "NEWEST") as "PRICE_ASC" | "PRICE_DESC" | "NEWEST",
+    ...(params.has("lat") && params.has("lng")
+      ? {
+          latitude: Number(params.get("lat")),
+          longitude: Number(params.get("lng")),
+          radiusKm: Number(params.get("radiusKm") ?? 50),
+        }
+      : {}),
+  };
+  $: if (JSON.stringify(backendFilters) !== filterKey) {
+    filterKey = JSON.stringify(backendFilters);
+    catalogCursor = null;
+    catalogPages = [];
+    pageResults.clear();
+    lastCursor = undefined;
+  }
+  function loadCatalogue(
+    cursor: string | null,
+    _retry: number,
+    options: typeof backendFilters,
+  ) {
+    catalogError = "";
+    return useQuery(
+      api.properties.browse,
+      { ...options, paginationOpts: { numItems: 40, cursor } },
+      () => {
+        catalogError = "Properties could not be loaded. Please retry.";
+      },
+    );
+  }
+  $: catalogue = loadCatalogue(catalogCursor, retry, backendFilters);
+  const pageResults = new Map<string, any[]>();
+  function acceptPage(result: any, cursor: string | null) {
+    pageResults.set(cursor ?? "first", result.page);
+    catalogPages = [
+      ...new Map(
+        [...pageResults.values()].flat().map((p) => [p._id, p]),
+      ).values(),
+    ];
+    lastCursor = cursor;
+  }
+  $: if ($catalogue) acceptPage($catalogue, catalogCursor);
   $: allProperties = (
-    $liveProperties?.length
-      ? $liveProperties
+    catalogPages.length
+      ? catalogPages
       : demoFallbacksEnabled
         ? FALLBACK_PROPERTIES
         : []
   ).map(toDisplayProperty);
-
+  $: liveProperties = catalogue;
   // View state
   let currentView: "grid" | "list" | "map" = "grid";
   let isMobileFilterOpen = false;
@@ -95,7 +166,7 @@
         return false;
       if (filters.lga && p.location.lga !== filters.lga) return false;
       // Search
-      if (filters.search) {
+      if (demoFallbacksEnabled && filters.search) {
         const q = filters.search.toLowerCase();
         const match =
           p.title.toLowerCase().includes(q) ||
@@ -155,6 +226,7 @@
       return true;
     })
     .sort((a: Property, b: Property) => {
+      if (filters.search.trim()) return 0;
       if (filters.sortBy === "Price: Low to High") return a.price - b.price;
       if (filters.sortBy === "Price: High to Low") return b.price - a.price;
       return b.id.localeCompare(a.id); // default newest
@@ -273,25 +345,35 @@
 
           <!-- Sort Select -->
           <div class="relative">
-            <select
-              aria-label={$adkT("Sort properties")}
-              bind:value={filters.sortBy}
-              class="appearance-none bg-white/5 border border-white/10 text-white text-xs sm:text-sm rounded-xl px-4 py-2.5 pr-8 focus:outline-none focus:border-emerald-500 cursor-pointer"
-            >
-              <option value="Newest" class="bg-[#0A1628]"
-                >{$adkT("Newest")}</option
+            {#if filters.search.trim()}
+              <span class="inline-flex min-h-[44px] items-center px-4 text-sm"
+                >{$adkT("Relevance")}</span
               >
-              <option value="Price: Low to High" class="bg-[#0A1628]"
-                >{$adkT("Price: Low to High")}</option
+            {:else}
+              <select
+                aria-label={$adkT("Sort properties")}
+                bind:value={filters.sortBy}
+                disabled={!!filters.search.trim()}
+                title={filters.search.trim()
+                  ? "Text searches are ordered by relevance"
+                  : "Sort properties"}
+                class="appearance-none bg-white/5 border border-white/10 text-white text-xs sm:text-sm rounded-xl px-4 py-2.5 pr-8 focus:outline-none focus:border-emerald-500 cursor-pointer"
               >
-              <option value="Price: High to Low" class="bg-[#0A1628]"
-                >{$adkT("Price: High to Low")}</option
-              >
-            </select>
-            <ArrowUpDown
-              size={14}
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"
-            />
+                <option value="Newest" class="bg-[#0A1628]"
+                  >{$adkT("Newest")}</option
+                >
+                <option value="Price: Low to High" class="bg-[#0A1628]"
+                  >{$adkT("Price: Low to High")}</option
+                >
+                <option value="Price: High to Low" class="bg-[#0A1628]"
+                  >{$adkT("Price: High to Low")}</option
+                >
+              </select>
+              <ArrowUpDown
+                size={14}
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"
+              />
+            {/if}
           </div>
 
           <!-- Mobile Filter Button -->
@@ -358,6 +440,16 @@
             properties={filteredProperties}
             bind:selectedId={selectedMapPropertyId}
           />
+        {:else if catalogError}<div
+            role="alert"
+            class="theme-light-surface rounded-xl border p-6"
+          >
+            <p>{catalogError}</p>
+            <button class="btn-primary" on:click={() => retry++}>Retry</button>
+          </div>
+        {:else if !$catalogue && !demoFallbacksEnabled}<p role="status">
+            Loading published properties…
+          </p>
         {:else if filteredProperties.length === 0}
           <!-- Empty State -->
           <div
@@ -369,7 +461,11 @@
               <SlidersHorizontal size={28} />
             </div>
             <h3 class="text-xl font-serif font-bold text-white mb-2">
-              {$adkT("No matching properties found")}
+              {$adkT(
+                $catalogue && !$catalogue.isDone
+                  ? "No matches on this page. Load more to continue searching."
+                  : "No matching properties found",
+              )}
             </h3>
             <p class="text-stone-400 text-sm max-w-md mb-6">
               {$adkT(
@@ -401,6 +497,15 @@
       </div>
     </div>
   </div>
+  {#if $catalogue && !$catalogue.isDone}<div class="flex justify-center py-8">
+      <button
+        class="btn-primary"
+        disabled={lastCursor !== catalogCursor}
+        on:click={() => {
+          catalogCursor = $catalogue!.continueCursor;
+        }}>Load more properties</button
+      >
+    </div>{/if}
 </div>
 
 <!-- Mobile Filters Drawer -->

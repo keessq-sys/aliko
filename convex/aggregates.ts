@@ -98,3 +98,32 @@ export const estateAggregate = new TableAggregate<{
   sumValue: (doc) =>
     "direction" in doc ? doc.amountMinor : Math.round(doc.rent * 100),
 });
+
+/** Separate namespace in the existing aggregate component; no full-table count scans. */
+export const propertyAggregate = new TableAggregate<{
+  Key: [string, string, number];
+  DataModel: DataModel;
+  TableName: "properties";
+  Namespace: string;
+}>(components.managementAggregate, {
+  namespace: () => "properties",
+  sortKey: (doc) => [
+    String(doc.agentId ?? ""),
+    doc.verificationStatus ?? "DRAFT",
+    doc.createdAt,
+  ],
+  sumValue: (doc) =>
+    doc.isActive && doc.verificationStatus === "VERIFIED" ? 1 : 0,
+});
+
+export const publicPropertyAggregate = new TableAggregate<{
+  Key: [string, number];
+  DataModel: DataModel;
+  TableName: "properties";
+  Namespace: string;
+}>(components.managementAggregate, {
+  namespace: () => "published-properties",
+  sortKey: (doc) => [doc.type, doc.createdAt],
+  sumValue: (doc) =>
+    doc.isActive && doc.verificationStatus === "VERIFIED" ? 1 : 0,
+});

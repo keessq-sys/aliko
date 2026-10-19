@@ -2,6 +2,8 @@ import { Migrations } from "@convex-dev/migrations";
 import { components, internal } from "./_generated/api";
 import schema from "./schema";
 import {
+  publicPropertyAggregate,
+  propertyAggregate,
   bookingAggregate,
   paymentAggregate,
   serviceRequestAggregate,
@@ -38,7 +40,28 @@ export const seedServiceRequestAggregate = migrations.define({
   },
 });
 
+export const seedPropertyAggregate = migrations.define({
+  table: "properties",
+  migrateOne: async (ctx, property) => {
+    await propertyAggregate.insertIfDoesNotExist(ctx, property);
+    await publicPropertyAggregate.insertIfDoesNotExist(ctx, property);
+    return {
+      searchText: [
+        property.title,
+        property.location,
+        property.state,
+        property.lga,
+        property.type,
+        property.description,
+      ]
+        .join(" ")
+        .slice(0, 12000),
+    };
+  },
+});
+
 export const runAll = migrations.runner([
+  internal.migrations.seedPropertyAggregate,
   internal.migrations.backfillPaymentUpdatedAt,
   internal.migrations.seedPaymentAggregate,
   internal.migrations.seedBookingAggregate,

@@ -1,3 +1,4 @@
+import { isolatedEndpoint } from "./lib/deployment-boundary.mjs";
 const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
 const token = process.env.CLOUDFLARE_API_TOKEN;
 const bucketName = process.env.R2_BUCKET_NAME || "aliko-diamond-key-media";
@@ -94,16 +95,29 @@ async function bindPagesProject() {
     throw new Error(
       `Cloudflare Pages project “${requestedProject}” was not found.`,
     );
+  const isolated = process.env.CONVEX_STAGING_URL
+    ? isolatedEndpoint(process.env.CONVEX_STAGING_URL)
+    : null;
   const production = project.deployment_configs?.production ?? {};
   const preview = project.deployment_configs?.preview ?? {};
   await cf(`/accounts/${accountId}/pages/projects/${project.name}`, {
     method: "PATCH",
     body: JSON.stringify({
+      ...(project.source?.type === "github"
+        ? {
+            source: {
+              type: "github",
+              config: {
+                production_deployments_enabled: false,
+                preview_deployment_setting: "none",
+              },
+            },
+          }
+        : {}),
       deployment_configs: {
         production: {
           r2_buckets: { ...production.r2_buckets, MEDIA: { name: bucketName } },
           env_vars: {
-            ...production.env_vars,
             PUBLIC_CONVEX_URL: {
               type: "plain_text",
               value: "https://gallant-husky-352.eu-west-1.convex.cloud",
@@ -120,18 +134,23 @@ async function bindPagesProject() {
             MEDIA: { name: previewBucketName },
           },
           env_vars: {
-            ...preview.env_vars,
+            ...Object.fromEntries(
+              Object.keys(preview.env_vars ?? {})
+                .filter((name) =>
+                  /SECRET|TOKEN|DEPLOY_KEY|API_KEY|ACCESS_KEY|ADMIN_PASSWORD/.test(
+                    name,
+                  ),
+                )
+                .map((name) => [name, null]),
+            ),
+            LIVE_TRANSACTIONS_ENABLED: { type: "plain_text", value: "false" },
             PUBLIC_CONVEX_URL: {
               type: "plain_text",
-              value:
-                process.env.CONVEX_STAGING_URL ||
-                "https://gallant-husky-352.eu-west-1.convex.cloud",
+              value: isolated?.url || "",
             },
             CONVEX_HTTP_ACTIONS_URL: {
               type: "plain_text",
-              value:
-                process.env.CONVEX_STAGING_HTTP_URL ||
-                "https://gallant-husky-352.eu-west-1.convex.site",
+              value: isolated?.httpUrl || "",
             },
           },
         },

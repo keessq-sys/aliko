@@ -1,3 +1,4 @@
+import aggregate from "@convex-dev/aggregate/test";
 import { convexTest } from "convex-test";
 import { beforeAll, afterAll, describe, expect, it, vi } from "vitest";
 import { generateKeyPair, exportPKCS8, decodeJwt, jwtVerify } from "jose";
@@ -18,6 +19,7 @@ beforeAll(async () => {
 afterAll(() => vi.unstubAllEnvs());
 function setup() {
   const t = convexTest(schema, modules);
+  aggregate.register(t, "managementAggregate");
   rateLimiter.register(t);
   return t;
 }
@@ -477,23 +479,98 @@ describe("provider-independent onboarding and document consent", () => {
       ),
       (ch) => ch.charCodeAt(0),
     );
+    const sha256 = Array.from(
+      new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)),
+    )
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    const { intentId } = await operator.mutation(
+      api.storage.generateUploadUrl,
+      {
+        purpose: "PROPERTY_IMAGE",
+        fileName: "test.png",
+        mimeType: "image/png",
+        size: bytes.length,
+        sha256,
+      },
+    );
     const storageId = await t.run((ctx) =>
       ctx.storage.store(new Blob([bytes], { type: "image/png" })),
     );
-    const assetId = await operator.mutation(api.storage.registerUpload, {
+    const assetId = await operator.action(api.storage.registerUpload, {
+      intentId,
       storageId,
       purpose: "PROPERTY_IMAGE",
       fileName: "test.png",
       mimeType: "image/png",
       size: bytes.length,
+      sha256,
     });
     expect(await t.run((ctx) => ctx.db.get(assetId))).toMatchObject({
       status: "ACTIVE",
-      securityVersion: "2026-10-08-upload-metadata-v1",
+      securityVersion: "2026-10-19-content-validated-v1",
     });
     expect(
       await operator.query(api.storage.getAssetUrl, { assetId }),
     ).toBeTruthy();
+  });
+  it("maintains indexed catalogue text through authenticated listing edits", async () => {
+    const t = setup(),
+      operator = await admin(t);
+    const id = await operator.mutation(api.properties.upsertProperty, {
+      slug: "search-fixture",
+      title: "Ikeja courtyard duplex",
+      type: "DUPLEX",
+      description: "Private courtyard",
+      price: 1000,
+      location: "Ikeja",
+      state: "Lagos",
+      amenities: [],
+      images: [],
+    });
+    const listing = await t.run((ctx) => ctx.db.get(id));
+    expect(listing?.searchText).toContain("Ikeja courtyard duplex");
+    await operator.mutation(api.properties.updateProperty, {
+      propertyId: id,
+      title: "Updated courtyard duplex",
+    });
+    expect((await t.run((ctx) => ctx.db.get(id)))?.searchText).toContain(
+      "Updated courtyard duplex",
+    );
+  });
+  it("rejects image MIME spoofing before publishing", async () => {
+    const t = setup(),
+      operator = await admin(t);
+    const bytes = new TextEncoder().encode("This is not a PNG image");
+    const sha256 = Array.from(
+      new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)),
+    )
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    const args = {
+      purpose: "PROPERTY_IMAGE" as const,
+      fileName: "spoof.png",
+      mimeType: "image/png",
+      size: bytes.length,
+      sha256,
+    };
+    const { intentId } = await operator.mutation(
+      api.storage.generateUploadUrl,
+      args,
+    );
+    const storageId = await t.run((ctx) =>
+      ctx.storage.store(new Blob([bytes], { type: "image/png" })),
+    );
+    await expect(
+      operator.action(api.storage.registerUpload, {
+        ...args,
+        intentId,
+        storageId,
+      }),
+    ).rejects.toThrow(/signature/);
+    expect(
+      await t.run((ctx) => ctx.db.query("storedAssets").collect()),
+    ).toHaveLength(0);
   });
   it("records owned typed consent and requires administrator review without a provider", async () => {
     const t = setup(),

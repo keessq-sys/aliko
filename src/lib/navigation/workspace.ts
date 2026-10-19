@@ -33,6 +33,7 @@ export const adminGroups: WorkspaceGroup[] = [
     items: [
       { href: "/admin/agents", label: "Agent Approvals", emoji: "🤝" },
       { href: "/admin/managers", label: "Manager Approvals", emoji: "🏢" },
+      { href: "/admin/newsletter", label: "Newsletter consent", emoji: "✉️" },
       { href: "/admin/users", label: "Users & Roles", emoji: "👥" },
     ],
   },

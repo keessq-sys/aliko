@@ -8,7 +8,9 @@ import { contactRateKey, rateLimiter } from "./lib/rateLimits";
 
 // ── Public: submit an enquiry from a property/plot/project page ──────────
 // No auth required — this is the lead-capture path for anonymous visitors.
-export const submitEnquiry = auditedMutation("enquiries:submitEnquiry")({
+export const submitEnquiry = auditedMutation("enquiries:submitEnquiry", {
+  allowAnonymous: true,
+})({
   args: {
     propertyId: v.optional(v.id("properties")),
     plotId: v.optional(v.id("plots")),

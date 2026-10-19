@@ -3,6 +3,7 @@ import { requireAdmin, requireUser } from "./lib/access";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import {
+  action,
   internalAction,
   internalMutation,
   internalQuery,
@@ -73,9 +74,12 @@ export const generateUploadUrl = auditedMutation("storage:generateUploadUrl")({
     fileName: v.string(),
     mimeType: v.string(),
     size: v.number(),
+    sha256: v.string(),
   },
   handler: async (ctx, args) => {
     const user = await authenticatedUser(ctx);
+    if (!/^[a-f0-9]{64}$/.test(args.sha256))
+      throw new Error("Invalid file digest");
     await rateLimiter.limit(ctx, "upload", {
       key: String(user._id),
       throws: true,
@@ -99,20 +103,40 @@ export const generateUploadUrl = auditedMutation("storage:generateUploadUrl")({
     ) {
       throw new Error("Forbidden for this upload purpose");
     }
-    return ctx.storage.generateUploadUrl();
+    const intentId = await ctx.db.insert("uploadIntents", {
+      ownerId: user._id,
+      ...args,
+      expiresAt: Date.now() + 15 * 60 * 1000,
+    });
+    return { url: await ctx.storage.generateUploadUrl(), intentId };
   },
 });
 
-export const registerUpload = auditedMutation("storage:registerUpload")({
+export const completeUpload = internalMutation({
   args: {
+    intentId: v.id("uploadIntents"),
     storageId: v.id("_storage"),
     purpose,
     fileName: v.string(),
     mimeType: v.string(),
     size: v.number(),
+    sha256: v.string(),
   },
   handler: async (ctx, args) => {
     const user = await authenticatedUser(ctx);
+    const intent = await ctx.db.get(args.intentId);
+    if (!intent || intent.ownerId !== user._id || intent.expiresAt < Date.now())
+      throw new Error("Invalid or expired upload intent");
+    if (intent.storageId && intent.storageId !== args.storageId)
+      throw new Error("Upload intent already used");
+    if (
+      intent.purpose !== args.purpose ||
+      intent.fileName !== args.fileName ||
+      intent.mimeType !== args.mimeType ||
+      intent.size !== args.size
+    )
+      throw new Error("Upload intent does not match file");
+    await ctx.db.patch(intent._id, { storageId: args.storageId });
     const existing = await ctx.db
       .query("storedAssets")
       .withIndex("by_storage", (q) => q.eq("storageId", args.storageId))
@@ -124,6 +148,16 @@ export const registerUpload = auditedMutation("storage:registerUpload")({
     }
     const metadata = await ctx.db.system.get(args.storageId);
     if (!metadata) throw new Error("Uploaded file was not found");
+    const metadataDigest = /^[a-f0-9]{64}$/i.test(metadata.sha256)
+      ? metadata.sha256.toLowerCase()
+      : Array.from(atob(metadata.sha256))
+          .map((c) => c.charCodeAt(0).toString(16).padStart(2, "0"))
+          .join("");
+    if (
+      metadataDigest !== intent.sha256 ||
+      metadata._creationTime < intent._creationTime
+    )
+      throw new Error("Uploaded file does not match the authorized content");
     const actualMime = metadata.contentType ?? args.mimeType;
     const rules = policy(args.purpose);
     if (!rules.allowed.has(actualMime.toLowerCase())) {
@@ -157,7 +191,7 @@ export const registerUpload = auditedMutation("storage:registerUpload")({
       status: requiresScan ? "PENDING_SCAN" : "ACTIVE",
       securityVersion: requiresScan
         ? undefined
-        : "2026-10-08-upload-metadata-v1",
+        : "2026-10-19-content-validated-v1",
       expiresAt:
         args.purpose === "SERVICE_ATTACHMENT"
           ? now + 365 * 24 * 60 * 60 * 1000
@@ -179,6 +213,63 @@ export const registerUpload = auditedMutation("storage:registerUpload")({
       await ctx.scheduler.runAfter(0, internal.storage.scanAsset, { assetId });
     }
     return assetId;
+  },
+});
+
+export const uploadIntent = internalQuery({
+  args: { intentId: v.id("uploadIntents") },
+  handler: async (ctx, args) => {
+    const user = await requireUser(ctx);
+    const intent = await ctx.db.get(args.intentId);
+    if (!intent || intent.ownerId !== user._id || intent.expiresAt < Date.now())
+      throw new Error("Invalid upload intent");
+    return intent;
+  },
+});
+
+export const registerUpload = action({
+  args: {
+    intentId: v.id("uploadIntents"),
+    storageId: v.id("_storage"),
+    purpose,
+    fileName: v.string(),
+    mimeType: v.string(),
+    size: v.number(),
+    sha256: v.string(),
+  },
+  handler: async (ctx, args): Promise<Id<"storedAssets">> => {
+    const intent = await ctx.runQuery(internal.storage.uploadIntent, {
+      intentId: args.intentId,
+    });
+    if (intent.storageId && intent.storageId !== args.storageId)
+      throw new Error("Upload intent already used");
+    const file = await ctx.storage.get(args.storageId);
+    if (!file || file.size !== intent.size || file.type !== intent.mimeType)
+      throw new Error("Upload content does not match intent");
+    if (file.type.startsWith("image/")) {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const { sanitizeImage } = await import("./lib/imageContent");
+      const ascii = (a: number, b: number) =>
+        new TextDecoder().decode(bytes.slice(a, b));
+      const valid =
+        file.type === "image/png"
+          ? [137, 80, 78, 71, 13, 10, 26, 10].every((b, i) => bytes[i] === b)
+          : file.type === "image/jpeg"
+            ? bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255
+            : file.type === "image/webp"
+              ? ascii(0, 4) === "RIFF" && ascii(8, 12) === "WEBP"
+              : file.type === "image/avif"
+                ? ascii(4, 8) === "ftyp" && /avif|avis/.test(ascii(8, 32))
+                : false;
+      if (!valid)
+        throw new Error("Image signature does not match its content type");
+      const sanitized = sanitizeImage(bytes, file.type);
+      if (sanitized.length !== bytes.length)
+        throw new Error(
+          "Remove location metadata from this image before uploading it",
+        );
+    }
+    return await ctx.runMutation(internal.storage.completeUpload, args);
   },
 });
 
@@ -239,12 +330,13 @@ export const releaseImageWithoutExternalScan = internalMutation({
     if (
       !asset ||
       asset.status !== "PENDING_SCAN" ||
+      asset.securityVersion !== "2026-10-19-content-validated-v1" ||
       !IMAGE_MIMES.has(asset.mimeType)
     )
       return;
     await ctx.db.patch(asset._id, {
       status: "ACTIVE",
-      securityVersion: "2026-10-08-upload-metadata-v1",
+      securityVersion: "2026-10-19-content-validated-v1",
       updatedAt: Date.now(),
     });
     await ctx.db.insert("adminAuditLog", {

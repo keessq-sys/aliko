@@ -18,7 +18,33 @@
   let canvas: HTMLCanvasElement;
   let animFrame: number;
   let renderer: import("three").WebGLRenderer;
-  let staticMode = false;
+  let staticMode = false,
+    destroyed = false,
+    modelError = "",
+    modelLoading = false;
+  let controls:
+    | import("three/examples/jsm/controls/OrbitControls.js").OrbitControls
+    | undefined;
+  let needsRender = true,
+    visible = true;
+  let visibilityObserver: IntersectionObserver | undefined;
+  let sceneToDispose: import("three").Scene | undefined;
+  function disposeScene(scene: import("three").Object3D) {
+    scene.traverse((object) => {
+      const mesh = object as import("three").Mesh;
+      mesh.geometry?.dispose();
+      const materials = Array.isArray(mesh.material)
+        ? mesh.material
+        : [mesh.material];
+      for (const material of materials)
+        if (material) {
+          for (const value of Object.values(material))
+            if (value && typeof value === "object" && "isTexture" in value)
+              (value as import("three").Texture).dispose();
+          material.dispose();
+        }
+    });
+  }
 
   const STATUS_COLORS: Record<string, number> = {
     AVAILABLE: 0x059669,
@@ -39,6 +65,7 @@
       return;
     }
     const THREE = await import("three");
+    if (destroyed) return;
 
     try {
       renderer = new THREE.WebGLRenderer({
@@ -55,6 +82,7 @@
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     const scene = new THREE.Scene();
+    sceneToDispose = scene;
 
     const W = container.clientWidth,
       H = container.clientHeight;
@@ -63,6 +91,37 @@
     camera.lookAt(0, 0, 0);
 
     renderer.setSize(W, H);
+    const { OrbitControls } =
+      await import("three/examples/jsm/controls/OrbitControls.js");
+    if (destroyed) return;
+    controls = new OrbitControls(camera, canvas);
+    controls.enableDamping = true;
+    controls.minDistance = 2;
+    controls.maxDistance = 150;
+    if (modelUrl) {
+      modelLoading = true;
+      void import("three/examples/jsm/loaders/GLTFLoader.js")
+        .then(async ({ GLTFLoader }) => {
+          const url = new URL(modelUrl!, location.href);
+          if (url.protocol !== "https:" && url.origin !== location.origin)
+            throw new Error("An HTTPS master plan is required");
+          const model = await new GLTFLoader().loadAsync(url.href);
+          if (destroyed) {
+            disposeScene(model.scene);
+            return;
+          }
+          scene.add(model.scene);
+          needsRender = true;
+        })
+        .catch(() => {
+          if (!destroyed)
+            modelError =
+              "The master-plan model could not be loaded. Plot markers remain available.";
+        })
+        .finally(() => {
+          if (!destroyed) modelLoading = false;
+        });
+    }
 
     // Lighting
     scene.add(new THREE.AmbientLight(0xffffff, 0.55));
@@ -90,23 +149,6 @@
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add(ground);
-
-    // Load optional GLTF model
-    if (modelUrl) {
-      const { GLTFLoader } =
-        await import("three/examples/jsm/loaders/GLTFLoader.js");
-      const loader = new GLTFLoader();
-      loader.load(
-        modelUrl,
-        (gltf) => {
-          scene.add(gltf.scene);
-        },
-        undefined,
-        () => {
-          staticMode = true;
-        },
-      );
-    }
 
     // Plot hotspot meshes
     const meshData: {
@@ -160,6 +202,7 @@
     }
 
     canvas.addEventListener("mousemove", (e) => {
+      needsRender = true;
       const hits = getIntersects(e);
       const hit = hits[0]?.object as import("three").Mesh | undefined;
       if (hoveredMesh && hoveredMesh !== hit) {
@@ -174,12 +217,22 @@
         ).emissiveIntensity = 0.45;
         canvas.style.cursor = "pointer";
         hoveredMesh = hit;
+        needsRender = true;
       } else {
         hoveredMesh = null;
+        needsRender = true;
       }
     });
 
+    let pointerStart = { x: 0, y: 0 };
+    canvas.addEventListener("pointerdown", (e) => {
+      pointerStart = { x: e.clientX, y: e.clientY };
+    });
     canvas.addEventListener("click", (e) => {
+      if (
+        Math.hypot(e.clientX - pointerStart.x, e.clientY - pointerStart.y) > 6
+      )
+        return;
       const hit = getIntersects(e)[0]?.object;
       if (hit?.userData?.plotId) {
         goto(`/plots?plot=${encodeURIComponent(hit.userData.plotId)}`);
@@ -187,18 +240,18 @@
     });
 
     // Animation
-    let t = 0;
+    visibilityObserver = new IntersectionObserver((entries) => {
+      visible = entries[0]?.isIntersecting ?? false;
+      if (visible) needsRender = true;
+    });
+    visibilityObserver.observe(container);
     function animate() {
       animFrame = requestAnimationFrame(animate);
-      t += 0.006;
-      camera.position.x = Math.cos(t * 0.12) * 16;
-      camera.position.z = Math.sin(t * 0.12) * 16;
-      camera.lookAt(0, 0, 0);
-      meshData.forEach(({ mesh, base, phase, status }) => {
-        if (status === "AVAILABLE")
-          mesh.position.y = base + Math.sin(t * 1.4 + phase) * 0.06;
-      });
-      renderer.render(scene, camera);
+      if (destroyed || document.hidden || !visible) return;
+      if (controls?.update() || needsRender) {
+        renderer.render(scene, camera);
+        needsRender = false;
+      }
     }
     animate();
 
@@ -207,6 +260,7 @@
       const w = container.clientWidth,
         h = container.clientHeight;
       renderer.setSize(w, h);
+      needsRender = true;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
     });
@@ -215,6 +269,10 @@
   });
 
   onDestroy(() => {
+    destroyed = true;
+    controls?.dispose();
+    visibilityObserver?.disconnect();
+    if (sceneToDispose) disposeScene(sceneToDispose);
     // onDestroy fires during SSR teardown too, where onMount never ran and
     // cancelAnimationFrame doesn't exist at all — guard both.
     if (typeof cancelAnimationFrame !== "undefined")
@@ -229,14 +287,30 @@
   class="relative w-full h-full rounded-2xl overflow-hidden"
   style="background:#050A0E"
 >
+  {#if modelLoading}<p
+      class="absolute top-2 left-2 z-10 rounded bg-black/80 p-2 text-sm text-white"
+      role="status"
+    >
+      Loading master plan…
+    </p>{/if}
+  {#if modelError}<p
+      class="absolute top-2 left-2 z-10 rounded bg-black/80 p-2 text-sm text-white"
+      role="status"
+    >
+      {modelError}
+    </p>{/if}
   {#if staticMode}
     <div class="absolute inset-0 overflow-auto px-5 pt-16 pb-16">
-      <p class="text-white mb-3"> {$adkT("Plot list — the 3D plan is unavailable or motion is reduced.")} </p>
+      <p class="text-white mb-3">
+        {$adkT("Plot list — the 3D plan is unavailable or motion is reduced.")}
+      </p>
       <div class="grid grid-cols-2 gap-3">
         {#each hotspots as hotspot}<a
             class="min-h-[44px] border border-white/30 rounded p-3 text-white"
             href={`/plots?plot=${encodeURIComponent(hotspot.plotId)}`}
-            >{$adkT(hotspot.beaconNumber)} · {$adkT(hotspot.status.replaceAll("_", " "))}</a
+            >{$adkT(hotspot.beaconNumber)} · {$adkT(
+              hotspot.status.replaceAll("_", " "),
+            )}</a
           >{/each}
       </div>
     </div>
@@ -265,8 +339,12 @@
     <span
       class="w-1.5 h-1.5 rounded-full bg-emerald-400"
       style="animation:glowPulse 2s infinite"
-    ></span> {$adkT("Live plot status · schematic markers")} </div>
+    ></span>
+    {$adkT("Live plot status · schematic markers")}
+  </div>
 
   <!-- Hint -->
-  <p class="absolute bottom-4 right-4 text-xs text-stone-500 hidden sm:block"> {$adkT("Click a beacon to view")} </p>
+  <p class="absolute bottom-4 right-4 text-xs text-stone-500 hidden sm:block">
+    {$adkT("Click a beacon to view")}
+  </p>
 </div>

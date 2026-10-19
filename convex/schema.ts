@@ -811,6 +811,7 @@ export default defineSchema({
   // booked/paid through this table; that would require its own deposit,
   // installment-schedule and payment design before it could be automated.
   properties: defineTable({
+    searchText: v.optional(v.string()),
     slug: v.string(),
     title: v.string(),
     type: v.union(
@@ -862,6 +863,12 @@ export default defineSchema({
     .index("by_active", ["isActive"])
     .index("by_featured", ["isFeatured"])
     .index("by_type", ["type"])
+    .index("by_publication", ["isActive", "verificationStatus", "createdAt"])
+    .index("by_publication_price", ["isActive", "verificationStatus", "price"])
+    .searchIndex("search_catalog", {
+      searchField: "searchText",
+      filterFields: ["isActive", "verificationStatus", "state", "lga", "type"],
+    })
     .index("by_agent", ["agentId"])
     .index("by_manager", ["managerId"]),
 
@@ -1109,6 +1116,23 @@ export default defineSchema({
     .index("by_work", ["workId"]),
 
   // ── Storage ownership, validation, quarantine and retention ────────────
+  newsletterSubscriptions: defineTable({
+    email: v.string(),
+    consentVersion: v.string(),
+    consentedAt: v.number(),
+    status: v.union(v.literal("SUBSCRIBED"), v.literal("UNSUBSCRIBED")),
+    updatedAt: v.number(),
+  }).index("by_email", ["email"]),
+  uploadIntents: defineTable({
+    ownerId: v.id("users"),
+    purpose: v.string(),
+    fileName: v.string(),
+    mimeType: v.string(),
+    size: v.number(),
+    sha256: v.string(),
+    expiresAt: v.number(),
+    storageId: v.optional(v.id("_storage")),
+  }).index("by_expiry", ["expiresAt"]),
   storedAssets: defineTable({
     securityVersion: v.optional(v.string()),
     scannedAt: v.optional(v.number()),

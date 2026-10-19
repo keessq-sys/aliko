@@ -17,6 +17,7 @@ function makeRef(prefix: string): string {
 // ── Public: submit a service request (guests allowed) ──────────────────────
 export const submitServiceRequest = auditedMutation(
   "serviceRequests:submitServiceRequest",
+  { allowAnonymous: true },
 )({
   args: {
     serviceSlug: v.string(),

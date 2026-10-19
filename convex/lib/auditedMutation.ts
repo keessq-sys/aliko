@@ -1,16 +1,48 @@
+import { Triggers } from "convex-helpers/server/triggers";
+import type { DataModel } from "../_generated/dataModel";
+import { propertyAggregate, publicPropertyAggregate } from "../aggregates";
+const triggers = new Triggers<DataModel>();
+triggers.register("properties", async (ctx, change) => {
+  if (change.newDoc) {
+    const searchText = [
+      change.newDoc.title,
+      change.newDoc.location,
+      change.newDoc.state,
+      change.newDoc.lga,
+      change.newDoc.type,
+      change.newDoc.description,
+    ]
+      .join(" ")
+      .slice(0, 12000);
+    if (change.newDoc.searchText !== searchText)
+      await ctx.db.patch(change.newDoc._id, { searchText });
+  }
+  for (const aggregate of [propertyAggregate, publicPropertyAggregate]) {
+    if (change.newDoc && change.oldDoc)
+      await aggregate.replaceOrInsert(ctx, change.oldDoc, change.newDoc);
+    else if (change.newDoc)
+      await aggregate.insertIfDoesNotExist(ctx, change.newDoc);
+    else if (change.oldDoc) await aggregate.deleteIfExists(ctx, change.oldDoc);
+  }
+});
 import { customMutation } from "convex-helpers/server/customFunctions";
 import { mutation } from "../_generated/server";
 import { emitAlert } from "./alerts";
 import { requireUser } from "./access";
 
 /** Record successful authenticated writes atomically, without storing arguments or results. */
-export function auditedMutation(operation: string) {
+export function auditedMutation(
+  operation: string,
+  options: { allowAnonymous?: boolean } = {},
+) {
   return customMutation(mutation, {
     args: {},
     input: async (ctx) => {
-      const actor = await requireUser(ctx).catch(() => null);
+      const actor = options.allowAnonymous
+        ? await requireUser(ctx).catch(() => null)
+        : await requireUser(ctx);
       return {
-        ctx: {},
+        ctx: triggers.wrapDB(ctx),
         args: {},
         onSuccess: async () => {
           if (!actor) return;

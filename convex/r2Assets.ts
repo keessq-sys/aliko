@@ -171,6 +171,7 @@ export const findRegisteredKeysForMaintenance = query({
 
 export const recordScheduledOrphanCleanup = auditedMutation(
   "r2Assets:recordScheduledOrphanCleanup",
+  { allowAnonymous: true },
 )({
   args: { keys: v.array(v.string()), secret: v.string() },
   handler: async (ctx, { keys, secret }) => {

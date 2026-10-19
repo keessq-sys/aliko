@@ -1,3 +1,4 @@
+import aggregate from "@convex-dev/aggregate/test";
 import { beforeAll, afterAll, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { transform } from "esbuild";
@@ -27,6 +28,7 @@ beforeAll(async () => {
 afterAll(() => vi.unstubAllEnvs());
 async function setup(failCheckoutOnce = false) {
   const t = convexTest(schema, modules);
+  aggregate.register(t, "managementAggregate");
   rateLimiter.register(t);
   let actor: ReturnType<typeof t.withIdentity> = t;
   let token: string | null = null;

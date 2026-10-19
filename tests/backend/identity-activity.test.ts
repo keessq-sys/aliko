@@ -1,3 +1,4 @@
+import aggregate from "@convex-dev/aggregate/test";
 import { convexTest } from "convex-test";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import rateLimiter from "@convex-dev/rate-limiter/test";
@@ -11,6 +12,7 @@ beforeEach(() =>
 afterEach(() => vi.unstubAllEnvs());
 function setup() {
   const t = convexTest(schema, modules);
+  aggregate.register(t, "managementAggregate");
   rateLimiter.register(t);
   return t;
 }

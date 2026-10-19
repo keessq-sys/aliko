@@ -266,18 +266,34 @@ export const confirmPayment = internalMutation({
 export const cancelBooking = auditedMutation("bookings:cancelBooking")({
   args: { bookingId: v.id("bookings"), reason: v.optional(v.string()) },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Unauthorized");
-
+    const user = await requireUser(ctx);
     const booking = await ctx.db.get(args.bookingId);
     if (!booking) throw new Error("Booking not found");
-    if (booking.clientId !== userId) {
-      const user = await ctx.db.get(userId as Id<"users">);
-      if (!user || !["ADMIN", "AGENT"].includes(user.role))
-        throw new Error("Forbidden — not your booking");
-    }
-    const pendingOrder = await ctx.db.query("checkoutOrders").withIndex("by_target_status", q => q.eq("kind", "LAND").eq("targetId", String(booking._id)).eq("status", "PENDING")).first();
-    if (pendingOrder) throw new Error("Checkout is in progress — reconcile the payment before cancelling");
+    if (booking.clientId !== user._id) await requireAdmin(ctx);
+    if (booking.paymentStatus === "FAILED") return; // Idempotent: never release a successor reservation.
+    const plot = await ctx.db.get(booking.plotId);
+    if (!plot || plot.status !== "RESERVED")
+      throw new Error("Plot reservation has changed; contact support");
+    const activeBookings = await ctx.db
+      .query("bookings")
+      .withIndex("by_plot", (q) => q.eq("plotId", booking.plotId))
+      .filter((q) => q.neq(q.field("paymentStatus"), "FAILED"))
+      .take(2);
+    if (activeBookings.length !== 1 || activeBookings[0]._id !== booking._id)
+      throw new Error("Plot reservation has changed; contact support");
+    const pendingOrder = await ctx.db
+      .query("checkoutOrders")
+      .withIndex("by_target_status", (q) =>
+        q
+          .eq("kind", "LAND")
+          .eq("targetId", String(booking._id))
+          .eq("status", "PENDING"),
+      )
+      .first();
+    if (pendingOrder)
+      throw new Error(
+        "Checkout is in progress — reconcile the payment before cancelling",
+      );
     if (booking.paidAmount > 0)
       throw new Error("Cannot cancel a paid booking — contact support");
     const recentPendingPayment = await ctx.db
@@ -294,6 +310,8 @@ export const cancelBooking = auditedMutation("bookings:cancelBooking")({
       );
     }
 
+    if (booking.paymentStatus !== "PENDING")
+      throw new Error("This booking cannot be cancelled");
     await ctx.db.patch(args.bookingId, {
       paymentStatus: "FAILED",
       updatedAt: Date.now(),

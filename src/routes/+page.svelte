@@ -34,7 +34,7 @@
        crawler or reader gets the core claim in the first paragraph of HTML. -->
   <p class="sr-only">
     {$adkT(
-      "Aliko Diamond Key Realtors Ltd is a government-verified real estate, land and property-services marketplace operating in Abuja FCT and Lagos, Nigeria. Every listing is title-checked against CAC, AGIS and State Ministry of Lands records before publication, and clients can bundle a purchase with interior design, construction, smart-home installation or facility management from the same platform.",
+      "Aliko Diamond Key Realtors Ltd connects clients with property, land and property services in Nigeria. Request supporting title documents, independent legal advice and confirmation of availability before making a purchase. Interior design, construction and facility management services are also available.",
     )}
   </p>
   <HeroSection />

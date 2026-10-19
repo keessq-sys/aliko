@@ -1,9 +1,10 @@
 <script lang="ts">
+  import { prepareUploadFile } from "$lib/utils/prepareUploadFile";
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
 
   import { api } from "$lib/convex/_generated/api";
-  import { useQuery, runMutation } from "$lib/convex/queries";
+  import { useQuery, runMutation, runAction } from "$lib/convex/queries";
   export let selected: any[] = [];
   let cursor: string | null = null;
   $: assets = useQuery(api.storage.myAssets, {
@@ -12,18 +13,29 @@
   let error = "",
     busy = false;
   async function upload(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
+    const selectedFile = (event.target as HTMLInputElement).files?.[0];
+    if (!selectedFile) return;
     busy = true;
     error = "";
     try {
+      const file = await prepareUploadFile(selectedFile);
       const args = {
         purpose: "SERVICE_ATTACHMENT" as const,
         fileName: file.name,
         mimeType: file.type,
         size: file.size,
+        sha256: Array.from(
+          new Uint8Array(
+            await crypto.subtle.digest("SHA-256", await file.arrayBuffer()),
+          ),
+        )
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join(""),
       };
-      const url = await runMutation(api.storage.generateUploadUrl, args);
+      const { url, intentId } = await runMutation(
+        api.storage.generateUploadUrl,
+        args,
+      );
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": file.type },
@@ -31,7 +43,11 @@
       });
       if (!response.ok) throw new Error("Upload failed");
       const { storageId } = await response.json();
-      await runMutation(api.storage.registerUpload, { ...args, storageId });
+      await runAction(api.storage.registerUpload, {
+        ...args,
+        storageId,
+        intentId,
+      });
       cursor = null;
     } catch (e) {
       error = e instanceof Error ? e.message : "Upload failed";
@@ -46,9 +62,14 @@
 
 <fieldset class="theme-surface rounded-xl border p-3">
   <legend>{$adkT("Attachments")}</legend>
-  <p class="text-sm"> {$adkT("Upload a PDF, JPG or PNG. Files become selectable after the security scan passes.")} </p>
+  <p class="text-sm">
+    {$adkT(
+      "Upload a PDF, JPG or PNG. Files become selectable after the security scan passes.",
+    )}
+  </p>
   <label class="block my-3"
-    >{$adkT("Upload a file")}<input dir="auto"
+    >{$adkT("Upload a file")}<input
+      dir="auto"
       type="file"
       accept="application/pdf,image/jpeg,image/png"
       disabled={busy}
@@ -58,13 +79,17 @@
   >
   {#if error}<p role="alert">{$adkT(error)}</p>{/if}
   {#each $assets?.page ?? [] as asset}<label class="flex gap-2 py-2"
-      ><input dir="auto"
+      ><input
+        dir="auto"
         type="checkbox"
         checked={selected.includes(asset._id)}
         disabled={asset.status !== "ACTIVE" ||
           (!selected.includes(asset._id) && selected.length >= 10)}
         on:change={(e) => select(asset._id, e.currentTarget.checked)}
-      /><span>{$adkT(asset.fileName)} — {$adkT(asset.status.replaceAll("_", " "))}</span
+      /><span
+        >{$adkT(asset.fileName)} — {$adkT(
+          asset.status.replaceAll("_", " "),
+        )}</span
       ></label
     >{/each}
   <div class="flex gap-3">

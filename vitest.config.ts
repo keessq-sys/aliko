@@ -6,6 +6,10 @@ export default defineConfig({
   },
   test: {
     maxWorkers: 2,
+    // Authentication fixtures generate RSA keys and start esbuild. Bound their
+    // setup separately from assertions on memory-constrained operator machines.
+    testTimeout: 30000,
+    hookTimeout: 60000,
     include: ["tests/backend/**/*.test.ts"],
     environment: "edge-runtime",
     server: {

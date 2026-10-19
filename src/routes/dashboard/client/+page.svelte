@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { prepareUploadFile } from "$lib/utils/prepareUploadFile";
   import { getI18n } from "$lib/i18n";
   const { locale: adkLocale } = getI18n();
 
@@ -60,18 +61,29 @@
   let photoInput: HTMLInputElement;
   let photoUploading = false;
   async function uploadPhoto(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
+    const selectedFile = (event.target as HTMLInputElement).files?.[0];
+    if (!selectedFile) return;
     photoUploading = true;
     profileError = "";
     try {
+      const file = await prepareUploadFile(selectedFile);
       const args = {
         purpose: "AVATAR_IMAGE" as const,
         fileName: file.name,
         mimeType: file.type,
         size: file.size,
+        sha256: Array.from(
+          new Uint8Array(
+            await crypto.subtle.digest("SHA-256", await file.arrayBuffer()),
+          ),
+        )
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join(""),
       };
-      const url = await runMutation(api.storage.generateUploadUrl, args);
+      const { url, intentId } = await runMutation(
+        api.storage.generateUploadUrl,
+        args,
+      );
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": file.type },
@@ -79,10 +91,14 @@
       });
       if (!response.ok) throw new Error("Photo upload failed");
       const { storageId } = await response.json();
-      await runMutation(api.storage.registerUpload, { ...args, storageId });
+      await runAction(api.storage.registerUpload, {
+        ...args,
+        storageId,
+        intentId,
+      });
       addToast({
         type: "info",
-        message: "Photo uploaded. It will appear after the security scan.",
+        message: "Photo uploaded and validated.",
       });
     } catch (error) {
       profileError =

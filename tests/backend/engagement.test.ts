@@ -1,3 +1,4 @@
+import aggregate from "@convex-dev/aggregate/test";
 import { convexTest } from "convex-test";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import schema from "../../convex/schema";
@@ -7,6 +8,7 @@ import { emitAlert } from "../../convex/lib/alerts";
 const modules = import.meta.glob("../../convex/**/*.ts");
 function setup() {
   const t = convexTest(schema, modules);
+  aggregate.register(t, "managementAggregate");
   rateLimiter.register(t);
   return t;
 }

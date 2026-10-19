@@ -1,3 +1,4 @@
+import aggregate from "@convex-dev/aggregate/test";
 import { convexTest } from "convex-test";
 import { describe, expect, it, vi } from "vitest";
 import rateLimiter from "@convex-dev/rate-limiter/test";
@@ -10,6 +11,7 @@ const modules = import.meta.glob("../../convex/**/*.ts");
 async function fixture() {
   const t = convexTest(schema, modules),
     now = Date.now();
+  aggregate.register(t, "managementAggregate");
   const ids = await t.run(async (ctx) => {
     const userId = await ctx.db.insert("users", {
       name: "Manager",
@@ -104,11 +106,19 @@ describe("paid manager access and listing media", () => {
       await ctx.db.patch(ids.managerId, { paidThrough: 0 });
       await ctx.db.patch(ids.orderId, { status: "DRAFT" });
     });
-    const first = await client.mutation(internal.checkout.prepare, { reference: "ADK-ORDER-TEST", expectedAmount: 25000, provider: "KORAPAY" });
+    const first = await client.mutation(internal.checkout.prepare, {
+      reference: "ADK-ORDER-TEST",
+      expectedAmount: 25000,
+      provider: "KORAPAY",
+    });
     expect(first.reference.length).toBeLessThanOrEqual(50);
     expect(first.reference).toMatch(/^ADK-KPY-/);
     await t.run((ctx) => ctx.db.patch(ids.orderId, { status: "DRAFT" }));
-    const second = await client.mutation(internal.checkout.prepare, { reference: "ADK-ORDER-TEST", expectedAmount: 25000, provider: "KORAPAY" });
+    const second = await client.mutation(internal.checkout.prepare, {
+      reference: "ADK-ORDER-TEST",
+      expectedAmount: 25000,
+      provider: "KORAPAY",
+    });
     expect(second.reference).not.toBe(first.reference);
   });
   it("verifies email ownership using an expiring single-use link without granting a role", async () => {
@@ -288,12 +298,24 @@ describe("paid manager access and listing media", () => {
       }),
     ).rejects.toThrow(/1 and 7/);
     await t.run(async (ctx) => {
-      const asset = await ctx.db.query("r2Assets").withIndex("by_key", (q) => q.eq("key", "property/test-0.webp")).unique();
+      const asset = await ctx.db
+        .query("r2Assets")
+        .withIndex("by_key", (q) => q.eq("key", "property/test-0.webp"))
+        .unique();
       await ctx.db.patch(asset!._id, { collection: "service" });
     });
-    await expect(client.mutation(api.properties.addPropertyMedia, { propertyId, storageIds: [], urls: urls.slice(0, 1) })).rejects.toThrow();
+    await expect(
+      client.mutation(api.properties.addPropertyMedia, {
+        propertyId,
+        storageIds: [],
+        urls: urls.slice(0, 1),
+      }),
+    ).rejects.toThrow();
     await t.run(async (ctx) => {
-      const asset = await ctx.db.query("r2Assets").withIndex("by_key", (q) => q.eq("key", "property/test-0.webp")).unique();
+      const asset = await ctx.db
+        .query("r2Assets")
+        .withIndex("by_key", (q) => q.eq("key", "property/test-0.webp"))
+        .unique();
       await ctx.db.patch(asset!._id, { collection: "property" });
     });
     await client.mutation(api.properties.addPropertyMedia, {

@@ -8,6 +8,7 @@ import { SERVICES, servicesWithFallback } from "../../src/lib/types/services";
 const modules = import.meta.glob("../../convex/**/*.ts");
 function setup() {
   const t = convexTest(schema, modules);
+  aggregate.register(t, "managementAggregate");
   rateLimiter.register(t);
   aggregate.register(t, "serviceRequestAggregate");
   return t;

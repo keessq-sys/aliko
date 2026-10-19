@@ -1,3 +1,4 @@
+import { publicPropertyAggregate } from "./aggregates";
 import { internalMutation, query } from "./_generated/server";
 import services from "./data/serviceCatalog.json";
 
@@ -27,13 +28,9 @@ export const synchronizeServices = internalMutation({
 export const publicSummary = query({
   args: {},
   handler: async (ctx) => {
-    const properties = await ctx.db
-      .query("properties")
-      .withIndex("by_active", (q) => q.eq("isActive", true))
-      .take(500);
-    const published = properties.filter(
-      (p) => p.verificationStatus === "VERIFIED",
-    );
+    const listings = await publicPropertyAggregate.sum(ctx, {
+      namespace: "published-properties",
+    });
     const agents = await ctx.db
       .query("agentApplications")
       .withIndex("by_status", (q) => q.eq("status", "APPROVED"))
@@ -43,22 +40,27 @@ export const publicSummary = query({
       .withIndex("by_active", (q) => q.eq("isActive", true))
       .take(500);
     return {
-      listings: published.length,
+      listings,
       agents: agents.length,
       projects: projects.length,
-      capped: properties.length === 500 || agents.length === 500,
+      capped: agents.length === 500 || projects.length === 500,
       types: Object.fromEntries(
-        [
-          "RESIDENTIAL",
-          "COMMERCIAL",
-          "LAND",
-          "APARTMENT",
-          "DUPLEX",
-          "PENTHOUSE",
-        ].map((type) => [
-          type,
-          published.filter((p) => p.type === type).length,
-        ]),
+        await Promise.all(
+          [
+            "RESIDENTIAL",
+            "COMMERCIAL",
+            "LAND",
+            "APARTMENT",
+            "DUPLEX",
+            "PENTHOUSE",
+          ].map(async (type) => [
+            type,
+            await publicPropertyAggregate.sum(ctx, {
+              namespace: "published-properties",
+              bounds: { prefix: [type] },
+            }),
+          ]),
+        ),
       ),
     };
   },

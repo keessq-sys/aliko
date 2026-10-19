@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import {
   existsSync,
   mkdtempSync,
@@ -14,6 +16,18 @@ const [snapshot] = process.argv.slice(2);
 if (!snapshot || !existsSync(snapshot))
   throw new Error("Pass an existing Convex snapshot ZIP path.");
 const { key } = validateRestoreTarget(process.env);
+const manifest = JSON.parse(readFileSync(`${snapshot}.manifest.json`, "utf8"));
+const snapshotBytes = readFileSync(snapshot);
+if (
+  manifest.file !== path.basename(snapshot) ||
+  manifest.bytes !== snapshotBytes.byteLength ||
+  manifest.sha256 !==
+    createHash("sha256").update(snapshotBytes).digest("hex") ||
+  manifest.includesFileStorage !== true
+)
+  throw new Error(
+    "Backup manifest or integrity check failed; no restore attempted.",
+  );
 const cli = path.resolve(process.cwd(), "node_modules/convex/bin/main.js");
 const temporaryDirectory = mkdtempSync(
   path.join(tmpdir(), "adk-staging-restore-"),

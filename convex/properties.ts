@@ -1,3 +1,5 @@
+import { propertyAggregate } from "./aggregates";
+import { paginationOptsValidator } from "convex/server";
 import { assertNigeriaLocation } from "./lib/nigeriaLocations";
 import { auditedMutation } from "./lib/auditedMutation";
 import { requireAdmin } from "./lib/access";
@@ -17,13 +19,11 @@ import { requireManagerSubscription } from "./lib/managerPlans";
 export const getMyPropertiesCount = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return 0;
-    const rows = await ctx.db
-      .query("properties")
-      .filter((q) => q.eq(q.field("agentId"), userId))
-      .take(500);
-    return rows.length;
+    const user = await requireUser(ctx);
+    return propertyAggregate.count(ctx, {
+      namespace: "properties",
+      bounds: { prefix: [String(user._id)] },
+    });
   },
 });
 
@@ -98,6 +98,146 @@ export const listProperties = query({
         .slice(0, args.limit ?? 60)
         .map((row) => withResolvedImages(ctx, row)),
     );
+  },
+});
+
+/** Cursor pagination uses publication index; filters are applied before pagination. */
+export const browse = query({
+  args: {
+    paginationOpts: paginationOptsValidator,
+    state: v.optional(v.string()),
+    type: v.optional(PROPERTY_TYPE),
+    latitude: v.optional(v.number()),
+    longitude: v.optional(v.number()),
+    radiusKm: v.optional(v.number()),
+    search: v.optional(v.string()),
+    lga: v.optional(v.string()),
+    minPrice: v.optional(v.number()),
+    maxPrice: v.optional(v.number()),
+    status: v.optional(v.string()),
+    bedrooms: v.optional(v.number()),
+    bedroomsExact: v.optional(v.boolean()),
+    bathrooms: v.optional(v.number()),
+    bathroomsExact: v.optional(v.boolean()),
+    sort: v.optional(
+      v.union(
+        v.literal("NEWEST"),
+        v.literal("PRICE_ASC"),
+        v.literal("PRICE_DESC"),
+      ),
+    ),
+  },
+  handler: async (ctx, args) => {
+    if ((args.latitude === undefined) !== (args.longitude === undefined))
+      throw new Error("Provide latitude and longitude together");
+    if (
+      args.latitude !== undefined &&
+      (Math.abs(args.latitude) > 90 ||
+        Math.abs(args.longitude!) > 180 ||
+        !Number.isFinite(args.latitude) ||
+        !Number.isFinite(args.longitude!))
+    )
+      throw new Error("Invalid coordinates");
+    const radius = args.radiusKm ?? 50;
+    if (!Number.isFinite(radius) || radius <= 0 || radius > 500)
+      throw new Error("Radius must be between 0 and 500 km");
+    const index = args.sort?.startsWith("PRICE")
+      ? "by_publication_price"
+      : "by_publication";
+    if (args.search?.trim() && args.sort && args.sort !== "NEWEST")
+      throw new Error(
+        "Text searches use relevance ordering; clear search to sort by price",
+      );
+    if (args.search && args.search.length > 120)
+      throw new Error("Search text is too long");
+    const rows = args.search?.trim()
+      ? ctx.db
+          .query("properties")
+          .withSearchIndex("search_catalog", (q) =>
+            q
+              .search("searchText", args.search!.trim())
+              .eq("isActive", true)
+              .eq("verificationStatus", "VERIFIED"),
+          )
+      : ctx.db
+          .query("properties")
+          .withIndex(index, (q) =>
+            q.eq("isActive", true).eq("verificationStatus", "VERIFIED"),
+          )
+          .order(args.sort === "PRICE_ASC" ? "asc" : "desc");
+    let filtered = rows.filter((q) =>
+      q.and(
+        ...[
+          ...(args.state ? [q.eq(q.field("state"), args.state)] : []),
+          ...(args.type ? [q.eq(q.field("type"), args.type)] : []),
+          ...(args.lga ? [q.eq(q.field("lga"), args.lga)] : []),
+          ...(args.minPrice !== undefined
+            ? [q.gte(q.field("price"), args.minPrice)]
+            : []),
+          ...(args.maxPrice !== undefined
+            ? [q.lte(q.field("price"), args.maxPrice)]
+            : []),
+          ...(args.status ? [q.eq(q.field("status"), args.status)] : []),
+          ...(args.bathrooms !== undefined
+            ? [
+                args.bathroomsExact
+                  ? q.eq(q.field("bathrooms"), args.bathrooms)
+                  : q.gte(q.field("bathrooms"), args.bathrooms),
+              ]
+            : []),
+          ...(args.bedrooms !== undefined
+            ? [
+                args.bedroomsExact
+                  ? q.eq(q.field("bedrooms"), args.bedrooms)
+                  : q.gte(q.field("bedrooms"), args.bedrooms),
+              ]
+            : []),
+        ],
+      ),
+    );
+    if (args.latitude !== undefined) {
+      const latitudeDelta = radius / 111.195;
+      filtered = filtered.filter((q) =>
+        q.and(
+          q.gte(
+            q.field("latitude"),
+            Math.max(-90, args.latitude! - latitudeDelta),
+          ),
+          q.lte(
+            q.field("latitude"),
+            Math.min(90, args.latitude! + latitudeDelta),
+          ),
+        ),
+      );
+    }
+    const result = await filtered.paginate({
+      ...args.paginationOpts,
+      numItems: Math.min(100, Math.max(1, args.paginationOpts.numItems)),
+    });
+    const nearby =
+      args.latitude === undefined
+        ? result.page
+        : result.page.filter((p) => {
+            if (p.latitude === undefined || p.longitude === undefined)
+              return false;
+            const r = Math.PI / 180,
+              dlat = (p.latitude - args.latitude!) * r,
+              dlon = (p.longitude - args.longitude!) * r;
+            const a =
+              Math.sin(dlat / 2) ** 2 +
+              Math.cos(args.latitude! * r) *
+                Math.cos(p.latitude * r) *
+                Math.sin(dlon / 2) ** 2;
+            return (
+              6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) <= radius
+            );
+          });
+    return {
+      ...result,
+      page: await Promise.all(
+        nearby.map((row) => withResolvedImages(ctx, row)),
+      ),
+    };
   },
 });
 

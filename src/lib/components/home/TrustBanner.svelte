@@ -9,22 +9,22 @@
     {
       icon: FileText,
       title: "C of O & Title Deeds",
-      desc: "Verified documents directly with land registries.",
+      desc: "Request supporting title documents and independent registry searches.",
     },
     {
       icon: Building,
-      title: "CAC Verified",
-      desc: "All agencies and developers are registered entities.",
+      title: "Company Registration",
+      desc: "Request CAC registration evidence from the contracting company.",
     },
     {
       icon: Lock,
-      title: "Secure Payments",
-      desc: "Escrow options and encrypted transaction pathways.",
+      title: "Checkout Review",
+      desc: "Confirm the amount and recipient on the hosted checkout before paying.",
     },
     {
       icon: ShieldCheck,
-      title: "AGIS Registered",
-      desc: "Compliant with Abuja Geographic Information Systems.",
+      title: "Registry Due Diligence",
+      desc: "Request relevant AGIS or state registry records where applicable.",
     },
   ];
 </script>
@@ -49,12 +49,18 @@
           >
             <ShieldCheck class="text-emerald-400" size={32} />
             <span class="text-xl font-extrabold tracking-wide uppercase"
-              >{$adkT("100% Legal Guarantee")}</span
+              >{$adkT("Property Due Diligence")}</span
             >
           </div>
         </div>
-        <h3 class="text-4xl font-extrabold mb-4"> {$adkT("Review every property before you commit.")} </h3>
-        <p class="text-gray-300"> {$adkT("Our multi-layered verification system ensures your investment is completely secure and legally binding.")} </p>
+        <h3 class="text-4xl font-extrabold mb-4">
+          {$adkT("Review every property before you commit.")}
+        </h3>
+        <p class="text-gray-300">
+          {$adkT(
+            "Ask for supporting documents and independent legal advice. A published listing does not guarantee title, availability or investment returns.",
+          )}
+        </p>
       </div>
 
       <!-- Right: Pillars -->
@@ -89,13 +95,25 @@
     <div class="mt-16 pt-8 border-t border-white/10">
       <p
         class="text-center text-xs text-gray-500 uppercase tracking-widest mb-6"
-      > {$adkT("Every Title Is Cross-Checked Against")} </p>
+      >
+        {$adkT("Records to request for independent checks")}
+      </p>
       <div class="flex flex-wrap justify-center gap-x-12 gap-y-4 opacity-60">
-        <div class="text-sm font-semibold tracking-wide"> {$adkT("CAC Company Registry")} </div>
-        <div class="text-sm font-semibold tracking-wide"> {$adkT("AGIS Land Records (FCT)")} </div>
-        <div class="text-sm font-semibold tracking-wide"> {$adkT("State Ministry of Lands")} </div>
+        <div class="text-sm font-semibold tracking-wide">
+          {$adkT("CAC Company Registry")}
+        </div>
+        <div class="text-sm font-semibold tracking-wide">
+          {$adkT("AGIS Land Records (FCT)")}
+        </div>
+        <div class="text-sm font-semibold tracking-wide">
+          {$adkT("State Ministry of Lands")}
+        </div>
       </div>
-      <p class="mt-6 text-center text-xs text-gray-600"> {$adkT("Payments processed securely via Paystack.")} </p>
+      <p class="mt-6 text-center text-xs text-gray-600">
+        {$adkT(
+          "Payments use Korapay hosted checkout. Review the order details before authorising payment.",
+        )}
+      </p>
     </div>
   </div>
 </section>
