@@ -257,8 +257,14 @@ describe("production authorization", () => {
     });
     const publicAgents = await t.query(api.partners.listApprovedAgents, {});
     expect(publicAgents).toHaveLength(1);
-    expect(publicAgents[0]).not.toHaveProperty("phone");
-    expect(publicAgents[0]).not.toHaveProperty("email");
+    expect(publicAgents[0].phone).toBe("08012345678");
+    expect(publicAgents[0].email).toBe("client@example.com");
+    expect(publicAgents[0]).not.toHaveProperty("reviewNotes");
+    expect(publicAgents[0]).not.toHaveProperty("nin");
+    await t.run((ctx) =>
+      ctx.db.patch(applicant.id, { accountStatus: "SUSPENDED" }),
+    );
+    expect(await t.query(api.partners.listApprovedAgents, {})).toHaveLength(0);
     expect((await t.run((ctx) => ctx.db.get(applicant.id)))?.role).toBe(
       "AGENT",
     );

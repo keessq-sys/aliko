@@ -394,6 +394,26 @@
     }
   }
 
+  let deleteError = "",
+    deletingId = "";
+  async function removeProperty(id: any, title: string) {
+    if (
+      !confirm(
+        `Delete "${title}" from the platform? Transaction records and media are retained. This cannot be undone.`,
+      )
+    )
+      return;
+    deletingId = id;
+    deleteError = "";
+    try {
+      await runMutation(api.properties.deleteProperty, { propertyId: id });
+    } catch (e) {
+      deleteError =
+        e instanceof Error ? e.message : "Deletion failed. Please retry.";
+    } finally {
+      deletingId = "";
+    }
+  }
   let togglingId: string | null = null;
 
   async function toggleActive(propertyId: string, nextActive: boolean) {
@@ -414,6 +434,9 @@
 <svelte:head><title>{$adkT("Properties — ADK Admin")}</title></svelte:head>
 
 <div class="p-8">
+  {#if deleteError}<p role="alert" class="mb-4 text-rose-500">
+      {deleteError}
+    </p>{/if}
   <div
     class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center"
   >
@@ -537,6 +560,15 @@
               {$adkT(p.isActive ? "ACTIVE" : "INACTIVE")}
             </button>
           </div>
+          <button
+            type="button"
+            class="mb-3 min-h-[44px] rounded-lg border border-rose-500/40 px-3 text-rose-400"
+            disabled={deletingId === p._id}
+            on:click={() => removeProperty(p._id, p.title)}
+            >{$adkT(
+              deletingId === p._id ? "Deleting…" : "Delete property",
+            )}</button
+          >
           <p class="mb-3 text-lg font-bold text-amber-400">
             {$adkT(formatNaira(p.price, $adkLocale))}
           </p>

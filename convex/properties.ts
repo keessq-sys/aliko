@@ -68,23 +68,26 @@ export const listProperties = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    if (args.activeOnly === false) await requireAdmin(ctx);
     let rows =
-      args.isFeatured != null
-        ? await ctx.db
-            .query("properties")
-            .withIndex("by_featured", (q) =>
-              q.eq("isFeatured", args.isFeatured!),
-            )
-            .take(500)
-        : args.type
+      args.activeOnly === false
+        ? await ctx.db.query("properties").take(500)
+        : args.isFeatured != null
           ? await ctx.db
               .query("properties")
-              .withIndex("by_type", (q) => q.eq("type", args.type!))
+              .withIndex("by_featured", (q) =>
+                q.eq("isFeatured", args.isFeatured!),
+              )
               .take(500)
-          : await ctx.db
-              .query("properties")
-              .withIndex("by_active", (q) => q.eq("isActive", true))
-              .take(500);
+          : args.type
+            ? await ctx.db
+                .query("properties")
+                .withIndex("by_type", (q) => q.eq("type", args.type!))
+                .take(500)
+            : await ctx.db
+                .query("properties")
+                .withIndex("by_active", (q) => q.eq("isActive", true))
+                .take(500);
 
     if (args.activeOnly === false) await requireAdmin(ctx);
     rows = rows.filter(
@@ -537,5 +540,37 @@ export const reviewProperty = auditedMutation("properties:reviewProperty")({
       detail: args.reference,
       createdAt: Date.now(),
     });
+  },
+});
+
+export const deleteProperty = auditedMutation("properties:deleteProperty")({
+  args: { propertyId: v.id("properties") },
+  handler: async (ctx, { propertyId }) => {
+    const actor = await requireAdmin(ctx);
+    const record = await ctx.db.get(propertyId);
+    if (!record) return;
+    if (record.status !== "AVAILABLE")
+      throw new Error(
+        "Reserved or sold properties cannot be deleted. Unpublish the listing instead.",
+      );
+    const order = await ctx.db
+      .query("checkoutOrders")
+      .withIndex("by_target_status", (q) =>
+        q.eq("kind", "PROPERTY").eq("targetId", String(propertyId)),
+      )
+      .first();
+    if (order)
+      throw new Error(
+        "This property has transaction history. Unpublish it instead.",
+      );
+    await ctx.db.insert("adminAuditLog", {
+      actorId: actor,
+      action: "PROPERTY_DELETED",
+      entityType: "properties",
+      entityId: String(propertyId),
+      detail: record.title,
+      createdAt: Date.now(),
+    });
+    await ctx.db.delete(propertyId);
   },
 });

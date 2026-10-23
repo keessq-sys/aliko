@@ -242,3 +242,40 @@ export const generateUploadUrl = auditedMutation("plots:generateUploadUrl")({
     return await ctx.storage.generateUploadUrl();
   },
 });
+
+export const deletePlot = auditedMutation("plots:deletePlot")({
+  args: { plotId: v.id("plots") },
+  handler: async (ctx, { plotId }) => {
+    const actor = await requireAdmin(ctx),
+      plot = await ctx.db.get(plotId);
+    if (!plot) return;
+    if (["RESERVED", "SOLD"].includes(plot.status))
+      throw new Error("Reserved or sold plots cannot be deleted.");
+    if (
+      await ctx.db
+        .query("bookings")
+        .withIndex("by_plot", (q) => q.eq("plotId", plotId))
+        .first()
+    )
+      throw new Error("This plot has booking history and cannot be deleted.");
+    await ctx.db.delete(plotId);
+    const project = await ctx.db.get(plot.projectId);
+    if (project)
+      await ctx.db.patch(project._id, {
+        totalPlots: Math.max(0, project.totalPlots - 1),
+        availablePlots: Math.max(
+          0,
+          project.availablePlots - (plot.status === "AVAILABLE" ? 1 : 0),
+        ),
+        updatedAt: Date.now(),
+      });
+    await ctx.db.insert("adminAuditLog", {
+      actorId: actor,
+      action: "PLOT_DELETED",
+      entityType: "plots",
+      entityId: String(plotId),
+      detail: plot.plotNumber,
+      createdAt: Date.now(),
+    });
+  },
+});

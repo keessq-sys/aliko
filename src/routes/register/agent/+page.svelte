@@ -8,7 +8,10 @@
   import { completeEnrolment } from "$lib/auth/enrolment";
   import { passwordProblem } from "../../../../convex/lib/passwordPolicy";
   import { ninProblem } from "../../../../convex/lib/nin";
-  import { onMount } from "svelte";
+  import { getConvexClient } from "convex-svelte";
+  import { synchronizeSession } from "$lib/convex/session";
+  import { prepareUploadFile } from "$lib/utils/prepareUploadFile";
+  import { onMount, onDestroy } from "svelte";
   let ready = false,
     submissionKey = "",
     accountReady = false;
@@ -26,7 +29,7 @@
     operationLga = "";
 
   import { goto } from "$app/navigation";
-  import { useQuery } from "$lib/convex/queries";
+  import { useQuery, runMutation, runAction } from "$lib/convex/queries";
   const account = useQuery(api.users.getMyProfile, {});
   let seededAccount = false;
   import {
@@ -126,6 +129,74 @@
     if (currentStep > 1) currentStep--;
   };
 
+  onDestroy(() => {
+    if (photoPreview && typeof URL !== "undefined")
+      URL.revokeObjectURL(photoPreview);
+  });
+  let photoPreview = "",
+    photoError = "";
+  async function selectPhoto(event: Event) {
+    const input = event.currentTarget as HTMLInputElement;
+    const file = input.files?.[0];
+    photoError = "";
+    if (!file) return;
+    if (
+      !["image/jpeg", "image/png", "image/webp", "image/avif"].includes(
+        file.type,
+      ) ||
+      file.size > 2_000_000
+    ) {
+      photoError = "Choose a JPG, PNG, WebP or AVIF photo up to 2 MB.";
+      input.value = "";
+      return;
+    }
+    try {
+      const prepared = await prepareUploadFile(file);
+      if (photoPreview) URL.revokeObjectURL(photoPreview);
+      formData.documents.photo = prepared;
+      photoPreview = URL.createObjectURL(prepared);
+    } catch {
+      photoError = "This photo could not be read. Please choose another image.";
+    }
+  }
+  async function uploadPhoto() {
+    const file = formData.documents.photo;
+    if (!file) return;
+    await synchronizeSession(getConvexClient());
+    const sha256 = Array.from(
+      new Uint8Array(
+        await crypto.subtle.digest("SHA-256", await file.arrayBuffer()),
+      ),
+    )
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    const args = {
+      purpose: "AVATAR_IMAGE" as const,
+      fileName: file.name,
+      mimeType: file.type,
+      size: file.size,
+      sha256,
+    };
+    const { url, intentId } = await runMutation(
+      api.storage.generateUploadUrl,
+      args,
+    );
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": file.type },
+      body: file,
+    });
+    if (!response.ok)
+      throw new Error(
+        "Your application is saved, but the profile photo could not upload. Retry to finish.",
+      );
+    const { storageId } = await response.json();
+    await runAction(api.storage.registerUpload, {
+      ...args,
+      intentId,
+      storageId,
+    });
+  }
   const submitForm = async () => {
     submitError = "";
     if (!formData.fullName || !formData.email || !formData.phone) {
@@ -160,6 +231,10 @@
         submitError = problem;
         return;
       }
+    }
+    if (photoError) {
+      submitError = photoError;
+      return;
     }
     submitting = true;
     try {
@@ -206,6 +281,7 @@
         nin = "";
       }
       if (!result.ok) throw new Error(result.error);
+      await uploadPhoto();
       reference = result.reference;
       submitted = true;
     } catch (err: any) {
@@ -363,14 +439,35 @@
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="md:col-span-2 flex flex-col items-center mb-4">
-                <div
-                  class="w-24 h-24 rounded-full bg-black/40 border border-white/20 flex items-center justify-center mb-2 overflow-hidden cursor-pointer hover:border-amber-500 transition-colors"
+                <label
+                  for="agent-profile-photo"
+                  class="cursor-pointer flex flex-col items-center gap-2"
                 >
-                  <User class="w-8 h-8 text-gray-500" />
-                </div>
-                <span class="text-sm text-amber-400"
-                  >{$adkT("Upload Photo")}</span
-                >
+                  <span
+                    class="w-24 h-24 rounded-full bg-black/40 border border-white/20 flex items-center justify-center overflow-hidden"
+                  >
+                    {#if photoPreview}<img
+                        src={photoPreview}
+                        alt="Selected portrait"
+                        class="w-full h-full object-cover"
+                      />{:else}<User class="w-8 h-8 text-gray-500" />{/if}
+                  </span><span class="text-sm text-amber-400"
+                    >{$adkT("Upload Photo")}</span
+                  >
+                </label>
+                <input
+                  id="agent-profile-photo"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/avif"
+                  on:change={selectPhoto}
+                  class="mt-2 max-w-full text-sm"
+                />
+                <p class="mt-1 text-xs">
+                  {$adkT(
+                    "Optional profile photo. Maximum 2 MB. Uploaded after your account is created.",
+                  )}
+                </p>
+                {#if photoError}<p role="alert">{$adkT(photoError)}</p>{/if}
               </div>
 
               <div>
@@ -755,6 +852,17 @@
                       >{/if}
                   </h3>
                   <p class="text-xs text-gray-500 mt-1">{$adkT(doc.types)}</p>
+                  {#if doc.id === "photo"}<input
+                      aria-label="Professional Photo"
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/avif"
+                      on:change={selectPhoto}
+                      class="mt-3 max-w-full text-sm"
+                    />{#if photoPreview}<img
+                        src={photoPreview}
+                        alt="Selected professional portrait"
+                        class="mt-3 h-20 w-20 rounded-full object-cover"
+                      />{/if}{/if}
                 </div>
               {/each}
             </div>

@@ -121,10 +121,20 @@
         const form = new FormData();
         form.append("file", file);
         form.append("collection", mode);
-        const r2 = await fetch("/api/media/upload", {
+        let r2 = await fetch("/api/media/upload", {
           method: "POST",
           body: form,
         });
+        if (r2.status === 401 || r2.status === 403) {
+          const session = await fetch("/api/auth/session?refresh=1", {
+            cache: "no-store",
+          });
+          if (session.ok && (await session.json()).token)
+            r2 = await fetch("/api/media/upload", {
+              method: "POST",
+              body: form,
+            });
+        }
         if (r2.ok) {
           const value = (await r2.json()) as { url: string };
           urls.push(value.url);
@@ -132,7 +142,9 @@
           const failure = await r2.json().catch(() => ({}));
           throw new Error(
             failure.error ??
-              `Upload rejected (${r2.status}). Please try again.`,
+              (r2.status === 401 || r2.status === 403
+                ? "Your upload session could not be authorised. Sign in again and retry; selected files are retained."
+                : `Upload rejected (${r2.status}). Please try again.`),
           );
         }
       }

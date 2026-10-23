@@ -25,7 +25,8 @@
 
   const agents = useQuery(api.partners.listApprovedAgents, {});
 
-  let searchQuery = "";
+  import { page } from "$app/stores";
+  let searchQuery = $page.url.searchParams.get("q") ?? "";
   let specializationFilter = "All Specializations";
   let stateFilter = "All Locations";
 
@@ -199,15 +200,21 @@
             >
               <!-- Avatar -->
               <div class="relative w-24 h-24 mx-auto mb-4">
-                <div
-                  class="flex h-full w-full items-center justify-center rounded-full border-2 border-emerald-500 bg-emerald-500/10 text-2xl font-bold text-emerald-300"
-                >
-                  {agent.fullName
-                    .split(" ")
-                    .map((n: string) => n[0])
-                    .slice(0, 2)
-                    .join("")}
-                </div>
+                {#if agent.avatarUrl}<img
+                    src={agent.avatarUrl}
+                    alt={agent.fullName}
+                    class="w-full h-full rounded-full object-cover"
+                  />{:else}
+                  <div
+                    class="flex h-full w-full items-center justify-center rounded-full border-2 border-emerald-500 bg-emerald-500/10 text-2xl font-bold text-emerald-300"
+                  >
+                    {agent.fullName
+                      .split(" ")
+                      .map((n: string) => n[0])
+                      .slice(0, 2)
+                      .join("")}
+                  </div>
+                {/if}
                 <div
                   class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-emerald-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-lg shadow-emerald-500/20"
                 >
@@ -254,7 +261,7 @@
               <!-- Actions -->
               <div class="grid grid-cols-2 gap-2 mt-auto">
                 <a
-                  href={`tel:${"+2349033333909"}`}
+                  href={`tel:${agent.phone ?? ""}`}
                   class="flex min-h-[44px] items-center justify-center gap-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs text-white transition-colors"
                 >
                   <Phone class="w-3 h-3" />
@@ -263,7 +270,7 @@
                 <a
                   href={whatsappHref(
                     `Hi ${agent.fullName}, I found your profile on Aliko Diamond Key and would like to talk about a property.`,
-                    "+2349033333909",
+                    agent.whatsapp || agent.phone || "",
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -273,6 +280,10 @@
                   {$adkT("WhatsApp")}
                 </a>
               </div>
+              {#if agent.email}<a
+                  class="mt-3 text-center underline"
+                  href={`mailto:${agent.email}`}>{$adkT("Email agent")}</a
+                >{/if}
             </div>
           {/each}
         </div>

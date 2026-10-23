@@ -256,15 +256,34 @@ export const listApprovedAgents = query({
       .withIndex("by_status", (q) => q.eq("status", "APPROVED"))
       .take(500);
     rows.sort((a, b) => b.createdAt - a.createdAt);
-    return rows.slice(0, args.limit ?? 100).map((r) => ({
-      _id: r._id,
-      fullName: r.fullName,
-      agencyName: r.agencyName,
-      specializations: r.specializations ?? [],
-      statesOfOperation: r.statesOfOperation ?? [],
-      experience: r.experience,
-      bio: r.bio,
-    }));
+    return (
+      await Promise.all(
+        rows.slice(0, args.limit ?? 100).map(async (r) => {
+          const user = r.userId ? await ctx.db.get(r.userId) : null;
+          if (
+            !user ||
+            user.role !== "AGENT" ||
+            user.accountStatus === "SUSPENDED"
+          )
+            return null;
+          return {
+            _id: r._id,
+            fullName: r.fullName,
+            agencyName: r.agencyName,
+            specializations: r.specializations ?? [],
+            statesOfOperation: r.statesOfOperation ?? [],
+            experience: r.experience,
+            bio: r.bio,
+            phone: r.phone,
+            whatsapp: r.whatsapp || r.phone,
+            email: r.email.trim().toLowerCase(),
+            avatarUrl: user.avatarStorageId
+              ? await ctx.storage.getUrl(user.avatarStorageId)
+              : user.avatarUrl,
+          };
+        }),
+      )
+    ).filter((row): row is NonNullable<typeof row> => row !== null);
   },
 });
 

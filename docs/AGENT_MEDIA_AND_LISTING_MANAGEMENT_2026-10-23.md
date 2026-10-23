@@ -1,0 +1,11 @@
+# Agent media and listing management fixes — 23 October 2026
+
+Agent registration has a real profile image picker with preview, supported-type and 2 MB validation. The selected image is sanitized and uploaded through an owner-bound Convex upload intent after enrolment establishes authentication. A photo failure leaves the form available for retry; professional enrolment remains idempotent. Public approved-agent directory and landing cards resolve the current stored avatar rather than always showing initials.
+
+Following the owner's revised contact instruction, approved active agents publish their professional phone, WhatsApp and email. Direct contact links use those details. Company-wide support retains the company number by default. Private NIN and review notes are excluded, and suspended or unapproved accounts are not returned. The home agent CTA navigates to the selected agent's directory result.
+
+Administrator property and plot interfaces include explicit delete controls with confirmation and failure feedback. Backend calls require a current trusted administrator and create audit records. Property deletion rejects reserved/sold listings and any associated checkout history. Plot deletion rejects reserved/sold plots and any booking history; successful deletion updates project counts. Media is not automatically deleted because other records may reference it. Unpublish properties with transaction history instead of deleting them. The property admin query now includes inactive drafts; the plot interface starts with all plots rather than hiding verified records.
+
+A fresh production administrator session passed a service-upload diagnostic: HTTP 201 for a synthetic image and HTTP 204 when deleting that same diagnostic object. The reported HTTP 403 was not reproduced with that session. Gallery uploads now refresh a verified session once before retrying a 401/403, retain selected files on failure and show a useful authorization message; permission checks remain enforced.
+
+Backend regression tests cover deletion access, booking protection, draft visibility, public contact routing and suspended-agent exclusion. Browser acceptance includes image selection/preview and registration flows. Release-specific results are recorded in the private handoff artifact.

@@ -4,9 +4,11 @@ export const BUSINESS_WHATSAPP_NUMBER = "+2349033333909";
 /** All customer enquiries go through the company support desk. */
 export function whatsappHref(
   message?: string,
-  _number: string = BUSINESS_WHATSAPP_NUMBER,
+  number: string = BUSINESS_WHATSAPP_NUMBER,
 ): string {
-  const digits = BUSINESS_WHATSAPP_NUMBER.replace(/[^0-9]/g, "");
+  let digits = number.replace(/[^0-9]/g, "");
+  if (/^0[0-9]{10}$/.test(digits)) digits = "234" + digits.slice(1);
+  if (!/^[1-9][0-9]{9,14}$/.test(digits)) return "";
   return message
     ? `https://wa.me/${digits}?text=${encodeURIComponent(message)}`
     : `https://wa.me/${digits}`;
