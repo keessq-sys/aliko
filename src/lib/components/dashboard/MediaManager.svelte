@@ -8,6 +8,7 @@
 
   import { api } from "$lib/convex/_generated/api";
   import { runMutation, useQuery } from "$lib/convex/queries";
+  import { uploadMedia } from "$lib/media/upload";
   import FileUpload from "$lib/components/ui/FileUpload.svelte";
   import { ImagePlus, Loader2 } from "lucide-svelte";
 
@@ -121,32 +122,8 @@
         const form = new FormData();
         form.append("file", file);
         form.append("collection", mode);
-        let r2 = await fetch("/api/media/upload", {
-          method: "POST",
-          body: form,
-        });
-        if (r2.status === 401 || r2.status === 403) {
-          const session = await fetch("/api/auth/session?refresh=1", {
-            cache: "no-store",
-          });
-          if (session.ok && (await session.json()).token)
-            r2 = await fetch("/api/media/upload", {
-              method: "POST",
-              body: form,
-            });
-        }
-        if (r2.ok) {
-          const value = (await r2.json()) as { url: string };
-          urls.push(value.url);
-        } else {
-          const failure = await r2.json().catch(() => ({}));
-          throw new Error(
-            failure.error ??
-              (r2.status === 401 || r2.status === 403
-                ? "Your upload session could not be authorised. Sign in again and retry; selected files are retained."
-                : `Upload rejected (${r2.status}). Please try again.`),
-          );
-        }
+        const value = await uploadMedia(form);
+        urls.push(value.url);
       }
       if (mode === "property") {
         await runMutation(api.properties.addPropertyMedia, {

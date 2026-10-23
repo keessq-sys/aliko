@@ -66,6 +66,16 @@ function isPrivateRoute(pathname: string): boolean {
   );
 }
 
+function mediaFailure(status: number, code: string, error: string) {
+  return Response.json(
+    { code, error },
+    {
+      status,
+      headers: { "Cache-Control": "private, no-store", Vary: "Cookie" },
+    },
+  );
+}
+
 const applicationHandle: Handle = async ({ event, resolve }) => {
   const aiBot = detectAiBot(event.request.headers.get("user-agent"));
   if (aiBot) {
@@ -91,15 +101,31 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
       event.request.method !== "GET" &&
       !scheduledMaintenance)
   ) {
-    const token = await sessionToken(
-      event.cookies,
-      event.url,
-      false,
-      event.locals,
-    ).catch(() => null);
+    let token: string | null;
+    try {
+      token = await sessionToken(event.cookies, event.url, false, event.locals);
+    } catch {
+      if (pathname.startsWith("/api/"))
+        return mediaFailure(
+          503,
+          "AUTH_UNAVAILABLE",
+          "Account verification is temporarily unavailable. Your selected files are retained; retry shortly.",
+        );
+      token = null;
+    }
     if (!token || !env.PUBLIC_CONVEX_URL) {
       if (pathname.startsWith("/api/"))
-        return new Response("Forbidden", { status: 403 });
+        return env.PUBLIC_CONVEX_URL
+          ? mediaFailure(
+              401,
+              "SESSION_REQUIRED",
+              "Sign in to upload images. Your selected files are retained.",
+            )
+          : mediaFailure(
+              503,
+              "AUTH_UNAVAILABLE",
+              "Account verification is temporarily unavailable. Retry shortly.",
+            );
       throw redirect(
         303,
         pathname.startsWith("/admin")
@@ -116,8 +142,21 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
           makeFunctionReference<"query">("users:getMyProfile"),
           {},
         ));
-      if (!profile || profile.accountStatus === "SUSPENDED")
+      if (!profile || profile.accountStatus === "SUSPENDED") {
+        if (pathname.startsWith("/api/"))
+          return profile
+            ? mediaFailure(
+                403,
+                "ACCOUNT_SUSPENDED",
+                "This account is suspended. Contact support.",
+              )
+            : mediaFailure(
+                401,
+                "SESSION_REQUIRED",
+                "Sign in to upload images. Your selected files are retained.",
+              );
         throw new Error("No authenticated profile");
+      }
       event.locals.user = profile as App.Locals["user"];
       const requiredRole = pathname.startsWith("/admin")
         ? "ADMIN"
@@ -131,23 +170,43 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
         !["ADMIN", "ESTATE_MANAGER"].includes(profile.role)
       )
         throw redirect(303, "/unauthorized");
-      if (requiredRole && profile.role !== requiredRole && profile.role !== "ADMIN")
+      if (
+        requiredRole &&
+        profile.role !== requiredRole &&
+        profile.role !== "ADMIN"
+      )
         throw redirect(303, "/unauthorized");
-      if (profile.role === "ESTATE_MANAGER" && (pathname.startsWith("/dashboard/manager") || pathname.startsWith("/dashboard/operations"))) {
-        const entitlement = await client.query(makeFunctionReference<"query">("subscriptions:mine"), {});
-        if (!entitlement.access.allowed) throw redirect(303, "/dashboard/subscriptions");
+      if (
+        profile.role === "ESTATE_MANAGER" &&
+        (pathname.startsWith("/dashboard/manager") ||
+          pathname.startsWith("/dashboard/operations"))
+      ) {
+        const entitlement = await client.query(
+          makeFunctionReference<"query">("subscriptions:mine"),
+          {},
+        );
+        if (!entitlement.access.allowed)
+          throw redirect(303, "/dashboard/subscriptions");
       }
       if (
         pathname.startsWith("/api/media/") &&
         !["ADMIN", "AGENT", "ESTATE_MANAGER"].includes(profile.role)
       ) {
-        return new Response("Forbidden", { status: 403 });
+        return mediaFailure(
+          403,
+          "UPLOAD_ROLE_REQUIRED",
+          "Image uploads require an administrator, agent or estate manager account.",
+        );
       }
     } catch (error) {
       if ((error as { status?: number }).status === 303) throw error;
 
       if (pathname.startsWith("/api/"))
-        return new Response("Forbidden", { status: 403 });
+        return mediaFailure(
+          503,
+          "AUTH_UNAVAILABLE",
+          "Account verification is temporarily unavailable. Your selected files are retained; retry shortly.",
+        );
       throw redirect(
         303,
         pathname.startsWith("/admin")
