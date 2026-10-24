@@ -259,13 +259,13 @@
             bind:value={draft.title}
             aria-label={$adkT("Property title")}
             placeholder={$adkT("Property title")}
-            class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
+            class="block w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
           /></label
         >
         <select
           bind:value={draft.type}
           aria-label={$adkT("Property type")}
-          class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
+          class="block w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
         >
           <option value="RESIDENTIAL">{$adkT("Residential")}</option><option
             value="APARTMENT">{$adkT("Apartment")}</option
@@ -281,7 +281,7 @@
             bind:value={draft.location}
             aria-label={$adkT("Location")}
             placeholder={$adkT("Location or neighbourhood")}
-            class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
+            class="block w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
           /></label
         >
         <select
@@ -312,7 +312,7 @@
             type="number"
             min="1"
             placeholder={$adkT("Price in naira")}
-            class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
+            class="block w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
           /></label
         >
         <label class="theme-text text-sm"

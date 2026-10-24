@@ -47,11 +47,14 @@
   // fabricated number — only listing count and profile are real here. ───
   const myListingsCount = useQuery(api.properties.getMyPropertiesCount, {});
   const myListings = useQuery(api.properties.getManageableProperties, {});
-  const myAssignedEnquiries = useQuery(api.enquiries.listMyAssignedEnquiries, {
-    limit: 100,
-  });
-  const myAssignedVisits = useQuery(
-    api.clientPortal.getMyAssignedSiteVisits,
+  $: myAssignedEnquiries = useQuery(
+    $myProfile?.role === "AGENT" ? api.enquiries.listMyAssignedEnquiries : null,
+    { limit: 100 },
+  );
+  $: myAssignedVisits = useQuery(
+    $myProfile?.role === "AGENT"
+      ? api.clientPortal.getMyAssignedSiteVisits
+      : null,
     {},
   );
   $: listingRows = ($myListings ?? []).map((property) => ({
