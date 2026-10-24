@@ -228,9 +228,10 @@ describe("paid manager access and listing media", () => {
       status: "EXPIRED",
     });
     await t.run((ctx) => ctx.db.patch(ids.userId, { role: "CLIENT" }));
-    await expect(
-      client.query(api.properties.getManageableProperties, {}),
-    ).rejects.toThrow(/Forbidden/);
+    // Downgraded users may use customer intake, but cannot see professional holdings.
+    expect(
+      await client.query(api.properties.getManageableProperties, {}),
+    ).toEqual([]);
   });
   it("keeps paid time after cancellation and denies new operations with incomplete profiles", async () => {
     const { t, ids, client } = await fixture();

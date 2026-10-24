@@ -1,96 +1,74 @@
 <script lang="ts">
-  import { getI18n } from "$lib/i18n";
-  const { locale: adkLocale } = getI18n();
-
+  import { page } from "$app/stores";
   import { getTranslation } from "$lib/i18n";
+  import { formatNaira } from "$lib/utils/format";
   const adkT = getTranslation();
-
-  import { Edit, EyeOff, Trash2, Plus, Filter } from 'lucide-svelte';
-
   export let properties: any[] = [];
-
-  function getStatusColor(status: string) {
-    switch(status.toLowerCase()) {
-      case 'available': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-      case 'reserved': return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
-      case 'sold': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      case 'rented': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-      default: return 'bg-stone-500/20 text-stone-400 border-stone-500/30';
-    }
-  }
+  let search = "",
+    status = "";
+  $: visible = properties.filter(
+    (p) =>
+      (!status || p.status === status) &&
+      (!search ||
+        `${p.title} ${p.location}`
+          .toLowerCase()
+          .includes(search.toLowerCase())),
+  );
 </script>
 
-<div class="rounded-xl border border-white/5 bg-[#050A0E]/80 shadow-xl backdrop-blur-md overflow-hidden">
-  <!-- Header -->
-  <div class="border-b border-white/5 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-    <h3 class="text-lg font-semibold text-white">{$adkT("Managed Properties")}</h3>
-
-    <div class="flex items-center gap-3">
-      <button class="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-stone-300 hover:bg-white/10 transition-colors">
-        <Filter class="h-4 w-4" /> {$adkT("Filter")} </button>
-      <button class="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-900/20">
-        <Plus class="h-4 w-4" /> {$adkT("Add Property")} </button>
-    </div>
+<section class="theme-surface rounded-xl border p-4 space-y-4">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h3 class="theme-text text-lg font-semibold">
+      {$adkT("Managed Properties")}
+    </h3>
+    <a href="#listing-editor" class="btn-primary min-h-[44px] px-4 py-3"
+      >{$adkT("Add property or land")}</a
+    >
   </div>
-
-  <!-- Table -->
+  <div class="flex flex-wrap gap-3">
+    <label class="theme-text text-sm"
+      >{$adkT("Search")}<input
+        dir="auto"
+        bind:value={search}
+        class="theme-input block min-h-[44px] rounded-lg border p-3"
+      /></label
+    ><label class="theme-text text-sm"
+      >{$adkT("Status")}<select
+        bind:value={status}
+        class="theme-input block min-h-[44px] rounded-lg border p-3"
+        ><option value="">{$adkT("All")}</option
+        >{#each ["AVAILABLE", "RESERVED", "SOLD"] as value}<option {value}
+            >{$adkT(value)}</option
+          >{/each}</select
+      ></label
+    >
+  </div>
   <div class="overflow-x-auto">
-    <div class="overflow-x-auto">
-    <table class="w-full text-left text-sm text-stone-300">
-      <thead class="bg-white/5 text-xs uppercase text-stone-400">
-        <tr>
-          <th class="w-12 px-6 py-4">
-            <input dir="auto" type="checkbox" class="rounded border-stone-600 bg-stone-800 text-emerald-500 focus:ring-emerald-500/50" />
-          </th>
-          <th class="px-6 py-4 font-medium">{$adkT("Property")}</th>
-          <th class="px-6 py-4 font-medium">{$adkT("Type")}</th>
-          <th class="px-6 py-4 font-medium">{$adkT("Location")}</th>
-          <th class="px-6 py-4 font-medium">{$adkT("Status")}</th>
-          <th class="px-6 py-4 font-medium">{$adkT("Price/Rent")}</th>
-          <th class="px-6 py-4 font-medium">{$adkT("Agent")}</th>
-          <th class="px-6 py-4 font-medium text-right">{$adkT("Actions")}</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-white/5">
-        {#each properties as property}
-          <tr class="hover:bg-white/[0.02] transition-colors group">
-            <td class="px-6 py-4">
-              <input dir="auto" type="checkbox" class="rounded border-stone-600 bg-stone-800 text-emerald-500 focus:ring-emerald-500/50" />
-            </td>
-            <td class="px-6 py-4">
-              <div class="flex items-center gap-3">
-                <div class="h-10 w-10 overflow-hidden rounded-lg bg-stone-800">
-                  <img src={property.image || 'https://picsum.photos/seed/prop1/100/100'} alt={$adkT(property.title)} class="h-full w-full object-cover" />
-                </div>
-                <div class="font-medium text-white">{$adkT(property.title)}</div>
-              </div>
-            </td>
-            <td class="px-6 py-4">{$adkT(property.type)}</td>
-            <td class="px-6 py-4 text-stone-400">{$adkT(property.location)}</td>
-            <td class="px-6 py-4">
-              <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium {getStatusColor(property.status)}">
-                {$adkT(property.status)}
-              </span>
-            </td>
-            <td class="px-6 py-4 font-medium text-white">₦{$adkT(property.price.toLocaleString($adkLocale === "ar" ? "ar-NG" : "en-NG"))}</td>
-            <td class="px-6 py-4 text-stone-400">{$adkT(property.agent)}</td>
-            <td class="px-6 py-4 text-right">
-              <div class="flex items-center justify-end gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                <button class="rounded min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-400 hover:bg-white/10 hover:text-white" title={$adkT("Edit")} aria-label={$adkT("Edit property")}>
-                  <Edit class="h-4 w-4" />
-                </button>
-                <button class="rounded min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-400 hover:bg-amber-500/20 hover:text-amber-400" title={$adkT("Deactivate")} aria-label={$adkT("Deactivate property")}>
-                  <EyeOff class="h-4 w-4" />
-                </button>
-                <button class="rounded min-h-[44px] min-w-[44px] flex items-center justify-center text-stone-400 hover:bg-rose-500/20 hover:text-rose-400" title={$adkT("Delete")} aria-label={$adkT("Delete property")}>
-                  <Trash2 class="h-4 w-4" />
-                </button>
-              </div>
-            </td>
-          </tr>
-        {/each}
-      </tbody>
+    <table class="w-full text-start text-sm theme-text">
+      <thead
+        ><tr
+          >{#each ["Property", "Location", "Status", "Price", "Actions"] as text}<th
+              class="p-3 text-start">{$adkT(text)}</th
+            >{/each}</tr
+        ></thead
+      ><tbody
+        >{#each visible as property}<tr class="border-t"
+            ><td class="p-3">{property.title}</td><td class="p-3"
+              >{property.location}</td
+            ><td class="p-3">{$adkT(property.status)}</td><td class="p-3"
+              >{formatNaira(property.price)}</td
+            ><td class="p-3"
+              ><a
+                class="inline-flex min-h-[44px] items-center rounded-lg border px-3"
+                href={`?listing=${encodeURIComponent(property.id)}${$page.url.hash || ($page.url.pathname.includes("manager") ? "#properties" : "#listings")}`}
+                >{$adkT("Manage listing")}</a
+              ></td
+            ></tr
+          >{/each}</tbody
+      >
     </table>
-    </div>
   </div>
-</div>
+  {#if !visible.length}<p class="theme-field-muted py-6 text-center">
+      {$adkT("No listings match your filters.")}
+    </p>{/if}
+</section>

@@ -50,9 +50,9 @@ describe("media HTTP authorization failures", () => {
     expect(response.status).toBe(503);
     expect(await response.json()).toMatchObject({ code: "AUTH_UNAVAILABLE" });
   });
-  it("keeps buyers and suspended accounts forbidden", async () => {
+  it("keeps unsupported roles and suspended accounts forbidden", async () => {
     for (const profile of [
-      { _id: "buyer", role: "CLIENT" },
+      { _id: "buyer", role: "TENANT" },
       { _id: "admin", role: "ADMIN", accountStatus: "SUSPENDED" },
     ]) {
       const handle = await mediaGuard(

@@ -190,7 +190,13 @@ const applicationHandle: Handle = async ({ event, resolve }) => {
       }
       if (
         pathname.startsWith("/api/media/") &&
-        !["ADMIN", "AGENT", "ESTATE_MANAGER"].includes(profile.role)
+        ![
+          "ADMIN",
+          "AGENT",
+          "ESTATE_MANAGER",
+          "CLIENT",
+          "DIASPORA_CLIENT",
+        ].includes(profile.role)
       ) {
         return mediaFailure(
           403,

@@ -1,3 +1,4 @@
+import { emitAlert } from "./lib/alerts";
 import { propertyAggregate } from "./aggregates";
 import { paginationOptsValidator } from "convex/server";
 import { assertNigeriaLocation } from "./lib/nigeriaLocations";
@@ -29,11 +30,28 @@ export const getMyPropertiesCount = query({
 
 async function requirePropertyManager(ctx: any) {
   const user = await requireUser(ctx);
-  if (!user || !["ADMIN", "AGENT", "ESTATE_MANAGER"].includes(user.role))
+  if (
+    !user ||
+    !["ADMIN", "AGENT", "ESTATE_MANAGER", "CLIENT", "DIASPORA_CLIENT"].includes(
+      user.role,
+    )
+  )
     throw new Error("Forbidden — property team only");
   if (user.role === "ESTATE_MANAGER")
     await requireManagerSubscription(ctx, user);
   return user;
+}
+
+function canManageListing(actor: any, property: any) {
+  if (actor.role === "ADMIN") return true;
+  if (actor.role === "AGENT") return property.agentId === actor._id;
+  if (actor.role === "ESTATE_MANAGER") return property.managerId === actor._id;
+  return (
+    ["CLIENT", "DIASPORA_CLIENT"].includes(actor.role) &&
+    property.ownerId === actor._id &&
+    !property.agentId &&
+    !property.managerId
+  );
 }
 
 async function withResolvedImages(ctx: any, property: any) {
@@ -273,14 +291,19 @@ export const getManageableProperties = query({
       user.role === "AGENT"
         ? await ctx.db
             .query("properties")
-            .filter((q) => q.eq(q.field("agentId"), user._id))
+            .withIndex("by_agent", (q) => q.eq("agentId", user._id))
             .take(500)
         : user.role === "ADMIN"
           ? await ctx.db.query("properties").take(500)
-          : await ctx.db
-              .query("properties")
-              .withIndex("by_manager", (q) => q.eq("managerId", user._id))
-              .take(500);
+          : ["CLIENT", "DIASPORA_CLIENT"].includes(user.role)
+            ? await ctx.db
+                .query("properties")
+                .withIndex("by_owner", (q) => q.eq("ownerId", user._id))
+                .take(500)
+            : await ctx.db
+                .query("properties")
+                .withIndex("by_manager", (q) => q.eq("managerId", user._id))
+                .take(500);
     return Promise.all(
       rows
         .sort((a, b) => b.updatedAt - a.updatedAt)
@@ -299,10 +322,8 @@ export const addPropertyMedia = auditedMutation("properties:addPropertyMedia")({
     const user = await requirePropertyManager(ctx);
     const property = await ctx.db.get(args.propertyId);
     if (!property) throw new Error("Property not found");
-    if (user.role === "AGENT" && property.agentId !== user._id)
-      throw new Error("You can only edit your assigned listings");
-    if (user.role === "ESTATE_MANAGER" && property.managerId !== user._id)
-      throw new Error("You can only edit your managed listings");
+    if (!canManageListing(user, property))
+      throw new Error("You can only edit your own listings");
     if (args.storageIds.length + (args.urls?.length ?? 0) < 1)
       throw new Error("Select at least one image");
     if (
@@ -354,6 +375,14 @@ export const addPropertyMedia = auditedMutation("properties:addPropertyMedia")({
         ...args.storageIds,
       ],
       images: [...property.images, ...safeUrls],
+      ...(user.role !== "ADMIN"
+        ? {
+            isActive: false,
+            verificationStatus: "DRAFT" as const,
+            verificationReference: undefined,
+            reviewedBy: undefined,
+          }
+        : {}),
       updatedAt: Date.now(),
     });
     await ctx.db.insert("adminAuditLog", {
@@ -411,7 +440,10 @@ export const createProperty = auditedMutation("properties:createProperty")({
     if (
       !Number.isFinite(args.price) ||
       args.price <= 0 ||
-      args.title.length > 160
+      args.title.length > 160 ||
+      !args.title.trim() ||
+      !args.location.trim() ||
+      !args.description.trim()
     )
       throw new Error("Invalid listing details");
     if (
@@ -426,6 +458,9 @@ export const createProperty = auditedMutation("properties:createProperty")({
       isFeatured: args.isFeatured ?? false,
       isActive: false,
       verificationStatus: "DRAFT",
+      ownerId: ["CLIENT", "DIASPORA_CLIENT"].includes(user.role)
+        ? user._id
+        : undefined,
       managerId: user.role === "ESTATE_MANAGER" ? user._id : undefined,
       status: "AVAILABLE",
       agentId: user.role === "AGENT" ? user._id : undefined,
@@ -506,6 +541,118 @@ export const upsertProperty = auditedMutation("properties:upsertProperty")({
   },
 });
 
+export const editMyListing = auditedMutation("properties:editMyListing")({
+  args: {
+    propertyId: v.id("properties"),
+    title: v.string(),
+    type: PROPERTY_TYPE,
+    description: v.string(),
+    price: v.number(),
+    location: v.string(),
+    state: v.string(),
+    lga: v.optional(v.string()),
+    sizeSqm: v.optional(v.number()),
+    bedrooms: v.optional(v.number()),
+    bathrooms: v.optional(v.number()),
+  },
+  handler: async (ctx, { propertyId, ...details }) => {
+    const actor = await requirePropertyManager(ctx),
+      property = await ctx.db.get(propertyId);
+    if (!property) throw new Error("Listing not found");
+    if (!canManageListing(actor, property))
+      throw new Error("You can only edit your own listings");
+    if (
+      property.status !== "AVAILABLE" ||
+      (await ctx.db
+        .query("checkoutOrders")
+        .withIndex("by_target_status", (q) =>
+          q.eq("kind", "PROPERTY").eq("targetId", String(propertyId)),
+        )
+        .first())
+    )
+      throw new Error(
+        "Listings with reservations or transaction history cannot be changed here. Contact the administrator.",
+      );
+    if (
+      !details.title.trim() ||
+      details.title.length > 160 ||
+      !details.location.trim() ||
+      !details.description.trim() ||
+      !Number.isFinite(details.price) ||
+      details.price <= 0
+    )
+      throw new Error("Complete valid listing details");
+    assertNigeriaLocation(details.state, details.lga);
+    for (const value of [details.sizeSqm, details.bedrooms, details.bathrooms])
+      if (value !== undefined && (!Number.isFinite(value) || value < 0))
+        throw new Error(
+          "Property dimensions and room counts must be non-negative",
+        );
+    await ctx.db.patch(propertyId, {
+      ...details,
+      isActive: false,
+      verificationStatus: "DRAFT",
+      verificationReference: undefined,
+      reviewedBy: undefined,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+export const submitForReview = auditedMutation("properties:submitForReview")({
+  args: { propertyId: v.id("properties") },
+  handler: async (ctx, { propertyId }) => {
+    const actor = await requirePropertyManager(ctx);
+    const property = await ctx.db.get(propertyId);
+    if (!property) throw new Error("Listing not found");
+    if (!canManageListing(actor, property))
+      throw new Error("You can only submit your own listings");
+    if (property.verificationStatus === "PENDING") return;
+    if (property.verificationStatus === "VERIFIED")
+      throw new Error("This listing is already approved");
+    if (
+      !property.title.trim() ||
+      !property.location.trim() ||
+      !property.description.trim() ||
+      property.price <= 0
+    )
+      throw new Error(
+        "Complete the title, location, description and price before submission",
+      );
+    assertNigeriaLocation(property.state, property.lga);
+    assertListingImageCount(
+      property.images.length + (property.imageStorageIds?.length ?? 0),
+      true,
+    );
+    const now = Date.now();
+    await ctx.db.patch(propertyId, {
+      verificationStatus: "PENDING",
+      isActive: false,
+      updatedAt: now,
+    });
+    const admins = await ctx.db
+      .query("users")
+      .withIndex("by_role_created", (q) => q.eq("role", "ADMIN"))
+      .take(10);
+    for (const admin of admins)
+      await emitAlert(ctx, {
+        userId: admin._id,
+        eventKey: `listing-review:${propertyId}:${now}`,
+        title: "Listing awaiting approval",
+        message: `${property.title} is ready for review.`,
+        href: `/admin/properties?listing=${propertyId}`,
+        category: "LISTING",
+      });
+    await ctx.db.insert("adminAuditLog", {
+      actorId: actor._id,
+      action: "PROPERTY_SUBMITTED",
+      entityType: "properties",
+      entityId: String(propertyId),
+      createdAt: now,
+    });
+  },
+});
+
 export const reviewProperty = auditedMutation("properties:reviewProperty")({
   args: {
     propertyId: v.id("properties"),
@@ -532,6 +679,22 @@ export const reviewProperty = auditedMutation("properties:reviewProperty")({
       isActive: args.approve,
       updatedAt: Date.now(),
     });
+    const ownerId = property.agentId ?? property.managerId ?? property.ownerId;
+    if (ownerId)
+      await emitAlert(ctx, {
+        userId: ownerId,
+        eventKey: `listing-decision:${property._id}:${Date.now()}`,
+        title: args.approve ? "Listing approved" : "Listing requires changes",
+        message: args.approve
+          ? `${property.title} is now published.`
+          : `${property.title}: ${args.reference.trim()}`,
+        href: property.agentId
+          ? "/dashboard/agent#listings"
+          : property.managerId
+            ? "/dashboard/manager#properties"
+            : "/dashboard/client#listings",
+        category: "LISTING",
+      });
     await ctx.db.insert("adminAuditLog", {
       actorId: reviewer,
       action: "PROPERTY_REVIEWED",

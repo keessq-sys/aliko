@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ProfilePhotoEditor from "$lib/components/dashboard/ProfilePhotoEditor.svelte";
   import { page } from "$app/stores";
   import { getI18n } from "$lib/i18n";
   const { locale: adkLocale } = getI18n();
@@ -257,7 +258,10 @@
 
     <div class="flex-1 overflow-y-auto p-8 hide-scrollbar">
       {#key currentTab}
-        <div in:fly={{ y: 10, duration: 220, delay: 80 }}>
+        <div
+          dir={$adkLocale === "ar" ? "rtl" : "ltr"}
+          in:fly={{ y: 10, duration: 220, delay: 80 }}
+        >
           {#if workspaceTabs[currentTab]}<OperationsWorkspace
               kind={workspaceTabs[currentTab]}
               title={$adkT(currentTab.replace("-", " "))}
@@ -351,9 +355,10 @@
               <h3 class="text-xl font-medium text-white">
                 {$adkT("Lead Pipeline")}
               </h3>
-              <button
+              <a
+                href="/dashboard/messages"
                 class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg flex gap-2"
-                ><Plus class="w-4 h-4" /> {$adkT("Add Lead")}</button
+                ><Plus class="w-4 h-4" /> {$adkT("Contact company desk")}</a
               >
             </div>
             <LeadsTable leads={MOCK_LEADS} />
@@ -539,9 +544,10 @@
               <h3 class="text-xl font-medium text-white">
                 {$adkT("Upcoming Viewings")}
               </h3>
-              <button
+              <a
+                href="/properties"
                 class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg flex gap-2 text-sm"
-                ><Plus class="w-4 h-4" /> {$adkT("Schedule Viewing")}</button
+                ><Plus class="w-4 h-4" /> {$adkT("Arrange property viewing")}</a
               >
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -613,7 +619,8 @@
                       ></div>{/each}
                   </div>
                 {:else}
-                  <div class="grid grid-cols-2 gap-4">
+                  <ProfilePhotoEditor avatarUrl={$myProfile?.avatarUrl} />
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-2">
                       <label
                         for="agent-profile-name"

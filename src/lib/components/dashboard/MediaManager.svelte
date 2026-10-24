@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from "$app/stores";
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
   import {
@@ -40,12 +41,14 @@
     }
   }
   let selectedId = "";
+  let openedListing = "";
   let files: File[] = [];
   let uploading = false;
   let error = "";
   let success = "";
+  let editingId = "";
   let creating = false;
-  let showCreate = false;
+  let showCreate = mode === "property";
   let draft = {
     title: "",
     location: "",
@@ -54,8 +57,60 @@
     price: 0,
     type: "RESIDENTIAL",
     description: "",
+    sizeSqm: 0,
+    bedrooms: 0,
+    bathrooms: 0,
   };
   $: rows = mode === "property" ? ($properties ?? []) : ($services ?? []);
+  function editSelected() {
+    if (!selectedRow) return;
+    editingId = selectedId;
+    draft = {
+      title: selectedRow.title,
+      type: selectedRow.type,
+      description: selectedRow.description,
+      price: selectedRow.price,
+      location: selectedRow.location,
+      state: selectedRow.state,
+      lga: selectedRow.lga ?? "",
+      sizeSqm: selectedRow.sizeSqm ?? 0,
+      bedrooms: selectedRow.bedrooms ?? 0,
+      bathrooms: selectedRow.bathrooms ?? 0,
+    };
+    showCreate = true;
+    document
+      .getElementById("listing-editor")
+      ?.scrollIntoView({ block: "start" });
+  }
+  $: selectedRow = rows.find((row) => row._id === selectedId);
+  $: requestedListing = $page.url.searchParams.get("listing");
+  $: if (!requestedListing) openedListing = "";
+  $: if (
+    mode === "property" &&
+    requestedListing &&
+    requestedListing !== openedListing &&
+    rows.some((row) => row._id === requestedListing)
+  ) {
+    selectedId = requestedListing;
+    openedListing = requestedListing;
+  }
+  async function submitListing() {
+    error = "";
+    success = "";
+    uploading = true;
+    try {
+      await runMutation(api.properties.submitForReview, {
+        propertyId: selectedId as any,
+      });
+      success =
+        "Submitted to the administrator for approval. This listing stays private until approved.";
+    } catch (cause) {
+      error =
+        cause instanceof Error ? cause.message : "Could not submit listing";
+    } finally {
+      uploading = false;
+    }
+  }
   $: existingImages =
     rows.find((row) => row._id === selectedId)?.images.length ?? 0;
 
@@ -78,14 +133,24 @@
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)/g, "");
-      selectedId = (await runMutation(api.properties.createProperty, {
-        ...draft,
-        slug,
-        type: draft.type as "RESIDENTIAL",
-        amenities: [],
-        images: [],
-      } as any)) as string;
-      success = "Listing created. Select images below to publish its gallery.";
+      if (editingId) {
+        await runMutation(api.properties.editMyListing, {
+          propertyId: editingId as any,
+          ...draft,
+          type: draft.type as "LAND",
+        });
+        selectedId = editingId;
+        editingId = "";
+      } else
+        selectedId = (await runMutation(api.properties.createProperty, {
+          ...draft,
+          slug,
+          type: draft.type as "RESIDENTIAL",
+          amenities: [],
+          images: [],
+        } as any)) as string;
+      success =
+        "Draft saved. Add 1–7 images below and submit it for administrator approval.";
       showCreate = false;
       draft = {
         title: "",
@@ -95,6 +160,9 @@
         price: 0,
         type: "RESIDENTIAL",
         description: "",
+        sizeSqm: 0,
+        bedrooms: 0,
+        bathrooms: 0,
       };
     } catch (cause) {
       error =
@@ -138,8 +206,16 @@
           urls,
         } as any);
       }
-      success = `${files.length} image${files.length === 1 ? "" : "s"} added to the gallery successfully.`;
+      const uploadedCount = files.length;
       files = [];
+      if (mode === "property" && $profile?.role !== "ADMIN") {
+        await runMutation(api.properties.submitForReview, {
+          propertyId: selectedId as any,
+        });
+        success =
+          "Submitted to the administrator for approval. This listing stays private until approved.";
+      } else
+        success = `${uploadedCount} images saved. Review the listing before publication.`;
     } catch (cause) {
       error = cause instanceof Error ? cause.message : "Upload failed.";
     } finally {
@@ -149,6 +225,7 @@
 </script>
 
 <section
+  id="listing-editor"
   class="mb-6 rounded-2xl border border-white/10 bg-[#0A1628] p-5 theme-surface"
 >
   <h2 class="mb-1 flex items-center gap-2 font-bold text-white theme-text">
@@ -157,7 +234,9 @@
   </h2>
   <p class="mb-4 text-xs text-stone-500">
     {$adkT(
-      "JPG, PNG, WebP or AVIF. Images are published to the selected live gallery.",
+      mode === "property"
+        ? "Add listing details and 1–7 images. The administrator reviews your submission before it appears publicly."
+        : "JPG, PNG, WebP or AVIF. Images are published to the selected live gallery.",
     )}
   </p>
   {#if mode === "property"}
@@ -167,20 +246,22 @@
       on:click={() => (showCreate = !showCreate)}
     >
       {$adkT(
-        showCreate ? "Close listing form" : "+ Create a new property listing",
+        showCreate ? "Hide listing details" : "+ Add property or land for sale",
       )}
     </button>
     {#if showCreate}
       <div
         class="mb-5 grid gap-3 rounded-xl border border-white/10 bg-black/20 p-4 md:grid-cols-2 theme-panel"
       >
-        <input
-          dir="auto"
-          bind:value={draft.title}
-          aria-label={$adkT("Property title")}
-          placeholder={$adkT("Property title")}
-          class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
-        />
+        <label class="theme-text text-sm"
+          >{$adkT("Listing title")}<input
+            dir="auto"
+            bind:value={draft.title}
+            aria-label={$adkT("Property title")}
+            placeholder={$adkT("Property title")}
+            class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
+          /></label
+        >
         <select
           bind:value={draft.type}
           aria-label={$adkT("Property type")}
@@ -194,13 +275,15 @@
             value="LAND">{$adkT("Land")}</option
           >
         </select>
-        <input
-          dir="auto"
-          bind:value={draft.location}
-          aria-label={$adkT("Location")}
-          placeholder={$adkT("Location or neighbourhood")}
-          class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
-        />
+        <label class="theme-text text-sm"
+          >{$adkT("Neighbourhood / address (e.g. Gwarinpa)")}<input
+            dir="auto"
+            bind:value={draft.location}
+            aria-label={$adkT("Location")}
+            placeholder={$adkT("Location or neighbourhood")}
+            class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
+          /></label
+        >
         <select
           on:change={() => (draft.lga = "")}
           bind:value={draft.state}
@@ -221,15 +304,46 @@
               >{/each}</select
           ></label
         >
-        <input
-          dir="auto"
-          bind:value={draft.price}
-          aria-label={$adkT("Price in naira")}
-          type="number"
-          min="1"
-          placeholder={$adkT("Price in naira")}
-          class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
-        />
+        <label class="theme-text text-sm"
+          >{$adkT("Price in naira")}<input
+            dir="auto"
+            bind:value={draft.price}
+            aria-label={$adkT("Price in naira")}
+            type="number"
+            min="1"
+            placeholder={$adkT("Price in naira")}
+            class="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
+          /></label
+        >
+        <label class="theme-text text-sm"
+          >{$adkT("Area (square metres)")}<input
+            dir="ltr"
+            type="number"
+            min="0"
+            bind:value={draft.sizeSqm}
+            class="theme-input w-full min-h-[44px] rounded-lg border p-3"
+          /></label
+        >
+        {#if draft.type !== "LAND"}
+          <label class="theme-text text-sm"
+            >{$adkT("Bedrooms")}<input
+              dir="ltr"
+              type="number"
+              min="0"
+              bind:value={draft.bedrooms}
+              class="theme-input w-full min-h-[44px] rounded-lg border p-3"
+            /></label
+          >
+          <label class="theme-text text-sm"
+            >{$adkT("Bathrooms")}<input
+              dir="ltr"
+              type="number"
+              min="0"
+              bind:value={draft.bathrooms}
+              class="theme-input w-full min-h-[44px] rounded-lg border p-3"
+            /></label
+          >
+        {/if}
         <textarea
           dir="auto"
           bind:value={draft.description}
@@ -243,7 +357,7 @@
           on:click={createListing}
           disabled={creating}
           class="min-h-[44px] rounded-lg bg-amber-500 px-4 text-sm font-bold text-black disabled:opacity-50 md:col-span-2"
-          >{$adkT(creating ? "Creating…" : "Create listing")}</button
+          >{$adkT(creating ? "Saving…" : "Save listing details")}</button
         >
       </div>
     {/if}
@@ -272,7 +386,47 @@
       on:files={(event) => (files = event.detail.files)}
     />
   </div>
-  {#if error}<p class="mt-3 text-sm text-rose-400">{$adkT(error)}</p>{/if}
+  {#if selectedRow && mode === "property"}
+    <div
+      class="mt-4 theme-panel rounded-xl border p-4 space-y-3"
+      aria-live="polite"
+    >
+      <p class="theme-text font-semibold">
+        {$adkT("Review status")}: {$adkT(
+          selectedRow.verificationStatus ?? "DRAFT",
+        )}
+      </p>
+      {#if selectedRow.verificationStatus === "REJECTED"}<p class="theme-text">
+          {selectedRow.verificationReference}
+        </p>{/if}
+      <button
+        type="button"
+        on:click={editSelected}
+        class="min-h-[44px] rounded-lg border px-4"
+        >{$adkT("Edit listing details")}</button
+      >
+      <div class="flex flex-wrap gap-2">
+        {#each selectedRow.images as image}<img
+            src={image}
+            alt={$adkT("Gallery item")}
+            class="h-20 w-24 rounded-lg object-cover"
+          />{/each}
+      </div>
+      {#if $profile?.role !== "ADMIN"}<button
+          type="button"
+          on:click={submitListing}
+          disabled={uploading ||
+            !existingImages ||
+            selectedRow.verificationStatus === "PENDING" ||
+            selectedRow.verificationStatus === "VERIFIED"}
+          class="btn-primary min-h-[44px] rounded-lg px-4"
+          >{$adkT("Submit listing for approval")}</button
+        >{/if}
+    </div>
+  {/if}
+  {#if error}<p role="alert" class="mt-3 text-sm text-rose-400">
+      {$adkT(error)}
+    </p>{/if}
   {#if success}<p class="mt-3 text-sm text-emerald-400">
       {$adkT(success)}
     </p>{/if}
@@ -305,8 +459,13 @@
     class="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-emerald-600 px-4 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
   >
     {#if uploading}<Loader2 size={15} class="animate-spin" />{/if}
-    {$adkT("Publish")}
-    {$adkT(files.length || "")}
-    {$adkT("image")}{$adkT(files.length === 1 ? "" : "s")}
+    {$adkT(
+      mode === "property"
+        ? $profile?.role === "ADMIN"
+          ? "Save gallery images"
+          : "Upload images and submit for approval"
+        : "Publish service images",
+    )}
+    {files.length || ""}
   </button>
 </section>

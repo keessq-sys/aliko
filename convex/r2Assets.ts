@@ -36,8 +36,23 @@ export const register = auditedMutation("r2Assets:register")({
     const actor = await user(ctx);
     if (actor.role === "ESTATE_MANAGER")
       await requireManagerSubscription(ctx, actor);
-    if (!["ADMIN", "AGENT", "ESTATE_MANAGER"].includes(actor.role))
+    if (
+      ![
+        "ADMIN",
+        "AGENT",
+        "ESTATE_MANAGER",
+        "CLIENT",
+        "DIASPORA_CLIENT",
+      ].includes(actor.role)
+    )
       throw new Error("Forbidden");
+    if (
+      ["CLIENT", "DIASPORA_CLIENT"].includes(actor.role) &&
+      args.collection !== "property"
+    )
+      throw new Error(
+        "Customer uploads must belong to a property or land listing",
+      );
     if (
       !/^[a-z0-9-]+\/\d{4}-\d{2}-\d{2}\/[a-f0-9-]+\.(jpg|png|webp|avif)$/.test(
         args.key,

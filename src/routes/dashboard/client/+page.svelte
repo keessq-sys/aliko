@@ -1,4 +1,5 @@
 <script lang="ts">
+  import MediaManager from "$lib/components/dashboard/MediaManager.svelte";
   import { prepareUploadFile } from "$lib/utils/prepareUploadFile";
   import { getI18n } from "$lib/i18n";
   const { locale: adkLocale } = getI18n();
@@ -155,6 +156,7 @@
   }
 
   const tabs = [
+    { id: "listings", label: "My Listings", icon: Landmark },
     { id: "bookings", label: "My Bookings", icon: Landmark },
     { id: "requests", label: "My Requests", icon: Inbox },
     { id: "saved", label: "Saved", icon: Heart },
@@ -208,7 +210,12 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {#key currentTab}
         <div in:fly={{ y: 10, duration: 220, delay: 80 }}>
-          {#if currentTab === "bookings"}
+          {#if currentTab === "listings"}
+            <MediaManager
+              mode="property"
+              title={$adkT("Submit property or land for approval")}
+            />
+          {:else if currentTab === "bookings"}
             <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
               <h2 class="text-xl font-semibold text-white">
                 {$adkT("My Bookings")}

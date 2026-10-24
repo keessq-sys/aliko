@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ProfilePhotoEditor from "$lib/components/dashboard/ProfilePhotoEditor.svelte";
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
 
@@ -51,10 +52,18 @@
     }
   }
   async function verifyEmail() {
-    busy = true; error = "";
-    try { await runAction(api.emailVerification.request, {}); message = "Verification email accepted. Check your inbox and follow the link."; }
-    catch(e) { error = e instanceof Error ? e.message : "Could not send verification email."; }
-    finally { busy = false; }
+    busy = true;
+    error = "";
+    try {
+      await runAction(api.emailVerification.request, {});
+      message =
+        "Verification email accepted. Check your inbox and follow the link.";
+    } catch (e) {
+      error =
+        e instanceof Error ? e.message : "Could not send verification email.";
+    } finally {
+      busy = false;
+    }
   }
   async function request() {
     busy = true;
@@ -93,7 +102,12 @@
 <main class="theme-text container mx-auto max-w-2xl px-4 pt-28 pb-12 space-y-6">
   <h1 class="text-3xl font-semibold">{$adkT("Account settings")}</h1>
   <IdentityStatus />
-  {#if $profile && !$profile.emailVerificationTime}<button class="rounded-lg border p-3 min-h-[44px]" disabled={busy} on:click={verifyEmail}>{$adkT("Send verification email")}</button>{/if}
+  {#if $profile}<ProfilePhotoEditor avatarUrl={$profile.avatarUrl} />{/if}
+  {#if $profile && !$profile.emailVerificationTime}<button
+      class="rounded-lg border p-3 min-h-[44px]"
+      disabled={busy}
+      on:click={verifyEmail}>{$adkT("Send verification email")}</button
+    >{/if}
   <a href="/dashboard/subscriptions" class="underline"
     >{$adkT("Manage subscription")}</a
   >

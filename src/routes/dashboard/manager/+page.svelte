@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ProfilePhotoEditor from "$lib/components/dashboard/ProfilePhotoEditor.svelte";
   import { page } from "$app/stores";
   import { getI18n } from "$lib/i18n";
   const { locale: adkLocale } = getI18n();
@@ -173,6 +174,7 @@
     { id: "properties", label: "My Properties", icon: Home },
     { id: "tenants", label: "Tenants", icon: Users },
     { id: "facility", label: "Facility & Maintenance", icon: Wrench },
+    { id: "vendors", label: "Vendors", icon: Briefcase },
     { id: "agents", label: "My Agents", icon: Briefcase },
     { id: "financials", label: "Financials", icon: DollarSign },
     { id: "documents", label: "Documents", icon: FileText },
@@ -272,7 +274,10 @@
     <!-- Scrollable Content Area -->
     <div class="flex-1 overflow-y-auto p-8 hide-scrollbar">
       {#key currentTab}
-        <div in:fly={{ y: 10, duration: 220, delay: 80 }}>
+        <div
+          dir={$adkLocale === "ar" ? "rtl" : "ltr"}
+          in:fly={{ y: 10, duration: 220, delay: 80 }}
+        >
           {#if workspaceTabs[currentTab]}<OperationsWorkspace
               kind={workspaceTabs[currentTab]}
               title={$adkT(currentTab.replace("-", " "))}
@@ -628,7 +633,8 @@
                       ></div>{/each}
                   </div>
                 {:else}
-                  <div class="grid grid-cols-2 gap-4">
+                  <ProfilePhotoEditor avatarUrl={$myProfile?.avatarUrl} />
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-2">
                       <label for="manager-name" class="text-sm text-stone-400"
                         >{$adkT("Full Name")}</label

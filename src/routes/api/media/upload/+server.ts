@@ -54,7 +54,9 @@ export const POST: RequestHandler = async ({
 }) => {
   if (
     !locals.user?._id ||
-    !["ADMIN", "AGENT", "ESTATE_MANAGER"].includes(locals.user.role ?? "")
+    !["ADMIN", "AGENT", "ESTATE_MANAGER", "CLIENT", "DIASPORA_CLIENT"].includes(
+      locals.user.role ?? "",
+    )
   ) {
     return json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -78,6 +80,14 @@ export const POST: RequestHandler = async ({
   const collection = String(form.get("collection") ?? "property")
     .replace(/[^a-z0-9-]/gi, "")
     .toLowerCase();
+  if (
+    ["CLIENT", "DIASPORA_CLIENT"].includes(locals.user.role ?? "") &&
+    collection !== "property"
+  )
+    return json(
+      { error: "Customer uploads must belong to a property or land listing" },
+      { status: 403 },
+    );
   if (!(file instanceof File))
     return json({ error: "Image file is required" }, { status: 400 });
   if (!ALLOWED.has(file.type) || file.size < 1 || file.size > MAX_BYTES) {

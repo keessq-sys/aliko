@@ -15,7 +15,10 @@
 
 <div class="relative">
   <input
-    dir="auto"
+    dir="ltr"
+    autocapitalize="none"
+    autocorrect="off"
+    spellcheck={false}
     {...$$restProps}
     type={visible ? "text" : "password"}
     bind:value

@@ -852,6 +852,7 @@ export default defineSchema({
     ),
     verificationReference: v.optional(v.string()),
     reviewedBy: v.optional(v.id("users")),
+    ownerId: v.optional(v.id("users")),
     managerId: v.optional(v.id("users")),
     agentId: v.optional(v.id("users")),
     latitude: v.optional(v.number()),
@@ -870,6 +871,7 @@ export default defineSchema({
       filterFields: ["isActive", "verificationStatus", "state", "lga", "type"],
     })
     .index("by_agent", ["agentId"])
+    .index("by_owner", ["ownerId"])
     .index("by_manager", ["managerId"]),
 
   // ── Enterprise Services Catalog ──────────────────────────────────────────

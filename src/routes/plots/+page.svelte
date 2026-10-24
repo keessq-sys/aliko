@@ -1,4 +1,6 @@
 <script lang="ts">
+  import PropertyCard from "$lib/components/properties/PropertyCard.svelte";
+  import { toDisplayProperty } from "$lib/utils/propertyAdapter";
   import { getI18n } from "$lib/i18n";
   const { locale: adkLocale } = getI18n();
 
@@ -37,6 +39,10 @@
   let projectFilter = "";
   let statusFilter = "AVAILABLE";
 
+  const landListings = useQuery(api.properties.listProperties, {
+    type: "LAND",
+    limit: 60,
+  });
   const projects = useQuery(api.projects.listProjects, {
     isActive: true,
     limit: 100,
@@ -80,7 +86,10 @@
       });
 
       if (installmentPlan === "OUTRIGHT") {
-        const order = await runMutation(api.checkout.create, { kind: "LAND", targetId: bookingResult!.bookingId });
+        const order = await runMutation(api.checkout.create, {
+          kind: "LAND",
+          targetId: bookingResult!.bookingId,
+        });
         window.location.href = `/checkout/${encodeURIComponent(order.reference)}`;
       }
     } catch (err: any) {
@@ -130,17 +139,37 @@
         <div
           class="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/60 px-3 py-1 font-mono text-xs text-emerald-400"
         >
-          <ShieldCheck size={13} /> {$adkT("LIVE PLOT REGISTRY")} </div>
+          <ShieldCheck size={13} />
+          {$adkT("LIVE PLOT REGISTRY")}
+        </div>
         <h1
           class="mb-4 font-serif text-4xl font-bold leading-tight sm:text-5xl"
-        > {$adkT("Reserve a")} <span class="text-gradient-gold">{$adkT("Verified")}</span>
+        >
+          {$adkT("Reserve a")}
+          <span class="text-gradient-gold">{$adkT("Verified")}</span>
           <span class="text-gradient-emerald">{$adkT("Land Plot")}</span>
         </h1>
-        <p class="text-base leading-relaxed text-stone-400"> {$adkT("Every plot below is queried directly from our registry — real beacon numbers, real title status, real availability. Reserving a plot creates a real booking against it.")} </p>
+        <p class="text-base leading-relaxed text-stone-400">
+          {$adkT(
+            "Every plot below is queried directly from our registry — real beacon numbers, real title status, real availability. Reserving a plot creates a real booking against it.",
+          )}
+        </p>
       </div>
     </div>
   </section>
 
+  {#if $landListings?.length}
+    <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <h2 class="mb-5 text-2xl font-semibold theme-text">
+        {$adkT("Approved land listings")}
+      </h2>
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {#each $landListings as listing}<PropertyCard
+            property={toDisplayProperty(listing)}
+          />{/each}
+      </div>
+    </section>
+  {/if}
   <section class="border-b border-white/5 bg-white/[0.02] py-4">
     <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4">
       <select
@@ -214,8 +243,9 @@
               </h3>
               <p class="mb-3 flex items-center gap-1 text-xs text-stone-500">
                 <MapPin size={12} />
-                {$adkT(plot.project?.name ?? "Unknown project")}, {$adkT(plot.project
-                  ?.state ?? "")}
+                {$adkT(plot.project?.name ?? "Unknown project")}, {$adkT(
+                  plot.project?.state ?? "",
+                )}
               </p>
               <div
                 class="mt-auto flex items-end justify-between border-t border-white/5 pt-3"
@@ -259,14 +289,22 @@
       {#if bookingResult}
         <div class="text-center">
           <CheckCircle2 size={40} class="mx-auto mb-3 text-emerald-400" />
-          <h3 class="mb-1 text-lg font-bold text-white">{$adkT("Plot Reserved")}</h3>
-          <p class="mb-4 text-sm text-stone-400">{$adkT("Your booking reference is")}</p>
+          <h3 class="mb-1 text-lg font-bold text-white">
+            {$adkT("Plot Reserved")}
+          </h3>
+          <p class="mb-4 text-sm text-stone-400">
+            {$adkT("Your booking reference is")}
+          </p>
           <p
             class="mb-4 rounded-lg bg-black/40 py-2 font-mono text-sm text-emerald-300"
           >
             {$adkT(bookingResult.reference)}
           </p>
-          <p class="mb-6 text-xs text-stone-500"> {$adkT("Our team will reach out with payment instructions to complete your purchase.")} </p>
+          <p class="mb-6 text-xs text-stone-500">
+            {$adkT(
+              "Our team will reach out with payment instructions to complete your purchase.",
+            )}
+          </p>
           <button on:click={closeModal} class="btn-primary w-full py-2.5"
             >{$adkT("Done")}</button
           >
@@ -274,11 +312,14 @@
       {:else}
         <div class="mb-4 flex items-start justify-between">
           <div>
-            <h3 class="text-lg font-bold text-white"> {$adkT("Reserve")} {$adkT(selectedPlot.beaconNumber)}
+            <h3 class="text-lg font-bold text-white">
+              {$adkT("Reserve")}
+              {$adkT(selectedPlot.beaconNumber)}
             </h3>
             <p class="text-xs text-stone-500">
-              {$adkT(selectedPlot.project?.name)} &middot; {$adkT(formatSqm(
-                selectedPlot.sizeSqm, $adkLocale))}
+              {$adkT(selectedPlot.project?.name)} &middot; {$adkT(
+                formatSqm(selectedPlot.sizeSqm, $adkLocale),
+              )}
             </p>
           </div>
           <button
@@ -308,7 +349,9 @@
         {/if}
 
         <label class="mb-5 block">
-          <span class="mb-1.5 block text-xs text-stone-500">{$adkT("Payment plan")}</span>
+          <span class="mb-1.5 block text-xs text-stone-500"
+            >{$adkT("Payment plan")}</span
+          >
           <select
             bind:value={installmentPlan}
             class="w-full min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-500"
@@ -325,15 +368,27 @@
           class="btn-primary flex w-full min-h-[44px] items-center justify-center gap-2 py-3 disabled:opacity-50"
         >
           {#if booking}<Loader2 size={16} class="animate-spin" />{/if}
-          {$adkT(installmentPlan === "OUTRIGHT"
-            ? "Reserve & Pay Now"
-            : "Reserve This Plot")}
+          {$adkT(
+            installmentPlan === "OUTRIGHT"
+              ? "Reserve & Pay Now"
+              : "Reserve This Plot",
+          )}
         </button>
         {#if installmentPlan === "OUTRIGHT"}
-          <p class="mt-3 text-center text-[11px] text-stone-600"> {$adkT("You'll review the order before continuing to Korapay's secure checkout for")} {$adkT(formatNaira(selectedPlot.price, $adkLocale))}.
+          <p class="mt-3 text-center text-[11px] text-stone-600">
+            {$adkT(
+              "You'll review the order before continuing to Korapay's secure checkout for",
+            )}
+            {$adkT(formatNaira(selectedPlot.price, $adkLocale))}.
           </p>
         {:else}
-          <p class="mt-3 text-center text-[11px] text-stone-600"> {$adkT("This reserves the plot. Our team will contact you with the")} {$adkT(installmentPlan)} {$adkT("payment schedule.")} </p>
+          <p class="mt-3 text-center text-[11px] text-stone-600">
+            {$adkT(
+              "This reserves the plot. Our team will contact you with the",
+            )}
+            {$adkT(installmentPlan)}
+            {$adkT("payment schedule.")}
+          </p>
         {/if}
       {/if}
     </div>

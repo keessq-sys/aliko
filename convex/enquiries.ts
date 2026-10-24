@@ -128,7 +128,12 @@ export const updateEnquiryStatus = auditedMutation(
     ),
   },
   handler: async (ctx, { enquiryId, status }) => {
-    await requireAdmin(ctx);
+    const actor = await requireUser(ctx);
+    const enquiry = await ctx.db.get(enquiryId);
+    if (!enquiry) throw new Error("Enquiry not found");
+    if (actor.role === "ADMIN") await requireAdmin(ctx);
+    else if (actor.role !== "AGENT" || enquiry.assignedAgentId !== actor._id)
+      throw new Error("Forbidden — assigned agent only");
     await ctx.db.patch(enquiryId, { status, updatedAt: Date.now() });
   },
 });

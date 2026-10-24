@@ -113,7 +113,11 @@
           <Mail class="h-5 w-5 text-gray-400" />
         </div>
         <input
-          dir="auto"
+          dir="ltr"
+          name="email"
+          autocapitalize="none"
+          autocorrect="off"
+          spellcheck={false}
           type="email"
           id="email"
           inputmode="email"
@@ -126,7 +130,7 @@
         />
       </div>
       {#if errors.email}
-        <p class="mt-1 text-sm text-red-400">{errors.email}</p>
+        <p class="mt-1 text-sm text-red-400">{$adkT(errors.email)}</p>
       {/if}
     </div>
 
@@ -141,7 +145,11 @@
           <Lock class="h-5 w-5 text-gray-400" />
         </div>
         <input
-          dir="auto"
+          dir="ltr"
+          name="password"
+          autocapitalize="none"
+          autocorrect="off"
+          spellcheck={false}
           type={showPassword ? "text" : "password"}
           id="password"
           autocomplete="current-password"
@@ -169,7 +177,7 @@
         </button>
       </div>
       {#if errors.password}
-        <p class="mt-1 text-sm text-red-400">{errors.password}</p>
+        <p class="mt-1 text-sm text-red-400">{$adkT(errors.password)}</p>
       {/if}
     </div>
 

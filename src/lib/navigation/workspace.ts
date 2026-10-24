@@ -73,6 +73,7 @@ export const adminGroups: WorkspaceGroup[] = [
 ];
 const sections: Record<string, Array<[string, string, string]>> = {
   CLIENT: [
+    ["listings", "My Listings", "🏠"],
     ["bookings", "My Bookings", "📆"],
     ["requests", "My Requests", "📥"],
     ["saved", "Saved", "❤️"],
@@ -96,6 +97,7 @@ const sections: Record<string, Array<[string, string, string]>> = {
     ["properties", "My Properties", "🏢"],
     ["tenants", "Tenants", "👥"],
     ["facility", "Facility & Maintenance", "🛠️"],
+    ["vendors", "Vendors", "🧰"],
     ["agents", "My Agents", "🤝"],
     ["financials", "Financials", "💳"],
     ["documents", "Documents", "📄"],
