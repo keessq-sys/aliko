@@ -280,4 +280,80 @@ describe("professional and customer listing review", () => {
       }),
     ).rejects.toThrow(/own/);
   });
+  it("requires physical confirmation and a settled fee before granting agent access", async () => {
+    const t = setup(),
+      owner = await actor(t, "CLIENT"),
+      admin = await actor(t, "ADMIN");
+    const applicationId = await t.run((ctx) =>
+      ctx.db.insert("agentApplications", {
+        reference: "ADK-TEST",
+        userId: owner.id,
+        fullName: "Applicant",
+        email: "applicant@example.invalid",
+        phone: "08000000000",
+        status: "PENDING",
+        registrationFeeNgn: 2000,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }),
+    );
+    const order = await owner.client.mutation(api.checkout.create, {
+      kind: "AGENT",
+      targetId: applicationId,
+    });
+    const stored = await owner.client.query(api.checkout.get, {
+      reference: order.reference,
+    });
+    expect(stored?.amount).toBe(2000);
+    await expect(
+      admin.client.mutation(api.partners.reviewAgentApplication, {
+        id: applicationId,
+        status: "APPROVED",
+      }),
+    ).rejects.toThrow(/physical identity/);
+    await expect(
+      admin.client.mutation(api.partners.reviewAgentApplication, {
+        id: applicationId,
+        status: "APPROVED",
+        manualVerificationReference: "physical-fixture",
+      }),
+    ).rejects.toThrow(/settled/);
+    await t.run(async (ctx) => {
+      const paid = (await ctx.db
+        .query("checkoutOrders")
+        .withIndex("by_reference", (q) => q.eq("reference", order.reference))
+        .unique())!;
+      await ctx.db.patch(paid._id, { status: "PAID" });
+      await ctx.db.insert("checkoutAttempts", {
+        orderId: paid._id,
+        reference: "fee-fixture",
+        amount: 2000,
+        currency: "NGN",
+        provider: "KORAPAY",
+        testMode: false,
+        status: "SUCCESS",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+    });
+    await admin.client.mutation(api.partners.reviewAgentApplication, {
+      id: applicationId,
+      status: "APPROVED",
+      manualVerificationReference: "physical-fixture",
+    });
+    expect(await owner.client.query(api.users.getMyProfile, {})).toMatchObject({
+      role: "AGENT",
+    });
+    const detail = await admin.client.query(
+      api.partners.agentApplicationDetail,
+      { id: applicationId },
+    );
+    expect(detail?.registrationPayment).toBe("PAID");
+    expect(detail).not.toHaveProperty("nin");
+    await expect(
+      owner.client.query(api.partners.agentApplicationDetail, {
+        id: applicationId,
+      }),
+    ).rejects.toThrow(/ADMIN/);
+  });
 });

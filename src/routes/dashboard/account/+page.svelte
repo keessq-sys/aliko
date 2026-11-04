@@ -1,4 +1,6 @@
 <script lang="ts">
+  import CheckoutButton from "$lib/components/payments/CheckoutButton.svelte";
+  const enrolments = useQuery(api.partners.myEnrolments, {});
   import ProfilePhotoEditor from "$lib/components/dashboard/ProfilePhotoEditor.svelte";
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
@@ -102,6 +104,28 @@
 <main class="theme-text container mx-auto max-w-2xl px-4 pt-28 pb-12 space-y-6">
   <h1 class="text-3xl font-semibold">{$adkT("Account settings")}</h1>
   <IdentityStatus />
+  {#each $enrolments?.agents ?? [] as application}
+    <section class="theme-panel rounded-xl border p-4 space-y-3">
+      <h2 class="font-semibold">
+        {$adkT("Agent registration")}: {application.reference}
+      </h2>
+      <p>
+        {application.status} · {$adkT(
+          "Physical identity confirmation is required before approval.",
+        )}
+      </p>
+      {#if application.registrationPaid}<p>
+          {$adkT(
+            "Registration payment received. Administrative approval is still required.",
+          )}
+        </p>
+      {:else if application.registrationFeeNgn && application.status !== "REJECTED"}<CheckoutButton
+          kind="AGENT"
+          targetId={application._id}
+          label="Pay agent registration fee"
+        />{/if}
+    </section>
+  {/each}
   {#if $profile}<ProfilePhotoEditor avatarUrl={$profile.avatarUrl} />{/if}
   {#if $profile && !$profile.emailVerificationTime}<button
       class="rounded-lg border p-3 min-h-[44px]"

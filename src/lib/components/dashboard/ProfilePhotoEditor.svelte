@@ -1,10 +1,6 @@
 <script lang="ts">
+  import { updatePortrait } from "$lib/media/portrait";
   import { getTranslation } from "$lib/i18n";
-  import { prepareUploadFile } from "$lib/utils/prepareUploadFile";
-  import { runAction, runMutation } from "$lib/convex/queries";
-  import { api } from "$lib/convex/_generated/api";
-  import { getConvexClient } from "convex-svelte";
-  import { synchronizeSession } from "$lib/convex/session";
   const adkT = getTranslation();
   export let avatarUrl: string | undefined = undefined;
   let busy = false,
@@ -25,38 +21,7 @@
         selected.size > 2_000_000
       )
         throw new Error("Choose a JPG, PNG, WebP or AVIF image up to 2 MB.");
-      const file = await prepareUploadFile(selected);
-      await synchronizeSession(getConvexClient());
-      const sha256 = Array.from(
-        new Uint8Array(
-          await crypto.subtle.digest("SHA-256", await file.arrayBuffer()),
-        ),
-      )
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("");
-      const metadata = {
-        purpose: "AVATAR_IMAGE" as const,
-        fileName: file.name,
-        mimeType: file.type,
-        size: file.size,
-        sha256,
-      };
-      const { url, intentId } = await runMutation(
-        api.storage.generateUploadUrl,
-        metadata,
-      );
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": file.type },
-        body: file,
-      });
-      if (!response.ok) throw new Error("Photo upload failed. Please retry.");
-      const { storageId } = await response.json();
-      await runAction(api.storage.registerUpload, {
-        ...metadata,
-        intentId,
-        storageId,
-      });
+      avatarUrl = await updatePortrait(selected);
       saved = true;
     } catch (cause) {
       error =

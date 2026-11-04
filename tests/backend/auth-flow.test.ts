@@ -418,9 +418,37 @@ describe("provider-independent onboarding and document consent", () => {
       operatingState: "Lagos",
       operatingLga: "Ikeja",
     });
+    await t.run(async (ctx) => {
+      const app = (await ctx.db.get(agent.id))!;
+      const now = Date.now();
+      const orderId = await ctx.db.insert("checkoutOrders", {
+        reference: crypto.randomUUID(),
+        ownerId: app.userId!,
+        kind: "AGENT",
+        targetId: String(app._id),
+        title: "Agent registration",
+        amount: 2000,
+        currency: "NGN",
+        status: "PAID",
+        createdAt: now,
+        updatedAt: now,
+      });
+      await ctx.db.insert("checkoutAttempts", {
+        orderId,
+        reference: crypto.randomUUID(),
+        amount: 2000,
+        currency: "NGN",
+        provider: "KORAPAY",
+        status: "SUCCESS",
+        testMode: false,
+        createdAt: now,
+        updatedAt: now,
+      });
+    });
     await operator.mutation(api.partners.reviewAgentApplication, {
       id: agent.id,
       status: "APPROVED",
+      manualVerificationReference: "physical-review-fixture",
     });
     expect((await client.query(api.users.getMyProfile, {}))?.role).toBe(
       "AGENT",

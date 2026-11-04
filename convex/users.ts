@@ -20,7 +20,13 @@ export const getMyProfile = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
     try {
-      return await requireUser(ctx);
+      const user = await requireUser(ctx);
+      return {
+        ...user,
+        avatarUrl: user.avatarStorageId
+          ? ((await ctx.storage.getUrl(user.avatarStorageId)) ?? undefined)
+          : user.avatarUrl,
+      };
     } catch {
       return null;
     }
@@ -40,11 +46,17 @@ export const updateMyProfile = auditedMutation("users:updateMyProfile")({
   },
   handler: async (ctx, args) => {
     await requireUser(ctx);
-    if (args.whatsapp !== undefined && !/^\+?[0-9]{10,15}$/.test(args.whatsapp.replace(/[\s()-]/g, "")))
+    if (
+      args.whatsapp !== undefined &&
+      !/^\+?[0-9]{10,15}$/.test(args.whatsapp.replace(/[\s()-]/g, ""))
+    )
       throw new Error("Provide a valid WhatsApp phone number.");
     if (args.operatingState !== undefined || args.operatingLga !== undefined) {
       const current = await requireUser(ctx);
-      assertNigeriaLocation(args.operatingState ?? current.operatingState ?? "", args.operatingLga ?? current.operatingLga ?? "");
+      assertNigeriaLocation(
+        args.operatingState ?? current.operatingState ?? "",
+        args.operatingLga ?? current.operatingLga ?? "",
+      );
     }
     if (
       Object.values(args).some(
@@ -65,7 +77,13 @@ export const updateMyProfile = auditedMutation("users:updateMyProfile")({
       ...patch,
       lastActiveAt: Date.now(),
     });
-    await ctx.db.insert("adminAuditLog", { actorId: userId as Id<"users">, action: "PROFILE_UPDATED", entityType: "users", entityId: String(userId), createdAt: Date.now() });
+    await ctx.db.insert("adminAuditLog", {
+      actorId: userId as Id<"users">,
+      action: "PROFILE_UPDATED",
+      entityType: "users",
+      entityId: String(userId),
+      createdAt: Date.now(),
+    });
   },
 });
 
@@ -94,11 +112,20 @@ export const listUsers = query({
           .order("desc")
           .take(limit)
       : ctx.db.query("users").order("desc").take(limit));
-    return Promise.all(users.map(async user => {
-      const identity = await ctx.db.query("identities").withIndex("by_user", q => q.eq("userId", user._id)).unique();
-      return { ...user, maskedNin: identity ? `•••••••${identity.lastFour}` : null,
-        identityStatus: identity?.status ?? "NOT_SUBMITTED", verificationMethod: identity?.verificationMethod };
-    }));
+    return Promise.all(
+      users.map(async (user) => {
+        const identity = await ctx.db
+          .query("identities")
+          .withIndex("by_user", (q) => q.eq("userId", user._id))
+          .unique();
+        return {
+          ...user,
+          maskedNin: identity ? `•••••••${identity.lastFour}` : null,
+          identityStatus: identity?.status ?? "NOT_SUBMITTED",
+          verificationMethod: identity?.verificationMethod,
+        };
+      }),
+    );
   },
 });
 

@@ -59,7 +59,9 @@ test("Arabic is rendered on the server and supports Unicode name and NIN fields"
     page.getByText("رقم التعريف الوطني (NIN)", { exact: true }),
   ).toBeVisible();
   await expect(
-    page.locator('form input[type="checkbox"][required]'),
+    nin
+      .locator("xpath=ancestor::form[1]")
+      .locator('input[type="checkbox"][required]'),
   ).toHaveCount(1);
 });
 

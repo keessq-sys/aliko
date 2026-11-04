@@ -30,7 +30,22 @@ export const myEnrolments = query({
       .take(50);
     return {
       managers: managers.filter((m) => m.userId === user._id),
-      agents: agents.filter((a) => a.userId === user._id),
+      agents: await Promise.all(
+        agents
+          .filter((a) => a.userId === user._id)
+          .map(async (a) => {
+            const payment = await ctx.db
+              .query("checkoutOrders")
+              .withIndex("by_target_status", (q) =>
+                q
+                  .eq("kind", "AGENT")
+                  .eq("targetId", String(a._id))
+                  .eq("status", "PAID"),
+              )
+              .first();
+            return { ...a, registrationPaid: payment?.ownerId === user._id };
+          }),
+      ),
     };
   },
 });
@@ -122,6 +137,7 @@ export const submitAgentApplication = auditedMutation(
       userId,
       ...args,
       status: "PENDING",
+      registrationFeeNgn: 2000,
       createdAt: now,
       updatedAt: now,
     });
@@ -263,7 +279,8 @@ export const listApprovedAgents = query({
           if (
             !user ||
             user.role !== "AGENT" ||
-            user.accountStatus === "SUSPENDED"
+            user.accountStatus === "SUSPENDED" ||
+            !r.manualVerificationReference
           )
             return null;
           return {
@@ -299,8 +316,12 @@ export const reviewAgentApplication = auditedMutation(
       v.literal("REJECTED"),
     ),
     reviewNotes: v.optional(v.string()),
+    manualVerificationReference: v.optional(v.string()),
   },
-  handler: async (ctx, { id, status, reviewNotes }) => {
+  handler: async (
+    ctx,
+    { id, status, reviewNotes, manualVerificationReference },
+  ) => {
     const reviewerId = await requireAdmin(ctx);
     const application = await ctx.db.get(id);
     if (!application?.userId)
@@ -310,8 +331,45 @@ export const reviewAgentApplication = auditedMutation(
     const account = await ctx.db.get(application.userId);
     if (!account || account.role === "ADMIN")
       throw new ConvexError("Invalid applicant account");
-    if (status === "APPROVED")
-      await requireSubmittedNin(ctx, application.userId);
+    if (status === "APPROVED") {
+      if (
+        !manualVerificationReference ||
+        manualVerificationReference.trim().length < 8
+      )
+        throw new ConvexError(
+          "Record the physical identity and address confirmation reference before approval.",
+        );
+      if (application.registrationFeeNgn) {
+        const paid = await ctx.db
+          .query("checkoutOrders")
+          .withIndex("by_target_status", (q) =>
+            q
+              .eq("kind", "AGENT")
+              .eq("targetId", String(id))
+              .eq("status", "PAID"),
+          )
+          .first();
+        const settled = paid
+          ? await ctx.db
+              .query("checkoutAttempts")
+              .withIndex("by_order", (q) => q.eq("orderId", paid._id))
+              .collect()
+          : [];
+        if (
+          !paid ||
+          paid.ownerId !== application.userId ||
+          !settled.some(
+            (a) =>
+              a.status === "SUCCESS" &&
+              !a.testMode &&
+              a.amount === application.registrationFeeNgn,
+          )
+        )
+          throw new ConvexError(
+            "A settled agent registration fee is required before approval.",
+          );
+      }
+    }
     await ctx.db.patch(application.userId, {
       role: status === "APPROVED" ? "AGENT" : "CLIENT",
     });
@@ -324,6 +382,10 @@ export const reviewAgentApplication = auditedMutation(
       createdAt: Date.now(),
     });
     const patch: Record<string, unknown> = { status, updatedAt: Date.now() };
+    patch.reviewedBy = reviewerId;
+    patch.reviewedAt = Date.now();
+    if (manualVerificationReference)
+      patch.manualVerificationReference = manualVerificationReference.trim();
     if (reviewNotes !== undefined) patch.reviewNotes = reviewNotes;
     await ctx.db.patch(id, patch);
     await emitAlert(ctx, {
@@ -406,5 +468,45 @@ export const reviewManagerApplication = auditedMutation(
       href: "/dashboard/account",
       category: "APPLICATION",
     });
+  },
+});
+
+export const agentApplicationDetail = query({
+  args: { id: v.id("agentApplications") },
+  handler: async (ctx, { id }) => {
+    await requireAdmin(ctx);
+    const application = await ctx.db.get(id);
+    if (!application) return null;
+    const user = application.userId
+      ? await ctx.db.get(application.userId)
+      : null;
+    const identity = user
+      ? await ctx.db
+          .query("identities")
+          .withIndex("by_user", (q) => q.eq("userId", user._id))
+          .unique()
+      : null;
+    const orders = await ctx.db
+      .query("checkoutOrders")
+      .withIndex("by_target", (q) =>
+        q.eq("kind", "AGENT").eq("targetId", String(id)),
+      )
+      .take(50);
+    const { nin, ...safe } = application;
+    return {
+      ...safe,
+      avatarUrl: user?.avatarStorageId
+        ? await ctx.storage.getUrl(user.avatarStorageId)
+        : user?.avatarUrl,
+      maskedNin: identity ? `•••••••${identity.lastFour}` : null,
+      identityStatus: "MANUAL_CONFIRMATION_REQUIRED",
+      registrationPayment: orders.some(
+        (o) => o.ownerId === application.userId && o.status === "PAID",
+      )
+        ? "PAID"
+        : application.registrationFeeNgn
+          ? "UNPAID"
+          : "LEGACY_NO_FEE",
+    };
   },
 });

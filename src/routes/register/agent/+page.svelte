@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { updatePortrait } from "$lib/media/portrait";
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
   import { NIGERIAN_STATES } from "../../../../convex/lib/nigeriaLocations";
@@ -8,8 +9,6 @@
   import { completeEnrolment } from "$lib/auth/enrolment";
   import { passwordProblem } from "../../../../convex/lib/passwordPolicy";
   import { ninProblem } from "../../../../convex/lib/nin";
-  import { getConvexClient } from "convex-svelte";
-  import { synchronizeSession } from "$lib/convex/session";
   import { prepareUploadFile } from "$lib/utils/prepareUploadFile";
   import { onMount, onDestroy } from "svelte";
   let ready = false,
@@ -29,7 +28,7 @@
     operationLga = "";
 
   import { goto } from "$app/navigation";
-  import { useQuery, runMutation, runAction } from "$lib/convex/queries";
+  import { useQuery } from "$lib/convex/queries";
   const account = useQuery(api.users.getMyProfile, {});
   let seededAccount = false;
   import {
@@ -162,40 +161,7 @@
   async function uploadPhoto() {
     const file = formData.documents.photo;
     if (!file) return;
-    await synchronizeSession(getConvexClient());
-    const sha256 = Array.from(
-      new Uint8Array(
-        await crypto.subtle.digest("SHA-256", await file.arrayBuffer()),
-      ),
-    )
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-    const args = {
-      purpose: "AVATAR_IMAGE" as const,
-      fileName: file.name,
-      mimeType: file.type,
-      size: file.size,
-      sha256,
-    };
-    const { url, intentId } = await runMutation(
-      api.storage.generateUploadUrl,
-      args,
-    );
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": file.type },
-      body: file,
-    });
-    if (!response.ok)
-      throw new Error(
-        "Your application is saved, but the profile photo could not upload. Retry to finish.",
-      );
-    const { storageId } = await response.json();
-    await runAction(api.storage.registerUpload, {
-      ...args,
-      intentId,
-      storageId,
-    });
+    await updatePortrait(file);
   }
   const submitForm = async () => {
     submitError = "";
@@ -284,6 +250,7 @@
       await uploadPhoto();
       reference = result.reference;
       submitted = true;
+      if (result.redirect) window.location.assign(result.redirect);
     } catch (err: any) {
       submitError = err?.message ?? "Submission failed. Please try again.";
     } finally {
@@ -300,6 +267,13 @@
 <div
   class="min-h-screen bg-[#050A0E] text-white pt-24 pb-12 px-4 sm:px-6 lg:px-8 relative"
 >
+  <p
+    class="relative z-10 mx-auto max-w-3xl rounded-xl border p-4 theme-panel theme-text"
+  >
+    {$adkT(
+      "Agent registration costs ₦2,000. Payment does not grant approval. Physical identity and address confirmation by the administrator is mandatory; automated NIN/BVN verification is unavailable.",
+    )}
+  </p>
   <!-- Background effects -->
   <div
     class="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-amber-900/20 to-transparent pointer-events-none"
@@ -379,10 +353,10 @@
       <div class="mb-12">
         <div class="flex items-center justify-between relative">
           <div
-            class="absolute left-0 top-1/2 w-full h-1 bg-gray-800 -z-10 -translate-y-1/2"
+            class="pointer-events-none absolute left-0 top-5 w-full h-1 bg-gray-800 -z-10 -translate-y-1/2"
           ></div>
           <div
-            class="absolute left-0 top-1/2 h-1 bg-amber-500 -z-10 -translate-y-1/2 transition-all duration-500"
+            class="pointer-events-none absolute left-0 top-5 h-1 bg-amber-500 -z-10 -translate-y-1/2 transition-all duration-500"
             style="width: {((currentStep - 1) / (totalSteps - 1)) * 100}%"
           ></div>
 
@@ -457,6 +431,7 @@
                 </label>
                 <input
                   id="agent-profile-photo"
+                  disabled={!ready || submitting}
                   type="file"
                   accept="image/jpeg,image/png,image/webp,image/avif"
                   on:change={selectPhoto}
@@ -854,6 +829,7 @@
                   <p class="text-xs text-gray-500 mt-1">{$adkT(doc.types)}</p>
                   {#if doc.id === "photo"}<input
                       aria-label="Professional Photo"
+                      disabled={!ready || submitting}
                       type="file"
                       accept="image/jpeg,image/png,image/webp,image/avif"
                       on:change={selectPhoto}

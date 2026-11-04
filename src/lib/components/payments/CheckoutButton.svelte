@@ -4,7 +4,7 @@
   import { api } from "$lib/convex/_generated/api";
   import { runMutation } from "$lib/convex/queries";
   const adkT = getTranslation();
-  export let kind: "PROPERTY" | "SERVICE" | "MANAGER";
+  export let kind: "PROPERTY" | "SERVICE" | "MANAGER" | "AGENT";
   export let targetId: string;
   export let label = "Review and pay";
   let busy = false,

@@ -1,61 +1,74 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test.describe('API Endpoints', () => {
-  test('should respond to health check', async ({ request }) => {
-    const response = await request.get('/api/health');
+test.describe("API Endpoints", () => {
+  test("should respond to health check", async ({ request }) => {
+    const response = await request.get("/api/health");
     expect(response.ok()).toBeTruthy();
   });
 
-  test('does not expose a legacy frontend Convex sync endpoint', async ({ request }) => {
-    const response = await request.post('/api/convex/sync', {
-      data: { test: true }
+  test("does not expose a legacy frontend Convex sync endpoint", async ({
+    request,
+  }) => {
+    const response = await request.post("/api/convex/sync", {
+      data: { test: true },
     });
     expect(response.status()).toBe(404);
   });
 
-  test('rejects unauthenticated media maintenance requests', async ({ request }) => {
-    const response = await request.post('/api/media/maintenance');
-    expect(response.status()).toBe(403);
+  test("rejects unauthenticated media maintenance requests", async ({
+    request,
+  }) => {
+    const response = await request.post("/api/media/maintenance");
+    expect(response.status()).toBe(401);
+    expect(await response.json()).toMatchObject({ code: "SESSION_REQUIRED" });
   });
 });
 
-test.describe('Webhook Endpoints', () => {
+test.describe("Webhook Endpoints", () => {
   const actionsUrl = process.env.CONVEX_HTTP_ACTIONS_URL;
-  test.skip(!actionsUrl, 'Set CONVEX_HTTP_ACTIONS_URL to run live Convex webhook checks.');
-  test('should verify Paystack webhook signature', async ({ request }) => {
+  test.skip(
+    !actionsUrl,
+    "Set CONVEX_HTTP_ACTIONS_URL to run live Convex webhook checks.",
+  );
+  test("should verify Paystack webhook signature", async ({ request }) => {
     const response = await request.post(`${actionsUrl!}/webhooks/paystack`, {
       headers: {
-        'x-paystack-signature': 'invalid-signature'
+        "x-paystack-signature": "invalid-signature",
       },
-      data: { event: 'charge.success', data: { reference: 'test' } }
+      data: { event: "charge.success", data: { reference: "test" } },
     });
     expect([401, 503]).toContain(response.status());
   });
 
-  test('should verify Flutterwave webhook secret hash', async ({ request }) => {
+  test("should verify Flutterwave webhook secret hash", async ({ request }) => {
     const response = await request.post(`${actionsUrl!}/webhooks/flutterwave`, {
-      headers: { 'verif-hash': 'invalid-secret-hash' },
-      data: { event: 'charge.completed', data: { id: 1, tx_ref: 'test', status: 'successful' } }
+      headers: { "verif-hash": "invalid-secret-hash" },
+      data: {
+        event: "charge.completed",
+        data: { id: 1, tx_ref: "test", status: "successful" },
+      },
     });
     expect([401, 503]).toContain(response.status());
   });
 
-  test('should verify WhatsApp webhook', async ({ request }) => {
-    const response = await request.get(`${actionsUrl!}/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token=test&hub.challenge=123`);
+  test("should verify WhatsApp webhook", async ({ request }) => {
+    const response = await request.get(
+      `${actionsUrl!}/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token=test&hub.challenge=123`,
+    );
     expect(response.status()).toBe(403);
   });
 
-  test('should reject an unsigned WhatsApp event', async ({ request }) => {
+  test("should reject an unsigned WhatsApp event", async ({ request }) => {
     const response = await request.post(`${actionsUrl!}/webhooks/whatsapp`, {
-      data: { entry: [{ changes: [{ value: { messages: [] } }] }] }
+      data: { entry: [{ changes: [{ value: { messages: [] } }] }] },
     });
     expect([401, 503]).toContain(response.status());
   });
 
-  test('should verify Dropbox Sign webhook', async ({ request }) => {
+  test("should verify Dropbox Sign webhook", async ({ request }) => {
     const response = await request.post(`${actionsUrl!}/webhooks/esign`, {
-      headers: { 'content-sha256': 'invalid-signature' },
-      multipart: { json: JSON.stringify({ event: { event_type: 'test' } }) }
+      headers: { "content-sha256": "invalid-signature" },
+      multipart: { json: JSON.stringify({ event: { event_type: "test" } }) },
     });
     expect([401, 503]).toContain(response.status());
   });

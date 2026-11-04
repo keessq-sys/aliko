@@ -4,6 +4,7 @@ test("agent photo picker previews a supported image and rejects oversized files"
 }) => {
   await page.goto("/register/agent", { waitUntil: "domcontentloaded" });
   const input = page.locator("#agent-profile-photo");
+  await expect(input).toBeEnabled();
   await input.setInputFiles({
     name: "portrait.png",
     mimeType: "image/png",
@@ -13,6 +14,10 @@ test("agent photo picker previews a supported image and rejects oversized files"
     ),
   });
   await expect(page.getByAltText("Selected portrait")).toBeVisible();
+  await expect(page.getByAltText("Selected portrait")).toHaveJSProperty(
+    "naturalWidth",
+    1,
+  );
   await input.setInputFiles({
     name: "oversized.png",
     mimeType: "image/png",

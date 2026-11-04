@@ -177,6 +177,7 @@ describe("single-form account, enrolment and checkout HTTP journey", () => {
     expect(response.status).toBe(200);
     const result = await response.json();
     expect(result.reference).toMatch(/^ADK-AGT-/);
+    expect(result.redirect).toMatch(/^\/checkout\/ADK-ORDER-/);
     expect(await (await submit(body)).json()).toEqual(result);
     const users = await t.run((ctx) => ctx.db.query("users").collect());
     expect(users).toHaveLength(1);
@@ -192,7 +193,19 @@ describe("single-form account, enrolment and checkout HTTP journey", () => {
       userId: users[0]._id,
       status: "PENDING",
       agencyName: "Test Agency",
+      registrationFeeNgn: 2000,
     });
+    expect(
+      await t.run((ctx) => ctx.db.query("checkoutOrders").collect()),
+    ).toMatchObject([
+      {
+        ownerId: users[0]._id,
+        kind: "AGENT",
+        targetId: String(applications[0]._id),
+        amount: 2000,
+        status: "DRAFT",
+      },
+    ]);
   });
   it("rejects cross-origin calls, administrator enrolment, incomplete signup and foreign account details", async () => {
     const { t, submit } = await setup();

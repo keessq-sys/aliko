@@ -43,6 +43,7 @@
   let selectedId = "";
   let openedListing = "";
   let files: File[] = [];
+  let uploadRevision = 0;
   let uploading = false;
   let error = "";
   let success = "";
@@ -61,6 +62,27 @@
     bedrooms: 0,
     bathrooms: 0,
   };
+  function toggleNewListing() {
+    if (showCreate) {
+      showCreate = false;
+      return;
+    }
+    selectedId = "";
+    editingId = "";
+    draft = {
+      title: "",
+      location: "",
+      state: "",
+      lga: "",
+      price: 0,
+      type: "RESIDENTIAL",
+      description: "",
+      sizeSqm: 0,
+      bedrooms: 0,
+      bathrooms: 0,
+    };
+    showCreate = true;
+  }
   $: rows = mode === "property" ? ($properties ?? []) : ($services ?? []);
   function editSelected() {
     if (!selectedRow) return;
@@ -177,16 +199,20 @@
   async function upload() {
     error = "";
     success = "";
-    if (!selectedId) return (error = `Choose a ${mode} first.`);
-    if (files.length === 0) return (error = "Choose at least one image.");
-    if (mode === "property" && existingImages + files.length > 7)
+    const batch = [...files];
+    if (!selectedId && mode === "property") await createListing();
+    if (!selectedId)
+      return (error = `Save listing details or choose a ${mode} first.`);
+    const destinationId = selectedId;
+    if (batch.length === 0) return (error = "Choose at least one image.");
+    if (mode === "property" && existingImages + batch.length > 7)
       return (error =
         "Each listing can contain between 1 and 7 images. Choose fewer files.");
     uploading = true;
     try {
       const storageIds: string[] = [];
       const urls: string[] = [];
-      for (const file of files) {
+      for (const file of batch) {
         const form = new FormData();
         form.append("file", file);
         form.append("collection", mode);
@@ -195,22 +221,23 @@
       }
       if (mode === "property") {
         await runMutation(api.properties.addPropertyMedia, {
-          propertyId: selectedId,
+          propertyId: destinationId,
           storageIds,
           urls,
         } as any);
       } else {
         await runMutation(api.services.addServiceMedia, {
-          id: selectedId,
+          id: destinationId,
           storageIds,
           urls,
         } as any);
       }
-      const uploadedCount = files.length;
+      const uploadedCount = batch.length;
       files = [];
+      uploadRevision++;
       if (mode === "property" && $profile?.role !== "ADMIN") {
         await runMutation(api.properties.submitForReview, {
-          propertyId: selectedId as any,
+          propertyId: destinationId as any,
         });
         success =
           "Submitted to the administrator for approval. This listing stays private until approved.";
@@ -243,7 +270,8 @@
     <button
       type="button"
       class="mb-4 text-sm font-semibold text-emerald-400 hover:text-emerald-300"
-      on:click={() => (showCreate = !showCreate)}
+      disabled={uploading || creating}
+      on:click={toggleNewListing}
     >
       {$adkT(
         showCreate ? "Hide listing details" : "+ Add property or land for sale",
@@ -362,13 +390,20 @@
       </div>
     {/if}
   {/if}
+  <p class="my-3 theme-text text-sm">
+    {$adkT(
+      "For a new listing, complete its details above and choose images below. Existing listings can be selected from Destination.",
+    )}
+  </p>
   <div class="grid gap-4 lg:grid-cols-[minmax(220px,0.7fr)_1.3fr]">
     <label class="block"
       ><span class="mb-1 block text-xs text-stone-400"
         >{$adkT("Destination")}</span
       >
       <select
+        aria-label={$adkT("Destination")}
         bind:value={selectedId}
+        disabled={uploading || creating}
         class="min-h-[44px] w-full rounded-lg border border-white/10 bg-black/40 px-3 text-sm text-white theme-input"
       >
         <option value="">{$adkT("Select")} {$adkT(mode)}</option>
@@ -378,6 +413,7 @@
       </select>
     </label>
     <FileUpload
+      resetKey={`${selectedId}:${uploadRevision}`}
       accept="image/jpeg,image/png,image/webp,image/avif"
       multiple
       maxSizeMB={15}
@@ -455,7 +491,10 @@
   <button
     type="button"
     on:click={upload}
-    disabled={uploading || files.length === 0 || !selectedId}
+    disabled={uploading ||
+      creating ||
+      files.length === 0 ||
+      (mode === "service" && !selectedId)}
     class="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-emerald-600 px-4 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
   >
     {#if uploading}<Loader2 size={15} class="animate-spin" />{/if}

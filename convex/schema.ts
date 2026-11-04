@@ -113,6 +113,7 @@ export default defineSchema({
       v.literal("PROPERTY"),
       v.literal("SERVICE"),
       v.literal("MANAGER"),
+      v.literal("AGENT"),
     ),
     targetId: v.string(),
     title: v.string(),
@@ -1017,6 +1018,8 @@ export default defineSchema({
 
   // ── Agent Applications (from the 5-step wizard) ──────────────────────────
   agentApplications: defineTable({
+    registrationFeeNgn: v.optional(v.number()),
+    manualVerificationReference: v.optional(v.string()),
     reference: v.string(), // e.g. ADK-AGT-2026-0001
     userId: v.optional(v.id("users")),
     submissionKey: v.optional(v.string()),

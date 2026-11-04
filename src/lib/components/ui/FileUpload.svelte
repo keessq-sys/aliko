@@ -8,7 +8,7 @@
     X,
     Image as ImageIcon,
   } from "lucide-svelte";
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onDestroy } from "svelte";
 
   export let accept: string = "*/*";
   export let multiple: boolean = false;
@@ -21,6 +21,20 @@
   let fileInput: HTMLInputElement;
   let selectedFiles: { file: File; preview: string | null }[] = [];
   let errorMsg = "";
+  export let resetKey = "";
+  let previousResetKey = resetKey;
+  function clearFiles() {
+    for (const item of selectedFiles)
+      if (item.preview) URL.revokeObjectURL(item.preview);
+    selectedFiles = [];
+    if (fileInput) fileInput.value = "";
+  }
+  $: if (resetKey !== previousResetKey) {
+    previousResetKey = resetKey;
+    clearFiles();
+    dispatch("files", { files: [] });
+  }
+  onDestroy(clearFiles);
 
   function handleDragEnter(e: DragEvent) {
     e.preventDefault();
@@ -46,6 +60,7 @@
     const target = e.target as HTMLInputElement;
     if (target.files) {
       processFiles(Array.from(target.files));
+      target.value = "";
     }
   }
 
@@ -101,7 +116,9 @@
     on:dragleave={handleDragLeave}
     on:dragover={handleDragOver}
     on:drop={handleDrop}
-    on:click={() => fileInput.click()}
+    on:click={(event) => {
+      if (event.target !== fileInput) fileInput.click();
+    }}
     on:keydown={(e) =>
       (e.key === "Enter" || e.key === " ") &&
       (e.preventDefault(), fileInput.click())}
@@ -110,7 +127,9 @@
       dir="auto"
       type="file"
       bind:this={fileInput}
-      class="hidden"
+      class="sr-only"
+      aria-label={label}
+      on:click|stopPropagation
       {accept}
       {multiple}
       on:change={handleFileInput}
@@ -166,6 +185,8 @@
             </div>
           </div>
           <button
+            type="button"
+            aria-label="Remove selected file"
             on:click={() => removeFile(i)}
             class="p-2 rounded hover:bg-stone-700 text-stone-400 hover:text-rose-400 transition-colors"
           >

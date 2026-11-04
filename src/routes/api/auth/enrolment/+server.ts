@@ -112,8 +112,17 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
       api.partners.submitAgentApplication,
       application,
     );
+    const order = await client.mutation(api.checkout.create, {
+      kind: "AGENT",
+      targetId: saved.id,
+    });
     return json(
-      { accountReady, applicationId: saved.id, reference: saved.reference },
+      {
+        accountReady,
+        applicationId: saved.id,
+        reference: saved.reference,
+        redirect: `/checkout/${encodeURIComponent(order.reference)}`,
+      },
       { headers },
     );
   } catch (error) {
