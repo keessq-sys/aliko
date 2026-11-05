@@ -2,6 +2,8 @@
 
 ## Documentation Index
 
+Current review: [Application code review and remediation — 4 November 2026](APPLICATION_CODE_REVIEW_2026-11-04.md). Older readiness percentages and provider descriptions are historical, not current certification.
+
 | Document | Description |
 |----------|-------------|
 | [Environment Setup](ENVIRONMENT_SETUP.md) | Complete environment variable reference and setup guide |
