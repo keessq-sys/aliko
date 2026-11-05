@@ -70,4 +70,6 @@ crons.interval(
   {},
 );
 
+crons.interval("reconcile Korapay refunds", { minutes: 5 }, internal.korapayOperations.reconcilePending, {});
+
 export default crons;

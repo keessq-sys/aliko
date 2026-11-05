@@ -210,6 +210,21 @@ describe("professional and customer listing review", () => {
       ).toBe(bytes.length);
     }
   });
+  it("only an admin can assign a validated portrait to an existing agent without changing the admin profile", async () => {
+    const t = setup(), owner = await actor(t), admin = await actor(t, "ADMIN"), other = await actor(t);
+    await t.run(ctx => ctx.db.insert("agentApplications", { userId: owner.id, reference: "PHOTO-AGENT", fullName: "Agent", email: "agent@example.invalid", phone: "08000000000", status: "PENDING", createdAt: Date.now(), updatedAt: Date.now() }));
+    const bytes = Uint8Array.from(atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aFv8AAAAASUVORK5CYII="), c => c.charCodeAt(0));
+    const sha256 = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))).map(b => b.toString(16).padStart(2, "0")).join("");
+    const args = { purpose: "AVATAR_IMAGE" as const, fileName: "portrait.png", mimeType: "image/png", size: bytes.length, sha256 };
+    await expect(other.client.mutation(api.storage.generateUploadUrl, { ...args, avatarTargetId: owner.id })).rejects.toThrow();
+    const { intentId } = await admin.client.mutation(api.storage.generateUploadUrl, { ...args, avatarTargetId: owner.id });
+    const storageId = await t.run(ctx => ctx.storage.store(new Blob([bytes], { type: "image/png" })));
+    await admin.client.action(api.storage.registerUpload, { ...args, intentId, storageId });
+    expect((await owner.client.query(api.users.getMyProfile, {}))?.avatarStorageId).toBe(storageId);
+    expect((await admin.client.query(api.users.getMyProfile, {}))?.avatarStorageId).toBeUndefined();
+    expect((await t.run(ctx => ctx.db.query("storedAssets").collect()))[0].ownerId).toBe(owner.id);
+    expect((await t.run(ctx => ctx.db.query("adminAuditLog").collect())).some(a => a.action === "AGENT_PORTRAIT_UPDATED" && a.entityId === owner.id)).toBe(true);
+  });
   it("only the assigned agent can update an enquiry", async () => {
     const t = setup(),
       owner = await actor(t),

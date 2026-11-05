@@ -22,6 +22,9 @@ export const POST: RequestHandler = async ({
       );
     const form = await request.formData(),
       selected = form.get("file");
+    const avatarTargetId = form.get("avatarTargetId");
+    if (avatarTargetId !== null && (typeof avatarTargetId !== "string" || avatarTargetId.length > 100))
+      return json({ error: "Invalid agent account" }, { status: 400 });
     if (
       !(selected instanceof File) ||
       !["image/jpeg", "image/png", "image/webp", "image/avif"].includes(
@@ -52,7 +55,7 @@ export const POST: RequestHandler = async ({
     client.setAuth(token);
     const upload = await client.mutation(
       api.storage.generateUploadUrl,
-      metadata,
+      { ...metadata, ...(avatarTargetId ? { avatarTargetId: avatarTargetId as any } : {}) },
     );
     const response = await fetch(upload.url, {
       method: "POST",
@@ -66,7 +69,9 @@ export const POST: RequestHandler = async ({
       intentId: upload.intentId,
       storageId,
     });
-    const profile = await client.query(api.users.getMyProfile, {});
+    const profile = avatarTargetId
+      ? await client.query(api.storage.adminPortrait, { userId: avatarTargetId as any })
+      : await client.query(api.users.getMyProfile, {});
     return json(
       { avatarUrl: profile?.avatarUrl },
       { headers: { "Cache-Control": "private, no-store" } },

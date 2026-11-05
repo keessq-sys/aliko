@@ -28,6 +28,12 @@ export const myAssets = query({
   },
 });
 
+export const adminPortrait = query({ args: { userId: v.id("users") }, handler: async (ctx, { userId }) => {
+  await requireAdmin(ctx);
+  const user = await ctx.db.get(userId);
+  return { avatarUrl: user?.avatarStorageId ? await ctx.storage.getUrl(user.avatarStorageId) : user?.avatarUrl };
+} });
+
 const purpose = v.union(
   v.literal("AVATAR_IMAGE"),
   v.literal("PROPERTY_IMAGE"),
@@ -70,6 +76,7 @@ async function authenticatedUser(ctx: any) {
 
 export const generateUploadUrl = auditedMutation("storage:generateUploadUrl")({
   args: {
+    avatarTargetId: v.optional(v.id("users")),
     purpose,
     fileName: v.string(),
     mimeType: v.string(),
@@ -78,6 +85,13 @@ export const generateUploadUrl = auditedMutation("storage:generateUploadUrl")({
   },
   handler: async (ctx, args) => {
     const user = await authenticatedUser(ctx);
+    if (args.avatarTargetId) {
+      await requireAdmin(ctx, 5 * 60000);
+      const target = await ctx.db.get(args.avatarTargetId);
+      const application = await ctx.db.query("agentApplications").withIndex("by_submission", q => q.eq("userId", args.avatarTargetId)).first();
+      if (args.purpose !== "AVATAR_IMAGE" || !target || !application || target.accountStatus === "SUSPENDED")
+        throw new Error("Choose an existing agent account for this portrait.");
+    }
     if (!/^[a-f0-9]{64}$/.test(args.sha256))
       throw new Error("Invalid file digest");
     await rateLimiter.limit(ctx, "upload", {
@@ -127,6 +141,11 @@ export const completeUpload = internalMutation({
     const intent = await ctx.db.get(args.intentId);
     if (!intent || intent.ownerId !== user._id || intent.expiresAt < Date.now())
       throw new Error("Invalid or expired upload intent");
+    const assetOwnerId = intent.avatarTargetId ?? user._id;
+    if (intent.avatarTargetId) {
+      await requireAdmin(ctx, 5 * 60000);
+      if (args.purpose !== "AVATAR_IMAGE" || !(await ctx.db.get(assetOwnerId))) throw new Error("Invalid portrait target.");
+    }
     if (intent.storageId && intent.storageId !== args.storageId)
       throw new Error("Upload intent already used");
     if (
@@ -142,7 +161,7 @@ export const completeUpload = internalMutation({
       .withIndex("by_storage", (q) => q.eq("storageId", args.storageId))
       .unique();
     if (existing) {
-      if (existing.ownerId !== user._id)
+      if (existing.ownerId !== assetOwnerId)
         throw new Error("This file belongs to another account");
       return existing._id;
     }
@@ -183,7 +202,7 @@ export const completeUpload = internalMutation({
     const now = Date.now();
     const assetId = await ctx.db.insert("storedAssets", {
       storageId: args.storageId,
-      ownerId: user._id,
+      ownerId: assetOwnerId,
       purpose: args.purpose,
       fileName: args.fileName.trim(),
       mimeType: actualMime,
@@ -200,10 +219,13 @@ export const completeUpload = internalMutation({
       updatedAt: now,
     });
     if (args.purpose === "AVATAR_IMAGE")
-      await ctx.db.patch(user._id, {
+      await ctx.db.patch(assetOwnerId, {
         avatarStorageId: args.storageId,
         avatarUrl: (await ctx.storage.getUrl(args.storageId)) ?? undefined,
       });
+    if (intent.avatarTargetId) await ctx.db.insert("adminAuditLog", {
+      actorId: user._id, action: "AGENT_PORTRAIT_UPDATED", entityType: "users", entityId: String(assetOwnerId), createdAt: Date.now(),
+    });
     if (
       requiresScan &&
       (process.env.MALWARE_SCANNER_URL ||

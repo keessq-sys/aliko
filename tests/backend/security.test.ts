@@ -481,6 +481,15 @@ describe("administrator MFA", () => {
 });
 
 describe("signature and pending refund safeguards", () => {
+  it("blocks allocation during a reserved Korapay refund", async () => {
+    const t = setup(), f = await paidBooking(t);
+    await t.run(async ctx => {
+      await ctx.db.patch(f.documentId, { status: "SIGNED" });
+      await ctx.db.patch(f.bookingId, { refundPending: true });
+    });
+    await expect(t.mutation(internal.fulfillment.allocateSignedBooking, { bookingId: f.bookingId, documentId: f.documentId })).rejects.toThrow("pending");
+    expect((await t.run(ctx => ctx.db.get(f.plotId)))?.status).toBe("RESERVED");
+  });
   it("blocks allocation while a provider refund is unresolved", async () => {
     const t = setup(),
       f = await paidBooking(t),

@@ -30,6 +30,7 @@ import type * as geocoding from "../geocoding.js";
 import type * as http from "../http.js";
 import type * as identity from "../identity.js";
 import type * as korapay from "../korapay.js";
+import type * as korapayOperations from "../korapayOperations.js";
 import type * as kyc from "../kyc.js";
 import type * as legalDocuments from "../legalDocuments.js";
 import type * as lib_access from "../lib/access.js";
@@ -102,6 +103,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   identity: typeof identity;
   korapay: typeof korapay;
+  korapayOperations: typeof korapayOperations;
   kyc: typeof kyc;
   legalDocuments: typeof legalDocuments;
   "lib/access": typeof lib_access;

@@ -15,7 +15,7 @@ import path from "node:path";
 const [snapshot] = process.argv.slice(2);
 if (!snapshot || !existsSync(snapshot))
   throw new Error("Pass an existing Convex snapshot ZIP path.");
-const { key } = validateRestoreTarget(process.env);
+const { key, deployment } = validateRestoreTarget(process.env);
 const manifest = JSON.parse(readFileSync(`${snapshot}.manifest.json`, "utf8"));
 const snapshotBytes = readFileSync(snapshot);
 if (
@@ -42,6 +42,7 @@ for (const name of [
 ])
   delete cleanEnvironment[name];
 try {
+  const startedAt = new Date();
   writeFileSync(envFile, `CONVEX_DEPLOY_KEY=${key}\n`, { mode: 0o600 });
   const result = spawnSync(
     process.execPath,
@@ -57,6 +58,16 @@ try {
     { env: cleanEnvironment, stdio: "inherit", shell: false },
   );
   if (result.error) throw result.error;
+  const receipt = {
+    startedAt: startedAt.toISOString(), finishedAt: new Date().toISOString(),
+    durationMs: Date.now() - startedAt.getTime(), deployment,
+    sourceSha256: manifest.sha256, includesFileStorage: true,
+    operator: process.env.RESTORE_OPERATOR || process.env.USERNAME || "UNASSIGNED",
+    exitCode: result.status,
+    verificationStatus: result.status === 0 ? "IMPORT_COMPLETED_INTEGRITY_PENDING" : "IMPORT_FAILED",
+  };
+  writeFileSync(`${snapshot}.${deployment}.restore.json`, `${JSON.stringify(receipt, null, 2)}\n`, { mode: 0o600 });
+  console.log(`Restore receipt recorded. Status: ${receipt.verificationStatus}. Verify restored tables, files and application journeys before declaring recovery successful.`);
   process.exitCode = result.status ?? 1;
 } finally {
   unlinkSync(envFile);

@@ -4,6 +4,7 @@
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
   export let avatarUrl: string | undefined = undefined;
+  export let avatarTargetId: string | undefined = undefined;
   let ready = false;
   onMount(() => {
     ready = true;
@@ -26,7 +27,7 @@
         selected.size > 2_000_000
       )
         throw new Error("Choose a JPG, PNG, WebP or AVIF image up to 2 MB.");
-      avatarUrl = await updatePortrait(selected);
+      avatarUrl = await updatePortrait(selected, avatarTargetId);
       saved = true;
     } catch (cause) {
       error =

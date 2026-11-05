@@ -389,7 +389,7 @@ export const reviewAgentApplication = auditedMutation(
           : [];
         if (
           !paid ||
-          paid.ownerId !== application.userId ||
+            paid.ownerId !== application.userId || paid.refundPending ||
           !settled.some(
             (a) =>
               a.status === "SUCCESS" &&

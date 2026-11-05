@@ -1,4 +1,5 @@
 <script lang="ts">
+  import KorapayFinance from "$lib/components/admin/KorapayFinance.svelte";
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
   let orderCursor: string | null = null;
@@ -169,7 +170,7 @@
   </h1>
   <p>
     {$adkT(
-      "These actions require recent administrator MFA. A refund does not automatically reverse legal title.",
+      "These actions require administrator authorization and any configured step-up checks. A refund does not automatically reverse legal title.",
     )}
   </p>
   {#if error}<p role="alert">{$adkT(error)}</p>{/if}{#if message}<p
@@ -318,6 +319,8 @@
     >{$adkT("Older recovery cases")}</button
   >
 </section>
+
+<KorapayFinance orders={$orders?.page ?? []} />
 
 <section class="theme-surface theme-text m-6 rounded-xl border p-6 space-y-3">
   <h2 class="text-xl font-bold">

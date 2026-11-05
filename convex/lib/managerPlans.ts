@@ -59,7 +59,7 @@ export async function managerEntitlement(ctx: any, user: any) {
     order.ownerId !== user._id ||
     order.kind !== "MANAGER" ||
     order.targetId !== String(record._id) ||
-    order.status !== "PAID" ||
+    order.status !== "PAID" || order.refundPending ||
     !attempt ||
     attempt.status !== "SUCCESS" ||
     attempt.testMode ||

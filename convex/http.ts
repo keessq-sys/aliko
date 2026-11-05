@@ -109,20 +109,22 @@ http.route({
     );
     if (!signature || !constantTimeEqual(signature, expected))
       return new Response("Invalid signature", { status: 401 });
-    if (event.event !== "charge.success" && event.event !== "charge.failed") return new Response("ok");
+    if (!["charge.success", "charge.failed", "refund.success", "refund.failed"].includes(event.event ?? "")) return new Response("ok");
     const reference = event.data.reference;
     if (!reference || reference.length > 200)
       return new Response("Invalid reference", { status: 400 });
     const claim = await ctx.runMutation(internal.operations.claimWebhookEvent, {
       provider: "KORAPAY",
       eventId: `${event.event}:${reference}`,
-      eventType: event.event,
+      eventType: event.event!,
       reference,
       payloadDigest: await sha256Hex(raw),
     });
     if (!claim.claimed) return new Response("ok");
     try {
-      await ctx.runAction(internal.korapay.processWebhook, { reference });
+      if (event.event?.startsWith("refund."))
+        await ctx.runAction(internal.korapayOperations.refundWebhook, { reference });
+      else await ctx.runAction(internal.korapay.processWebhook, { reference });
       await ctx.runMutation(internal.operations.finishWebhookEvent, {
         eventId: claim.eventId,
         status: "PROCESSED",

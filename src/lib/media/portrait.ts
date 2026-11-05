@@ -1,7 +1,8 @@
 /** Use the verified cookie session rather than waiting for a realtime connection. */
-export async function updatePortrait(file: File): Promise<string> {
+export async function updatePortrait(file: File, avatarTargetId?: string): Promise<string> {
   const form = new FormData();
   form.append("file", file);
+  if (avatarTargetId) form.append("avatarTargetId", avatarTargetId);
   const response = await fetch("/api/profile/photo", {
     method: "POST",
     body: form,

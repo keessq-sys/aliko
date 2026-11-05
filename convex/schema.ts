@@ -105,7 +105,43 @@ export default defineSchema({
     .index("by_owner", ["ownerId", "createdAt"])
     .index("by_order", ["orderId"])
     .index("by_status_end", ["status", "endsAt"]),
+  korapayRefunds: defineTable({
+    orderId: v.id("checkoutOrders"),
+    attemptId: v.id("checkoutAttempts"),
+    reference: v.string(),
+    paymentReference: v.string(),
+    amount: v.number(),
+    currency: v.string(),
+    reason: v.string(),
+    status: v.union(v.literal("PENDING"), v.literal("COMPLETED"), v.literal("FAILED")),
+    initiatedBy: v.id("users"),
+    checkedAt: v.optional(v.number()),
+    lastError: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_order", ["orderId"]).index("by_reference", ["reference"])
+    .index("by_status_check", ["status", "checkedAt"]),
+  korapaySettlementReports: defineTable({
+    batchReference: v.string(),
+    evidenceReference: v.string(),
+    currency: v.string(),
+    grossMinor: v.number(),
+    feesMinor: v.number(),
+    netMinor: v.number(),
+    settledAt: v.number(),
+    transactionCount: v.number(),
+    status: v.literal("REPORTED_NOT_BANK_VERIFIED"),
+    importedBy: v.id("users"),
+    createdAt: v.number(),
+  }).index("by_batch", ["batchReference"]),
+  korapaySettlementItems: defineTable({
+    reportId: v.id("korapaySettlementReports"),
+    attemptId: v.id("checkoutAttempts"),
+    paymentReference: v.string(),
+    grossMinor: v.number(), feesMinor: v.number(), netMinor: v.number(),
+  }).index("by_report", ["reportId"]).index("by_payment", ["paymentReference"]),
   checkoutOrders: defineTable({
+    refundPending: v.optional(v.boolean()),
     reference: v.string(),
     ownerId: v.id("users"),
     kind: v.union(
@@ -462,6 +498,7 @@ export default defineSchema({
 
   // ── Bookings ──────────────────────────────────────────────────────────────
   bookings: defineTable({
+    refundPending: v.optional(v.boolean()),
     fulfillmentWorkflowId: v.optional(v.string()),
     fulfillmentStatus: v.optional(v.string()),
     fulfillmentError: v.optional(v.string()),
@@ -1129,6 +1166,7 @@ export default defineSchema({
     updatedAt: v.number(),
   }).index("by_email", ["email"]),
   uploadIntents: defineTable({
+    avatarTargetId: v.optional(v.id("users")),
     ownerId: v.id("users"),
     purpose: v.string(),
     fileName: v.string(),

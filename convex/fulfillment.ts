@@ -132,7 +132,7 @@ export const allocateSignedBooking = internalMutation({
       .withIndex("by_booking", (q) => q.eq("bookingId", booking._id))
       .filter((q) => q.eq(q.field("status"), "PENDING"))
       .first();
-    if (pendingRefund)
+    if (pendingRefund || booking.refundPending)
       throw new Error(
         "Allocation is blocked while a refund outcome is pending",
       );

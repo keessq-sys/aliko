@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ProfilePhotoEditor from "$lib/components/dashboard/ProfilePhotoEditor.svelte";
   import { tick } from "svelte";
   import { getI18n } from "$lib/i18n";
   const { locale: adkLocale } = getI18n();
@@ -167,6 +168,7 @@
         >
       </div>
       {#if $detail}
+        {#if $detail.userId}<ProfilePhotoEditor avatarTargetId={$detail.userId} avatarUrl={$detail.avatarUrl ?? undefined} />{/if}
         {#if $detail.avatarUrl}<img
             src={$detail.avatarUrl}
             alt="Applicant portrait"
