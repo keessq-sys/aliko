@@ -66,3 +66,15 @@ Exact current-run tests, deployment revision and CI result must accompany the re
 - Convex production deployment completed successfully for the reviewed functions.
 - GitHub CI run 41885542829 is confirmed successful for the preceding release, closing the previously pending browser-install check. Current revision CI and hosted acceptance are tracked separately.
 
+
+### Completed release acceptance — 5 November
+
+- Released application revision: 967be4da07f19dd24d28e3da9fb346f3baa7b84c.
+- Separate full Chromium run completed: **139 passed, 7 skipped**. Backend: **140 passed**. The combined npm test startup timeout above remains recorded accurately.
+- GitHub CI **42040532046 passed**, including the expanded enrolment, photo, Arabic authentication and service-routing checks: https://github.com/keessq-sys/aliko/actions/runs/42040532046 .
+- Convex deployment completed. Cloudflare release: https://0a7a719a.aliko-3f9.pages.dev . The custom domain returned HTTP 200 and matching immutable asset references.
+- Authenticated production browser sign-in succeeded; an existing agent verification detail panel loaded. An invalid HTML portrait was rejected with HTTP 400; no diagnostic listing drafts remained.
+- Unsigned and forged Korapay callbacks were rejected with HTTP 401. This does not prove a legitimate funded callback or settlement: no paid agent-registration record was found during the audit.
+- No real agent portrait was overwritten: all three existing applications lacked a saved portrait, and no approved replacement/account was supplied.
+- Documentation-only evidence updates do not change the tested/deployed application artifact.
+
