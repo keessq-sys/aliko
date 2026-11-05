@@ -1,4 +1,9 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+  let ready = false;
+  onMount(() => {
+    ready = true;
+  });
   import { preloadVisibleRoutes } from "$lib/actions/preloadVisibleRoutes";
   import InstallApp from "$lib/components/ui/InstallApp.svelte";
   import { getTranslation } from "$lib/i18n";
@@ -191,6 +196,7 @@
           aria-label={$adkT(isMobileMenuOpen ? "Close menu" : "Open menu")}
           aria-expanded={isMobileMenuOpen}
           aria-controls="public-navigation-menu"
+          disabled={!ready}
           on:click={toggleMobileMenu}
         >
           {#if isMobileMenuOpen}

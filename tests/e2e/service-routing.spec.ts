@@ -101,12 +101,21 @@ test("service links navigate without a full-page error", async ({ page }) => {
 });
 
 test("browser-only forms cannot submit natively before their handlers are ready", async ({
-  browser, baseURL,
+  browser,
+  baseURL,
 }) => {
-  const context = await browser.newContext({ baseURL, javaScriptEnabled: false });
+  const context = await browser.newContext({
+    baseURL,
+    javaScriptEnabled: false,
+  });
   const page = await context.newPage();
   try {
     await page.goto("/auth/admin");
+    await expect(
+      page
+        .locator("header")
+        .getByRole("button", { name: "Open menu", exact: true }),
+    ).toBeDisabled();
     await expect(
       page.getByRole("button", { name: "Sign In", exact: true }),
     ).toBeDisabled();

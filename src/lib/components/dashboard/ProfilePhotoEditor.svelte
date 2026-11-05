@@ -1,8 +1,13 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { updatePortrait } from "$lib/media/portrait";
   import { getTranslation } from "$lib/i18n";
   const adkT = getTranslation();
   export let avatarUrl: string | undefined = undefined;
+  let ready = false;
+  onMount(() => {
+    ready = true;
+  });
   let busy = false,
     error = "",
     saved = false;
@@ -47,7 +52,7 @@
       <input
         type="file"
         accept="image/jpeg,image/png,image/webp,image/avif"
-        disabled={busy}
+        disabled={!ready || busy}
         on:change={update}
         class="theme-input mt-2 block w-full min-h-[44px] max-w-full"
       />

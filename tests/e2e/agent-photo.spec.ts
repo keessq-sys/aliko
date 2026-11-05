@@ -2,7 +2,9 @@ import { test, expect } from "@playwright/test";
 test("agent photo picker previews a supported image and rejects oversized files", async ({
   page,
 }) => {
-  await page.goto("/register/agent", { waitUntil: "domcontentloaded" });
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/register/agent");
   const input = page.locator("#agent-profile-photo");
   await expect(input).toBeEnabled();
   await input.setInputFiles({
@@ -24,4 +26,5 @@ test("agent photo picker previews a supported image and rejects oversized files"
     buffer: Buffer.alloc(2_000_001),
   });
   await expect(page.getByRole("alert")).toContainText("up to 2 MB");
+  expect(errors).toEqual([]);
 });
