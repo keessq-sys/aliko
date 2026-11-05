@@ -2,6 +2,8 @@
 
 Review continued and dependency evidence refreshed on **5 November 2026**.
 
+Later release update: [Production gap remediation — 5 November](PRODUCTION_GAP_REMEDIATION_2026-11-05.md) supersedes the open R08 implementation status below: full Korapay refunds and an audited settlement-report import are now deployed. Actual refund delivery, independent settlement/bank verification and the remaining external acceptance items remain open.
+
 ## Assessment and evidence boundaries
 
 Product: Aliko Diamond Key, https://alikodiamondkey.com. Repository: keessq-sys/aliko. Production backend: gallant-husky-352. This report reconciles the conversation's requests with current source, tests and bounded production checks. It supersedes the current-state claims in the 1 October enterprise report; historical reports remain historical evidence. No completion percentage or unrestricted-transaction certification is asserted.

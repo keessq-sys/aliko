@@ -46,3 +46,13 @@ Final test counts, deployment revision and CI evidence are appended after releas
 
 Validation completed before release: Svelte check 0 errors/0 warnings; 151 backend tests passed. After the final monetary-currency guard, all 9 Korapay operation tests passed again. Production build completed successfully. GitHub and hosted acceptance are recorded separately below.
 
+
+### Completed release verification
+
+- Application revision: aa3cb513f4963c101e948a0ee360c9ba258d1c04.
+- GitHub CI 42079178172 passed, including lint, backend tests, production build and 40 browser regressions: https://github.com/keessq-sys/aliko/actions/runs/42079178172 .
+- Convex functions/schema deployed successfully. Cloudflare frontend: https://e767df65.aliko-3f9.pages.dev . Custom domain returned HTTP 200 with matching immutable asset references.
+- Authenticated hosted queries for Korapay refunds and settlement reports succeeded. The finance controls rendered, the page fit a 390px viewport, and the agent-detail portrait-upload control rendered without browser page errors.
+- The hosted check performed no refund, payment, agent creation or portrait mutation. These results certify the tested controls, not external transfer delivery or unrestricted production readiness.
+- The approved personal photo remains untracked and was excluded from the release. This final documentation-only update does not change the tested application artifact.
+

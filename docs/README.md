@@ -43,6 +43,6 @@ For questions about deployment or configuration:
 2. Review GitHub Actions workflow logs
 3. Check Convex and Cloudflare dashboards
 4. Open an issue in the repository
-# Latest production gap work
+## Latest production gap work
 
 See [Production gap remediation — 5 November 2026](PRODUCTION_GAP_REMEDIATION_2026-11-05.md) for Korapay refund/report controls, backup evidence and the external acceptance boundaries.
