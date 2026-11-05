@@ -25,7 +25,7 @@ export const myEnrolments = query({
       .take(50);
     const agents = await ctx.db
       .query("agentApplications")
-      .withIndex("by_email", (q) => q.eq("email", user.email))
+      .withIndex("by_submission", (q) => q.eq("userId", user._id))
       .order("desc")
       .take(50);
     return {
@@ -100,8 +100,27 @@ export const submitAgentApplication = auditedMutation(
           q.eq("userId", userId).eq("submissionKey", args.submissionKey),
         )
         .unique();
-      if (saved) return { id: saved._id, reference: saved.reference };
+      if (saved)
+        return {
+          id: saved._id,
+          reference: saved.reference,
+          registrationFeeNgn: saved.registrationFeeNgn ?? 0,
+        };
     }
+    // Retries and a second browser tab must resume the same application/fee.
+    const existing = await ctx.db
+      .query("agentApplications")
+      .withIndex("by_submission", (q) => q.eq("userId", userId))
+      .collect();
+    const active = existing.find(
+      (a) => a.userId === userId && a.status !== "REJECTED",
+    );
+    if (active)
+      return {
+        id: active._id,
+        reference: active.reference,
+        registrationFeeNgn: active.registrationFeeNgn ?? 0,
+      };
     const identity = await ctx.db
       .query("identities")
       .withIndex("by_user", (q) => q.eq("userId", userId))
@@ -141,7 +160,7 @@ export const submitAgentApplication = auditedMutation(
       createdAt: now,
       updatedAt: now,
     });
-    return { id, reference };
+    return { id, reference, registrationFeeNgn: 2000 };
   },
 });
 
@@ -194,6 +213,19 @@ export const submitManagerApplication = auditedMutation(
           );
         return { id: saved._id };
       }
+    }
+    const active = (
+      await ctx.db
+        .query("estateManagers")
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .collect()
+    ).find((application) => application.status !== "SUSPENDED");
+    if (active) {
+      if (active.plan !== args.plan)
+        throw new ConvexError(
+          "Your application was saved with a different plan. Review My payments before changing plans.",
+        );
+      return { id: active._id };
     }
     const identity = await ctx.db
       .query("identities")
@@ -370,8 +402,28 @@ export const reviewAgentApplication = auditedMutation(
           );
       }
     }
+    if (status === "APPROVED" && account.role === "ESTATE_MANAGER")
+      throw new ConvexError(
+        "An estate manager cannot be changed to an agent through application review.",
+      );
+    const otherApproved = await ctx.db
+      .query("agentApplications")
+      .withIndex("by_submission", (q) => q.eq("userId", account._id))
+      .collect();
+    const retainsApproval = otherApproved.some(
+      (a) =>
+        a._id !== id &&
+        a.userId === account._id &&
+        a.status === "APPROVED" &&
+        !!a.manualVerificationReference,
+    );
     await ctx.db.patch(application.userId, {
-      role: status === "APPROVED" ? "AGENT" : "CLIENT",
+      role:
+        status === "APPROVED" || (account.role === "AGENT" && retainsApproval)
+          ? "AGENT"
+          : account.role === "AGENT"
+            ? "CLIENT"
+            : account.role,
     });
     await ctx.db.insert("adminAuditLog", {
       actorId: reviewerId,
@@ -446,8 +498,25 @@ export const reviewManagerApplication = auditedMutation(
       throw new ConvexError("Invalid applicant account");
     if (status === "APPROVED")
       await requireSubmittedNin(ctx, application.userId);
+    if (status === "APPROVED" && account.role === "AGENT")
+      throw new ConvexError(
+        "An agent cannot be changed to an estate manager through application review.",
+      );
+    const peers = await ctx.db
+      .query("estateManagers")
+      .withIndex("by_user", (q) => q.eq("userId", account._id))
+      .collect();
+    const retainsApproval = peers.some(
+      (a) => a._id !== id && a.status === "APPROVED",
+    );
     await ctx.db.patch(application.userId, {
-      role: status === "APPROVED" ? "ESTATE_MANAGER" : "CLIENT",
+      role:
+        status === "APPROVED" ||
+        (account.role === "ESTATE_MANAGER" && retainsApproval)
+          ? "ESTATE_MANAGER"
+          : account.role === "ESTATE_MANAGER"
+            ? "CLIENT"
+            : account.role,
     });
     await ctx.db.insert("adminAuditLog", {
       actorId: reviewerId,

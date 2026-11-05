@@ -138,6 +138,20 @@ describe("single-form account, enrolment and checkout HTTP journey", () => {
       amount: 75000,
       status: "DRAFT",
     });
+    await t.run((ctx) =>
+      ctx.db.patch(rows.managers[0]._id, {
+        paidThrough: Date.now() + 86400000,
+      }),
+    );
+    const resumed = await submit({
+      ...manager,
+      submissionKey: "manager-paid-new-tab-001",
+      registration: undefined,
+    });
+    expect(resumed.status).toBe(200);
+    expect(await resumed.json()).toMatchObject({
+      redirect: "/dashboard/account",
+    });
   });
   it("keeps the account and submitted details when checkout fails, then resumes without another signup", async () => {
     const { t, submit, saved } = await setup(true);
@@ -206,6 +220,38 @@ describe("single-form account, enrolment and checkout HTTP journey", () => {
         status: "DRAFT",
       },
     ]);
+    await t.run(async (ctx) => {
+      const order = (await ctx.db.query("checkoutOrders").collect())[0];
+      await ctx.db.patch(order._id, { status: "PAID" });
+    });
+    const paidResume = await submit({
+      ...body,
+      submissionKey: "agent-paid-new-tab-001",
+      registration: undefined,
+    });
+    expect(paidResume.status).toBe(200);
+    expect(await paidResume.json()).toMatchObject({
+      redirect: "/dashboard/account",
+    });
+    await t.run(async (ctx) => {
+      await ctx.db.patch(applications[0]._id, {
+        registrationFeeNgn: undefined,
+      });
+      for (const order of await ctx.db.query("checkoutOrders").collect())
+        await ctx.db.delete(order._id);
+    });
+    const legacyResume = await submit({
+      ...body,
+      submissionKey: "agent-legacy-new-tab-001",
+      registration: undefined,
+    });
+    expect(legacyResume.status).toBe(200);
+    expect(await legacyResume.json()).toMatchObject({
+      redirect: "/dashboard/account",
+    });
+    expect(
+      await t.run((ctx) => ctx.db.query("checkoutOrders").collect()),
+    ).toHaveLength(0);
   });
   it("rejects cross-origin calls, administrator enrolment, incomplete signup and foreign account details", async () => {
     const { t, submit } = await setup();

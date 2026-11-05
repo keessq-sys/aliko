@@ -21,8 +21,14 @@ export const getMyProfile = query({
     if (!userId) return null;
     try {
       const user = await requireUser(ctx);
+      const {
+        registrationNinCipher,
+        registrationNinHash,
+        registrationNinLastFour,
+        ...profile
+      } = user;
       return {
-        ...user,
+        ...profile,
         avatarUrl: user.avatarStorageId
           ? ((await ctx.storage.getUrl(user.avatarStorageId)) ?? undefined)
           : user.avatarUrl,

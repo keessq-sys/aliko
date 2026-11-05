@@ -200,9 +200,14 @@ describe("professional and customer listing review", () => {
         intentId,
         storageId,
       });
+      const profile = await owner.client.query(api.users.getMyProfile, {});
+      expect(profile).toMatchObject({ avatarStorageId: storageId });
+      expect(profile?.avatarUrl).toBe(
+        await t.run((ctx) => ctx.storage.getUrl(storageId)),
+      );
       expect(
-        await owner.client.query(api.users.getMyProfile, {}),
-      ).toMatchObject({ avatarStorageId: storageId });
+        await t.run(async (ctx) => (await ctx.storage.get(storageId))?.size),
+      ).toBe(bytes.length);
     }
   });
   it("only the assigned agent can update an enquiry", async () => {
@@ -355,5 +360,213 @@ describe("professional and customer listing review", () => {
         id: applicationId,
       }),
     ).rejects.toThrow(/ADMIN/);
+  });
+});
+
+describe("review consistency and profile privacy", () => {
+  it("does not change a manager plan while money may be in flight", async () => {
+    const t = setup(),
+      owner = await actor(t, "CLIENT"),
+      user = await t.run((ctx) => ctx.db.get(owner.id));
+    const managerId = await t.run(async (ctx) => {
+      const id = await ctx.db.insert("estateManagers", {
+        userId: owner.id,
+        companyName: "Fixture",
+        contactName: "Applicant",
+        email: user!.email,
+        phone: "08000000000",
+        statesOfOperation: ["Lagos"],
+        plan: "STARTER",
+        status: "PENDING",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+      await ctx.db.insert("checkoutOrders", {
+        ownerId: owner.id,
+        reference: "pending-manager",
+        kind: "MANAGER",
+        targetId: String(id),
+        title: "STARTER — Fixture",
+        amount: 75000,
+        currency: "NGN",
+        status: "PENDING",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+      return id;
+    });
+    await expect(
+      owner.client.mutation(api.subscriptions.selectPlan, {
+        managerId,
+        plan: "PROFESSIONAL",
+      }),
+    ).rejects.toThrow(/pending payment/);
+    expect(await t.run((ctx) => ctx.db.get(managerId))).toMatchObject({
+      plan: "STARTER",
+    });
+  });
+  it("resumes manager enrolment across tabs without another plan charge", async () => {
+    const t = setup(),
+      owner = await actor(t, "CLIENT"),
+      user = await t.run((ctx) => ctx.db.get(owner.id));
+    await t.run((ctx) =>
+      ctx.db.insert("identities", {
+        userId: owner.id,
+        ninCipher: "fixture",
+        fingerprint: crypto.randomUUID(),
+        lastFour: "0000",
+        status: "PENDING",
+        consentVersion: "2026-10-03",
+        consentedAt: Date.now(),
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }),
+    );
+    const args = {
+      companyName: "Fixture Estates",
+      contactName: "Applicant",
+      email: user!.email,
+      phone: "08000000000",
+      operatingState: "Lagos",
+      operatingLga: "Ikeja",
+      statesOfOperation: ["Lagos"],
+      plan: "STARTER" as const,
+    };
+    const first = await owner.client.mutation(
+      api.partners.submitManagerApplication,
+      { ...args, submissionKey: "manager-tab-one-001" },
+    );
+    expect(
+      await owner.client.mutation(api.partners.submitManagerApplication, {
+        ...args,
+        submissionKey: "manager-tab-two-002",
+      }),
+    ).toEqual(first);
+    await expect(
+      owner.client.mutation(api.partners.submitManagerApplication, {
+        ...args,
+        plan: "PROFESSIONAL",
+        submissionKey: "manager-tab-three-003",
+      }),
+    ).rejects.toThrow(/different plan/);
+    expect(
+      await t.run((ctx) => ctx.db.query("estateManagers").collect()),
+    ).toHaveLength(1);
+  });
+  it("resumes an agent application across distinct browser submission keys", async () => {
+    const t = setup(),
+      owner = await actor(t, "CLIENT");
+    const user = await t.run((ctx) => ctx.db.get(owner.id));
+    await t.run((ctx) =>
+      ctx.db.insert("identities", {
+        userId: owner.id,
+        ninCipher: "fixture-encrypted",
+        fingerprint: crypto.randomUUID(),
+        lastFour: "0000",
+        status: "PENDING",
+        consentVersion: "2026-10-03",
+        consentedAt: Date.now(),
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }),
+    );
+    const data = {
+      fullName: "Applicant",
+      email: user!.email.toUpperCase(),
+      phone: "08000000000",
+      operatingState: "Lagos",
+      operatingLga: "Ikeja",
+    };
+    const first = await owner.client.mutation(
+      api.partners.submitAgentApplication,
+      { ...data, submissionKey: "browser-one-request-001" },
+    );
+    const second = await owner.client.mutation(
+      api.partners.submitAgentApplication,
+      { ...data, submissionKey: "browser-two-request-002" },
+    );
+    expect(second).toEqual(first);
+    expect(
+      await owner.client.query(api.partners.myEnrolments, {}),
+    ).toMatchObject({ agents: [{ _id: first.id }] });
+    expect(
+      await t.run((ctx) => ctx.db.query("agentApplications").collect()),
+    ).toHaveLength(1);
+  });
+  it("reviewing an old rejected application cannot revoke a separately approved agent", async () => {
+    const t = setup(),
+      owner = await actor(t),
+      admin = await actor(t, "ADMIN"),
+      user = await t.run((ctx) => ctx.db.get(owner.id));
+    const old = await t.run(async (ctx) => {
+      const fields = {
+        userId: owner.id,
+        fullName: "Applicant",
+        email: user!.email,
+        phone: "08000000000",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      await ctx.db.insert("agentApplications", {
+        ...fields,
+        reference: "CURRENT",
+        status: "APPROVED",
+        manualVerificationReference: "physical-verified",
+      });
+      return ctx.db.insert("agentApplications", {
+        ...fields,
+        reference: "OLD",
+        status: "PENDING",
+      });
+    });
+    await admin.client.mutation(api.partners.reviewAgentApplication, {
+      id: old,
+      status: "REJECTED",
+    });
+    expect(await owner.client.query(api.users.getMyProfile, {})).toMatchObject({
+      role: "AGENT",
+    });
+  });
+  it("never returns temporary encrypted identity envelopes in browser profiles", async () => {
+    const t = setup(),
+      owner = await actor(t, "CLIENT");
+    await t.run((ctx) =>
+      ctx.db.patch(owner.id, {
+        registrationNinCipher: "private-envelope",
+        registrationNinHash: "private-hash",
+        registrationNinLastFour: "0000",
+      }),
+    );
+    const profile = await owner.client.query(api.users.getMyProfile, {});
+    expect(profile).not.toHaveProperty("registrationNinCipher");
+    expect(profile).not.toHaveProperty("registrationNinHash");
+    expect(profile).not.toHaveProperty("registrationNinLastFour");
+  });
+  it("declining a manager application preserves an existing agent role", async () => {
+    const t = setup(),
+      owner = await actor(t),
+      admin = await actor(t, "ADMIN"),
+      user = await t.run((ctx) => ctx.db.get(owner.id));
+    const id = await t.run((ctx) =>
+      ctx.db.insert("estateManagers", {
+        userId: owner.id,
+        companyName: "Fixture",
+        contactName: "Applicant",
+        email: user!.email,
+        phone: "08000000000",
+        statesOfOperation: ["Lagos"],
+        plan: "STARTER",
+        status: "PENDING",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }),
+    );
+    await admin.client.mutation(api.partners.reviewManagerApplication, {
+      id,
+      status: "SUSPENDED",
+    });
+    expect(await owner.client.query(api.users.getMyProfile, {})).toMatchObject({
+      role: "AGENT",
+    });
   });
 });

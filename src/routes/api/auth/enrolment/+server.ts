@@ -95,6 +95,21 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
         api.partners.submitManagerApplication,
         application,
       );
+      const enrolments = await client.query(api.partners.myEnrolments, {});
+      if (
+        enrolments.managers.some(
+          (manager) =>
+            manager._id === saved.id && (manager.paidThrough ?? 0) > Date.now(),
+        )
+      )
+        return json(
+          {
+            accountReady,
+            applicationId: saved.id,
+            redirect: "/dashboard/account",
+          },
+          { headers },
+        );
       const order = await client.mutation(api.checkout.create, {
         kind: "MANAGER",
         targetId: saved.id,
@@ -112,16 +127,26 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
       api.partners.submitAgentApplication,
       application,
     );
-    const order = await client.mutation(api.checkout.create, {
-      kind: "AGENT",
-      targetId: saved.id,
-    });
+    const enrolments = await client.query(api.partners.myEnrolments, {});
+    const paid = enrolments.agents.some(
+      (application) =>
+        application._id === saved.id && application.registrationPaid,
+    );
+    const order =
+      saved.registrationFeeNgn && !paid
+        ? await client.mutation(api.checkout.create, {
+            kind: "AGENT",
+            targetId: saved.id,
+          })
+        : null;
     return json(
       {
         accountReady,
         applicationId: saved.id,
         reference: saved.reference,
-        redirect: `/checkout/${encodeURIComponent(order.reference)}`,
+        redirect: order
+          ? `/checkout/${encodeURIComponent(order.reference)}`
+          : "/dashboard/account",
       },
       { headers },
     );
